@@ -14,20 +14,22 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun AuralExampleSettingsPanel(settings: AuralExampleSettings, popularityAvailable: Boolean,
-                                      onChange: (AuralExampleSettings) -> Unit, onBack: () -> Unit) {
+                                      onChange: (AuralExampleSettings) -> Unit, onBack: () -> Unit, popularityDescription: String? = null) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp).testTag("AuralExampleSettingsPanel")) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack, modifier = Modifier.testTag("AuralExampleSettingsBack")) { Icon(Icons.Default.ArrowBack, "Back") }
             Text("Examples", style = MaterialTheme.typography.titleLarge)
         }
-        Text("Applies to your next exercise", style = MaterialTheme.typography.bodySmall)
+        Text("Catalog and next example", style = MaterialTheme.typography.bodySmall)
         AuralExampleSwitch("Prefer popular songs", "AuralPopularity", settings.popularity && popularityAvailable, popularityAvailable,
-            if (!popularityAvailable) "Popularity data unavailable" else null) { onChange(settings.copy(popularity = it)) }
+            popularityDescription ?: if (!popularityAvailable) "Popularity data unavailable" else null) { onChange(settings.copy(popularity = it)) }
         AuralExampleSwitch("Keep examples varied", "AuralVariety", settings.variety) { onChange(settings.copy(variety = it)) }
         AuralExampleSwitch("Favor my favorites", "AuralFavorites", settings.favorites) { onChange(settings.copy(favorites = it)) }
         Divider(Modifier.padding(vertical = 12.dp))
         AuralExampleSwitch("Distinguish inversions", "AuralInversions", settings.distinguishInversions,
             description = "Track bass-sensitive practice separately") { onChange(settings.copy(distinguishInversions = it)) }
+        AuralExampleSwitch("Flat list", "AuralFlatList", settings.flatList,
+            description = "All sequences · highest combined score first") { onChange(settings.copy(flatList = it)) }
     }
 }
 

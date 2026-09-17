@@ -24,7 +24,7 @@ class AuralQuizDeviceTest {
 
     @Test fun progressionPlaysToCompletionAndNextRetainsTheChosenVariant() {
         val session = AuralSession(Store(), seedFor = { it })
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled=false) } }
         compose.onNodeWithTag("AuralFamily-dominant-return").performScrollTo().performClick()
         compose.onNodeWithTag("AuralProgression-departure").performScrollTo().performClick()
         compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
@@ -43,7 +43,7 @@ class AuralQuizDeviceTest {
 
     @Test fun switchingPhaseDuringRealPlaybackCannotGradeTheNewQuestion() {
         val session = AuralSession(Store(), seedFor = { it })
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled=false) } }
         compose.onNodeWithTag("AuralFamily-dominant-return").performScrollTo().performClick()
         compose.onNodeWithTag("AuralProgression-departure").performScrollTo().performClick()
         compose.onNodeWithTag("AuralListen").performScrollTo().performClick()

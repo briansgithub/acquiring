@@ -6,6 +6,22 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class AuralSessionTest {
+    @Test fun playbackRoundTripRestoresDraftAndAttemptAfterProcessRecreation() {
+        val store=MemoryStore(); val lesson=session(store)
+        lesson.practice("dominant-return","recall",variantId="departure")
+        lesson.played(); val id=lesson.view().exercise!!.id
+        lesson.exploringPlayback(listOf("I"))
+        val restored=session(store)
+        assertEquals(id,restored.view().exercise!!.id)
+        assertEquals(listOf("I"),restored.playbackReturn!!.draft)
+        assertTrue(restored.view().heard); assertTrue(restored.view().supported)
+        assertTrue(restored.playbackReturn!!.open)
+        restored.returnFromPlayback(); restored.rememberDraft(listOf("I","V"))
+        val again=session(store)
+        assertFalse(again.playbackReturn!!.open); assertEquals(listOf("I","V"),again.playbackReturn!!.draft)
+        again.submit(again.view().exercise!!.answer.degrees)
+        assertTrue(session(store).view().answered)
+    }
     private class MemoryStore(var raw: String? = null, var writable: Boolean = true) : AuralPersistence {
         override fun read() = raw
         override fun write(value: String): Boolean { if (writable) raw = value; return writable }

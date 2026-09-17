@@ -13,6 +13,22 @@ import kotlin.math.abs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AuralAudioTest {
+    @Test fun longExamplesStreamBoundedBlocksAndPreserveCompletion() = runTest {
+        var written=0;var maxBlock=0;var closed=false
+        val sink=object:AuralStreamingSink {
+            override fun prepare(samples:ShortArray,sampleRate:Int) { error("Long example must stream") }
+            override fun prepareStream(sampleRate:Int) { assertEquals(8000,sampleRate) }
+            override fun write(samples:ShortArray,count:Int):Int { maxBlock=maxOf(maxBlock,samples.size); val n=minOf(count,511);written+=n;return n }
+            override fun play() {}
+            override val playedFrames get()=written
+            override fun close() { closed=true }
+        }
+        val audio=AuralAudio(sampleRate=8000,sinkFactory={sink},dispatcher=StandardTestDispatcher(testScheduler),clockMs={testScheduler.currentTime})
+        val events=List(140) { event(listOf(60,64,67),2.0) }
+        val job=async { audio.play(events,120,"CLARINET") }
+        advanceUntilIdle();job.await()
+        assertEquals(140*8000,written);assertEquals(2048,maxBlock);assertTrue(closed)
+    }
     @Test fun exposureStartsOnlyAfterActualPassageFramesAndOnlyOnce() = runTest {
         val sink = FakeSink({ testScheduler.currentTime })
         val audio = AuralAudio(sampleRate = 8000, sinkFactory = { sink }, dispatcher = StandardTestDispatcher(testScheduler), clockMs = { testScheduler.currentTime })

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -46,12 +47,12 @@ internal fun auralBriefPrompt(exercise: AuralExercise): String = when (exercise.
 /** Neutral slots carry timing/order, never hidden answer labels or answer-specific colors. */
 @Composable
 internal fun AuralChordStrip(degrees: List<String?>, modifier: Modifier = Modifier) {
-    Row(modifier, horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(if(degrees.size > 6) modifier.horizontalScroll(rememberScrollState()) else modifier, horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
         degrees.forEachIndexed { index, degree ->
             if (index > 0) Text("→", color = MaterialTheme.colorScheme.onSurfaceVariant)
             Surface(shape = MaterialTheme.shapes.medium,
                 color = if (degree == null) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.secondaryContainer,
-                modifier = Modifier.weight(1f)) {
+                modifier = if(degrees.size > 6) Modifier.width(72.dp) else Modifier.weight(1f)) {
                 Box(Modifier.heightIn(min = 52.dp).padding(horizontal = 4.dp, vertical = 12.dp), contentAlignment = Alignment.Center) {
                     Text(degree ?: "?", style = MaterialTheme.typography.titleMedium)
                 }
@@ -136,7 +137,7 @@ internal fun AuralInfoDialog(view: AuralLessonView, familyId: String?, onDismiss
                 Text("Sing in any comfortable octave. Unclear pitch is ungraded. Audio stays on this device.")
                 Text("○ New   ● Practicing   ✓ Mastered\nThree dots: Recognize, Recall, Sing. Each includes separate skills; progress is shared across a family’s progressions.")
                 familyId?.let { id ->
-                    Text(AuralCurriculum.families.first { it.id == id }.label, style = MaterialTheme.typography.titleSmall)
+                    Text(AuralCurriculum.families.firstOrNull { it.id == id }?.label ?: "Sequence progress", style = MaterialTheme.typography.titleSmall)
                     AuralCurriculum.skills.forEach { skill ->
                         val cell = AuralCurriculum.cell(view.progress, id, skill.id)
                         Column {

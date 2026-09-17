@@ -25,7 +25,7 @@ import kotlin.math.roundToInt
 internal data class AuralAudioPlan(val timeline: PlaybackTimeline, val frameCount: Int, val durationMs: Double)
 
 /** Rest events preserve their complete beat duration but create no sounding voices. */
-internal fun auralPlaybackPlan(events: List<AuralEvent>, tempo: Double, sampleRate: Int): AuralAudioPlan {
+internal fun auralPlaybackPlan(events: List<AuralEvent>, tempo: Double, sampleRate: Int, streaming: Boolean = false): AuralAudioPlan {
     require(events.isNotEmpty()) { "No listening example is available." }
     require(tempo.isFinite() && tempo in 20.0..400.0) { "Invalid listening tempo." }
     require(sampleRate in 8_000..192_000) { "Invalid output sample rate." }
@@ -45,7 +45,8 @@ internal fun auralPlaybackPlan(events: List<AuralEvent>, tempo: Double, sampleRa
         )
     }
     val seconds = beat * 60.0 / tempo
-    require(seconds in 0.001..120.0) { "Listening examples must fit within two minutes." }
+    require(seconds.isFinite() && seconds >= .001 && seconds * sampleRate < Int.MAX_VALUE) { "Listening duration exceeds output frame capacity." }
+    require(streaming || seconds <= 120.0) { "Long examples require streaming output." }
     return AuralAudioPlan(PlaybackTimeline(0.0, beat, sounding), (seconds * sampleRate).roundToInt(), seconds * 1000.0)
 }
 
@@ -64,9 +65,21 @@ internal interface AuralAudioSink {
     val playedFrames: Int
     fun close()
 }
+internal interface AuralStreamingSink : AuralAudioSink {
+    fun prepareStream(sampleRate: Int)
+    fun write(samples: ShortArray, count: Int): Int
+}
 
-private class AndroidAuralAudioSink : AuralAudioSink {
+private class AndroidAuralAudioSink : AuralStreamingSink {
     private var track: AudioTrack? = null
+    override fun prepareStream(sampleRate: Int) {
+        val bufferSize = maxOf(8192, AudioTrack.getMinBufferSize(sampleRate,AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT))
+        track = AudioTrack.Builder().setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+            .setAudioFormat(AudioFormat.Builder().setSampleRate(sampleRate).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).setEncoding(AudioFormat.ENCODING_PCM_16BIT).build())
+            .setSessionId(AppAudioOutput.sessionId).setBufferSizeInBytes(bufferSize).setTransferMode(AudioTrack.MODE_STREAM).build()
+        check(track!!.state != AudioTrack.STATE_UNINITIALIZED)
+    }
+    override fun write(samples: ShortArray, count: Int): Int = checkNotNull(track).write(samples,0,count,AudioTrack.WRITE_NON_BLOCKING)
     override fun prepare(samples: ShortArray, sampleRate: Int) {
         val output = AudioTrack.Builder()
             .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
@@ -140,7 +153,7 @@ internal class AuralAudio(
         instrument: AudioEngine.Waveform = AudioEngine.Waveform.TRIANGLE,
         exposureStartBeat: Double = 0.0, onStarted: () -> Unit = {},
     ): Unit = coroutineScope {
-        val plan = auralPlaybackPlan(events, tempo, sampleRate)
+        val plan = auralPlaybackPlan(events, tempo, sampleRate, streaming = true)
         require(exposureStartBeat.isFinite() && exposureStartBeat >= 0 && exposureStartBeat < plan.timeline.endBeat)
         val exposureFrame = (exposureStartBeat * 60.0 / tempo * sampleRate).toInt()
         val callerContext = currentCoroutineContext().minusKey(Job)
@@ -157,7 +170,9 @@ internal class AuralAudio(
                 ensureActive()
                 val config = PlaybackConfig(tempo, 0, instrument, PlaybackChordMode.FULL, 0f, 0.72f)
                 val renderer = PlaybackPcmRenderer(plan.timeline, config, sampleRate)
-                val samples = ShortArray(plan.frameCount)
+                sink = sinkFactory()
+                val streaming = sink as? AuralStreamingSink
+                val samples = if(streaming == null) ShortArray(plan.frameCount) else ShortArray(0)
                 val block = ShortArray(2048)
                 var offset = 0
                 while (offset < samples.size) {
@@ -179,14 +194,22 @@ internal class AuralAudio(
                             }
                         }
                 }
-                sink = sinkFactory()
-                sink!!.prepare(samples, sampleRate)
+                if(streaming != null) streaming.prepareStream(sampleRate) else sink!!.prepare(samples, sampleRate)
                 ensureActive()
                 sink!!.play()
                 val deadline = clockMs() + plan.durationMs.toLong() + 5000L
                 var notified = false
+                var rendered = 0
+                var pending = 0
                 while (true) {
                     ensureActive()
+                    if(streaming != null && rendered < plan.frameCount) {
+                        if(pending == 0) { pending=minOf(block.size,plan.frameCount-rendered); renderer.renderAudioInto(block,pending) }
+                        val written=streaming.write(block,pending)
+                        check(written >= 0) { "Audio output write failed." }
+                        rendered += written; pending -= written
+                        if(pending > 0 && written > 0) block.copyInto(block,0,written,written+pending)
+                    }
                     val frames = sink!!.playedFrames
                     if (!notified && frames > exposureFrame) {
                         // Session state stays on the caller's dispatcher. Cancellation can retire
@@ -194,9 +217,9 @@ internal class AuralAudio(
                         withContext(callerContext) { ensureActive(); onStarted() }
                         notified = true
                     }
-                    if (frames >= samples.size) break
+                    if (frames >= plan.frameCount) break
                     check(clockMs() < deadline) { "Audio playback stalled. Try listening again." }
-                    delay(12)
+                    delay(if(streaming != null) 2 else 12)
                 }
             }
         } finally {

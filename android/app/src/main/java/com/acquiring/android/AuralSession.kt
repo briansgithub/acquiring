@@ -4,6 +4,8 @@ import android.content.Context
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Serializable
 internal data class AuralSavedSession(
@@ -16,7 +18,10 @@ internal data class AuralSavedSession(
     val inversionProgress: AuralProgress = AuralProgress(),
     val sourceExposures: List<AuralSourceExposure> = emptyList(),
     val sourceHistoryReliable: Boolean = true,
+    val playbackReturn: AuralPlaybackReturn? = null,
 )
+@Serializable internal data class AuralPlaybackReturn(val exerciseId: String,val draft: List<String>,val heard: Boolean,val answered: Boolean,
+    val guidanceVisible: Boolean,val plays: Int,val attempts: Int,val assistance: List<String>,val feedback: String,val open: Boolean = true)
 
 internal interface AuralPersistence {
     fun read(): String?
@@ -62,6 +67,9 @@ internal class AuralSession(
     private var favoriteSongIds = emptySet<String>()
     val exampleSettings get() = saved.exampleSettings
     val popularityAvailable get() = exampleProvider?.popularityAvailable == true
+    val playbackReturn get() = saved.playbackReturn?.takeIf { it.exerciseId == saved.current?.id }
+    fun rememberDraft(draft: List<String>) { playbackReturn?.let { saved=saved.copy(playbackReturn=it.copy(draft=draft)); save() } }
+    fun returnFromPlayback() { playbackReturn?.let { saved=saved.copy(playbackReturn=it.copy(open=false)); save() } }
     fun setFavorites(ids: Set<String>) { favoriteSongIds = ids }
     fun setExampleSettings(settings: AuralExampleSettings) { saved = saved.copy(exampleSettings = settings); save() }
     private fun progressFor(settings: AuralExampleSettings = saved.exampleSettings) = if (settings.distinguishInversions) saved.inversionProgress else saved.progress
@@ -103,6 +111,7 @@ internal class AuralSession(
                     inversionProgress = readField("inversionProgress", AuralProgress()) { AuralCurriculum.normalize(json.decodeFromJsonElement<AuralProgress>(it)) },
                     sourceExposures = exposures,
                     sourceHistoryReliable = reliableHistory && !damagedExposure,
+                    playbackReturn = readField<AuralPlaybackReturn?>("playbackReturn",null) { if(it is JsonNull) null else json.decodeFromJsonElement<AuralPlaybackReturn>(it) },
                 )
                 if (recoveredMetadata) storageWarning = "Some saved settings or history could not be read. Valid learning progress has been kept."
                 if (!decoded.sourceHistoryReliable) storageWarning = "Some listening history could not be restored. Your progress has been kept; song examples count as supported practice."
@@ -126,6 +135,10 @@ internal class AuralSession(
                     assistance = listOf("resumed-example")
                     guidanceVisible = current.support == 2
                     feedback = "Resumed example. Listen again; this counts as supported practice."
+                    decoded.playbackReturn?.takeIf { it.exerciseId==current.id && it.plays in 0..1000 && it.attempts in 0..1000 }?.let {
+                        assistance=it.assistance+"source-playback"; heard=it.heard; answered=it.answered; guidanceVisible=it.guidanceVisible
+                        plays=it.plays; attempts=it.attempts; feedback=it.feedback
+                    }
                 }
             }
         } catch (_: Exception) {
@@ -142,6 +155,8 @@ internal class AuralSession(
     }
 
     private fun save() {
+        playbackReturn?.let { saved=saved.copy(playbackReturn=it.copy(heard=heard,answered=answered,guidanceVisible=guidanceVisible,
+            plays=plays,attempts=attempts,assistance=assistance,feedback=feedback)) }
         try {
             check(persistence.write(json.encodeToString(saved)))
         } catch (_: Exception) {
@@ -166,6 +181,46 @@ internal class AuralSession(
         val skill = AuralPracticeModes.selectSkill(progressFor(), familyId, variantId, modeId)
         val kind = if (skill == "reproduce") microphoneKind ?: AuralPracticeModes.selectMicrophoneKind(progressFor(), familyId) else null
         practice(familyId, skill, kind, variantId)
+    }
+
+    val recentSongs: List<String> get() = saved.sourceExposures.asReversed().map { it.songId }.distinct().take(10)
+    val favorites: Set<String> get() = favoriteSongIds.toSet()
+    suspend fun practicePattern(pattern: AuralPatternTarget, catalog: AuralCatalog, mode: String, microphoneKind: String? = null, assessment: Boolean = false) {
+        val serial = saved.serial + 1; val seed = seedFor(serial)
+        val skills = when(mode) { "recognize" -> listOf("guided","compare","identify"); "recall" -> listOf("recall","complete","audiate"); else -> listOf("reproduce") }
+        val skill = skills.firstOrNull { AuralCurriculum.cell(progressFor(),pattern.id,it).practiceCorrect < 4 } ?: skills[(serial % skills.size).toInt()]
+        val cell = AuralCurriculum.cell(progressFor(),pattern.id,skill)
+        val target = AuralTarget(pattern.id,skill,cell.support,cell.support == 0,microphoneKind=microphoneKind,variantId=if(assessment) null else pattern.id,instrumentOverride=preferredInstrument,octaveShift=1,pattern=pattern)
+        val base = AuralCurriculum.generate(target,seed)
+        val settings = saved.exampleSettings.copy(distinguishInversions=pattern.view == "harmony_bass")
+        val context = AuralSelectionContext(recentSongs,saved.sourceExposures.map { it.sourceId }.toSet(),favoriteSongIds,assessment=cell.support == 0,
+            supportedOccurrenceId=saved.current?.takeIf { cell.support > 0 && it.familyId == pattern.id && it.skillId != skill }?.provenance?.corpus?.passage?.occurrenceId)
+        val passage = withContext(Dispatchers.IO) { catalog.passage(pattern,settings,context,seed,pattern.id) }
+        val source = AuralCorpusProvenance(catalog.snapshotId,catalog.popularityVersion,"structural-patterns-1",passage,settings,seed=seed and 0xffffffffL,semitoneShift=12,
+            recentSongIds=recentSongs,favoriteSongIds=favoriteSongIds.sorted(),heardSourceIds=context.heardSourceIds.toList(),
+            familiar=AuralExposureIndex(context.heardSourceIds).contains(passage.sourceId),assessment=context.assessment,playbackTempo=base.tempo,sourceHistoryReliable=saved.sourceHistoryReliable)
+        val exercise = auralWithCorpus(base,source).let { it.copy(provenance=it.provenance.copy(exampleSettings=settings)) }
+        saved = saved.copy(serial=serial,current=exercise)
+        assistance = if(assessment) emptyList() else listOf("selected-pattern"); plays=0; attempts=0; heard=false; answered=false; guidanceVisible=exercise.support == 2; feedback=""
+        save()
+    }
+    fun exploringPlayback(draft: List<String> = emptyList()) {
+        val current=saved.current ?: return
+        assistance = assistance + "source-playback"; listeningStarted()
+        saved=saved.copy(playbackReturn=AuralPlaybackReturn(current.id,draft,heard,answered,guidanceVisible,plays,attempts,assistance,feedback)); save()
+    }
+    fun assistedChunk() { assistance = assistance + "chunked-listening"; save() }
+    fun reviewPattern(rows: List<AuralCatalogRow>): Pair<AuralPatternTarget,String>? {
+        val modes=listOf("recognize","recall","sing").filter { saved.microphoneEnabled || it!="sing" }
+        val candidates=rows.flatMap { row -> modes.map { mode ->
+            val skill=when(mode) { "recognize" -> "identify"; "recall" -> "recall"; else -> "reproduce" }
+            Triple(row.target,mode,AuralCurriculum.cell(progressFor(),row.target.id,skill))
+        } }
+        val eligible=candidates.filter { (p,mode,_) -> mode=="recognize" || AuralCurriculum.cell(progressFor(),p.id,"identify").independentCorrect>=2 }
+        val chosen=eligible.filter { it.third.independentAttempts>0 && it.third.dueAt<=clock() }.minByOrNull { it.third.dueAt }
+            ?: eligible.firstOrNull { it.third.lastCorrect==false }
+            ?: eligible.filter { !it.third.mastered }.let { if(it.isEmpty()) null else it[(saved.serial%it.size).toInt()] }
+        return chosen?.let { it.first to it.second }
     }
 
     private fun start(target: AuralTarget, seed: Long, serial: Long) {

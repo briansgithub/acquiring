@@ -13,7 +13,7 @@ import kotlin.random.Random
 @Serializable data class AuralOption(val id: String, val label: String, val degrees: List<String>)
 @Serializable data class AuralAnswer(val degrees: List<String>, val optionId: String? = null, val targetMidis: List<Int> = emptyList())
 @Serializable data class AuralMicrophoneTask(val kind: String, val label: String, val eventIndices: List<Int>, val targetMidis: List<Int>, val scaleDegree: Int? = null)
-@Serializable data class AuralTarget(val familyId: String, val skillId: String, val support: Int = 2, val transfer: Boolean = false, val reason: String = "", val microphoneKind: String? = null, val variantId: String? = null, val instrumentOverride: String? = null, val octaveShift: Int = 0)
+@Serializable data class AuralTarget(val familyId: String, val skillId: String, val support: Int = 2, val transfer: Boolean = false, val reason: String = "", val microphoneKind: String? = null, val variantId: String? = null, val instrumentOverride: String? = null, val octaveShift: Int = 0, val pattern: AuralPatternTarget? = null)
 @Serializable data class AuralProvenance(val generatorVersion: String, val seed: Long, val target: AuralTarget, val variantId: String, val keyTonic: String, val tempo: Int, val instrument: String, val inversions: List<Int>, val register: Int, val spreads: List<Boolean>, val contextDegrees: List<String>, val corpus: AuralCorpusProvenance? = null, val exampleSettings: AuralExampleSettings? = null, val fallbackReason: String? = null)
 @Serializable data class AuralExercise(
     val id: String, val familyId: String, val variantId: String, val skillId: String,
@@ -78,6 +78,7 @@ object AuralCurriculum {
         AuralSkill("reproduce", "Reproduce", "Sing a specified root, bass, scale degree, or root sequence."),
     )
     private val familyIds get() = families.map { it.id }
+    private fun knownFamily(id: String) = id in familyIds || Regex("p_[0-9a-f]{12}_[0-9]+_[0-9a-f]{32}").matches(id)
     private val skillIds get() = skills.map { it.id }
     private fun accuracy(cell: AuralCell): Double = if (cell.recentIndependent.isEmpty()) 0.0 else cell.recentIndependent.count { it }.toDouble() / cell.recentIndependent.size
     private fun support(cell: AuralCell) = if (cell.practiceCorrect < 2) 2 else if (cell.practiceCorrect < 4) 1 else 0
@@ -96,9 +97,9 @@ object AuralCurriculum {
     fun normalize(progress: AuralProgress): AuralProgress {
         if (progress.version != 1) return AuralProgress()
         val allowed = families.flatMap { f -> skills.map { "${f.id}:${it.id}" } }.toSet()
-        return progress.copy(cells = progress.cells.filterKeys { it in allowed }.mapValues { cleanCell(it.value, it.key.substringAfter(':')) }, attempts = progress.attempts.coerceIn(0, 1_000_000),
+        return progress.copy(cells = progress.cells.filterKeys { it in allowed || knownFamily(it.substringBefore(':')) && it.substringAfter(':') in skillIds }.mapValues { cleanCell(it.value, it.key.substringAfter(':')) }, attempts = progress.attempts.coerceIn(0, 1_000_000),
             exposures = progress.exposures.filter { it.fingerprint.length in 1..200 && it.id.length in 1..200 && it.at >= 0 }.takeLast(MAX_EXPOSURES),
-            recent = progress.recent.filter { it.familyId in familyIds && it.skillId in skillIds && it.key in keys && it.id.length in 1..200 && it.support in 0..2 && (it.microphoneKind == null || it.microphoneKind in microphoneKinds) }.takeLast(MAX_RECENT).map { it.copy(at = it.at.coerceAtLeast(0), generatorVersion = it.generatorVersion.take(40), fingerprint = it.fingerprint.take(200), variantId = it.variantId.take(50), assistance = it.assistance.take(20).map { a -> a.take(80) }, plays = it.plays.coerceIn(0, 1000), attempt = it.attempt.coerceIn(0, 1000)) })
+            recent = progress.recent.filter { knownFamily(it.familyId) && it.skillId in skillIds && it.key in keys && it.id.length in 1..200 && it.support in 0..2 && (it.microphoneKind == null || it.microphoneKind in microphoneKinds) }.takeLast(MAX_RECENT).map { it.copy(at = it.at.coerceAtLeast(0), generatorVersion = it.generatorVersion.take(40), fingerprint = it.fingerprint.take(200), variantId = it.variantId.take(100), assistance = it.assistance.take(20).map { a -> a.take(80) }, plays = it.plays.coerceIn(0, 1000), attempt = it.attempt.coerceIn(0, 1000)) })
     }
     fun cell(progress: AuralProgress, familyId: String, skillId: String) = cleanCell(progress.cells["$familyId:$skillId"] ?: AuralCell(), skillId)
     private fun evidenced(progress: AuralProgress, familyId: String, skillId: String): Boolean {
@@ -165,6 +166,7 @@ object AuralCurriculum {
     }
     /** The target decides pedagogy; the seed only decides its musical realization. */
     fun generate(target: AuralTarget, seed: Long): AuralExercise {
+        if (target.pattern != null) return generatePatternExercise(target, seed)
         val family = requireNotNull(families.find { it.id == target.familyId }) { "Unknown harmonic family" }
         require(target.skillId in skillIds) { "Unknown aural skill" }
         require(target.support in 0..2) { "Support must be 0, 1, or 2" }
@@ -239,7 +241,7 @@ object AuralCurriculum {
     }
     /** Practice grows readiness; only unfamiliar first-pass performance grows mastery. */
     fun record(progress: AuralProgress, exercise: AuralExercise, correct: Boolean, assistance: List<String> = emptyList(), plays: Int = 1, attempt: Int = 1, technicalUncertainty: Boolean = false, now: Long = System.currentTimeMillis()): AuralProgress {
-        require(exercise.familyId in familyIds && exercise.skillId in skillIds) { "Unknown curriculum exercise" }
+        require(knownFamily(exercise.familyId) && exercise.skillId in skillIds) { "Unknown curriculum exercise" }
         val p = normalize(progress)
         val old = cell(p, exercise.familyId, exercise.skillId)
         val alreadyGraded = p.recent.any { it.id == exercise.id && !it.technicalUncertainty }
