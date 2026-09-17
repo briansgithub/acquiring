@@ -131,14 +131,19 @@ internal class AuralAudio(
         }
     }
 
-    suspend fun play(events: List<AuralEvent>, tempo: Int, instrument: String) =
-        play(events, tempo.toDouble(), auralWaveform(instrument))
+    suspend fun play(events: List<AuralEvent>, tempo: Int, instrument: String,
+                     exposureStartBeat: Double = 0.0, onStarted: () -> Unit = {}) =
+        play(events, tempo.toDouble(), auralWaveform(instrument), exposureStartBeat, onStarted)
 
     suspend fun play(
         events: List<AuralEvent>, tempo: Double = 80.0,
-        instrument: AudioEngine.Waveform = AudioEngine.Waveform.TRIANGLE
+        instrument: AudioEngine.Waveform = AudioEngine.Waveform.TRIANGLE,
+        exposureStartBeat: Double = 0.0, onStarted: () -> Unit = {},
     ): Unit = coroutineScope {
         val plan = auralPlaybackPlan(events, tempo, sampleRate)
+        require(exposureStartBeat.isFinite() && exposureStartBeat >= 0 && exposureStartBeat < plan.timeline.endBeat)
+        val exposureFrame = (exposureStartBeat * 60.0 / tempo * sampleRate).toInt()
+        val callerContext = currentCoroutineContext().minusKey(Job)
         val thisJob = currentCoroutineContext()[Job]!!
         val previous = synchronized(lock) {
             check(!disposed) { "Practice audio has been disposed." }
@@ -179,8 +184,17 @@ internal class AuralAudio(
                 ensureActive()
                 sink!!.play()
                 val deadline = clockMs() + plan.durationMs.toLong() + 5000L
-                while (sink!!.playedFrames < samples.size) {
+                var notified = false
+                while (true) {
                     ensureActive()
+                    val frames = sink!!.playedFrames
+                    if (!notified && frames > exposureFrame) {
+                        // Session state stays on the caller's dispatcher. Cancellation can retire
+                        // a queued callback before it records exposure for a replacement question.
+                        withContext(callerContext) { ensureActive(); onStarted() }
+                        notified = true
+                    }
+                    if (frames >= samples.size) break
                     check(clockMs() < deadline) { "Audio playback stalled. Try listening again." }
                     delay(12)
                 }

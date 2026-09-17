@@ -37,8 +37,11 @@ Unsupported/missing/invalid examples use a synthetic realization for the same
 target and record a fallback reason. Future chord extensions and family mappings
 must expand validation explicitly.
 
-Source exposure is recorded when listening starts (including interruption), not
-when an unplayed question is created. Source identity survives changing seeds,
+Source exposure is recorded after the output playback head reaches the passage,
+including later interruption, not when a question is created or audio is prepared.
+The synthetic key reference alone does not expose the passage. Notifications run
+on the caller's dispatcher and cancelled/replaced playback cannot mark a new
+question heard. Source identity survives changing seeds,
 instruments and inversion views. Physical intervals `[startIndex,endIndex)` are
 grouped by song and section, merged, and queried by binary search. Any positive
 transition overlap counts conservatively as familiar, including shorter fragments
@@ -61,6 +64,13 @@ and relevant exposure/favorites context. Restoring validates source notes and
 regenerates answers even if the original sidecar is no longer installed. Replaying
 the *selection* requires retaining the referenced immutable snapshot; reproducing
 the selected *exercise* only requires its saved validated payload.
+
+Optional settings and exposure metadata decode independently of valid learning
+progress. Good exposure records survive malformed neighbors. If history is
+unreadable, a persisted reliability flag keeps corpus examples as supported
+practice until that history is repaired/restored; losing history cannot manufacture
+fresh-mastery credit. Existing synthetic-example evidence remains usable. A warning
+explains this condition only when damaged history is encountered.
 
 Human checks: listen to root versus inverted bass tasks, confirm source rhythms
 and silence lengths, check unfamiliar examples and supported reuse, and try all

@@ -13,6 +13,49 @@ import kotlin.math.abs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AuralAudioTest {
+    @Test fun exposureStartsOnlyAfterActualPassageFramesAndOnlyOnce() = runTest {
+        val sink = FakeSink({ testScheduler.currentTime })
+        val audio = AuralAudio(sampleRate = 8000, sinkFactory = { sink }, dispatcher = StandardTestDispatcher(testScheduler), clockMs = { testScheduler.currentTime })
+        var notified = 0
+        val job = async { audio.play(listOf(event(listOf(60), 2.0), event(emptyList(), .75), event(listOf(67))), 120, "sine", exposureStartBeat = 2.75) { notified++ } }
+        runCurrent()
+        assertEquals(0, notified) // Rendered/prepared/started does not yet mean the passage was heard.
+        advanceTimeBy(1370); runCurrent()
+        assertEquals(0, notified) // Key reference and separator do not expose the corpus passage.
+        advanceTimeBy(30); runCurrent()
+        assertEquals(1, notified)
+        advanceUntilIdle(); job.await()
+        assertEquals(1, notified)
+        assertEquals(1, sink.closed)
+    }
+
+    @Test fun preparationFailureAndCancelledReferenceDoNotRegisterExposure() = runTest {
+        var notified = 0
+        var released = false
+        val failed = AuralAudio(sampleRate = 8000, dispatcher = StandardTestDispatcher(testScheduler), sinkFactory = {
+            object : AuralAudioSink {
+                override fun prepare(samples: ShortArray, sampleRate: Int) { error("Output unavailable") }
+                override fun play() { error("Must not start") }
+                override val playedFrames = 0
+                override fun close() { released = true }
+            }
+        })
+        var failure: Exception? = null
+        val attempt = async { try { failed.play(listOf(event(listOf(60))), 120, "sine") { notified++ } } catch (error: Exception) { failure = error } }
+        advanceUntilIdle(); attempt.await()
+        assertNotNull(failure)
+        assertTrue(released)
+        assertEquals(0, notified)
+
+        val sink = FakeSink({ testScheduler.currentTime })
+        val cancelled = AuralAudio(sampleRate = 8000, sinkFactory = { sink }, dispatcher = StandardTestDispatcher(testScheduler), clockMs = { testScheduler.currentTime })
+        val job = async { cancelled.play(listOf(event(listOf(60), 2.0), event(listOf(67))), 120, "sine", exposureStartBeat = 2.0) { notified++ } }
+        runCurrent(); advanceTimeBy(200); runCurrent()
+        cancelled.cancel(); advanceUntilIdle()
+        assertTrue(job.isCancelled)
+        assertEquals(0, notified)
+        assertEquals(1, sink.closed)
+    }
     @Test fun adjacentChordsBlendForTwentyMillisecondsButWrittenSilenceStaysEmpty() = runTest {
         val events = listOf(event(listOf(60)), event(listOf(67)), event(emptyList()), event(listOf(64)))
         for (tempo in listOf(60.0, 120.0, 180.0)) {
@@ -97,9 +140,10 @@ class AuralAudioTest {
         val sinks = mutableListOf<FakeSink>()
         val audio = AuralAudio(sampleRate = 8000, sinkFactory = { FakeSink({ testScheduler.currentTime }).also(sinks::add) },
             dispatcher = StandardTestDispatcher(testScheduler), clockMs = { testScheduler.currentTime })
-        val first = async { audio.play(listOf(event(listOf(60), 4.0)), 120, "triangle") }
+        val notifications = mutableListOf<String>()
+        val first = async { audio.play(listOf(event(listOf(60), 4.0)), 120, "triangle") { notifications += "first" } }
         runCurrent()
-        val second = async { audio.play(listOf(event(listOf(67))), 120, "soft") }
+        val second = async { audio.play(listOf(event(listOf(67))), 120, "soft") { notifications += "second" } }
         runCurrent()
         assertTrue(first.isCancelled)
         assertEquals(1, sinks.first().closed)
@@ -107,6 +151,7 @@ class AuralAudioTest {
         advanceUntilIdle()
         second.await()
         assertEquals(1, sinks.last().closed)
+        assertEquals(listOf("second"), notifications)
     }
 
     @Test fun disposeCancelsAndCannotPlayLater() = runTest {
@@ -127,12 +172,14 @@ class AuralAudioTest {
         val sink = FakeSink({ testScheduler.currentTime }, stall = true)
         val audio = AuralAudio(sampleRate = 8000, sinkFactory = { sink }, dispatcher = StandardTestDispatcher(testScheduler), clockMs = { testScheduler.currentTime })
         var failure: Throwable? = null
+        var notified = false
         val job = async {
-            try { audio.play(listOf(event(listOf(60))), 120, "sine") } catch (error: IllegalStateException) { failure = error }
+            try { audio.play(listOf(event(listOf(60))), 120, "sine") { notified = true } } catch (error: IllegalStateException) { failure = error }
         }
         advanceUntilIdle()
         job.await()
         assertTrue(failure?.message?.contains("stalled") == true)
         assertEquals(1, sink.closed)
+        assertFalse(notified)
     }
 }
