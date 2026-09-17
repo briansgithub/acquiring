@@ -19,6 +19,7 @@ The curriculum chooses a family, variant and skill before selection. A bounded
 four-target descriptor cache avoids repeated target scans; only the chosen
 payload is read. File changes or snapshot changes invalidate reuse. The selector
 uses the shared xorshift32 contract and three draws (including singleton pools).
+New selections use `aural-selector-2`; saved version-one payloads still restore.
 Song multiplicity never affects weights. The unsigned low 32 bits of the existing
 generator seed are recorded as the selector seed. Shared JS/Swift-ready fixtures
 live in `contracts/aural-corpus/selection-fixtures.json`; set
@@ -26,8 +27,11 @@ live in `contracts/aural-corpus/selection-fixtures.json`; set
 
 The adapter validates actual triad pitch classes and roots against the exact
 current major-key curriculum variant, validates same-key tonic context and audio
-limits, then preserves source durations, notes, inversions, and bass motion. The
-existing octave preference raises every note by 12 semitones. Root, bass,
+limits, then preserves source beat ratios, notes, inversions, and bass motion.
+Playback uses the curriculum's adaptive tempo, recorded as an explicit
+`playbackTempo` transform; the source's original/reference tempo remains in the
+passage. Legacy saved exercises lacking this transform retain their source tempo.
+The existing octave preference raises every note by 12 semitones. Root, bass,
 scale-degree and root-sequence microphone answers are rebuilt from this material.
 Unsupported/missing/invalid examples use a synthetic realization for the same
 target and record a fallback reason. Future chord extensions and family mappings
@@ -35,7 +39,13 @@ must expand validation explicitly.
 
 Source exposure is recorded when listening starts (including interruption), not
 when an unplayed question is created. Source identity survives changing seeds,
-instruments and inversion views. Independent selection filters globally to fresh
+instruments and inversion views. Physical intervals `[startIndex,endIndex)` are
+grouped by song and section, merged, and queried by binary search. Any positive
+transition overlap counts conservatively as familiar, including shorter fragments
+inside previously heard passages. A shared endpoint chord alone does not. Legacy
+opaque source IDs retain exact matching. Relevant heard intervals are retained in
+provenance so replay cannot mistake an overlapping passage for fresh material.
+Independent selection filters globally to fresh
 passages where possible; otherwise it remains familiar supported practice. Guided
 phase transitions can intentionally retain the same eligible passage.
 
@@ -46,7 +56,7 @@ progress; changing preferences cannot transfer existing evidence. Shared instrum
 settings remain available. Song/section metadata appears only after grading.
 
 Saved current exercises and recent attempts retain source payloads and revisions,
-snapshot/mapping/popularity versions, seed, octave transform, effective settings,
+snapshot/mapping/popularity versions, seed, octave/tempo transforms, effective settings,
 and relevant exposure/favorites context. Restoring validates source notes and
 regenerates answers even if the original sidecar is no longer installed. Replaying
 the *selection* requires retaining the referenced immutable snapshot; reproducing
