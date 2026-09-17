@@ -163,6 +163,21 @@ class AuralSessionTest {
         assertEquals(progress, restored.progress)
     }
 
+    @Test fun malformedOptionalSettingsCannotEraseValidLearningEvidence() {
+        val store = MemoryStore()
+        val lesson = session(store); lesson.next(); lesson.played(); lesson.submit(emptyList())
+        val progress = lesson.view().progress
+        val original = Json.parseToJsonElement(store.raw!!).jsonObject
+        for ((key, badValue) in mapOf("exampleSettings" to JsonPrimitive("invalid"), "serial" to JsonObject(emptyMap()),
+                "microphoneEnabled" to JsonPrimitive("invalid"), "inversionProgress" to JsonPrimitive("invalid"))) {
+            store.raw = JsonObject(original + (key to badValue)).toString()
+            val restored = session(store).view()
+            assertEquals(key, progress, restored.progress)
+            assertNotNull(restored.exercise)
+            assertTrue(restored.storageWarning.contains("kept"))
+        }
+    }
+
     @Test fun explorationIsSupportedAndPreservesMicrophoneSubtypeOnRestart() {
         val store = MemoryStore()
         val lesson = session(store)

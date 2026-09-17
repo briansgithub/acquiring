@@ -15,6 +15,7 @@ internal data class AuralSavedSession(
     val exampleSettings: AuralExampleSettings = AuralExampleSettings(),
     val inversionProgress: AuralProgress = AuralProgress(),
     val sourceExposures: List<AuralSourceExposure> = emptyList(),
+    val sourceHistoryReliable: Boolean = true,
 )
 
 internal interface AuralPersistence {
@@ -74,14 +75,37 @@ internal class AuralSession(
                 val envelope = json.parseToJsonElement(raw).jsonObject
                 // Earlier/default serializers omit default-valued version fields.
                 require(envelope["version"] == null || envelope["version"]?.jsonPrimitive?.intOrNull == 1)
+                var recoveredMetadata = false
+                var damagedExposure = false
+                fun <T> readField(name: String, default: T, onFailure: () -> Unit = {}, decode: (JsonElement) -> T): T {
+                    val element = envelope[name] ?: return default
+                    return try { decode(element) } catch (_: Exception) {
+                        recoveredMetadata = true; onFailure(); default
+                    }
+                }
+                val reliableHistory = readField("sourceHistoryReliable", true, { damagedExposure = true }) {
+                    requireNotNull(it.jsonPrimitive.booleanOrNull)
+                }
+                val exposures = readField("sourceExposures", emptyList<AuralSourceExposure>(), { damagedExposure = true }) { element ->
+                    element.jsonArray.mapNotNull { item ->
+                        try {
+                            json.decodeFromJsonElement<AuralSourceExposure>(item).also {
+                                require(it.at >= 0 && it.sourceId.length in 1..1000 && it.songId.isNotBlank())
+                            }
+                        } catch (_: Exception) { recoveredMetadata = true; damagedExposure = true; null }
+                    }.asReversed().distinctBy { it.sourceId }.asReversed()
+                }
                 val decoded = AuralSavedSession(
-                    progress = envelope["progress"]?.let { json.decodeFromJsonElement<AuralProgress>(it) } ?: AuralProgress(),
-                    serial = (envelope["serial"]?.jsonPrimitive?.longOrNull ?: 0L).coerceAtLeast(0L),
-                    microphoneEnabled = envelope["microphoneEnabled"]?.jsonPrimitive?.booleanOrNull != false,
-                    exampleSettings = envelope["exampleSettings"]?.let { json.decodeFromJsonElement<AuralExampleSettings>(it) } ?: AuralExampleSettings(),
-                    inversionProgress = envelope["inversionProgress"]?.let { AuralCurriculum.normalize(json.decodeFromJsonElement<AuralProgress>(it)) } ?: AuralProgress(),
-                    sourceExposures = envelope["sourceExposures"]?.let { json.decodeFromJsonElement<List<AuralSourceExposure>>(it) }?.filter { it.at >= 0 && it.sourceId.length in 1..1000 } ?: emptyList(),
+                    progress = readField("progress", AuralProgress()) { json.decodeFromJsonElement<AuralProgress>(it) },
+                    serial = readField("serial", 0L) { requireNotNull(it.jsonPrimitive.longOrNull).coerceAtLeast(0L) },
+                    microphoneEnabled = readField("microphoneEnabled", true) { requireNotNull(it.jsonPrimitive.booleanOrNull) },
+                    exampleSettings = readField("exampleSettings", AuralExampleSettings()) { json.decodeFromJsonElement<AuralExampleSettings>(it) },
+                    inversionProgress = readField("inversionProgress", AuralProgress()) { AuralCurriculum.normalize(json.decodeFromJsonElement<AuralProgress>(it)) },
+                    sourceExposures = exposures,
+                    sourceHistoryReliable = reliableHistory && !damagedExposure,
                 )
+                if (recoveredMetadata) storageWarning = "Some saved settings or history could not be read. Valid learning progress has been kept."
+                if (!decoded.sourceHistoryReliable) storageWarning = "Some listening history could not be restored. Your progress has been kept; song examples count as supported practice."
                 // Validate the saved target via the generator. Never trust arbitrary saved notes.
                 val current = try {
                     envelope["current"]?.takeUnless { it is JsonNull }?.let { element ->
@@ -154,7 +178,7 @@ internal class AuralSession(
             assessment = target.support == 0 && target.variantId == null,
             supportedOccurrenceId = prior?.provenance?.corpus?.takeIf { target.support > 0 && prior.familyId == target.familyId && prior.variantId == base.variantId && prior.skillId != target.skillId }?.passage?.occurrenceId,
         )) } catch (_: Exception) { null }
-        val generated = try { source?.let { auralWithCorpus(base, it) } } catch (_: Exception) { null }
+        val generated = try { source?.let { auralWithCorpus(base, it.copy(sourceHistoryReliable = saved.sourceHistoryReliable)) } } catch (_: Exception) { null }
         val selected = (generated ?: base).let { it.copy(provenance = it.provenance.copy(exampleSettings = settings,
             fallbackReason = if (generated == null) "No eligible corpus passage; generated example for the same target." else null)) }
         val (progress, exercise) = if (generated == null) AuralCurriculum.beginExercise(progressFor(), selected, clock())

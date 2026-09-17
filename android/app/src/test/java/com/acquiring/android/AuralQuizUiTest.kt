@@ -60,6 +60,27 @@ class AuralQuizUiTest {
         compose.onNodeWithTag("AuralSource").performScrollTo().assertTextContains("Hidden song", substring = true)
     }
 
+    @Test fun failedPlaybackDoesNotMakeAnUnheardPassageFamiliar() {
+        val store = Store()
+        val provider = object : AuralExampleProvider {
+            override fun example(base: AuralExercise, settings: AuralExampleSettings, context: AuralSelectionContext): AuralCorpusProvenance {
+                val source = corpusFixture(base, settings)
+                return source.copy(familiar = AuralExposureIndex(context.heardSourceIds).contains(source.passage.sourceId))
+            }
+        }
+        val session = AuralSession(store, seedFor = { it }, exampleProvider = provider)
+        session.practice("dominant-return", "recall", variantId = "departure")
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) { error("Audio preparation failed") } } }
+        compose.onNodeWithTag("AuralContinue").performClick()
+        compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
+        compose.waitForIdle()
+        assertFalse(session.view().heard)
+        assertEquals(0, session.view().progress.attempts)
+        assertTrue(Json.decodeFromString<AuralSavedSession>(store.raw!!).sourceExposures.isEmpty())
+        session.practice("dominant-return", "recall", variantId = "departure")
+        assertFalse(session.view().exercise!!.previouslyExposed)
+    }
+
     @Test fun threeTabsReplaceSevenAndIntroductionLeadsStraightIntoRecognition() {
         val session = AuralSession(Store(), seedFor = { it })
         compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }

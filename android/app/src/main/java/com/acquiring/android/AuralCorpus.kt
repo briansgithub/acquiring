@@ -31,6 +31,7 @@ import kotlinx.serialization.json.Json
     val familiar: Boolean = false,
     val assessment: Boolean = false, val supportedOccurrenceId: String? = null,
     val playbackTempo: Int? = null,
+    val sourceHistoryReliable: Boolean = true,
 )
 @Serializable data class AuralSourceExposure(val sourceId: String, val songId: String, val at: Long)
 internal data class AuralOccurrenceRef(val id: String, val songId: String, val sectionId: String, val sourceId: String)
@@ -226,7 +227,7 @@ internal fun auralWithCorpus(base: AuralExercise, source: AuralCorpusProvenance)
     fun digest(value: String) = MessageDigest.getInstance("SHA-256").digest(value.toByteArray()).joinToString("") { "%02x".format(it) }
     val ex = base.copy(id = base.id + "-" + digest(p.occurrenceId), keyTonic = keyTonic, tempo = playbackTempo,
         events = events, context = context, microphoneTask = task, answer = base.answer.copy(targetMidis = task?.targetMidis.orEmpty()),
-        fingerprint = "source-" + digest(p.sourceId), previouslyExposed = source.familiar,
+        fingerprint = "source-" + digest(p.sourceId), previouslyExposed = source.familiar || !source.sourceHistoryReliable,
         provenance = base.provenance.copy(keyTonic = keyTonic, tempo = playbackTempo, inversions = emptyList(), spreads = emptyList(), contextDegrees = context.map { it.degree }, corpus = source))
     // Enforce the same audio duration and pitch constraints before accepting the example.
     auralPlaybackPlan(auralPromptEvents(ex), ex.tempo.toDouble(), 8000)
