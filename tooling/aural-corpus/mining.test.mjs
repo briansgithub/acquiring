@@ -140,8 +140,26 @@ test('per-selected total, additional and cumulative sequence reports are exact',
       assert.equal(entry.cumulative, combined.windows.get(k)?.size || 0);
       assert.equal(entry.overlappingVisits, p.occurrenceCount * Math.max(0, p.length - k + 1) - entry.total);
     }
+    assert.equal(Object.keys(p.sequenceCoverage).length, p.length - 1);
     previous = combined;
   }
+});
+
+test('compact per-pattern reports retain cumulative shorter-window counts from earlier long patterns', () => {
+  const runs = [run('a', 'I ii V I vi IV'), run('b', 'I ii V I vi IV'),
+    run('c', 'V I'), run('d', 'V I'), run('e', 'V I'), run('f', 'V I')];
+  const index = discoverPatterns(runs);
+  const result = selectPatterns(index, runs, { targetCoverage: 1, structureMinSongs: 2 });
+  assert.ok(result.selected[0].length > result.selected[result.selected.length - 1].length);
+  const prefix = [];
+  for (const pattern of result.selected) {
+    prefix.push(pattern);
+    const oracle = bruteCoverage(runs, prefix);
+    assert.equal(Object.keys(pattern.sequenceCoverage).length, pattern.length - 1);
+    for (const [length, metrics] of Object.entries(pattern.sequenceCoverage))
+      assert.equal(metrics.cumulative, oracle.windows.get(Number(length))?.size || 0);
+  }
+  assert.equal(Object.keys(result.views.harmony.sequenceCoverage).length, 5);
 });
 
 test('song support differs from occurrence count and patterns do not cross sections', () => {
@@ -254,4 +272,32 @@ test('40,000-song offline performance and full coverage', { skip: process.env.AU
     selected: result.selected.length, miningSeconds: (mined - started) / 1000,
     selectionSeconds: (completed - mined) / 1000, residentBytes: process.memoryUsage().rss,
     peakResidentKiB: process.resourceUsage().maxRSS }));
+});
+
+test('40,000-song diverse-vocabulary selection and compact reporting', { skip: process.env.AURAL_CORPUS_DIVERSE_BENCHMARK !== '1' }, t => {
+  let seed = 781231;
+  const random = n => { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return (seed >>> 0) % n; };
+  const vocabulary = Array.from({ length: 40 }, (_, i) => `functional-quality-${i}`);
+  const runs = Array.from({ length: 40000 }, (_, s) => {
+    let previous = -1;
+    const tokens = Array.from({ length: 40 }, () => {
+      let token = random(39); if (token >= previous && previous >= 0) token++;
+      previous = token; return vocabulary[token];
+    });
+    return run(`diverse${s}`, tokens);
+  });
+  const started = performance.now(); const index = discoverPatterns(runs); const mined = performance.now();
+  t.diagnostic(JSON.stringify({ phase: 'discovered', songs: runs.length, tokens: 1600000,
+    suffixIntervals: index.intervals.length, candidates: index.candidates.length, miningSeconds: (mined - started) / 1000 }));
+  const result = selectPatterns(index); const completed = performance.now();
+  assert.ok(result.views.harmony.coverage >= 0.8);
+  assert.ok(index.candidates.length > 100000);
+  assert.ok(result.selected.length > 10000);
+  assert.equal(result.selected.reduce((n, p) => n + Object.keys(p.sequenceCoverage).length, 0),
+    result.selected.reduce((n, p) => n + p.length - 1, 0));
+  t.diagnostic(JSON.stringify({ songs: runs.length, tokens: 1600000, suffixIntervals: index.intervals.length,
+    candidates: index.candidates.length, selected: result.selected.length, coverage: result.views.harmony.coverage,
+    sequenceMetricRows: result.selected.reduce((n, p) => n + Object.keys(p.sequenceCoverage).length, 0),
+    miningSeconds: (mined - started) / 1000, selectionSeconds: (completed - mined) / 1000,
+    residentBytes: process.memoryUsage().rss, peakResidentKiB: process.resourceUsage().maxRSS }));
 });

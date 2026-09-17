@@ -146,6 +146,8 @@ class CoverageState {
     this.coveredTransitions = 0;
     this.coveredLength = new Uint32Array(context.index.runAt.length);
     this.lengthHistogram = new Float64Array(context.maxLength + 2);
+    this.lengthFenwick = new Float64Array(context.maxLength + 2);
+    this.coveredChordStarts = 0;
     this.minimum = new RangeMinimum(context.index.suffixArray.length);
     this.ownerAt = new Int32Array(context.index.runAt.length).fill(-1);
     this.owners = [];
@@ -154,11 +156,17 @@ class CoverageState {
   explains(pattern) {
     return this.minimum.query(pattern.intervalStart, pattern.intervalEnd) >= pattern.length;
   }
-  sequenceCounts() {
-    const counts = new Float64Array(this.lengthHistogram.length);
-    let sum = 0;
-    for (let k = counts.length - 1; k >= 1; k--) { sum += this.lengthHistogram[k]; counts[k] = sum; }
+  sequenceCounts(maximum = this.context.maxLength) {
+    const counts = new Float64Array(maximum + 2);
+    let prefix = 0;
+    for (let p = maximum; p > 0; p -= p & -p) prefix += this.lengthFenwick[p];
+    let sum = this.coveredChordStarts - prefix;
+    for (let k = maximum; k >= 1; k--) { sum += this.lengthHistogram[k]; counts[k] = sum; }
     return counts;
+  }
+  recordLength(length, delta) {
+    this.lengthHistogram[length] += delta;
+    for (let p = length; p < this.lengthFenwick.length; p += p & -p) this.lengthFenwick[p] += delta;
   }
   evaluate(pattern) {
     const { index, edgeOrdinals, evaluationSeen } = this.context;
@@ -200,8 +208,9 @@ class CoverageState {
         const value = farthest - p + 1;
         const at = index.runStarts[r] + p; const previous = this.coveredLength[at];
         if (value > previous) {
-          if (previous) this.lengthHistogram[previous]--;
-          this.lengthHistogram[value]++;
+          if (previous) this.recordLength(previous, -1);
+          else this.coveredChordStarts++;
+          this.recordLength(value, 1);
           this.coveredLength[at] = value; this.ownerAt[at] = owner;
           this.minimum.set(suffixRankAt[at], value);
         }
@@ -350,8 +359,8 @@ export function selectPatterns(index, runs = index.runs, config = {}) {
     for (const choice of chosen) {
       if (!retained.has(choice.pattern.id)) continue;
       const pattern = choice.pattern; const evidence = state.evaluate(pattern);
-      const before = state.sequenceCounts(); const beforeTransitions = state.coveredTransitions;
-      state.add(pattern); const after = state.sequenceCounts();
+      const before = state.sequenceCounts(pattern.length); const beforeTransitions = state.coveredTransitions;
+      state.add(pattern); const after = state.sequenceCounts(pattern.length);
       selected.push({
         ...pattern, tokens: patternTokens(index, pattern), reason: choice.reason,
         effectiveOccurrences: evidence.effectiveOccurrences, priorityScore: baseScore(pattern, evidence.effectiveOccurrences, config),
@@ -362,7 +371,10 @@ export function selectPatterns(index, runs = index.runs, config = {}) {
         cumulativeTransitions: state.coveredTransitions,
         cumulativeCoverage: context.edgeIds.size ? state.coveredTransitions / context.edgeIds.size : 0,
         cumulativeObservedCoverage: observed ? state.coveredTransitions / observed : 0,
-        sequenceCoverage: sequenceReport(context, after, before, standaloneSequences(index, pattern, context.maxLength), context.maxLength, pattern),
+        // A pattern cannot add windows longer than itself. Omitted lengths have
+        // zero total/additional coverage and retain the previous cumulative
+        // count; final per-view coverage still reports every corpus length.
+        sequenceCoverage: sequenceReport(context, after, before, standaloneSequences(index, pattern, pattern.length), pattern.length, pattern),
       });
     }
     const metrics = {
