@@ -25,6 +25,8 @@ Inputs stay read-only. The mutable normalized cache reuses unchanged sections, r
 
 Snapshots live under `snapshots/<snapshotId>/`. Their identities include source revisions, catalog metadata, rejected-source diagnostics, configuration, code/schema fingerprints, family mappings, and popularity inputs. A complete build writes checksums and publishes its pointer only after staging finishes. Repeated identical builds verify and reuse the existing snapshot. Interrupted staging directories are not published. Preserve old snapshots needed by saved exercises; rollback means selecting a previously validated snapshot, not editing its contents. Generated databases and reports belong under the ignored data root.
 
+For an exporter/index-only revision, `--reuse-snapshot-inputs "<snapshot directory>"` explicitly reuses that snapshot's frozen input set. It verifies the report checksum, normalization dependency fingerprint, catalog hash, cache scope, and every cached section ID/revision/version before rebuilding discovery and artifacts. It does **not** incorporate later raw-source edits; omit it for a corpus refresh. This avoids a costly source-file scan when only the runtime schema changes. The normalized cache is trusted generated data: manually editing cached payloads without updating their revisions is unsupported.
+
 ## Musical and statistical meaning
 
 ### Source normalization
@@ -111,6 +113,8 @@ The curriculum requests eligible family/variant/skill material before sampling. 
 Popularity/favorites/recency modify positive song weights. Supported sequences may deliberately reuse a passage; independent assessment prefers fresh eligible source material. Selector v2 recognizes positive overlap of physical transitions encoded by `song|section|start|end`; shared endpoint chords remain distinct, and opaque legacy IDs use exact matching. Changing key or voicing does not erase familiarity. Persist effective settings, selector seed/version, source/snapshot IDs, transformations, assistance, and actual exposure. Frozen v1 selection contexts remain replayable.
 
 The Android reader accepts the provisioned `files/aural-corpus.db` runtime snapshot. Deployment/provisioning and device validation are separate from building the offline artifacts. The database schema, ASCII identifiers, unsigned xorshift32 behavior, and `contracts/aural-corpus/selection-fixtures.json` form the iOS contract. Swift still requires native UI, persistence, audio, and microphone integration.
+
+The target index covers descriptor fields as well as family, variant, view, song and section, so candidate lookup avoids reading large playback payloads. Only the selected occurrence's payload is fetched. Cold target loading still needs usability review; the reader currently caches four targets and performs synchronous selection. Production distribution also needs an asset/update delivery path; development provisioning uses ADB.
 
 ## Validation and human review
 

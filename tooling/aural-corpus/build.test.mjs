@@ -29,6 +29,8 @@ test('end-to-end snapshots are immutable, reproducible and independent of the ol
     const checksum = hashFile(path.join(first.destination, 'runtime.db'));
     const reuse = await buildCorpus({ catalog, cacheRoot, output, structureMinSongs: 2 });
     assert.equal(reuse.reusedSnapshot, true); assert.equal(reuse.sourceStats.reused, 3);
+    const frozen = await buildCorpus({ catalog, cacheRoot, output, structureMinSongs: 2, reuseSnapshotInputs: first.destination });
+    assert.equal(frozen.snapshotId, first.snapshotId);
     const fresh = await buildCorpus({ catalog, cacheRoot, output: path.join(temp, 'clean'), structureMinSongs: 2 });
     assert.equal(first.snapshotId, fresh.snapshotId);
     assert.equal(hashFile(path.join(fresh.destination, 'runtime.db')), checksum);

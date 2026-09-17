@@ -8,5 +8,5 @@ CREATE TABLE quiz_occurrence (
  view TEXT NOT NULL CHECK(view IN ('harmony','harmony_bass')),
  family_id TEXT NOT NULL, variant_id TEXT NOT NULL, payload TEXT NOT NULL
 );
-CREATE INDEX quiz_target ON quiz_occurrence(family_id,variant_id,view,song_id,section_id);
+CREATE INDEX quiz_target ON quiz_occurrence(family_id,variant_id,view,song_id,section_id,occurrence_id,source_id);
 CREATE INDEX quiz_source ON quiz_occurrence(source_id);
