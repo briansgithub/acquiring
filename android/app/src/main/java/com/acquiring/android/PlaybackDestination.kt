@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
@@ -116,6 +118,12 @@ fun PlaybackDestination(
             onToggleMonitoring = { persistentToggle[0]() },
             onShowHelp = { showPlaybackHelp = true }
         )
+        initialPassage?.let { passage ->
+            TextButton(onClick = { PlaybackController.seek(passage.first, resume = false) },
+                modifier = Modifier.align(Alignment.CenterHorizontally).testTag("PlaybackJumpToQuizPassage")) {
+                Text("Jump to quiz passage")
+            }
+        }
 
         PlaybackTab(
             section = selectedSection,

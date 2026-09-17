@@ -63,6 +63,28 @@ class AuralQuizUiTest {
         compose.onNodeWithTag("AuralSource").performScrollTo().assertTextContains("Hidden song", substring = true)
     }
 
+    @Test fun sourcePlaybackUsesTheHostRouteAndPreservesTheQuiz() {
+        val provider = object : AuralExampleProvider {
+            override fun example(base: AuralExercise, settings: AuralExampleSettings, context: AuralSelectionContext) = corpusFixture(base, settings)
+        }
+        val session = AuralSession(Store(), seedFor = { it }, exampleProvider = provider)
+        var opened: AuralSourcePassage? = null
+        session.practice("dominant-return", "recall", variantId = "departure")
+        val exerciseId = session.view().exercise!!.id
+        compose.setContent { MaterialTheme {
+            AuralQuizScreen({}, session, catalogEnabled = false, openFullPlayback = { passage, _ ->
+                opened = passage
+                true
+            })
+        } }
+        compose.onNodeWithTag("AuralContinue").performClick()
+        compose.onNodeWithTag("AuralOpenPlayback").performScrollTo().assertIsEnabled().performClick()
+        compose.waitUntil(5_000) { opened != null }
+        assertEquals("Hidden song", opened!!.title)
+        assertEquals(exerciseId, session.view().exercise!!.id)
+        assertTrue(session.view().supported)
+    }
+
     @Test fun failedPlaybackDoesNotMakeAnUnheardPassageFamiliar() {
         val store = Store()
         val provider = object : AuralExampleProvider {
