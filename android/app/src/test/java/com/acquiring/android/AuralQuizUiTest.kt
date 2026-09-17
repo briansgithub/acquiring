@@ -70,17 +70,19 @@ class AuralQuizUiTest {
         val session = AuralSession(Store(), seedFor = { it }, exampleProvider = provider)
         var opened: AuralSourcePassage? = null
         session.practice("dominant-return", "recall", variantId = "departure")
-        val exerciseId = session.view().exercise!!.id
         compose.setContent { MaterialTheme {
             AuralQuizScreen({}, session, catalogEnabled = false, openFullPlayback = { passage, _ ->
                 opened = passage
                 true
             })
         } }
+        compose.waitForIdle()
+        val exerciseId = session.view().exercise!!.id
         compose.onNodeWithTag("AuralContinue").performClick()
         compose.onNodeWithTag("AuralOpenPlayback").performScrollTo().assertIsEnabled().performClick()
         compose.waitUntil(5_000) { opened != null }
         assertEquals("Hidden song", opened!!.title)
+        assertEquals(session.view().exercise!!.provenance.corpus!!.passage.sourceId, opened!!.sourceId)
         assertEquals(exerciseId, session.view().exercise!!.id)
         assertTrue(session.view().supported)
     }
