@@ -108,6 +108,35 @@ internal fun AuralProgressionCard(variant: AuralVariant, onClick: () -> Unit) {
     }
 }
 
+/** The catalog is the production entry point; never flash the retired family picker while it opens. */
+@Composable
+internal fun AuralCatalogInterstitial(status: String, error: String?, onRetry: () -> Unit, onGuidedCourse: () -> Unit, modifier: Modifier = Modifier) {
+    Column(modifier.fillMaxSize().testTag("AuralCatalogInterstitial"),
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
+            Box(Modifier.size(80.dp), contentAlignment = Alignment.Center) {
+                Text("♫", style = MaterialTheme.typography.displaySmall)
+            }
+        }
+        Spacer(Modifier.height(20.dp))
+        if (error == null) {
+            CircularProgressIndicator(modifier = Modifier.testTag("AuralCatalogLoading"))
+            Spacer(Modifier.height(16.dp))
+            Text("Preparing progressions", style = MaterialTheme.typography.titleMedium)
+            Text(status, style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        } else {
+            Text("Progressions need an update", style = MaterialTheme.typography.titleMedium)
+            Text(error, Modifier.padding(horizontal = 32.dp, vertical = 8.dp), style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = onRetry, modifier = Modifier.testTag("AuralCatalogRetry")) { Text("Try again") }
+                OutlinedButton(onClick = onGuidedCourse, modifier = Modifier.testTag("AuralGuidedCourse")) { Text("Guided course") }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AuralModeTabs(skillId: String, songsSelected:Boolean=false, onSongs:(()->Unit)?=null, onSelect: (String) -> Unit) {

@@ -110,15 +110,26 @@ internal fun AuralQuizScreen(
     var chunkIndex by rememberSaveable { mutableStateOf(-1) }
     var catalog by remember { mutableStateOf<AuralCatalog?>(null) }
     var catalogError by remember { mutableStateOf<String?>(null) }
+    var catalogStatus by remember { mutableStateOf("Organizing song harmony for practice") }
+    var catalogLoadAttempt by rememberSaveable { mutableStateOf(0) }
     var playbackSource by remember { mutableStateOf<AuralPlaybackSource?>(null) }
     var songsTab by rememberSaveable { mutableStateOf(session.playbackReturn?.fromSongs==true) }
     var reviewPool by remember { mutableStateOf(emptyList<AuralCatalogRow>()) }
     val catalogState = rememberSaveableStateHolder()
-    LaunchedEffect(Unit) {
+    LaunchedEffect(catalogLoadAttempt) {
         if(!catalogEnabled) return@LaunchedEffect
+        catalogError = null
+        catalogStatus = "Opening your progression catalog"
         try { catalog = withContext(Dispatchers.IO) { AuralCatalog(File(context.filesDir,"aural-catalog.db")) } }
         catch (cancelled: CancellationException) { throw cancelled }
-        catch (_: Exception) { catalogError = "Song catalog is not installed. Guided practice is available." }
+        catch (_: Exception) {
+            catalogStatus = "Downloading the progression catalog"
+            val installed = AuralCatalogDownloader.downloadAndInstall(context) { catalogStatus = it }
+            if (installed.isSuccess) {
+                try { catalog = withContext(Dispatchers.IO) { AuralCatalog(File(context.filesDir,"aural-catalog.db")) } }
+                catch (_: Exception) { catalogError = "The progression catalog could not be opened after download." }
+            } else catalogError = installed.exceptionOrNull()?.message ?: "The progression catalog is not available right now."
+        }
     }
     DisposableEffect(catalog) { val current=catalog; onDispose { current?.close() } }
     LaunchedEffect(answer) { session.rememberDraft(answer) }
@@ -375,17 +386,15 @@ internal fun AuralQuizScreen(
                 AuralPatternSongs(catalog,exercise.provenance.target.pattern!!,busy,::openSong,Modifier.weight(1f))
             }
             if(view.feedback.isNotBlank()) Text(view.feedback,Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.bodySmall)
-        } else if(route == "families" && catalogEnabled && catalog == null && catalogError == null) {
-            Column(Modifier.weight(1f).fillMaxWidth().testTag("AuralCatalogLoading"),
-                horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center) {
-                CircularProgressIndicator()
-                Text("Loading progressions…",Modifier.padding(16.dp),style=MaterialTheme.typography.bodyMedium)
-                if(exercise!=null) TextButton(onClick={ route="lesson" },modifier=Modifier.testTag("AuralContinue")) { Text("Continue quiz") }
-            }
-        } else if(route == "families" && catalog != null) {
-            catalogState.SaveableStateProvider("catalog") {
-                AuralCatalogScreen(catalog!!,exampleSettings,session,{ patternPractice(it,"recognize") },::adaptive,
-                    if(exercise != null) ({ route="lesson" }) else null,Modifier.weight(1f),onReview={ rows -> reviewPool=rows; session.reviewPattern(rows)?.let { patternPractice(it.first,it.second,true) } })
+        } else if(route == "families" && catalogEnabled) {
+            if (catalog == null) {
+                AuralCatalogInterstitial(catalogStatus, catalogError, onRetry = { catalogLoadAttempt++ }, onGuidedCourse = ::adaptive,
+                    modifier = Modifier.weight(1f))
+            } else {
+                catalogState.SaveableStateProvider("catalog") {
+                    AuralCatalogScreen(catalog!!,exampleSettings,session,{ patternPractice(it,"recognize") },::adaptive,
+                        if(exercise != null) ({ route="lesson" }) else null,Modifier.weight(1f),onReview={ rows -> reviewPool=rows; session.reviewPattern(rows)?.let { patternPractice(it.first,it.second,true) } })
+                }
             }
         } else {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
