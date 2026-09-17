@@ -24,7 +24,7 @@ class InstrumentSessionOwnerTest {
     }
 
     @Test
-    fun quizSelectionSurvivesScreensWithoutChangingSavedDefault() {
+    fun playbackSelectionSurvivesScreensWithoutChangingSavedDefault() {
         val store = FakeStore(AudioEngine.Waveform.SAWTOOTH.name)
         val applied = mutableListOf<AudioEngine.Waveform>()
         val session = InstrumentSessionOwner(store, applied::add)

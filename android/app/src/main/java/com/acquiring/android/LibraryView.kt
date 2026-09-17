@@ -38,6 +38,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -103,6 +104,7 @@ import kotlin.math.roundToInt
 
 
 internal const val LIBRARY_TITLE_SEARCH_TEST_TAG = "LibraryTitleSearch"
+internal const val LIBRARY_SETTINGS_TEST_TAG = "LibrarySettings"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -137,7 +139,10 @@ fun LibraryView(
     onAllSongs: () -> Unit,
     searchResult: String?,
     allSongs: List<SongBrowseRow>,
-    onSongClick: (SongBrowseRow) -> Unit
+    onSongClick: (SongBrowseRow) -> Unit,
+    onOpenSettings: () -> Unit,
+    settingsUpdateAvailable: Boolean = false,
+    onOpenAuralQuiz: () -> Unit = {}
 ) {
     var searchScope by rememberSaveable { mutableStateOf(LibrarySearchScope.SONGS) }
     var searchFocused by remember { mutableStateOf(false) }
@@ -164,15 +169,15 @@ fun LibraryView(
                 detectTapGestures { focusManager.clearFocus(force = true) }
             }
     ) {
+        LibraryTopBar(
+            updateAvailable = settingsUpdateAvailable,
+            onOpenSettings = onOpenSettings
+        )
         if (showChrome) {
             PlaylistsSection(
                 playlistDao = playlistDao,
                 songDao = activeDb.songDao(),
                 onSongClick = onSongClick
-            )
-            Text(
-                text = "Search Library",
-                style = MaterialTheme.typography.titleMedium
             )
         }
         
@@ -273,6 +278,13 @@ fun LibraryView(
 
         Divider(modifier = Modifier.padding(vertical = 12.dp))
 
+        Button(
+            onClick = { focusManager.clearFocus(force = true); onOpenAuralQuiz() },
+            modifier = Modifier.fillMaxWidth().testTag("OpenAuralQuiz")
+        ) {
+            Text("Aural Quiz")
+        }
+
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(allSongs) { song ->
                 Card(
@@ -320,5 +332,47 @@ fun LibraryView(
         }
         }
 
+    }
+}
+
+@Composable
+private fun LibraryTopBar(
+    updateAvailable: Boolean,
+    onOpenSettings: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Library",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .weight(1f)
+                .semantics { heading() }
+        )
+        IconButton(
+            onClick = onOpenSettings,
+            modifier = Modifier
+                .testTag(LIBRARY_SETTINGS_TEST_TAG)
+                .semantics {
+                    contentDescription = "Open settings"
+                    stateDescription = if (updateAvailable) "Update available" else "No update"
+                }
+        ) {
+            Box {
+                Icon(Icons.Default.Settings, contentDescription = null)
+                if (updateAvailable) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .size(8.dp)
+                            .background(Color(0xFFFF9800), CircleShape)
+                    )
+                }
+            }
+        }
     }
 }

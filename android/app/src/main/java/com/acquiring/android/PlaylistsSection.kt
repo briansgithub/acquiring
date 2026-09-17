@@ -228,7 +228,7 @@ fun PlaylistsSection(
                             }
 
                             songs.isEmpty() -> Text(
-                                text = "No songs yet. Tap the star on the Quiz tab to add one.",
+                                text = "No songs yet. Tap the star on the Playback tab to add one.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.fillMaxWidth().padding(12.dp)
