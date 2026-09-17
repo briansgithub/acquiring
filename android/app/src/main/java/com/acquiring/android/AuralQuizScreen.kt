@@ -116,6 +116,7 @@ internal fun AuralQuizScreen(
     LaunchedEffect(Unit) {
         if(!catalogEnabled) return@LaunchedEffect
         try { catalog = withContext(Dispatchers.IO) { AuralCatalog(File(context.filesDir,"aural-catalog.db")) } }
+        catch (cancelled: CancellationException) { throw cancelled }
         catch (_: Exception) { catalogError = "Song catalog is not installed. Guided practice is available." }
     }
     DisposableEffect(catalog) { val current=catalog; onDispose { current?.close() } }
@@ -334,6 +335,13 @@ internal fun AuralQuizScreen(
                 AuralPatternSongs(catalog,exercise.provenance.target.pattern!!,busy,::openSong,Modifier.weight(1f))
             }
             if(view.feedback.isNotBlank()) Text(view.feedback,Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.bodySmall)
+        } else if(route == "families" && catalogEnabled && catalog == null && catalogError == null) {
+            Column(Modifier.weight(1f).fillMaxWidth().testTag("AuralCatalogLoading"),
+                horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center) {
+                CircularProgressIndicator()
+                Text("Loading progressions…",Modifier.padding(16.dp),style=MaterialTheme.typography.bodyMedium)
+                if(exercise!=null) TextButton(onClick={ route="lesson" },modifier=Modifier.testTag("AuralContinue")) { Text("Continue quiz") }
+            }
         } else if(route == "families" && catalog != null) {
             catalogState.SaveableStateProvider("catalog") {
                 AuralCatalogScreen(catalog!!,exampleSettings,session,{ patternPractice(it,"recognize") },::adaptive,
