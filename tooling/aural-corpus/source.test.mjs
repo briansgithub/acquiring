@@ -3,8 +3,26 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { openDatabase } from './common.mjs';
+import { pathToFileURL } from 'node:url';
+import { openDatabase, moduleFingerprint } from './common.mjs';
 import { updateNormalizedCache, readNormalizedCache } from './source.mjs';
+
+test('normalization fingerprint follows shared transitive modules across checkouts', () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'aural-fingerprint-test-'));
+  try {
+    for (const name of ['first', 'second']) {
+      const dir = path.join(temp, name); fs.mkdirSync(dir);
+      fs.writeFileSync(path.join(dir, 'entry.mjs'), "import { value } from './theory.mjs'; export { value };");
+      fs.writeFileSync(path.join(dir, 'theory.mjs'), "export { value } from './scales.mjs';");
+      fs.writeFileSync(path.join(dir, 'scales.mjs'), 'export const value = [0,4,7];');
+    }
+    const first = () => moduleFingerprint(pathToFileURL(path.join(temp, 'first', 'entry.mjs')));
+    const second = () => moduleFingerprint(pathToFileURL(path.join(temp, 'second', 'entry.mjs')));
+    assert.equal(first(), second());
+    fs.writeFileSync(path.join(temp, 'second', 'scales.mjs'), 'export const value = [0,3,7];');
+    assert.notEqual(first(), second());
+  } finally { fs.rmSync(temp, { recursive: true, force: true }); }
+});
 
 test('cached additions edits deletions equal a fresh rebuild, preserving unrelated IDs', () => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'aural-source-test-'));
@@ -21,6 +39,7 @@ test('cached additions edits deletions equal a fresh rebuild, preserving unrelat
     };
     addSong('one', [1, 5, 1]); addSong('two', [4, 5, 1]);
     const options = { catalog, cacheRoot, normalizedFile: path.join(temp, 'cached.db') };
+    assert.throws(() => updateNormalizedCache({ ...options, normalizedFile: catalog }), /must not overwrite/);
     const first = updateNormalizedCache(options);
     const before = readNormalizedCache(options.normalizedFile);
     assert.equal(first.stats.normalized, 2);
