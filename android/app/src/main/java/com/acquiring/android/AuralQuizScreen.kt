@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -35,6 +36,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.io.File
 
 /** Gates help separately from generic instructions; unrevealed answers stay out of semantics. */
 internal data class AuralQuestionPresentation(val title: String, val prompt: String, val guidance: String?)
@@ -74,11 +76,12 @@ internal fun AuralQuizScreen(
     sessionOverride: AuralSession? = null,
     defaultInstrument: AudioEngine.Waveform = AudioEngine.Waveform.CLARINET,
     settingsContent: (@Composable (() -> Unit) -> Unit)? = null,
+    loadFavoriteSongs: (suspend () -> Set<String>)? = null,
     playExample: (suspend (AuralExercise) -> Unit)? = null
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val session = remember { sessionOverride ?: AuralSession(AuralPreferences(context)) }
+    val session = remember { sessionOverride ?: AuralSession(AuralPreferences(context), exampleProvider = SqliteAuralExampleProvider(File(context.filesDir, "aural-corpus.db"))) }
     val audio = remember { AuralAudio(context.applicationContext) }
     val pitchSource = remember { MicrophonePitchTracker(context.applicationContext) }
     val scope = rememberCoroutineScope()
@@ -93,6 +96,8 @@ internal fun AuralQuizScreen(
     var selectedFamily by rememberSaveable { mutableStateOf(AuralCurriculum.families.first().id) }
     var showInfo by remember { mutableStateOf(false) }
     var showSettings by rememberSaveable { mutableStateOf(false) }
+    var showExampleSettings by rememberSaveable { mutableStateOf(false) }
+    var exampleSettings by remember { mutableStateOf(session.exampleSettings) }
     var microphoneMenu by remember { mutableStateOf(false) }
     var practiceMicrophoneKind by rememberSaveable { mutableStateOf("auto") }
     var activityJob by remember { mutableStateOf<Job?>(null) }
@@ -134,7 +139,9 @@ internal fun AuralQuizScreen(
             else -> onBack()
         }
     }
-    BackHandler { if (showSettings) showSettings = false else back() }
+    BackHandler { if (showSettings) showSettings = false else if (showExampleSettings) showExampleSettings = false else back() }
+
+    LaunchedEffect(loadFavoriteSongs) { loadFavoriteSongs?.let { session.setFavorites(it()) } }
 
     LaunchedEffect(defaultInstrument) {
         cancel(markInterrupted = true)
@@ -169,6 +176,7 @@ internal fun AuralQuizScreen(
         refresh()
         activityJob = scope.launch {
             try {
+                session.listeningStarted()
                 if (playExample != null) playExample(exercise)
                 else audio.play(auralPromptEvents(exercise), exercise.tempo, exercise.instrument)
                 if (token == generation) session.played()
@@ -224,7 +232,10 @@ internal fun AuralQuizScreen(
     val selected = AuralCurriculum.families.first { it.id == selectedFamily }
     val namedPractice = exercise?.provenance?.target?.variantId != null
     val inLesson = route == "lesson" && exercise != null
-    if (showSettings && settingsContent != null) {
+    if (showExampleSettings) {
+        AuralExampleSettingsPanel(exampleSettings, session.popularityAvailable,
+            onChange = { session.setExampleSettings(it); exampleSettings = it; refresh() }, onBack = { showExampleSettings = false })
+    } else if (showSettings && settingsContent != null) {
         Box(Modifier.fillMaxSize().padding(16.dp)) { settingsContent { showSettings = false } }
     } else {
     Column(Modifier.fillMaxSize().testTag("AuralQuiz")) {
@@ -235,6 +246,8 @@ internal fun AuralQuizScreen(
             Text("Aural Quiz", style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f).testTag("AuralQuizTitle"))
             IconButton(onClick = { showInfo = true }) { Icon(Icons.Outlined.Info, contentDescription = "Learning help and progress") }
+            IconButton(onClick = { cancel(markInterrupted = true); showExampleSettings = true },
+                modifier = Modifier.testTag("AuralExampleSettings")) { Icon(painterResource(R.drawable.ic_aural_preferences), contentDescription = "Example preferences") }
             if (settingsContent != null) IconButton(onClick = {
                 cancel(markInterrupted = true); showSettings = true
             }, modifier = Modifier.testTag("AuralSettings")) { Icon(Icons.Default.Settings, contentDescription = "Open settings") }
@@ -368,6 +381,10 @@ internal fun AuralQuizScreen(
                         Text(view.feedback, Modifier.fillMaxWidth().padding(12.dp).testTag("AuralFeedback").semantics { liveRegion = LiveRegionMode.Polite })
                     }
                     if (view.answered) {
+                        exercise.provenance.corpus?.passage?.let { passage ->
+                            Text(listOf(passage.title, passage.artist, passage.sectionName).filter { it.isNotBlank() }.joinToString(" · "),
+                                style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag("AuralSource"))
+                        }
                         Button(onClick = ::next, modifier = Modifier.fillMaxWidth().testTag("AuralNext")) { Text("Next") }
                         TextButton(onClick = { cancel(); session.retry(); resetResponse(); refresh() }) { Text("Try again") }
                     }

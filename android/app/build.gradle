@@ -87,6 +87,7 @@ android {
     }
     sourceSets {
         test.resources.srcDir providers.gradleProperty("parityFixturesDir").getOrElse("${rootProject.projectDir}/../contracts/fixtures")
+        test.resources.srcDir providers.environmentVariable("AURAL_CORPUS_FIXTURES").getOrElse("${rootProject.projectDir}/../contracts/aural-corpus")
     }
     testOptions {
         unitTests.returnDefaultValues = true
