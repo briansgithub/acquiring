@@ -13,7 +13,7 @@ class AuralCorpusSessionTest {
     private val provider = object : AuralExampleProvider {
         override fun example(base: AuralExercise, settings: AuralExampleSettings, context: AuralSelectionContext): AuralCorpusProvenance {
             val source = corpusFixture(base, settings)
-            return source.copy(familiar = source.passage.sourceId in context.heardSourceIds)
+            return source.copy(familiar = AuralExposureIndex(context.heardSourceIds).contains(source.passage.sourceId))
         }
     }
     private fun session(store: Store = Store(), provider: AuralExampleProvider? = this.provider) =
@@ -51,6 +51,24 @@ class AuralCorpusSessionTest {
         assertEquals(original.answer, restored.answer)
         assertEquals(original.provenance.corpus, restored.provenance.corpus)
         assertEquals(original.provenance.exampleSettings, restored.provenance.exampleSettings)
+        assertEquals(original.tempo, restored.tempo)
+        assertEquals(original.tempo, original.provenance.corpus!!.playbackTempo)
+    }
+
+    @Test fun hearingLongerPassageMakesItsContainedShorterPassageSupported() {
+        val provider = object : AuralExampleProvider {
+            override fun example(base: AuralExercise, settings: AuralExampleSettings, context: AuralSelectionContext): AuralCorpusProvenance {
+                val source = corpusFixture(base, settings, sourceStart = if (base.variantId == "direct") 3 else 2)
+                return source.copy(familiar = AuralExposureIndex(context.heardSourceIds).contains(source.passage.sourceId))
+            }
+        }
+        val lesson = session(provider = provider)
+        lesson.practice("dominant-return", "recall", variantId = "departure") // [2,4)
+        lesson.played()
+        lesson.setExampleSettings(AuralExampleSettings(distinguishInversions = true))
+        lesson.practice("dominant-return", "identify", variantId = "direct") // [3,4)
+        assertTrue(lesson.view().exercise!!.previouslyExposed)
+        assertTrue(lesson.view().supported)
     }
     @Test fun changesApplyNextExerciseAndEvidenceStaysInItsOriginalInversionView() {
         val store = Store()
