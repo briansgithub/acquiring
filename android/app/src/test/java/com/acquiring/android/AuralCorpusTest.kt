@@ -10,7 +10,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.File
 
-internal fun corpusFixture(base: AuralExercise, settings: AuralExampleSettings = AuralExampleSettings(), sourceId: String = "song"): AuralCorpusProvenance {
+internal fun corpusFixture(base: AuralExercise, settings: AuralExampleSettings = AuralExampleSettings(), sourceId: String = "song", sourceStart: Int = 2): AuralCorpusProvenance {
     fun event(degree: String): AuralEvent {
         val root = 48 + mapOf("I" to 0, "ii" to 2, "iii" to 4, "IV" to 5, "V" to 7, "vi" to 9, "vii°" to 11, "V/V" to 2).getValue(degree)
         val third = if (degree in listOf("ii", "iii", "vi", "vii°")) 3 else 4
@@ -19,13 +19,59 @@ internal fun corpusFixture(base: AuralExercise, settings: AuralExampleSettings =
         val notes = listOf(root + third, root + fifth, root + 12)
         return AuralEvent(notes, root, notes.first(), degree, "function", 1.5)
     }
-    val p = AuralSourcePassage("occurrence", "pattern", sourceId, "Hidden song", "Artist", "section", "Chorus", "rev1", 2, 2 + base.fullDegrees.size - 1,
+    val p = AuralSourcePassage("occurrence", "pattern", sourceId, "Hidden song", "Artist", "section", "Chorus", "rev1", sourceStart, sourceStart + base.fullDegrees.size - 1,
         if (settings.distinguishInversions) "harmony_bass" else "harmony", base.familyId, base.variantId, "C", "major", 90,
         base.fullDegrees.map(::event), listOf(event("I")), base.fullDegrees)
-    return AuralCorpusProvenance("snapshot", null, "current-triads-1", p, settings, seed = base.seed and 0xffffffffL, semitoneShift = base.provenance.target.octaveShift * 12)
+    return AuralCorpusProvenance("snapshot", null, "current-triads-1", p, settings, seed = base.seed and 0xffffffffL,
+        semitoneShift = base.provenance.target.octaveShift * 12, playbackTempo = base.tempo)
 }
 
 class AuralCorpusTest {
+    @Test fun exposureUsesPhysicalTransitionOverlapAcrossPatternLengthsAndViews() {
+        val exposure = AuralExposureIndex(setOf("song|verse|2|6", "song|verse|9|11", "legacy-recording", "song|verse|bad|position"))
+        assertTrue(exposure.contains("song|verse|3|5")) // a contained shorter passage
+        assertTrue(exposure.contains("song|verse|1|3")) // partial overlap
+        assertTrue(exposure.contains("song|verse|1|12")) // a larger passage includes prior hearing
+        assertFalse(exposure.contains("song|verse|6|9")) // shared endpoint chords only
+        assertFalse(exposure.contains("song|chorus|2|6"))
+        assertFalse(exposure.contains("other-song|verse|2|6"))
+        assertTrue(exposure.contains("legacy-recording"))
+        assertFalse(exposure.contains("legacy-recording-other"))
+        assertTrue(exposure.contains("song|verse|bad|position"))
+        assertFalse(exposure.contains("song|verse|bad|another"))
+        assertEquals(listOf("song|verse|2|6", "song|verse|9|11"), exposure.relevantTo(setOf("song|verse|3|5")))
+        val refs = listOf(AuralOccurrenceRef("overlapping", "song", "verse", "song|verse|3|5"),
+            AuralOccurrenceRef("fresh", "song", "verse", "song|verse|6|9"))
+        val context = AuralSelectionContext(heardSourceIds = setOf("song|verse|2|6"), assessment = true)
+        for (bassSensitive in listOf(false, true)) repeat(100) { seed ->
+            assertEquals("fresh", AuralCorpusSelector.select(refs, emptyMap(), emptyMap(),
+                AuralExampleSettings(distinguishInversions = bassSensitive), context, seed.toLong())!!.id)
+        }
+    }
+    @Test fun intervalIndexMatchesBruteForceWithoutBridgingUnheardTransitions() {
+        val random = kotlin.random.Random(721)
+        val ranges = List(1000) { val start = random.nextInt(100000); start to start + random.nextInt(1, 8) }
+        val exposure = AuralExposureIndex(ranges.map { "song|section|${it.first}|${it.second}" }.toSet())
+        repeat(1000) {
+            val start = random.nextInt(100000)
+            val end = start + random.nextInt(1, 20)
+            assertEquals(ranges.any { it.first < end && it.second > start }, exposure.contains("song|section|$start|$end"))
+        }
+    }
+    @Test fun adaptiveTempoIsExplicitAndLegacySavedTimingRemainsReconstructable() {
+        val base = AuralCurriculum.generate(AuralTarget("dominant-return", "recall", octaveShift = 1), 33)
+        val source = corpusFixture(base)
+        assertEquals(base.tempo, auralWithCorpus(base, source).tempo)
+        assertEquals(source.passage.events.map { it.beats }, auralWithCorpus(base, source).events.map { it.beats })
+        val legacy = source.copy(selectorVersion = "aural-selector-1", playbackTempo = null)
+        assertEquals(90, auralWithCorpus(base, legacy).tempo)
+        assertThrows(IllegalArgumentException::class.java) { auralWithCorpus(base, source.copy(playbackTempo = base.tempo + 1)) }
+        val tempos = (1L..30L).map { seed ->
+            val varied = AuralCurriculum.generate(AuralTarget("dominant-return", "recall", support = 0, octaveShift = 1), seed)
+            auralWithCorpus(varied, corpusFixture(varied)).tempo
+        }
+        assertTrue(tempos.distinct().size >= 2)
+    }
     @Test fun physicalMultiplicityCannotInflateSongProbability() {
         val a = AuralOccurrenceRef("a", "song-a", "section-a", "a")
         val b = AuralOccurrenceRef("b", "song-b", "section-b", "b")
@@ -106,6 +152,11 @@ class AuralCorpusDatabaseTest {
             val result = provider.example(base, source.settings, AuralSelectionContext())!!
             assertEquals(source.passage, result.passage)
             assertEquals(base.fullDegrees, auralWithCorpus(base, result).fullDegrees)
+            assertEquals(base.tempo, auralWithCorpus(base, result).tempo)
+            val overlapping = provider.example(base, source.settings, AuralSelectionContext(heardSourceIds = setOf("song|section|1|3"), assessment = true))!!
+            assertTrue(overlapping.familiar)
+            assertEquals(listOf("song|section|1|3"), overlapping.heardSourceIds)
+            assertTrue(auralWithCorpus(base, overlapping).previouslyExposed)
             assertNull(provider.example(base, source.settings.copy(distinguishInversions = true), AuralSelectionContext()))
             assertNull(provider.example(AuralCurriculum.generate(AuralTarget("plagal-return", "recall"), 17), source.settings, AuralSelectionContext()))
         } finally { file.delete() }

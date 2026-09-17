@@ -52,6 +52,7 @@ class AuralCorpusParityTest {
                 assertEquals(scenario.getValue("name").jsonPrimitive.content, expected.jsonObject.getValue("occurrenceId").jsonPrimitive.content, actual!!.id)
                 assertEquals(expected.jsonObject.getValue("songId").jsonPrimitive.content, actual.songId)
                 assertEquals(expected.jsonObject.getValue("sectionId").jsonPrimitive.content, actual.sectionId)
+                assertEquals(expected.jsonObject.getValue("familiar").jsonPrimitive.boolean, AuralExposureIndex(context.heardSourceIds).contains(actual.sourceId))
             }
         }
     }

@@ -25,11 +25,12 @@ import kotlinx.serialization.json.Json
 @Serializable data class AuralCorpusProvenance(
     val snapshotId: String, val popularityVersion: String?, val familyMappingVersion: String,
     val passage: AuralSourcePassage, val settings: AuralExampleSettings,
-    val selectorVersion: String = "aural-selector-1", val seed: Long,
+    val selectorVersion: String = "aural-selector-2", val seed: Long,
     val semitoneShift: Int, val recentSongIds: List<String> = emptyList(),
     val favoriteSongIds: List<String> = emptyList(), val heardSourceIds: List<String> = emptyList(),
     val familiar: Boolean = false,
     val assessment: Boolean = false, val supportedOccurrenceId: String? = null,
+    val playbackTempo: Int? = null,
 )
 @Serializable data class AuralSourceExposure(val sourceId: String, val songId: String, val at: Long)
 internal data class AuralOccurrenceRef(val id: String, val songId: String, val sectionId: String, val sourceId: String)
@@ -39,6 +40,46 @@ internal data class AuralSelectionContext(
     val favoriteSongIds: Set<String> = emptySet(), val assessment: Boolean = false,
     val supportedOccurrenceId: String? = null,
 )
+
+/** Indexed physical transition intervals; an endpoint chord alone is not shared hearing. */
+internal class AuralExposureIndex(private val heardIds: Set<String>) {
+    private data class Span(val section: String, val start: Long, val end: Long)
+    private fun span(id: String): Span? {
+        val parts = id.split('|')
+        if (parts.size != 4 || parts[0].isEmpty() || parts[1].isEmpty()) return null
+        if (parts[2].isEmpty() || parts[3].isEmpty() || !(parts[2] + parts[3]).all { it in '0'..'9' }) return null
+        val start = parts[2].toLongOrNull() ?: return null
+        val end = parts[3].toLongOrNull() ?: return null
+        if (start < 0 || end <= start || end > 9007199254740991L) return null
+        return Span(parts[0] + "|" + parts[1], start, end)
+    }
+    private val bySection: Map<String, List<Span>> = heardIds.mapNotNull(::span).groupBy { it.section }.mapValues { (_, spans) ->
+        val merged = mutableListOf<Span>()
+        spans.sortedWith(compareBy<Span> { it.start }.thenBy { it.end }).forEach { next ->
+            val last = merged.lastOrNull()
+            if (last == null || next.start > last.end) merged += next
+            else merged[merged.lastIndex] = last.copy(end = maxOf(last.end, next.end))
+        }
+        merged
+    }
+    fun contains(sourceId: String): Boolean {
+        if (sourceId in heardIds) return true // Legacy IDs remain exact-match compatible.
+        val target = span(sourceId) ?: return false
+        val intervals = bySection[target.section] ?: return false
+        var low = 0
+        var high = intervals.size
+        // Find the last heard interval starting before the requested end.
+        while (low < high) {
+            val middle = (low + high) ushr 1
+            if (intervals[middle].start < target.end) low = middle + 1 else high = middle
+        }
+        return low > 0 && intervals[low - 1].end > target.start
+    }
+    fun relevantTo(sourceIds: Set<String>): List<String> {
+        val sections = sourceIds.mapNotNull { span(it)?.section }.toSet()
+        return heardIds.filter { it in sourceIds || span(it)?.section in sections }.sorted()
+    }
+}
 
 /** This exact random stream and weighting contract is shared with the offline JS selector. */
 internal class AuralSelectionRandom(seed: Long) {
@@ -58,7 +99,8 @@ internal object AuralCorpusSelector {
                settings: AuralExampleSettings, context: AuralSelectionContext, seed: Long): AuralOccurrenceRef? {
         if (refs.isEmpty()) return null
         if (!context.assessment) context.supportedOccurrenceId?.let { id -> refs.firstOrNull { it.id == id }?.let { return it } }
-        val eligible = if (context.assessment) refs.filter { it.sourceId !in context.heardSourceIds }.ifEmpty { refs } else refs
+        val exposure = AuralExposureIndex(context.heardSourceIds)
+        val eligible = if (context.assessment) refs.filter { !exposure.contains(it.sourceId) }.ifEmpty { refs } else refs
         val rng = AuralSelectionRandom(seed)
         fun choose(ids: List<String>, weight: (String) -> Double): String {
             val ordered = ids.sorted()
@@ -137,11 +179,12 @@ internal class SqliteAuralExampleProvider(private val file: File) : AuralExample
                 require(c.moveToFirst()); json.decodeFromString<AuralSourcePassage>(c.getString(0))
             }
             require(passage.occurrenceId == chosen.id && passage.songId == chosen.songId && passage.sectionId == chosen.sectionId && passage.sourceId == chosen.sourceId)
+            val exposure = AuralExposureIndex(context.heardSourceIds)
             AuralCorpusProvenance(metadata.getValue("snapshot_id"), metadata["popularity_version"], metadata["family_mapping_version"] ?: "current-triads-1",
                 passage, settings, seed = base.seed and 0xffffffffL, semitoneShift = base.provenance.target.octaveShift * 12,
                 recentSongIds = context.recentSongIds, favoriteSongIds = context.favoriteSongIds.intersect(pool.songs.keys).sorted(),
-                heardSourceIds = context.heardSourceIds.intersect(pool.refs.map { it.sourceId }.toSet()).sorted(), familiar = passage.sourceId in context.heardSourceIds,
-                assessment = context.assessment, supportedOccurrenceId = context.supportedOccurrenceId)
+                heardSourceIds = exposure.relevantTo(pool.refs.map { it.sourceId }.toSet()), familiar = exposure.contains(passage.sourceId),
+                assessment = context.assessment, supportedOccurrenceId = context.supportedOccurrenceId, playbackTempo = base.tempo)
         }
     } catch (_: Exception) { null }
 }
@@ -149,12 +192,14 @@ internal class SqliteAuralExampleProvider(private val file: File) : AuralExample
 /** Rebuild answers from validated musical material; never trust saved answer fields. */
 internal fun auralWithCorpus(base: AuralExercise, source: AuralCorpusProvenance): AuralExercise {
     val p = source.passage
-    require(source.selectorVersion == "aural-selector-1" && source.seed == (base.seed and 0xffffffffL) && source.snapshotId.isNotBlank())
+    require(source.selectorVersion in setOf("aural-selector-1", "aural-selector-2") && source.seed == (base.seed and 0xffffffffL) && source.snapshotId.isNotBlank())
     require(p.familyId == base.familyId && p.variantId == base.variantId && p.degreeLabels == base.fullDegrees)
     require(p.view == if (source.settings.distinguishInversions) "harmony_bass" else "harmony")
     require(p.keyScale == "major" && p.keyTonic in MusicTheory.NOTE_TO_PC && p.tempo in 20..200)
     require(p.events.size == base.events.size && p.startIndex >= 0 && p.endIndex >= p.startIndex && p.sourceRevision.isNotBlank())
     require(source.semitoneShift == base.provenance.target.octaveShift * 12)
+    require(source.playbackTempo == null || source.playbackTempo == base.tempo)
+    val playbackTempo = source.playbackTempo ?: p.tempo // v1 saved exercises retain their original timing.
     fun transform(event: AuralEvent): AuralEvent {
         require(event.notes.size in 2..16 && event.notes == event.notes.sorted() && event.bassMidi == event.notes.first())
         require(event.rootMidi in 1..127 && event.notes.all { it in 1..127 } && event.beats.isFinite() && event.beats > 0 && event.beats <= 32)
@@ -179,10 +224,10 @@ internal fun auralWithCorpus(base: AuralExercise, source: AuralCorpusProvenance)
         task.copy(targetMidis = midis)
     }
     fun digest(value: String) = MessageDigest.getInstance("SHA-256").digest(value.toByteArray()).joinToString("") { "%02x".format(it) }
-    val ex = base.copy(id = base.id + "-" + digest(p.occurrenceId), keyTonic = keyTonic, tempo = p.tempo,
+    val ex = base.copy(id = base.id + "-" + digest(p.occurrenceId), keyTonic = keyTonic, tempo = playbackTempo,
         events = events, context = context, microphoneTask = task, answer = base.answer.copy(targetMidis = task?.targetMidis.orEmpty()),
         fingerprint = "source-" + digest(p.sourceId), previouslyExposed = source.familiar,
-        provenance = base.provenance.copy(keyTonic = keyTonic, tempo = p.tempo, inversions = emptyList(), spreads = emptyList(), contextDegrees = context.map { it.degree }, corpus = source))
+        provenance = base.provenance.copy(keyTonic = keyTonic, tempo = playbackTempo, inversions = emptyList(), spreads = emptyList(), contextDegrees = context.map { it.degree }, corpus = source))
     // Enforce the same audio duration and pitch constraints before accepting the example.
     auralPlaybackPlan(auralPromptEvents(ex), ex.tempo.toDouble(), 8000)
     return ex
