@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { DEFAULT_SETTINGS, popularityWeight, replaySelection, selectExample, xorshift32 } from './selector.mjs';
+import { DEFAULT_SETTINGS, createSourceFamiliarity, parseSourceSpan, popularityWeight, replaySelection, selectExample, xorshift32 } from './selector.mjs';
 
 const occurrence = (id, sourceId = id) => ({ id, sourceId });
 const song = (id, count = 1, popularity) => ({ id, popularity, sections: [{ id: `${id}-section`, occurrences: Array.from({ length: count }, (_, n) => occurrence(`${id}-${n}`)) }] });
@@ -76,6 +76,32 @@ test('assessment filters globally fresh sources before selecting a song', () => 
   const familiar = selectExample({ songs, seed: 1, context: { assessment: true, heardSourceIds: ['a-0', 'b-0'] }, settings: { variety: false } });
   assert.equal(familiar.selection.familiar, true);
   assert.equal(familiar.selectionContext.freshPoolApplied, false);
+});
+
+test('physical transition overlap, containment, and shared endpoints have distinct familiarity', () => {
+  const familiar = createSourceFamiliarity(['song|verse|2|7', 'song|verse|10|12', 'song|verse|12|14', 'opaque-id']);
+  for (const span of ['song|verse|3|5', 'song|verse|0|3', 'song|verse|0|20', 'song|verse|6|8', 'song|verse|11|13']) assert.equal(familiar(span), true, span);
+  for (const span of ['song|verse|0|2', 'song|verse|7|10', 'song|verse|14|15', 'song|chorus|2|7', 'other-song|verse|2|7', 'opaque-id-other']) assert.equal(familiar(span), false, span);
+  assert.equal(familiar('opaque-id'), true);
+});
+
+test('malformed/unsafe span IDs retain legacy exact matching without invented ranges', () => {
+  for (const invalid of ['s|v|+1|2', 's|v|-0|2', 's|v|1.0|2', 's|v|2|2', 's|v|2|1', 's|v|1|9007199254740992', '|v|1|2', 's||1|2', 's|v|1|2|extra']) {
+    assert.equal(parseSourceSpan(invalid), null, invalid);
+    assert.equal(createSourceFamiliarity([invalid])(invalid), true);
+    assert.equal(createSourceFamiliarity([invalid])('s|v|1|2'), false);
+  }
+  assert.deepEqual(parseSourceSpan('s|v|0001|0003'), { sectionKey: 's|v', start: 1, end: 3 });
+  assert.equal(parseSourceSpan('s|v|1|9007199254740991').end, Number.MAX_SAFE_INTEGER);
+});
+
+test('assessment recognizes contained passages and v1 replay keeps materialized semantics', () => {
+  const data = [{ id: 'song', sections: [{ id: 'verse', occurrences: [occurrence('contained', 'song|verse|3|5'), occurrence('endpoint', 'song|verse|7|9')] }] }];
+  const result = selectExample({ songs: data, seed: 1, context: { assessment: true, heardSourceIds: ['song|verse|2|7'] } });
+  assert.equal(result.selection.occurrenceId, 'endpoint');
+  assert.equal(result.selectionContext.selectorVersion, 'aural-selector-2');
+  const legacy = structuredClone(result.selectionContext); legacy.selectorVersion = 'aural-selector-1';
+  assert.deepEqual(replaySelection(legacy).selection, result.selection);
 });
 
 test('supported reuse requires current eligibility and does not consume random draws', () => {
