@@ -67,7 +67,7 @@ fun PlaybackDestination(
     var useRelativeIonianContext by remember { mutableStateOf(false) }
     var playbackKeyDisplay by remember { mutableStateOf<PlaybackKeyDisplay?>(null) }
     val context = LocalContext.current
-    LaunchedEffect(useRelativeIonianContext) {
+    LaunchedEffect(context, selectedSectionKey, useRelativeIonianContext) {
         TimelineFrameRateStore.applyToWindow(context)
     }
     var showTitleSheet by remember { mutableStateOf(false) }
