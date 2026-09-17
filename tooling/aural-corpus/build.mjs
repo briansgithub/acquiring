@@ -20,7 +20,10 @@ export async function buildCorpus(options) {
   const config = { minSongs: options.minSongs ?? 2, structureMinSongs: options.structureMinSongs ?? 5, targetCoverage: options.targetCoverage ?? 0.8 };
   if (!Number.isInteger(config.minSongs) || config.minSongs < 2 || !Number.isInteger(config.structureMinSongs) || config.structureMinSongs < 2 || !Number.isFinite(config.targetCoverage) || config.targetCoverage <= 0 || config.targetCoverage > 1) throw Error('Invalid corpus configuration');
   fs.mkdirSync(options.output, { recursive: true });
-  const source = updateNormalizedCache({ ...options, normalizedFile: options.normalizedFile || path.join(options.output, options.limit ? `normalized-${options.limit}.db` : 'normalized.db'), log });
+  const sourceOptions = { ...options, normalizedFile: options.normalizedFile || path.join(options.output, options.limit ? `normalized-${options.limit}.db` : 'normalized.db'), log };
+  const source = options.reuseSnapshotInputs
+    ? (await import('./reuse.mjs')).reuseSnapshotInputs({ ...sourceOptions, snapshotDirectory: options.reuseSnapshotInputs })
+    : updateNormalizedCache(sourceOptions);
   const normalized = readNormalizedCache(source.normalizedFile);
   let popularity = [], popularitySnapshotId = 'unavailable', popularityProvenance = null;
   if (options.popularityFile) {
@@ -29,7 +32,7 @@ export async function buildCorpus(options) {
     popularitySnapshotId = artifact.snapshotId;
     popularityProvenance = artifact.manifest || artifact.provenance;
   }
-  const codeFingerprint = hash(['common.mjs','normalize.mjs','source.mjs','miner.mjs','coverage.mjs','export.mjs','build.mjs', '../../contracts/aural-corpus/schema.sql'].map(name => [name, hashFile(new URL(name, import.meta.url))]));
+  const codeFingerprint = hash(['common.mjs','normalize.mjs','source.mjs','reuse.mjs','miner.mjs','coverage.mjs','export.mjs','build.mjs', '../../contracts/aural-corpus/schema.sql'].map(name => [name, hashFile(new URL(name, import.meta.url))]));
   const catalogHash = hash(source.songs), rejectedSourceHash = hash(source.diagnostics);
   const snapshotId = hash({ build: BUILD_VERSION, codeFingerprint, normalization: source.normalizationFingerprint, mapping: familyMapping,
     source: source.sourceHash, catalogHash, rejectedSourceHash, config, scope: source.scope, popularity, popularitySnapshotId });
@@ -86,14 +89,14 @@ async function main() {
     if (!args[i].startsWith('--') || !args[i + 1] || args[i + 1].startsWith('--')) throw Error('Use --option value');
     values[args[i].slice(2)] = args[i + 1];
   }
-  const known = ['catalog','cache-root','output','normalized-file','limit','min-songs','structure-min-songs','target-coverage','popularity-file'];
+  const known = ['catalog','cache-root','output','normalized-file','limit','min-songs','structure-min-songs','target-coverage','popularity-file','reuse-snapshot-inputs'];
   for (const key of Object.keys(values)) if (!known.includes(key)) throw Error(`Unknown option: ${key}`);
   const { default: root } = await import('../lib/dataRoot.js');
   const options = { catalog: values.catalog || path.join(root.getCatalogDir(), 'hooktheory_catalog.db'),
     cacheRoot: values['cache-root'] || root.getPlaybackCacheDir(), output: values.output || path.join(root.resolveDataRoot(), 'aural-corpus'),
     normalizedFile: values['normalized-file'], limit: Number(values.limit || 0), minSongs: Number(values['min-songs'] || 2),
     structureMinSongs: Number(values['structure-min-songs'] || 5), targetCoverage: Number(values['target-coverage'] || .8),
-    popularityFile: values['popularity-file'], log: value => console.log(JSON.stringify(value)) };
+    popularityFile: values['popularity-file'], reuseSnapshotInputs: values['reuse-snapshot-inputs'], log: value => console.log(JSON.stringify(value)) };
   if (!Number.isInteger(options.limit) || options.limit < 0) throw Error('Invalid limit');
   console.log(JSON.stringify(await buildCorpus(options)));
 }

@@ -40,6 +40,7 @@ test('runtime database has exact target indexes and preserves neutral missing po
     const row = db.prepare('SELECT * FROM quiz_occurrence LIMIT 1').get();
     assert.equal(JSON.parse(row.payload).sourceId, row.source_id);
     assert.match(db.prepare("EXPLAIN QUERY PLAN SELECT * FROM quiz_occurrence WHERE family_id='dominant-return' AND variant_id='direct' AND view='harmony'").get().detail, /quiz_target/);
+    assert.match(db.prepare("EXPLAIN QUERY PLAN SELECT occurrence_id,source_id,song_id,section_id FROM quiz_occurrence WHERE family_id='dominant-return' AND variant_id='direct' AND view='harmony'").get().detail, /COVERING INDEX quiz_target/);
     assert.equal(db.prepare('PRAGMA user_version').get().user_version, 1);
     db.close();
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
