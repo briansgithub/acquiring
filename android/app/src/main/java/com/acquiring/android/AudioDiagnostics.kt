@@ -16,9 +16,9 @@ internal object AudioDiagnostics {
 
     val ALLOWED_OPERATIONS = setOf(
         "app.audioInitialized",
-        "quiz.playRequest",
-        "quiz.lifecyclePause",
-        "quiz.reset",
+        "playback.playRequest",
+        "playback.lifecyclePause",
+        "playback.reset",
         "engine.stopAll",
         "engine.reset",
         "diagnostics.export",
@@ -102,8 +102,8 @@ internal object AudioDiagnostics {
         record("engine.stopAll")
         AudioEngine.stopAllPlayback()
         record("engine.reset")
-        record("quiz.reset")
-        QuizPlaybackController.reset()
+        record("playback.reset")
+        PlaybackController.reset()
     }
 
     fun shareIntent(text: String): Intent =

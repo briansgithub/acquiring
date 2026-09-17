@@ -217,7 +217,7 @@ internal fun HummingIntervalPopup(
 
     LaunchedEffect(ownsMicrophone) {
         if (!ownsMicrophone && microphoneAction !is ActiveMicrophoneAction.Idle) {
-            // Another quiz interaction now owns the shared tracker. Clear only our
+            // Another playback interaction now owns the shared tracker. Clear only our
             // logical action; this lease is intentionally unable to stop the new owner.
             clearMicrophoneActionAfterOwnershipLoss()
         }
@@ -285,7 +285,7 @@ internal fun HummingIntervalPopup(
 
     fun requestMicrophoneAction(requested: RequestedMicrophoneAction) {
         // Stop any earlier action from this feature, then reserve exclusive access.
-        // Reserving before the permission sheet also supersedes persistent quiz mode
+        // Reserving before the permission sheet also supersedes persistent playback mode
         // immediately while allowing the pending permission request to survive ON_PAUSE.
         pitchTracker.stop()
         exclusivePitchTracker?.claim()
@@ -310,7 +310,7 @@ internal fun HummingIntervalPopup(
         requestMicrophoneAction(RequestedMicrophoneAction.Listen(slotId))
     }
 
-    // Double-tapping a melody/root relative-interval object elsewhere in the quiz
+    // Double-tapping a melody/root relative-interval object elsewhere in the playback
     // hands us its two target notes here: expand the tool and assign the first
     // note to the left slot and the second to the middle slot as reference
     // labels. The user can double-tap either target slot to begin singing back

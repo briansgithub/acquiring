@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal enum class MicrophonePitchOwner {
-    QUIZ_PERSISTENT,
+    PLAYBACK_PERSISTENT,
     SINGING_TOOL
 }
 
@@ -20,7 +20,7 @@ internal interface ExclusivePitchSource : PitchSource {
     fun claim(trackingMode: PitchTrackingMode = PitchTrackingMode.STANDARD)
 }
 
-/** Serializes the app's quiz-related microphone interactions over one pitch tracker. */
+/** Serializes the app's playback-related microphone interactions over one pitch tracker. */
 internal class MicrophonePitchCoordinator(
     private val delegate: PitchSource
 ) {

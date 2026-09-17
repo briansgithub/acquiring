@@ -1,0 +1,1151 @@
+{
+  "schemaVersion": 1,
+  "selectorVersion": "aural-selector-2",
+  "notes": [
+    "Identifiers are printable ASCII; sort lexicographically by code point.",
+    "Unsigned xorshift32: x ^= x << 13; x ^= x >>> 17; x ^= x << 5; convert to uint32 and divide by 4294967296.",
+    "Replace zero initial seed with 0x6d2b79f5. Use IEEE-754 double arithmetic for weights and draws.",
+    "Ordinary selections draw once per level, even for singleton pools; supported reuse and empty pools draw zero times.",
+    "For assessment, remove all familiar source occurrences globally if any fresh eligible occurrence exists.",
+    "Version 2 familiarity includes positive overlap of physical transitions in sourceId song|section|start|end. Shared endpoint chords do not overlap. Opaque legacy IDs retain exact matching."
+  ],
+  "prngVectors": [
+    {
+      "seed": 0,
+      "uint32": [
+        1085196063,
+        2447379481,
+        2618286376,
+        1701901981,
+        265159372,
+        1030440423
+      ]
+    },
+    {
+      "seed": 1,
+      "uint32": [
+        270369,
+        67634689,
+        2647435461,
+        307599695,
+        2398689233,
+        745495504
+      ]
+    },
+    {
+      "seed": 42,
+      "uint32": [
+        11355432,
+        2836018348,
+        476557059,
+        3648046016,
+        3759983556,
+        1441438134
+      ]
+    },
+    {
+      "seed": 4294967295,
+      "uint32": [
+        253983,
+        4228382207,
+        1958451267,
+        4056713434,
+        2049502865,
+        2560970988
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "default-zero",
+      "input": {
+        "songs": [
+          {
+            "id": "alpha",
+            "popularity": {
+              "score": 0.95,
+              "confidence": 0.8
+            },
+            "sections": [
+              {
+                "id": "alpha-verse",
+                "occurrences": [
+                  {
+                    "id": "a1",
+                    "sourceId": "source-a1"
+                  },
+                  {
+                    "id": "a2",
+                    "sourceId": "source-a2"
+                  }
+                ]
+              },
+              {
+                "id": "alpha-chorus",
+                "popularity": {
+                  "score": 0.9,
+                  "confidence": 1,
+                  "trustworthy": true
+                },
+                "occurrences": [
+                  {
+                    "id": "a3",
+                    "sourceId": "source-a3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "beta",
+            "popularity": {
+              "score": 0.2,
+              "confidence": 0.5
+            },
+            "sections": [
+              {
+                "id": "beta-verse",
+                "occurrences": [
+                  {
+                    "id": "b1",
+                    "sourceId": "source-b1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gamma",
+            "sections": [
+              {
+                "id": "gamma-bridge",
+                "occurrences": [
+                  {
+                    "id": "c1",
+                    "sourceId": "source-c1"
+                  },
+                  {
+                    "id": "c2",
+                    "sourceId": "source-c1"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 0
+      },
+      "expected": {
+        "selection": {
+          "songId": "alpha",
+          "sectionId": "alpha-chorus",
+          "occurrenceId": "a3",
+          "sourceId": "source-a3",
+          "familiar": false
+        },
+        "draws": [
+          0.25266689783893526,
+          0.5698249398265034,
+          0.6096173021942377
+        ]
+      }
+    },
+    {
+      "name": "default-one",
+      "input": {
+        "songs": [
+          {
+            "id": "alpha",
+            "popularity": {
+              "score": 0.95,
+              "confidence": 0.8
+            },
+            "sections": [
+              {
+                "id": "alpha-verse",
+                "occurrences": [
+                  {
+                    "id": "a1",
+                    "sourceId": "source-a1"
+                  },
+                  {
+                    "id": "a2",
+                    "sourceId": "source-a2"
+                  }
+                ]
+              },
+              {
+                "id": "alpha-chorus",
+                "popularity": {
+                  "score": 0.9,
+                  "confidence": 1,
+                  "trustworthy": true
+                },
+                "occurrences": [
+                  {
+                    "id": "a3",
+                    "sourceId": "source-a3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "beta",
+            "popularity": {
+              "score": 0.2,
+              "confidence": 0.5
+            },
+            "sections": [
+              {
+                "id": "beta-verse",
+                "occurrences": [
+                  {
+                    "id": "b1",
+                    "sourceId": "source-b1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gamma",
+            "sections": [
+              {
+                "id": "gamma-bridge",
+                "occurrences": [
+                  {
+                    "id": "c1",
+                    "sourceId": "source-c1"
+                  },
+                  {
+                    "id": "c2",
+                    "sourceId": "source-c1"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1
+      },
+      "expected": {
+        "selection": {
+          "songId": "alpha",
+          "sectionId": "alpha-chorus",
+          "occurrenceId": "a3",
+          "sourceId": "source-a3",
+          "familiar": false
+        },
+        "draws": [
+          0.00006295018829405308,
+          0.015747428173199296,
+          0.6164041024167091
+        ]
+      }
+    },
+    {
+      "name": "default-high",
+      "input": {
+        "songs": [
+          {
+            "id": "alpha",
+            "popularity": {
+              "score": 0.95,
+              "confidence": 0.8
+            },
+            "sections": [
+              {
+                "id": "alpha-verse",
+                "occurrences": [
+                  {
+                    "id": "a1",
+                    "sourceId": "source-a1"
+                  },
+                  {
+                    "id": "a2",
+                    "sourceId": "source-a2"
+                  }
+                ]
+              },
+              {
+                "id": "alpha-chorus",
+                "popularity": {
+                  "score": 0.9,
+                  "confidence": 1,
+                  "trustworthy": true
+                },
+                "occurrences": [
+                  {
+                    "id": "a3",
+                    "sourceId": "source-a3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "beta",
+            "popularity": {
+              "score": 0.2,
+              "confidence": 0.5
+            },
+            "sections": [
+              {
+                "id": "beta-verse",
+                "occurrences": [
+                  {
+                    "id": "b1",
+                    "sourceId": "source-b1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gamma",
+            "sections": [
+              {
+                "id": "gamma-bridge",
+                "occurrences": [
+                  {
+                    "id": "c1",
+                    "sourceId": "source-c1"
+                  },
+                  {
+                    "id": "c2",
+                    "sourceId": "source-c1"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 4294967295
+      },
+      "expected": {
+        "selection": {
+          "songId": "alpha",
+          "sectionId": "alpha-verse",
+          "occurrenceId": "a1",
+          "sourceId": "source-a1",
+          "familiar": false
+        },
+        "draws": [
+          0.00005913502536714077,
+          0.9844969508703798,
+          0.4559874690603465
+        ]
+      }
+    },
+    {
+      "name": "weighted-recency-favorites",
+      "input": {
+        "songs": [
+          {
+            "id": "alpha",
+            "popularity": {
+              "score": 0.95,
+              "confidence": 0.8
+            },
+            "sections": [
+              {
+                "id": "alpha-verse",
+                "occurrences": [
+                  {
+                    "id": "a1",
+                    "sourceId": "source-a1"
+                  },
+                  {
+                    "id": "a2",
+                    "sourceId": "source-a2"
+                  }
+                ]
+              },
+              {
+                "id": "alpha-chorus",
+                "popularity": {
+                  "score": 0.9,
+                  "confidence": 1,
+                  "trustworthy": true
+                },
+                "occurrences": [
+                  {
+                    "id": "a3",
+                    "sourceId": "source-a3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "beta",
+            "popularity": {
+              "score": 0.2,
+              "confidence": 0.5
+            },
+            "sections": [
+              {
+                "id": "beta-verse",
+                "occurrences": [
+                  {
+                    "id": "b1",
+                    "sourceId": "source-b1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gamma",
+            "sections": [
+              {
+                "id": "gamma-bridge",
+                "occurrences": [
+                  {
+                    "id": "c1",
+                    "sourceId": "source-c1"
+                  },
+                  {
+                    "id": "c2",
+                    "sourceId": "source-c1"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 7654321,
+        "settings": {
+          "favorites": true
+        },
+        "favoriteSongIds": [
+          "beta"
+        ],
+        "context": {
+          "recentSongIds": [
+            "alpha",
+            "unused",
+            "gamma"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "beta",
+          "sectionId": "beta-verse",
+          "occurrenceId": "b1",
+          "sourceId": "source-b1",
+          "familiar": false
+        },
+        "draws": [
+          0.7239723913371563,
+          0.37303593941032887,
+          0.4830992443021387
+        ]
+      }
+    },
+    {
+      "name": "uniform",
+      "input": {
+        "songs": [
+          {
+            "id": "alpha",
+            "popularity": {
+              "score": 0.95,
+              "confidence": 0.8
+            },
+            "sections": [
+              {
+                "id": "alpha-verse",
+                "occurrences": [
+                  {
+                    "id": "a1",
+                    "sourceId": "source-a1"
+                  },
+                  {
+                    "id": "a2",
+                    "sourceId": "source-a2"
+                  }
+                ]
+              },
+              {
+                "id": "alpha-chorus",
+                "popularity": {
+                  "score": 0.9,
+                  "confidence": 1,
+                  "trustworthy": true
+                },
+                "occurrences": [
+                  {
+                    "id": "a3",
+                    "sourceId": "source-a3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "beta",
+            "popularity": {
+              "score": 0.2,
+              "confidence": 0.5
+            },
+            "sections": [
+              {
+                "id": "beta-verse",
+                "occurrences": [
+                  {
+                    "id": "b1",
+                    "sourceId": "source-b1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gamma",
+            "sections": [
+              {
+                "id": "gamma-bridge",
+                "occurrences": [
+                  {
+                    "id": "c1",
+                    "sourceId": "source-c1"
+                  },
+                  {
+                    "id": "c2",
+                    "sourceId": "source-c1"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 7654321,
+        "settings": {
+          "popularity": false,
+          "variety": false
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "gamma",
+          "sectionId": "gamma-bridge",
+          "occurrenceId": "c1",
+          "sourceId": "source-c1",
+          "familiar": false
+        },
+        "draws": [
+          0.7239723913371563,
+          0.37303593941032887,
+          0.4830992443021387
+        ]
+      }
+    },
+    {
+      "name": "all-four-on",
+      "input": {
+        "songs": [
+          {
+            "id": "alpha",
+            "popularity": {
+              "score": 0.95,
+              "confidence": 0.8
+            },
+            "sections": [
+              {
+                "id": "alpha-verse",
+                "occurrences": [
+                  {
+                    "id": "a1",
+                    "sourceId": "source-a1"
+                  },
+                  {
+                    "id": "a2",
+                    "sourceId": "source-a2"
+                  }
+                ]
+              },
+              {
+                "id": "alpha-chorus",
+                "popularity": {
+                  "score": 0.9,
+                  "confidence": 1,
+                  "trustworthy": true
+                },
+                "occurrences": [
+                  {
+                    "id": "a3",
+                    "sourceId": "source-a3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "beta",
+            "popularity": {
+              "score": 0.2,
+              "confidence": 0.5
+            },
+            "sections": [
+              {
+                "id": "beta-verse",
+                "occurrences": [
+                  {
+                    "id": "b1",
+                    "sourceId": "source-b1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gamma",
+            "sections": [
+              {
+                "id": "gamma-bridge",
+                "occurrences": [
+                  {
+                    "id": "c1",
+                    "sourceId": "source-c1"
+                  },
+                  {
+                    "id": "c2",
+                    "sourceId": "source-c1"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1085196063,
+        "settings": {
+          "popularity": true,
+          "variety": true,
+          "favorites": true,
+          "distinguishInversions": true
+        },
+        "favoriteSongIds": [
+          "gamma"
+        ]
+      },
+      "expected": {
+        "selection": {
+          "songId": "beta",
+          "sectionId": "beta-verse",
+          "occurrenceId": "b1",
+          "sourceId": "source-b1",
+          "familiar": false
+        },
+        "draws": [
+          0.5698249398265034,
+          0.6096173021942377,
+          0.3962549336720258
+        ]
+      }
+    },
+    {
+      "name": "fresh-assessment",
+      "input": {
+        "songs": [
+          {
+            "id": "alpha",
+            "popularity": {
+              "score": 0.95,
+              "confidence": 0.8
+            },
+            "sections": [
+              {
+                "id": "alpha-verse",
+                "occurrences": [
+                  {
+                    "id": "a1",
+                    "sourceId": "source-a1"
+                  },
+                  {
+                    "id": "a2",
+                    "sourceId": "source-a2"
+                  }
+                ]
+              },
+              {
+                "id": "alpha-chorus",
+                "popularity": {
+                  "score": 0.9,
+                  "confidence": 1,
+                  "trustworthy": true
+                },
+                "occurrences": [
+                  {
+                    "id": "a3",
+                    "sourceId": "source-a3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "beta",
+            "popularity": {
+              "score": 0.2,
+              "confidence": 0.5
+            },
+            "sections": [
+              {
+                "id": "beta-verse",
+                "occurrences": [
+                  {
+                    "id": "b1",
+                    "sourceId": "source-b1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gamma",
+            "sections": [
+              {
+                "id": "gamma-bridge",
+                "occurrences": [
+                  {
+                    "id": "c1",
+                    "sourceId": "source-c1"
+                  },
+                  {
+                    "id": "c2",
+                    "sourceId": "source-c1"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1,
+        "context": {
+          "assessment": true,
+          "heardSourceIds": [
+            "source-a1",
+            "source-a2",
+            "source-a3",
+            "source-b1"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "gamma",
+          "sectionId": "gamma-bridge",
+          "occurrenceId": "c2",
+          "sourceId": "source-c1",
+          "familiar": false
+        },
+        "draws": [
+          0.00006295018829405308,
+          0.015747428173199296,
+          0.6164041024167091
+        ]
+      }
+    },
+    {
+      "name": "familiar-assessment",
+      "input": {
+        "songs": [
+          {
+            "id": "alpha",
+            "popularity": {
+              "score": 0.95,
+              "confidence": 0.8
+            },
+            "sections": [
+              {
+                "id": "alpha-verse",
+                "occurrences": [
+                  {
+                    "id": "a1",
+                    "sourceId": "source-a1"
+                  },
+                  {
+                    "id": "a2",
+                    "sourceId": "source-a2"
+                  }
+                ]
+              },
+              {
+                "id": "alpha-chorus",
+                "popularity": {
+                  "score": 0.9,
+                  "confidence": 1,
+                  "trustworthy": true
+                },
+                "occurrences": [
+                  {
+                    "id": "a3",
+                    "sourceId": "source-a3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "beta",
+            "popularity": {
+              "score": 0.2,
+              "confidence": 0.5
+            },
+            "sections": [
+              {
+                "id": "beta-verse",
+                "occurrences": [
+                  {
+                    "id": "b1",
+                    "sourceId": "source-b1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gamma",
+            "sections": [
+              {
+                "id": "gamma-bridge",
+                "occurrences": [
+                  {
+                    "id": "c1",
+                    "sourceId": "source-c1"
+                  },
+                  {
+                    "id": "c2",
+                    "sourceId": "source-c1"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1,
+        "context": {
+          "assessment": true,
+          "heardSourceIds": [
+            "source-a1",
+            "source-a2",
+            "source-a3",
+            "source-b1",
+            "source-c1"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "alpha",
+          "sectionId": "alpha-chorus",
+          "occurrenceId": "a3",
+          "sourceId": "source-a3",
+          "familiar": true
+        },
+        "draws": [
+          0.00006295018829405308,
+          0.015747428173199296,
+          0.6164041024167091
+        ]
+      }
+    },
+    {
+      "name": "supported-reuse",
+      "input": {
+        "songs": [
+          {
+            "id": "alpha",
+            "popularity": {
+              "score": 0.95,
+              "confidence": 0.8
+            },
+            "sections": [
+              {
+                "id": "alpha-verse",
+                "occurrences": [
+                  {
+                    "id": "a1",
+                    "sourceId": "source-a1"
+                  },
+                  {
+                    "id": "a2",
+                    "sourceId": "source-a2"
+                  }
+                ]
+              },
+              {
+                "id": "alpha-chorus",
+                "popularity": {
+                  "score": 0.9,
+                  "confidence": 1,
+                  "trustworthy": true
+                },
+                "occurrences": [
+                  {
+                    "id": "a3",
+                    "sourceId": "source-a3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "beta",
+            "popularity": {
+              "score": 0.2,
+              "confidence": 0.5
+            },
+            "sections": [
+              {
+                "id": "beta-verse",
+                "occurrences": [
+                  {
+                    "id": "b1",
+                    "sourceId": "source-b1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gamma",
+            "sections": [
+              {
+                "id": "gamma-bridge",
+                "occurrences": [
+                  {
+                    "id": "c1",
+                    "sourceId": "source-c1"
+                  },
+                  {
+                    "id": "c2",
+                    "sourceId": "source-c1"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1,
+        "context": {
+          "supportedOccurrenceId": "b1"
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "beta",
+          "sectionId": "beta-verse",
+          "occurrenceId": "b1",
+          "sourceId": "source-b1",
+          "familiar": false
+        },
+        "draws": []
+      }
+    },
+    {
+      "name": "empty",
+      "input": {
+        "songs": [],
+        "seed": 42
+      },
+      "expected": {
+        "selection": null,
+        "draws": []
+      }
+    },
+    {
+      "name": "overlap-long-heard-contained",
+      "input": {
+        "songs": [
+          {
+            "id": "song",
+            "sections": [
+              {
+                "id": "verse",
+                "occurrences": [
+                  {
+                    "id": "contained",
+                    "sourceId": "song|verse|3|5"
+                  },
+                  {
+                    "id": "long",
+                    "sourceId": "song|verse|0|9"
+                  },
+                  {
+                    "id": "endpoint",
+                    "sourceId": "song|verse|7|9"
+                  }
+                ]
+              },
+              {
+                "id": "chorus",
+                "occurrences": [
+                  {
+                    "id": "other-section",
+                    "sourceId": "song|chorus|3|5"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1,
+        "context": {
+          "assessment": true,
+          "heardSourceIds": [
+            "song|verse|2|7",
+            "song|chorus|0|9"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "song",
+          "sectionId": "verse",
+          "occurrenceId": "endpoint",
+          "sourceId": "song|verse|7|9",
+          "familiar": false
+        },
+        "draws": [
+          0.00006295018829405308,
+          0.015747428173199296,
+          0.6164041024167091
+        ]
+      }
+    },
+    {
+      "name": "overlap-short-heard-long",
+      "input": {
+        "songs": [
+          {
+            "id": "song",
+            "sections": [
+              {
+                "id": "verse",
+                "occurrences": [
+                  {
+                    "id": "a-long",
+                    "sourceId": "song|verse|0|9"
+                  },
+                  {
+                    "id": "z-fresh",
+                    "sourceId": "song|verse|10|12"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 42,
+        "context": {
+          "assessment": true,
+          "heardSourceIds": [
+            "song|verse|4|5"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "song",
+          "sectionId": "verse",
+          "occurrenceId": "z-fresh",
+          "sourceId": "song|verse|10|12",
+          "familiar": false
+        },
+        "draws": [
+          0.002643892541527748,
+          0.660311977379024,
+          0.11095708678476512
+        ]
+      }
+    },
+    {
+      "name": "overlap-shared-endpoint-fresh",
+      "input": {
+        "songs": [
+          {
+            "id": "song",
+            "sections": [
+              {
+                "id": "verse",
+                "occurrences": [
+                  {
+                    "id": "endpoint",
+                    "sourceId": "song|verse|7|9"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1,
+        "context": {
+          "assessment": true,
+          "heardSourceIds": [
+            "song|verse|2|7"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "song",
+          "sectionId": "verse",
+          "occurrenceId": "endpoint",
+          "sourceId": "song|verse|7|9",
+          "familiar": false
+        },
+        "draws": [
+          0.00006295018829405308,
+          0.015747428173199296,
+          0.6164041024167091
+        ]
+      }
+    },
+    {
+      "name": "overlap-other-section-fresh",
+      "input": {
+        "songs": [
+          {
+            "id": "song",
+            "sections": [
+              {
+                "id": "chorus",
+                "occurrences": [
+                  {
+                    "id": "other-section",
+                    "sourceId": "song|chorus|3|5"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1,
+        "context": {
+          "assessment": true,
+          "heardSourceIds": [
+            "song|verse|2|7"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "song",
+          "sectionId": "chorus",
+          "occurrenceId": "other-section",
+          "sourceId": "song|chorus|3|5",
+          "familiar": false
+        },
+        "draws": [
+          0.00006295018829405308,
+          0.015747428173199296,
+          0.6164041024167091
+        ]
+      }
+    }
+  ]
+}

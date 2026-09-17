@@ -3,11 +3,12 @@ package com.acquiring.android
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.os.Build
+import android.view.Display
 import android.view.Window
 import android.view.WindowManager
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 internal enum class TimelineFrameRatePreference(val storageValue: String, val title: String) {
     STANDARD("60", "60 fps"),
@@ -48,8 +49,6 @@ internal object TimelineFrameRateStore {
         private set
 
     fun initialize(context: Context) {
-        val displayMaximum = displayRefreshHz(context)
-        apply(read(context), displayMaximum)
         applyToWindow(context)
     }
 
@@ -59,7 +58,6 @@ internal object TimelineFrameRateStore {
             .edit()
             .putString(TimelineFrameRatePreference.DEFAULTS_KEY, next.storageValue)
             .apply()
-        apply(next, displayRefreshHz(context))
         applyToWindow(context)
     }
 
@@ -77,10 +75,19 @@ internal object TimelineFrameRateStore {
     }
 
     fun applyToWindow(context: Context) {
-        windowOf(context)?.let(::applyToWindow)
+        val window = windowOf(context)
+        if (window != null) {
+            applyToWindow(window)
+        } else {
+            apply(read(context), displayMaximumHz(displayOf(context)))
+        }
     }
 
     fun applyToWindow(window: Window) {
+        // Refresh both requests together on entry, lock/section changes and resume.
+        // The active display rate may already be capped by our previous request.
+        val display = window.decorView.display ?: displayOf(window.context)
+        apply(read(window.context), displayMaximumHz(display))
         val fps = preference.framesPerSecond(displayMaximumHz).toFloat()
         val params = window.attributes
         params.preferredRefreshRate = fps
@@ -96,15 +103,20 @@ internal object TimelineFrameRateStore {
         return null
     }
 
-    private fun displayRefreshHz(context: Context): Int {
-        val refresh = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            context.display?.refreshRate
-        } else {
-            @Suppress("DEPRECATION")
-            (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)
-                ?.defaultDisplay
-                ?.refreshRate
-        } ?: 60f
-        return refresh.toInt().coerceAtLeast(1)
+    @Suppress("DEPRECATION")
+    private fun displayOf(context: Context): Display? =
+        (context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay
+
+    private fun displayMaximumHz(display: Display?): Int {
+        if (display == null) return 60
+        val currentMode = display.mode
+        val refresh = display.supportedModes
+            .filter {
+                it.physicalWidth == currentMode.physicalWidth &&
+                    it.physicalHeight == currentMode.physicalHeight
+            }
+            .maxOfOrNull { it.refreshRate }
+            ?: display.refreshRate
+        return refresh.roundToInt().coerceAtLeast(1)
     }
 }
