@@ -12,6 +12,43 @@ class AuralSessionTest {
     }
     private fun session(store: MemoryStore = MemoryStore()) = AuralSession(store, clock = { 1_000L }, seedFor = { it * 991L })
 
+    @Test fun newAndResumedQuizUsesRaisedOctaveWithoutLosingProgress() {
+        val old = AuralCurriculum.generate(AuralTarget("dominant-return", "recall", instrumentOverride = "CLARINET"), 22)
+        val store = MemoryStore(Json.encodeToString(AuralSavedSession(current = old)))
+        val lesson = session(store)
+        lesson.setInstrument(AudioEngine.Waveform.CLARINET)
+        assertEquals(1, lesson.view().exercise!!.provenance.target.octaveShift)
+        assertEquals(old.events.first().notes.map { it + 12 }, lesson.view().exercise!!.events.first().notes)
+        lesson.next()
+        assertEquals(1, lesson.view().exercise!!.provenance.target.octaveShift)
+        assertEquals(0, lesson.view().progress.attempts)
+    }
+
+    @Test fun instrumentChangePreservesQuestionAndCannotEraseAReplayOrAwardNewEvidence() {
+        val store = MemoryStore()
+        val lesson = session(store)
+        lesson.setInstrument(AudioEngine.Waveform.CLARINET)
+        lesson.practice("dominant-return", "recall", variantId = "departure")
+        val original = lesson.view().exercise!!
+        lesson.played()
+        lesson.setInstrument(AudioEngine.Waveform.MARIMBA)
+        val changed = lesson.view().exercise!!
+        assertEquals("MARIMBA", changed.instrument)
+        assertEquals(original.events, changed.events)
+        assertEquals(original.context, changed.context)
+        assertEquals(original.answer, changed.answer)
+        assertFalse(lesson.view().heard)
+        assertTrue(lesson.view().supported)
+        assertEquals(0, lesson.view().progress.attempts)
+        assertEquals(changed.provenance, session(store).view().exercise!!.provenance)
+        lesson.played(); lesson.submit(changed.answer.degrees)
+        lesson.setInstrument(AudioEngine.Waveform.FLUTE)
+        assertEquals(changed, lesson.view().exercise) // Completed evidence retains its actual sound.
+        lesson.next()
+        assertEquals("FLUTE", lesson.view().exercise!!.instrument)
+        assertEquals(0, lesson.view().progress.cells.values.sumOf { it.independentAttempts })
+    }
+
     @Test fun cannotSubmitBeforeHearingOrSubmitTwice() {
         val lesson = session()
         lesson.next(); lesson.submit(emptyList())
@@ -165,8 +202,10 @@ class AuralSessionTest {
             val exercise = AuralCurriculum.generate(AuralTarget(AuralCurriculum.families.first().id, skill, 0), 99L)
             val prompt = auralPromptEvents(exercise)
             val originalStart = exercise.context.size + 1
+            assertEquals(0.75, prompt[exercise.context.size].beats, 0.0)
             assertEquals(exercise.events, prompt.subList(originalStart, originalStart + exercise.events.size))
             val maskedStart = originalStart + exercise.events.size + 1
+            assertEquals(0.75, prompt[maskedStart - 1].beats, 0.0)
             val gap = exercise.gapIndex!!
             assertTrue(prompt[maskedStart + gap].notes.isEmpty())
             assertEquals(exercise.events[gap].beats, prompt[maskedStart + gap].beats, 0.0)

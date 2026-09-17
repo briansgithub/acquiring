@@ -38,6 +38,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -103,6 +104,7 @@ import kotlin.math.roundToInt
 
 
 internal const val LIBRARY_TITLE_SEARCH_TEST_TAG = "LibraryTitleSearch"
+internal const val LIBRARY_SETTINGS_TEST_TAG = "LibrarySettings"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -138,6 +140,8 @@ fun LibraryView(
     searchResult: String?,
     allSongs: List<SongBrowseRow>,
     onSongClick: (SongBrowseRow) -> Unit,
+    onOpenSettings: () -> Unit,
+    settingsUpdateAvailable: Boolean = false,
     onOpenAuralQuiz: () -> Unit = {}
 ) {
     var searchScope by rememberSaveable { mutableStateOf(LibrarySearchScope.SONGS) }
@@ -165,6 +169,10 @@ fun LibraryView(
                 detectTapGestures { focusManager.clearFocus(force = true) }
             }
     ) {
+        LibraryTopBar(
+            updateAvailable = settingsUpdateAvailable,
+            onOpenSettings = onOpenSettings
+        )
         TextButton(onClick = onOpenAuralQuiz, modifier = Modifier.testTag("OpenAuralQuiz")) {
             Text("Aural Quiz · learn by ear")
         }
@@ -173,10 +181,6 @@ fun LibraryView(
                 playlistDao = playlistDao,
                 songDao = activeDb.songDao(),
                 onSongClick = onSongClick
-            )
-            Text(
-                text = "Search Library",
-                style = MaterialTheme.typography.titleMedium
             )
         }
         
@@ -324,5 +328,47 @@ fun LibraryView(
         }
         }
 
+    }
+}
+
+@Composable
+private fun LibraryTopBar(
+    updateAvailable: Boolean,
+    onOpenSettings: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Library",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .weight(1f)
+                .semantics { heading() }
+        )
+        IconButton(
+            onClick = onOpenSettings,
+            modifier = Modifier
+                .testTag(LIBRARY_SETTINGS_TEST_TAG)
+                .semantics {
+                    contentDescription = "Open settings"
+                    stateDescription = if (updateAvailable) "Update available" else "No update"
+                }
+        ) {
+            Box {
+                Icon(Icons.Default.Settings, contentDescription = null)
+                if (updateAvailable) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .size(8.dp)
+                            .background(Color(0xFFFF9800), CircleShape)
+                    )
+                }
+            }
+        }
     }
 }

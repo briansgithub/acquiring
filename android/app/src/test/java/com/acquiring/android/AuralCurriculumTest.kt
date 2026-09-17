@@ -7,6 +7,48 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class AuralCurriculumTest {
+    @Test fun octaveLiftTransposesEverySoundAndSingingTargetWithoutChangingTheQuestion() {
+        for (family in AuralCurriculum.families) for (support in 0..2) for (kind in AuralCurriculum.microphoneKinds) {
+            val target = AuralTarget(family.id, "reproduce", support, microphoneKind = kind)
+            val old = AuralCurriculum.generate(target, 812)
+            val lifted = AuralCurriculum.generate(target.copy(octaveShift = 1), 812)
+            assertEquals(old.events.map { it.copy(notes = it.notes.map { n -> n + 12 }, rootMidi = it.rootMidi + 12, bassMidi = it.bassMidi + 12) }, lifted.events)
+            assertEquals(old.context.map { it.copy(notes = it.notes.map { n -> n + 12 }, rootMidi = it.rootMidi + 12, bassMidi = it.bassMidi + 12) }, lifted.context)
+            assertEquals(old.answer.targetMidis.map { it + 12 }, lifted.answer.targetMidis)
+            assertEquals(old.fullDegrees, lifted.fullDegrees)
+            assertEquals(old.tempo, lifted.tempo)
+            assertEquals(old.instrument, lifted.instrument)
+            assertEquals(old.provenance.register + 1, lifted.provenance.register)
+            val record = AuralCurriculum.record(AuralProgress(), lifted, true).recent.last()
+            assertEquals(lifted, AuralCurriculum.generate(target.copy(octaveShift = record.octaveShift), record.seed))
+        }
+    }
+    @Test fun defaultInstrumentChangesSoundWithoutChangingMusicalQuestionAndPersistsInHistory() {
+        for (skill in AuralCurriculum.skills) for (instrument in AudioEngine.Waveform.entries) {
+            val target = AuralTarget("predominant-cadence", skill.id, support = 0)
+            val original = AuralCurriculum.generate(target, 932)
+            val changed = AuralCurriculum.generate(target.copy(instrumentOverride = instrument.name), 932)
+            assertEquals(instrument.name, changed.instrument)
+            assertEquals(original.events, changed.events)
+            assertEquals(original.context, changed.context)
+            assertEquals(original.options, changed.options)
+            assertEquals(original.answer, changed.answer)
+            val record = AuralCurriculum.record(AuralProgress(), changed, true).recent.last()
+            assertEquals(changed, AuralCurriculum.generate(AuralTarget(record.familyId, record.skillId, record.support,
+                record.transfer, microphoneKind = record.microphoneKind, variantId = record.requestedVariantId,
+                instrumentOverride = record.instrumentOverride), record.seed))
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            AuralCurriculum.generate(AuralTarget("dominant-return", "guided", instrumentOverride = "unknown"), 1)
+        }
+    }
+
+    @Test fun legacySoundAndSettingsNameShareExposureIdentity() {
+        val target = AuralTarget("dominant-return", "guided", support = 2)
+        val old = AuralCurriculum.generate(target, 11)
+        val changed = AuralCurriculum.generate(target.copy(instrumentOverride = "SINE"), 11)
+        assertEquals(old.fingerprint, changed.fingerprint)
+    }
     private fun generated(skill: String = "compare", seed: Long = 1, support: Int = 0, family: String = "dominant-return", transfer: Boolean = false) =
         AuralCurriculum.generate(AuralTarget(family, skill, support, transfer), seed)
     private fun cell(p: AuralProgress, skill: String = "compare", family: String = "dominant-return") = AuralCurriculum.cell(p, family, skill)

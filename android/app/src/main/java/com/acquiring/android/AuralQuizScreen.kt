@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -46,7 +47,7 @@ internal fun auralMicrophoneKindLabel(kind: String): String = when (kind) {
 internal fun auralQuestionPresentation(view: AuralLessonView): AuralQuestionPresentation {
     val exercise = view.exercise ?: return AuralQuestionPresentation("Aural Quiz", "Choose a family", null)
     return AuralQuestionPresentation(
-        auralPhaseLabel(exercise.skillId),
+        AuralPracticeModes.forSkill(exercise.skillId).label,
         auralBriefPrompt(exercise),
         when {
             view.guidanceVisible -> exercise.guidance
@@ -59,8 +60,9 @@ internal fun auralQuestionPresentation(view: AuralLessonView): AuralQuestionPres
 /** Full reference, then an exactly timed gap: the task has a defined musical answer. */
 internal fun auralPromptEvents(exercise: AuralExercise): List<AuralEvent> {
     val rest = AuralEvent(emptyList(), 60, 60, "", "silence", 2.0)
-    val result = exercise.context + rest + exercise.events
-    val modeled = if (exercise.referenceRequired) result + rest + exercise.events.mapIndexed { index, event ->
+    val separator = rest.copy(beats = 0.75)
+    val result = exercise.context + separator + exercise.events
+    val modeled = if (exercise.referenceRequired) result + separator + exercise.events.mapIndexed { index, event ->
         if (index == exercise.gapIndex) event.copy(notes = emptyList()) else event
     } else result
     return if (exercise.skillId in listOf("recall", "audiate", "reproduce")) modeled + rest else modeled
@@ -70,6 +72,8 @@ internal fun auralPromptEvents(exercise: AuralExercise): List<AuralEvent> {
 internal fun AuralQuizScreen(
     onBack: () -> Unit,
     sessionOverride: AuralSession? = null,
+    defaultInstrument: AudioEngine.Waveform = AudioEngine.Waveform.CLARINET,
+    settingsContent: (@Composable (() -> Unit) -> Unit)? = null,
     playExample: (suspend (AuralExercise) -> Unit)? = null
 ) {
     val context = LocalContext.current
@@ -88,8 +92,9 @@ internal fun AuralQuizScreen(
     var route by rememberSaveable { mutableStateOf("families") }
     var selectedFamily by rememberSaveable { mutableStateOf(AuralCurriculum.families.first().id) }
     var showInfo by remember { mutableStateOf(false) }
+    var showSettings by rememberSaveable { mutableStateOf(false) }
     var microphoneMenu by remember { mutableStateOf(false) }
-    var practiceMicrophoneKind by rememberSaveable { mutableStateOf("root") }
+    var practiceMicrophoneKind by rememberSaveable { mutableStateOf("auto") }
     var activityJob by remember { mutableStateOf<Job?>(null) }
     var generation by remember { mutableStateOf(0) }
 
@@ -103,16 +108,16 @@ internal fun AuralQuizScreen(
         refresh()
     }
     fun resetResponse() { answer = emptyList(); microphoneIndex = 0; microphoneResults = emptyList() }
-    fun practice(familyId: String, variantId: String, skillId: String) {
+    fun practice(familyId: String, variantId: String, modeId: String) {
         cancel()
-        session.practice(familyId, skillId, practiceMicrophoneKind.takeIf { skillId == "reproduce" }, variantId)
+        session.practiceMode(familyId, variantId, modeId, practiceMicrophoneKind.takeUnless { it == "auto" })
         selectedFamily = familyId; route = "lesson"; resetResponse(); refresh()
     }
     fun adaptive() { cancel(); session.next(); resetResponse(); route = "lesson"; refresh() }
     fun next() {
         val exercise = view.exercise
         val variantId = exercise?.provenance?.target?.variantId
-        if (exercise != null && variantId != null) practice(exercise.familyId, variantId, exercise.skillId)
+        if (exercise != null && variantId != null) practice(exercise.familyId, variantId, AuralPracticeModes.forSkill(exercise.skillId).id)
         else adaptive()
     }
     fun back() {
@@ -129,7 +134,13 @@ internal fun AuralQuizScreen(
             else -> onBack()
         }
     }
-    BackHandler { back() }
+    BackHandler { if (showSettings) showSettings = false else back() }
+
+    LaunchedEffect(defaultInstrument) {
+        cancel(markInterrupted = true)
+        session.setInstrument(defaultInstrument)
+        resetResponse(); refresh()
+    }
 
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         permissionPending = false
@@ -213,6 +224,9 @@ internal fun AuralQuizScreen(
     val selected = AuralCurriculum.families.first { it.id == selectedFamily }
     val namedPractice = exercise?.provenance?.target?.variantId != null
     val inLesson = route == "lesson" && exercise != null
+    if (showSettings && settingsContent != null) {
+        Box(Modifier.fillMaxSize().padding(16.dp)) { settingsContent { showSettings = false } }
+    } else {
     Column(Modifier.fillMaxSize().testTag("AuralQuiz")) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = ::back, modifier = Modifier.testTag("AuralBack")) {
@@ -221,12 +235,15 @@ internal fun AuralQuizScreen(
             Text("Aural Quiz", style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f).testTag("AuralQuizTitle"))
             IconButton(onClick = { showInfo = true }) { Icon(Icons.Outlined.Info, contentDescription = "Learning help and progress") }
+            if (settingsContent != null) IconButton(onClick = {
+                cancel(markInterrupted = true); showSettings = true
+            }, modifier = Modifier.testTag("AuralSettings")) { Icon(Icons.Default.Settings, contentDescription = "Open settings") }
         }
         if (inLesson && namedPractice) {
             Text(selected.label, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 16.dp))
             Text(exercise!!.fullDegrees.joinToString(" → "), style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
-            AuralPhaseTabs(exercise.skillId) { skill -> practice(exercise.familyId, exercise.variantId, skill) }
+            AuralModeTabs(exercise.skillId) { mode -> practice(exercise.familyId, exercise.variantId, mode) }
         }
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             if (view.storageWarning.isNotEmpty()) Text(view.storageWarning, color = MaterialTheme.colorScheme.error)
@@ -239,7 +256,6 @@ internal fun AuralQuizScreen(
                         }
                         if (exercise != null) OutlinedButton(onClick = {
                             selectedFamily = exercise.familyId
-                            exercise.microphoneTask?.kind?.let { practiceMicrophoneKind = it }
                             route = "lesson"
                         }, modifier = Modifier.testTag("AuralContinue")) { Text("Continue") }
                     }
@@ -253,7 +269,7 @@ internal fun AuralQuizScreen(
                     Text(selected.description, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     AuralFamilyProgress(selected.id, view.progress)
                     selected.variants.forEach { variant ->
-                        AuralProgressionCard(variant) { practice(selected.id, variant.id, "guided") }
+                        AuralProgressionCard(variant) { practice(selected.id, variant.id, "recognize") }
                     }
                 }
                 exercise != null -> {
@@ -267,12 +283,12 @@ internal fun AuralQuizScreen(
                     Text(presentation.prompt, style = MaterialTheme.typography.titleMedium)
                     if (exercise.responseType == "microphone") {
                         if (namedPractice) Box {
-                            OutlinedButton(onClick = { microphoneMenu = true }, enabled = !busy) { Text(auralMicrophoneKindLabel(practiceMicrophoneKind)) }
+                            OutlinedButton(onClick = { microphoneMenu = true }, enabled = !busy) { Text(if (practiceMicrophoneKind == "auto") "Auto · singing task" else auralMicrophoneKindLabel(practiceMicrophoneKind)) }
                             DropdownMenu(expanded = microphoneMenu, onDismissRequest = { microphoneMenu = false }) {
-                                AuralCurriculum.microphoneKinds.forEach { kind ->
-                                    DropdownMenuItem(text = { Text(auralMicrophoneKindLabel(kind)) }, onClick = {
+                                (listOf("auto") + AuralCurriculum.microphoneKinds).forEach { kind ->
+                                    DropdownMenuItem(text = { Text(if (kind == "auto") "Auto" else auralMicrophoneKindLabel(kind)) }, onClick = {
                                         practiceMicrophoneKind = kind; microphoneMenu = false
-                                        practice(exercise.familyId, exercise.variantId, exercise.skillId)
+                                        practice(exercise.familyId, exercise.variantId, "sing")
                                     })
                                 }
                             }
@@ -299,8 +315,8 @@ internal fun AuralQuizScreen(
                                     contentDescription = if (busy) "Stop" else if (view.heard) "Replay · practice" else "Listen", modifier = Modifier.size(36.dp))
                             }
                             Text(if (recording) "Recording…" else if (busy) "Listening…" else if (view.heard) "Replay" else "Listen", style = MaterialTheme.typography.labelLarge)
-                            if (!view.guidanceVisible) TextButton(onClick = { session.hint(); refresh() }, enabled = !busy,
-                                modifier = Modifier.testTag("AuralHint")) { Text("Hint") }
+                            if (!view.guidanceVisible) TextButton(onClick = { session.hint(); refresh(); listen() }, enabled = !busy,
+                                modifier = Modifier.testTag("AuralHint")) { Text("Guide") }
                         }
                     }
                     if (view.heard && !view.answered) {
@@ -341,8 +357,11 @@ internal fun AuralQuizScreen(
                             val responseReady = exercise.responseType == "guided" ||
                                 (exercise.responseType == "choice" && answer.size == 1) ||
                                 (exercise.responseType == "sequence" && answer.size == exercise.answer.degrees.size)
-                            Button(onClick = { session.submit(answer); refresh() }, enabled = !busy && responseReady,
-                                modifier = Modifier.fillMaxWidth().testTag("AuralSubmit")) { Text(if (exercise.responseType == "guided") "Got it" else "Check") }
+                            Button(onClick = {
+                                session.submit(answer); refresh()
+                                if (namedPractice && exercise.responseType == "guided") next()
+                            }, enabled = !busy && responseReady,
+                                modifier = Modifier.fillMaxWidth().testTag("AuralSubmit")) { Text(if (exercise.responseType == "guided") "Start practice" else "Check") }
                         }
                     }
                     if (view.feedback.isNotBlank()) Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceVariant) {
@@ -355,6 +374,7 @@ internal fun AuralQuizScreen(
                 }
             }
         }
+    }
     }
     if (showInfo) AuralInfoDialog(view,
         familyId = if (route == "progressions" || inLesson && namedPractice) selectedFamily else null,

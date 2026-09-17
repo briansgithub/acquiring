@@ -13,7 +13,7 @@ import kotlin.random.Random
 @Serializable data class AuralOption(val id: String, val label: String, val degrees: List<String>)
 @Serializable data class AuralAnswer(val degrees: List<String>, val optionId: String? = null, val targetMidis: List<Int> = emptyList())
 @Serializable data class AuralMicrophoneTask(val kind: String, val label: String, val eventIndices: List<Int>, val targetMidis: List<Int>, val scaleDegree: Int? = null)
-@Serializable data class AuralTarget(val familyId: String, val skillId: String, val support: Int = 2, val transfer: Boolean = false, val reason: String = "", val microphoneKind: String? = null, val variantId: String? = null)
+@Serializable data class AuralTarget(val familyId: String, val skillId: String, val support: Int = 2, val transfer: Boolean = false, val reason: String = "", val microphoneKind: String? = null, val variantId: String? = null, val instrumentOverride: String? = null, val octaveShift: Int = 0)
 @Serializable data class AuralProvenance(val generatorVersion: String, val seed: Long, val target: AuralTarget, val variantId: String, val keyTonic: String, val tempo: Int, val instrument: String, val inversions: List<Int>, val register: Int, val spreads: List<Boolean>, val contextDegrees: List<String>)
 @Serializable data class AuralExercise(
     val id: String, val familyId: String, val variantId: String, val skillId: String,
@@ -40,6 +40,8 @@ import kotlin.random.Random
     val support: Int, val transfer: Boolean, val assistance: List<String>, val plays: Int, val attempt: Int,
     val microphoneKind: String? = null,
     val requestedVariantId: String? = null,
+    val instrumentOverride: String? = null,
+    val octaveShift: Int = 0,
 )
 @Serializable data class AuralProgress(
     val version: Int = 1, val cells: Map<String, AuralCell> = emptyMap(), val attempts: Int = 0,
@@ -166,6 +168,8 @@ object AuralCurriculum {
         require(target.skillId in skillIds) { "Unknown aural skill" }
         require(target.support in 0..2) { "Support must be 0, 1, or 2" }
         require(target.microphoneKind == null || target.microphoneKind in microphoneKinds) { "Unknown microphone task" }
+        require(target.instrumentOverride == null || AudioEngine.Waveform.entries.any { it.name == target.instrumentOverride }) { "Unknown default instrument" }
+        require(target.octaveShift in 0..1) { "Unsupported quiz octave shift" }
         val rng = Random(seed)
         val support = target.support
         val transfer = support == 0 && target.transfer
@@ -175,8 +179,9 @@ object AuralCurriculum {
             requireNotNull(family.variants.find { it.id == target.variantId }) { "Unknown progression in this family" }
         val key = KeyInfo((if (support == 2) keys.take(3) else if (support == 1) keys.take(6) else keys).random(rng), "major")
         val tempo = (if (support == 2) listOf(66, 72) else if (support == 1) listOf(66, 72, 80) else if (transfer) listOf(60, 84, 96) else listOf(66, 72, 80, 88)).random(rng)
-        val instrument = (if (support == 2) listOf("sine") else if (support == 1) listOf("sine", "triangle") else listOf("sine", "triangle", "soft")).random(rng)
-        val register = if (support == 2) 0 else if (support == 1) listOf(0, 0, 1).random(rng) else listOf(-1, 0, 1).random(rng)
+        val generatedInstrument = (if (support == 2) listOf("sine") else if (support == 1) listOf("sine", "triangle") else listOf("sine", "triangle", "soft")).random(rng)
+        val instrument = target.instrumentOverride ?: generatedInstrument
+        val register = (if (support == 2) 0 else if (support == 1) listOf(0, 0, 1).random(rng) else listOf(-1, 0, 1).random(rng)) + target.octaveShift
         val inversions = selected.degrees.map { if (support == 2) 0 else if (support == 1) listOf(0, 0, 1).random(rng) else rng.nextInt(3) }
         val spreads = selected.degrees.map { support == 0 && (transfer || rng.nextDouble() > .65) }
         val events = selected.degrees.mapIndexed { i, d -> buildEvent(d, key, inversions[i], register, spreads[i]) }
@@ -195,7 +200,7 @@ object AuralCurriculum {
             val index = rng.nextInt(events.size)
             val indices = if (kind == "rootSequence") events.indices.toList() else listOf(index)
             val scaleDegree = listOf(1, 3, 5).random(rng)
-            val midis = if (kind == "scaleDegree") listOf(48 + MusicTheory.NOTE_TO_PC.getValue(key.tonic) + MusicTheory.SCALE_INTERVALS.getValue("major")[scaleDegree - 1]) else indices.map { if (kind == "bass") events[it].bassMidi else events[it].rootMidi }
+            val midis = if (kind == "scaleDegree") listOf(48 + target.octaveShift * 12 + MusicTheory.NOTE_TO_PC.getValue(key.tonic) + MusicTheory.SCALE_INTERVALS.getValue("major")[scaleDegree - 1]) else indices.map { if (kind == "bass") events[it].bassMidi else events[it].rootMidi }
             val label = when (kind) {
                 "rootSequence" -> "Sing the chord roots in order. Any comfortable octave is accepted."
                 "scaleDegree" -> "Sing scale degree $scaleDegree in the established key. Any comfortable octave is accepted."
@@ -205,8 +210,10 @@ object AuralCurriculum {
         } else null
         val answer = AuralAnswer(answerDegrees, options.find { it.degrees == selected.degrees }?.id, microphoneTask?.targetMidis.orEmpty())
         // Musical content rather than the seed determines familiarity, including across skill phases.
-        val fingerprint = "realization-" + listOf(family.id, selected.id, key.tonic, tempo, instrument, events.map { it.notes }, context.map { it.notes }).joinToString("|").hashCode().toUInt().toString(16)
-        val selectionIdentity = target.variantId?.let { ":selected-$it" }.orEmpty()
+        // Legacy identifiers and Settings names for the same sound share exposure history.
+        val soundIdentity = when (instrument) { "SINE" -> "sine"; "TRIANGLE" -> "triangle"; "WARM_ORGAN" -> "soft"; else -> instrument }
+        val fingerprint = "realization-" + listOf(family.id, selected.id, key.tonic, tempo, soundIdentity, events.map { it.notes }, context.map { it.notes }).joinToString("|").hashCode().toUInt().toString(16)
+        val selectionIdentity = target.variantId?.let { ":selected-$it" }.orEmpty() + target.instrumentOverride?.let { ":instrument-$it" }.orEmpty() + if (target.octaveShift == 0) "" else ":octave-${target.octaveShift}"
         val id = "aural-" + "$GENERATOR_VERSION:${family.id}:$skill:$support:$transfer:${microphoneTask?.kind}:$seed$selectionIdentity".hashCode().toUInt().toString(16)
         val prompt = when (skill) {
             "guided" -> "Listen for the changing feeling of tension and arrival."
@@ -260,7 +267,7 @@ object AuralCurriculum {
         val exposures = if (!exercise.exposureRegistered && p.exposures.none { it.fingerprint == exercise.fingerprint }) (p.exposures + AuralExposure(exercise.fingerprint, exercise.id, now)).takeLast(MAX_EXPOSURES) else p.exposures
         // Preserve the generator's input, including null (seed-selected subtype).
         // Substituting the chosen kind would consume the random stream differently on replay.
-        val record = AuralAttemptRecord(exercise.id, exercise.familyId, exercise.skillId, correct, independent, technicalUncertainty, now, exercise.seed, exercise.generatorVersion, exercise.fingerprint, exercise.keyTonic, exercise.variantId, exercise.support, exercise.transfer, assistance, plays, attempt, exercise.provenance.target.microphoneKind, exercise.provenance.target.variantId)
+        val record = AuralAttemptRecord(exercise.id, exercise.familyId, exercise.skillId, correct, independent, technicalUncertainty, now, exercise.seed, exercise.generatorVersion, exercise.fingerprint, exercise.keyTonic, exercise.variantId, exercise.support, exercise.transfer, assistance, plays, attempt, exercise.provenance.target.microphoneKind, exercise.provenance.target.variantId, exercise.provenance.target.instrumentOverride, exercise.provenance.target.octaveShift)
         return p.copy(cells = if (technicalUncertainty) p.cells else p.cells + ("${exercise.familyId}:${exercise.skillId}" to updated), attempts = p.attempts + if (technicalUncertainty) 0 else 1, recent = (p.recent + record).takeLast(MAX_RECENT), exposures = exposures)
     }
 }

@@ -35,8 +35,12 @@ internal fun auralPlaybackPlan(events: List<AuralEvent>, tempo: Double, sampleRa
         require(event.notes.size <= 16 && event.notes.all { it in 1..127 }) { "Invalid playback pitches." }
         val start = beat
         beat += event.beats
+        // Overlap adjacent chord attacks briefly, never a written rest or prompt end.
+        val next = events.getOrNull(index + 1)
+        val overlapBeats = if (next != null && next.notes.isNotEmpty())
+            minOf(0.020 * tempo / 60.0, next.beats / 2.0) else 0.0
         if (event.notes.isEmpty()) null else PlaybackTimelineEvent(
-            id = index.toLong(), startBeat = start, endBeat = start + event.beats * 0.9,
+            id = index.toLong(), startBeat = start, endBeat = beat + overlapBeats,
             layer = PlaybackAudioLayer.CHORD, fullMidiNotes = event.notes.toIntArray(), rootMidiNote = event.rootMidi
         )
     }
@@ -49,7 +53,8 @@ internal fun auralWaveform(instrument: String): AudioEngine.Waveform = when (ins
     "sine" -> AudioEngine.Waveform.SINE
     "triangle" -> AudioEngine.Waveform.TRIANGLE
     "soft" -> AudioEngine.Waveform.WARM_ORGAN
-    else -> throw IllegalArgumentException("Unknown practice instrument: $instrument")
+    else -> AudioEngine.Waveform.entries.firstOrNull { it.name == instrument }
+        ?: throw IllegalArgumentException("Unknown practice instrument: $instrument")
 }
 
 /** Small injectable output boundary; production uses the app's shared output session. */
