@@ -14,7 +14,7 @@ import kotlin.random.Random
 @Serializable data class AuralAnswer(val degrees: List<String>, val optionId: String? = null, val targetMidis: List<Int> = emptyList())
 @Serializable data class AuralMicrophoneTask(val kind: String, val label: String, val eventIndices: List<Int>, val targetMidis: List<Int>, val scaleDegree: Int? = null)
 @Serializable data class AuralTarget(val familyId: String, val skillId: String, val support: Int = 2, val transfer: Boolean = false, val reason: String = "", val microphoneKind: String? = null, val variantId: String? = null, val instrumentOverride: String? = null, val octaveShift: Int = 0)
-@Serializable data class AuralProvenance(val generatorVersion: String, val seed: Long, val target: AuralTarget, val variantId: String, val keyTonic: String, val tempo: Int, val instrument: String, val inversions: List<Int>, val register: Int, val spreads: List<Boolean>, val contextDegrees: List<String>)
+@Serializable data class AuralProvenance(val generatorVersion: String, val seed: Long, val target: AuralTarget, val variantId: String, val keyTonic: String, val tempo: Int, val instrument: String, val inversions: List<Int>, val register: Int, val spreads: List<Boolean>, val contextDegrees: List<String>, val corpus: AuralCorpusProvenance? = null, val exampleSettings: AuralExampleSettings? = null, val fallbackReason: String? = null)
 @Serializable data class AuralExercise(
     val id: String, val familyId: String, val variantId: String, val skillId: String,
     val support: Int, val transfer: Boolean, val seed: Long, val generatorVersion: String,
@@ -42,13 +42,14 @@ import kotlin.random.Random
     val requestedVariantId: String? = null,
     val instrumentOverride: String? = null,
     val octaveShift: Int = 0,
+    val corpus: AuralCorpusProvenance? = null,
 )
 @Serializable data class AuralProgress(
     val version: Int = 1, val cells: Map<String, AuralCell> = emptyMap(), val attempts: Int = 0,
     val recent: List<AuralAttemptRecord> = emptyList(), val exposures: List<AuralExposure> = emptyList(),
 )
 
-/** Pure curriculum and evidence engine. Song/example selection is a separate future adapter. */
+/** Pure curriculum and evidence engine. Song/example selection stays in a separate adapter. */
 object AuralCurriculum {
     const val GENERATOR_VERSION = "android-aural-1"
     private const val DAY = 86_400_000L
@@ -267,7 +268,7 @@ object AuralCurriculum {
         val exposures = if (!exercise.exposureRegistered && p.exposures.none { it.fingerprint == exercise.fingerprint }) (p.exposures + AuralExposure(exercise.fingerprint, exercise.id, now)).takeLast(MAX_EXPOSURES) else p.exposures
         // Preserve the generator's input, including null (seed-selected subtype).
         // Substituting the chosen kind would consume the random stream differently on replay.
-        val record = AuralAttemptRecord(exercise.id, exercise.familyId, exercise.skillId, correct, independent, technicalUncertainty, now, exercise.seed, exercise.generatorVersion, exercise.fingerprint, exercise.keyTonic, exercise.variantId, exercise.support, exercise.transfer, assistance, plays, attempt, exercise.provenance.target.microphoneKind, exercise.provenance.target.variantId, exercise.provenance.target.instrumentOverride, exercise.provenance.target.octaveShift)
+        val record = AuralAttemptRecord(exercise.id, exercise.familyId, exercise.skillId, correct, independent, technicalUncertainty, now, exercise.seed, exercise.generatorVersion, exercise.fingerprint, exercise.keyTonic, exercise.variantId, exercise.support, exercise.transfer, assistance, plays, attempt, exercise.provenance.target.microphoneKind, exercise.provenance.target.variantId, exercise.provenance.target.instrumentOverride, exercise.provenance.target.octaveShift, exercise.provenance.corpus)
         return p.copy(cells = if (technicalUncertainty) p.cells else p.cells + ("${exercise.familyId}:${exercise.skillId}" to updated), attempts = p.attempts + if (technicalUncertainty) 0 else 1, recent = (p.recent + record).takeLast(MAX_RECENT), exposures = exposures)
     }
 }

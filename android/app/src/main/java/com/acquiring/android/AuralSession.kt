@@ -11,7 +11,10 @@ internal data class AuralSavedSession(
     val progress: AuralProgress = AuralProgress(),
     val serial: Long = 0,
     val microphoneEnabled: Boolean = true,
-    val current: AuralExercise? = null
+    val current: AuralExercise? = null,
+    val exampleSettings: AuralExampleSettings = AuralExampleSettings(),
+    val inversionProgress: AuralProgress = AuralProgress(),
+    val sourceExposures: List<AuralSourceExposure> = emptyList(),
 )
 
 internal interface AuralPersistence {
@@ -41,7 +44,8 @@ internal data class AuralLessonView(
 internal class AuralSession(
     private val persistence: AuralPersistence,
     private val clock: () -> Long = System::currentTimeMillis,
-    private val seedFor: (Long) -> Long = { serial -> System.nanoTime() xor serial }
+    private val seedFor: (Long) -> Long = { serial -> System.nanoTime() xor serial },
+    private val exampleProvider: AuralExampleProvider? = null,
 ) {
     private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
     private var saved = AuralSavedSession()
@@ -54,6 +58,14 @@ internal class AuralSession(
     private var feedback = ""
     private var storageWarning = ""
     private var preferredInstrument: String? = null
+    private var favoriteSongIds = emptySet<String>()
+    val exampleSettings get() = saved.exampleSettings
+    val popularityAvailable get() = exampleProvider?.popularityAvailable == true
+    fun setFavorites(ids: Set<String>) { favoriteSongIds = ids }
+    fun setExampleSettings(settings: AuralExampleSettings) { saved = saved.copy(exampleSettings = settings); save() }
+    private fun progressFor(settings: AuralExampleSettings = saved.exampleSettings) = if (settings.distinguishInversions) saved.inversionProgress else saved.progress
+    private fun withProgress(progress: AuralProgress, settings: AuralExampleSettings = saved.exampleSettings) =
+        if (settings.distinguishInversions) saved.copy(inversionProgress = progress) else saved.copy(progress = progress)
 
     init {
         try {
@@ -65,15 +77,21 @@ internal class AuralSession(
                 val decoded = AuralSavedSession(
                     progress = envelope["progress"]?.let { json.decodeFromJsonElement<AuralProgress>(it) } ?: AuralProgress(),
                     serial = (envelope["serial"]?.jsonPrimitive?.longOrNull ?: 0L).coerceAtLeast(0L),
-                    microphoneEnabled = envelope["microphoneEnabled"]?.jsonPrimitive?.booleanOrNull != false
+                    microphoneEnabled = envelope["microphoneEnabled"]?.jsonPrimitive?.booleanOrNull != false,
+                    exampleSettings = envelope["exampleSettings"]?.let { json.decodeFromJsonElement<AuralExampleSettings>(it) } ?: AuralExampleSettings(),
+                    inversionProgress = envelope["inversionProgress"]?.let { AuralCurriculum.normalize(json.decodeFromJsonElement<AuralProgress>(it)) } ?: AuralProgress(),
+                    sourceExposures = envelope["sourceExposures"]?.let { json.decodeFromJsonElement<List<AuralSourceExposure>>(it) }?.filter { it.at >= 0 && it.sourceId.length in 1..1000 } ?: emptyList(),
                 )
                 // Validate the saved target via the generator. Never trust arbitrary saved notes.
                 val current = try {
                     envelope["current"]?.takeUnless { it is JsonNull }?.let { element ->
                         val old = json.decodeFromJsonElement<AuralExercise>(element)
-                        val regenerated = AuralCurriculum.generate(old.provenance.target, old.seed)
+                        val base = AuralCurriculum.generate(old.provenance.target, old.seed)
+                        val regenerated = old.provenance.corpus?.let { auralWithCorpus(base, it) } ?: base
                         require(old.generatorVersion == regenerated.generatorVersion)
-                        regenerated.copy(previouslyExposed = true, exposureRegistered = true)
+                        regenerated.copy(previouslyExposed = true, exposureRegistered = true,
+                            provenance = regenerated.provenance.copy(exampleSettings = old.provenance.corpus?.settings ?: old.provenance.exampleSettings,
+                                fallbackReason = old.provenance.fallbackReason))
                     }
                 } catch (_: Exception) {
                     storageWarning = "The unfinished example could not be restored. Your learning progress has been kept."
@@ -94,7 +112,7 @@ internal class AuralSession(
 
     fun view(): AuralLessonView {
         val ex = saved.current
-        return AuralLessonView(ex, saved.progress, heard, answered, guidanceVisible,
+        return AuralLessonView(ex, progressFor(ex?.provenance?.exampleSettings ?: saved.exampleSettings), heard, answered, guidanceVisible,
             ex == null || ex.support > 0 || ex.provenance.target.variantId != null || ex.previouslyExposed || assistance.isNotEmpty() || plays > 1 || attempts > 1,
             saved.microphoneEnabled, feedback, storageWarning)
     }
@@ -110,25 +128,38 @@ internal class AuralSession(
     fun next() {
         val serial = if (saved.serial == Long.MAX_VALUE) 1 else saved.serial + 1
         val seed = seedFor(serial)
-        val target = AuralCurriculum.selectTarget(saved.progress, seed, clock(), saved.microphoneEnabled)
+        val target = AuralCurriculum.selectTarget(progressFor(), seed, clock(), saved.microphoneEnabled)
         start(target, seed, serial)
     }
 
     fun practice(familyId: String, skillId: String, microphoneKind: String? = null, variantId: String? = null) {
         val serial = if (saved.serial == Long.MAX_VALUE) 1 else saved.serial + 1
-        val support = if (variantId == null) 2 else AuralCurriculum.cell(saved.progress, familyId, skillId).support
+        val support = if (variantId == null) 2 else AuralCurriculum.cell(progressFor(), familyId, skillId).support
         start(AuralTarget(familyId, skillId, support = support, microphoneKind = microphoneKind, variantId = variantId), seedFor(serial), serial)
     }
 
     fun practiceMode(familyId: String, variantId: String, modeId: String, microphoneKind: String? = null) {
-        val skill = AuralPracticeModes.selectSkill(saved.progress, familyId, variantId, modeId)
-        val kind = if (skill == "reproduce") microphoneKind ?: AuralPracticeModes.selectMicrophoneKind(saved.progress, familyId) else null
+        val skill = AuralPracticeModes.selectSkill(progressFor(), familyId, variantId, modeId)
+        val kind = if (skill == "reproduce") microphoneKind ?: AuralPracticeModes.selectMicrophoneKind(progressFor(), familyId) else null
         practice(familyId, skill, kind, variantId)
     }
 
     private fun start(target: AuralTarget, seed: Long, serial: Long) {
-        val (progress, exercise) = AuralCurriculum.beginExercise(saved.progress, AuralCurriculum.generate(target.copy(instrumentOverride = preferredInstrument, octaveShift = 1), seed), clock())
-        saved = saved.copy(serial = serial, progress = progress, current = exercise)
+        val settings = saved.exampleSettings.copy(popularity = saved.exampleSettings.popularity && popularityAvailable)
+        val base = AuralCurriculum.generate(target.copy(instrumentOverride = preferredInstrument, octaveShift = 1), seed)
+        val prior = saved.current
+        val source = try { exampleProvider?.example(base, settings, AuralSelectionContext(
+            recentSongIds = saved.sourceExposures.asReversed().map { it.songId }.distinct().take(10),
+            heardSourceIds = saved.sourceExposures.map { it.sourceId }.toSet(), favoriteSongIds = favoriteSongIds,
+            assessment = target.support == 0 && target.variantId == null,
+            supportedOccurrenceId = prior?.provenance?.corpus?.takeIf { target.support > 0 && prior.familyId == target.familyId && prior.variantId == base.variantId && prior.skillId != target.skillId }?.passage?.occurrenceId,
+        )) } catch (_: Exception) { null }
+        val generated = try { source?.let { auralWithCorpus(base, it) } } catch (_: Exception) { null }
+        val selected = (generated ?: base).let { it.copy(provenance = it.provenance.copy(exampleSettings = settings,
+            fallbackReason = if (generated == null) "No eligible corpus passage; generated example for the same target." else null)) }
+        val (progress, exercise) = if (generated == null) AuralCurriculum.beginExercise(progressFor(), selected, clock())
+            else progressFor() to selected.copy(exposureRegistered = true)
+        saved = withProgress(progress).copy(serial = serial, current = exercise)
         assistance = emptyList(); plays = 0; attempts = 0; heard = false; answered = false
         guidanceVisible = exercise.support == 2
         feedback = ""
@@ -140,10 +171,14 @@ internal class AuralSession(
         preferredInstrument = instrument.name
         val old = saved.current ?: return
         if (answered || old.instrument == instrument.name && old.provenance.target.octaveShift == 1) return
-        val replacement = AuralCurriculum.generate(old.provenance.target.copy(instrumentOverride = instrument.name, octaveShift = 1), old.seed)
-        val (progress, exercise) = AuralCurriculum.beginExercise(saved.progress, replacement, clock())
+        val base = AuralCurriculum.generate(old.provenance.target.copy(instrumentOverride = instrument.name, octaveShift = 1), old.seed)
+        val replacement = old.provenance.corpus?.let { auralWithCorpus(base, it.copy(semitoneShift = 12)) } ?: base
+        val settings = old.provenance.exampleSettings ?: saved.exampleSettings
+        val (progress, updated) = if (old.provenance.corpus == null) AuralCurriculum.beginExercise(progressFor(settings), replacement, clock())
+            else progressFor(settings) to replacement.copy(previouslyExposed = old.previouslyExposed, exposureRegistered = true)
+        val exercise = updated.copy(provenance = updated.provenance.copy(exampleSettings = old.provenance.exampleSettings, fallbackReason = old.provenance.fallbackReason))
         if (heard || plays > 0) assistance = assistance + "instrument-change"
-        saved = saved.copy(progress = progress, current = exercise)
+        saved = withProgress(progress, settings).copy(current = exercise)
         heard = false
         feedback = ""
         save()
@@ -151,9 +186,17 @@ internal class AuralSession(
 
     fun played() {
         if (saved.current == null || answered) return
+        listeningStarted()
         if (plays > 0) assistance = assistance + "replay"
         plays += 1; heard = true
         feedback = ""
+    }
+
+    /** Record actual exposure as sound starts, including playback interrupted before completion. */
+    fun listeningStarted() {
+        val passage = saved.current?.provenance?.corpus?.passage ?: return
+        saved = saved.copy(sourceExposures = saved.sourceExposures.filter { it.sourceId != passage.sourceId } + AuralSourceExposure(passage.sourceId, passage.songId, clock()))
+        save()
     }
 
     fun hint() {
@@ -182,8 +225,9 @@ internal class AuralSession(
         if (!heard || answered) return
         attempts += 1
         val independent = !view().supported && exercise.responseType != "guided"
-        saved = saved.copy(progress = AuralCurriculum.record(saved.progress, exercise, correct,
-            assistance = assistance, plays = plays, attempt = attempts, now = clock()))
+        val settings = exercise.provenance.exampleSettings ?: saved.exampleSettings
+        saved = withProgress(AuralCurriculum.record(progressFor(settings), exercise, correct,
+            assistance = assistance, plays = plays, attempt = attempts, now = clock()), settings)
         answered = true; guidanceVisible = true
         feedback = when {
             exercise.responseType == "guided" -> "Listening complete."

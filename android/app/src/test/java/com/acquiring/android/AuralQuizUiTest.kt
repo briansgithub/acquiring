@@ -25,6 +25,41 @@ class AuralQuizUiTest {
         override fun write(value: String): Boolean { raw = value; return true }
     }
 
+    @Test fun fourExamplePreferencesApplyNextExerciseAndUnavailablePopularityIsDisabled() {
+        val session = AuralSession(Store(), seedFor = { it })
+        session.practice("dominant-return", "recall", variantId = "departure")
+        val original = session.view().exercise
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.onNodeWithTag("AuralExampleSettings").performClick()
+        compose.onAllNodes(isToggleable()).assertCountEquals(4)
+        compose.onNodeWithTag("AuralPopularity").assertIsNotEnabled().assertIsOff()
+        compose.onNodeWithTag("AuralVariety").assertIsOn().performClick()
+        compose.onNodeWithTag("AuralFavorites").assertIsOff().performClick()
+        compose.onNodeWithTag("AuralInversions").assertIsOff().performClick()
+        assertFalse(session.exampleSettings.variety)
+        assertTrue(session.exampleSettings.favorites)
+        assertTrue(session.exampleSettings.distinguishInversions)
+        assertEquals(original!!.events, session.view().exercise!!.events)
+        compose.onNodeWithTag("AuralExampleSettingsBack").performClick()
+        compose.onNodeWithTag("AuralQuiz").assertExists()
+    }
+
+    @Test fun songAndSectionMetadataStayOutOfAnswerSemanticsUntilGraded() {
+        val provider = object : AuralExampleProvider {
+            override fun example(base: AuralExercise, settings: AuralExampleSettings, context: AuralSelectionContext) = corpusFixture(base, settings)
+        }
+        val session = AuralSession(Store(), seedFor = { it }, exampleProvider = provider)
+        session.practice("dominant-return", "recall", variantId = "departure")
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.onNodeWithTag("AuralContinue").performClick()
+        compose.onNodeWithTag("AuralSource").assertDoesNotExist()
+        compose.onNodeWithText("Hidden song", substring = true).assertDoesNotExist()
+        compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
+        session.view().exercise!!.answer.degrees.forEach { compose.onNodeWithTag("AuralDegree-$it").performScrollTo().performClick() }
+        compose.onNodeWithTag("AuralSubmit").performScrollTo().performClick()
+        compose.onNodeWithTag("AuralSource").performScrollTo().assertTextContains("Hidden song", substring = true)
+    }
+
     @Test fun threeTabsReplaceSevenAndIntroductionLeadsStraightIntoRecognition() {
         val session = AuralSession(Store(), seedFor = { it })
         compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
