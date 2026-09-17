@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pan-tool style pointer for the press-and-hold row. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M23,5.5V20c0,2.2 -1.8,4 -4,4h-7.3c-1.08,0 -2.1,-0.43 -2.85,-1.19L1,14.83c0,-0 -0.01,-0.01 0,-0.01 -0.51,-0.54 -0.48,-1.39 0.08,-1.89 0.54,-0.48 1.37,-0.47 1.89,0.06l4.03,4.23V4.5c0,-0.83 0.67,-1.5 1.5,-1.5S10,3.67 10,4.5v6h1V1.5C11,0.67 11.67,0 12.5,0S14,0.67 14,1.5V10.5h1V2.5C15,1.67 15.67,1 16.5,1S18,1.67 18,2.5v8h1V5.5C19,4.67 19.67,4 20.5,4S22,4.67 22,5.5 23,5.5 23,5.5z" />
+</vector>

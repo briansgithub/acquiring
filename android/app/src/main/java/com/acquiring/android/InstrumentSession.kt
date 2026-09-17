@@ -27,7 +27,7 @@ private class SharedPreferencesInstrumentStore(context: Context) : InstrumentPre
 
 /**
  * Owns the saved default and the transient instrument for one application session.
- * Quiz choices only change [sessionInstrument]; Settings changes both values.
+ * Playback choices only change [sessionInstrument]; Settings changes both values.
  */
 internal class InstrumentSessionOwner(
     private val store: InstrumentPreferenceStore,

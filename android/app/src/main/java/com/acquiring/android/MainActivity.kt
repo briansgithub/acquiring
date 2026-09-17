@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         AppAudioOutput.initialize(this)
-        QuizPlaybackController.initialize(this)
+        PlaybackController.initialize(this)
         AppInstrumentSession.initialize(this)
         TimelineFrameRateStore.initialize(this)
         TimelineFrameRateStore.applyToWindow(window)
@@ -196,7 +196,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onPause() {
-        QuizPlaybackController.pauseForAppInactive()
+        PlaybackController.pauseForAppInactive()
         AudioEngine.stopAllPlayback()
         super.onPause()
     }
@@ -237,15 +237,20 @@ internal fun MainScreen(
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
     var isShowingAllSongs by rememberSaveable { mutableStateOf(false) }
     var isShowingSettings by rememberSaveable { mutableStateOf(false) }
+    var isShowingAuralQuiz by rememberSaveable { mutableStateOf(false) }
+    // When Playback was opened from an Aural Quiz example, Back returns to the
+    // existing quiz state rather than the Library. The passage also marks the
+    // exact source range inside the ordinary Playback screen.
+    var auralPlaybackPassage by remember { mutableStateOf<AuralSourcePassage?>(null) }
     var timelineFrameRate by remember {
         mutableStateOf(TimelineFrameRateStore.preference)
     }
-    var isShowingQuiz by remember { mutableStateOf(false) }
+    var isShowingPlayback by remember { mutableStateOf(false) }
     var songParentPage by remember { mutableStateOf(SongParentPage.LIBRARY) }
     var showLetterNames by remember { mutableStateOf(false) }
-    var quizTempoPercent by remember(selectedSong?.slug) { mutableStateOf(100f) }
-    var quizArpeggioOptionIndex by remember(selectedSong?.slug) {
-        mutableStateOf(DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX)
+    var playbackTempoPercent by remember(selectedSong?.slug) { mutableStateOf(100f) }
+    var playbackArpeggioOptionIndex by remember(selectedSong?.slug) {
+        mutableStateOf(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX)
     }
     var isShowingRecent by remember { mutableStateOf(false) }
     var isShowingRecentArtists by remember { mutableStateOf(false) }
@@ -259,7 +264,7 @@ internal fun MainScreen(
     var singingCollapseTick by remember { mutableStateOf(0) }
     var stopPersistentTick by remember { mutableStateOf(0) }
     var isPersistentMonitoring by remember { mutableStateOf(false) }
-    var quizWasShown by remember { mutableStateOf(false) }
+    var playbackWasShown by remember { mutableStateOf(false) }
     val octaveOffset = songOctaveOffsetViewModel.octaveOffset
     
     var titleOffset by remember { mutableStateOf(0) }
@@ -329,8 +334,8 @@ internal fun MainScreen(
     val microphonePitchCoordinator = remember(context.applicationContext) {
         MicrophonePitchCoordinator(MicrophonePitchTracker(context.applicationContext))
     }
-    val persistentQuizPitchSource = remember(microphonePitchCoordinator) {
-        microphonePitchCoordinator.sourceFor(MicrophonePitchOwner.QUIZ_PERSISTENT)
+    val persistentPlaybackPitchSource = remember(microphonePitchCoordinator) {
+        microphonePitchCoordinator.sourceFor(MicrophonePitchOwner.PLAYBACK_PERSISTENT)
     }
     val singingToolPitchSource = remember(microphonePitchCoordinator) {
         microphonePitchCoordinator.sourceFor(MicrophonePitchOwner.SINGING_TOOL)
@@ -367,10 +372,10 @@ internal fun MainScreen(
     }
     val json = remember { Json { ignoreUnknownKeys = true } }
     val singingSessionKey = selectedSong?.slug?.let { slug -> "$slug:${selectedSectionId.orEmpty()}" }
-    LaunchedEffect(isShowingQuiz) {
-        if (isShowingQuiz) {
-            quizWasShown = true
-        } else if (quizWasShown) {
+    LaunchedEffect(isShowingPlayback) {
+        if (isShowingPlayback) {
+            playbackWasShown = true
+        } else if (playbackWasShown) {
             singingDepartureTick++
             stopPersistentTick++
         }
@@ -460,18 +465,34 @@ internal fun MainScreen(
     val returnToParent = {
         browseOpenJob?.cancel()
         browseOpenJob = null
-        if (isShowingSettings) {
+        if (auralPlaybackPassage != null && selectedSongSections != null) {
+            PlaybackController.pause()
+            AudioEngine.stopAllPlayback()
+            persistentPlaybackPitchSource.stop()
+            singingToolPitchSource.stop()
+            singingDepartureTick++
+            singingCollapseTick++
+            songOctaveOffsetViewModel.clearSession()
+            selectedSongSections = null
+            selectedSong = null
+            selectedSectionId = null
+            isShowingPlayback = false
+            auralPlaybackPassage = null
+            isShowingAuralQuiz = true
+        } else if (isShowingAuralQuiz) {
+            isShowingAuralQuiz = false
+        } else if (isShowingSettings) {
             isShowingSettings = false
         } else if (selectedArtistSongs != null && selectedSongSections == null) {
             selectedArtistName = null
             selectedArtistSongs = null
-        } else if (selectedSongSections != null && !isShowingQuiz) {
-            isShowingQuiz = true
+        } else if (selectedSongSections != null && !isShowingPlayback) {
+            isShowingPlayback = true
         } else if (selectedSongSections != null) {
             songOctaveOffsetViewModel.clearSession()
             selectedSongSections = null
             selectedSong = null
-            isShowingQuiz = false
+            isShowingPlayback = false
             if (songParentPage == SongParentPage.LIBRARY) {
                 selectedArtistName = null
                 selectedArtistSongs = null
@@ -486,7 +507,7 @@ internal fun MainScreen(
 
     // Match the visible Back control while a selected song or artist is open.
     BackHandler(
-        enabled = isShowingSettings || selectedSongSections != null || selectedArtistSongs != null || isShowingAllSongs
+        enabled = isShowingAuralQuiz || isShowingSettings || selectedSongSections != null || selectedArtistSongs != null || isShowingAllSongs
     ) {
         returnToParent()
     }
@@ -577,7 +598,7 @@ internal fun MainScreen(
                     if (selectedSong?.slug != song.slug) return@launch
                     selectedSongSections = sections
                     selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
-                    isShowingQuiz = true
+                    isShowingPlayback = true
                 } catch (cancellation: CancellationException) {
                     throw cancellation
                 } catch (e: Exception) {
@@ -604,7 +625,7 @@ internal fun MainScreen(
                             selectedSong = harvestedSong
                             selectedSongSections = sections
                             selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
-                            isShowingQuiz = true
+                            isShowingPlayback = true
                             harvestStatus = "Loaded chords for ${song.title ?: song.slug}!"
                         } catch (cancellation: CancellationException) {
                             throw cancellation
@@ -644,6 +665,49 @@ internal fun MainScreen(
         }
     }
 
+    /** Uses the normal song blob and normal Playback state, never the compact quiz cache. */
+    val openAuralSourcePlayback: suspend (AuralSourcePassage, Boolean) -> Boolean = openAuralSourcePlayback@ { passage, _ ->
+        val song = withContext(Dispatchers.IO) { activeDb.songDao().getSongBySlug(passage.songId) }
+            ?: return@openAuralSourcePlayback false
+        val blob = song.dataBlob ?: return@openAuralSourcePlayback false
+        val sections = try { decodeSongSections(blob) } catch (cancelled: CancellationException) { throw cancelled } catch (_: Exception) { return@openAuralSourcePlayback false }
+        val sectionId = sections[passage.sectionId]?.let { passage.sectionId }
+            ?: sections.entries.firstOrNull { (_, section) -> section.safeSectionName == passage.sectionName }?.key
+            ?: return@openAuralSourcePlayback false
+        songOctaveOffsetViewModel.clearSession()
+        HistoryManager.addSong(context, song.slug)
+        HistoryManager.addArtist(context, song.artist)
+        selectedSong = song
+        selectedSongSections = sections
+        selectedSectionId = sectionId
+        auralPlaybackPassage = passage
+        isShowingPlayback = true
+        isShowingAuralQuiz = false
+        true
+    }
+
+    val settingsContent: @Composable (() -> Unit) -> Unit = { closeSettings ->
+        AppSettingsScreen(
+            defaultInstrument = defaultInstrument,
+            onDefaultInstrumentChange = AppInstrumentSession::selectAsDefault,
+            catalogStatus = catalogStatus,
+            catalogFreshness = CatalogAutoInstall.lastRefreshLabel(context),
+            onUpdateCatalog = downloadCatalog,
+            playUpdateStatus = playUpdateStatus,
+            onOpenPlayUpdate = {
+                openUpdateDistribution(context)
+            },
+            timelineFrameRate = timelineFrameRate,
+            onTimelineFrameRateChange = {
+                TimelineFrameRateStore.select(context, it)
+                timelineFrameRate = it
+            },
+            onShareAudioDiagnostics = { AudioDiagnostics.share(context) },
+            onResetAudioEngine = { AudioDiagnostics.resetEngine() },
+            onBack = closeSettings
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
         // Invisible target that owns the default initial focus on launch, so the
         // search field starts genuinely unselected instead of grabbing focus itself.
@@ -658,29 +722,16 @@ internal fun MainScreen(
             modifier = Modifier
                 .weight(1f)
                 .then(
-                    if (isShowingQuiz) Modifier else Modifier.padding(16.dp)
+                    if (isShowingPlayback || isShowingAuralQuiz) Modifier else Modifier.padding(16.dp)
                 )
         ) {
-            if (isShowingSettings) {
-                AppSettingsScreen(
-                    defaultInstrument = defaultInstrument,
-                    onDefaultInstrumentChange = AppInstrumentSession::selectAsDefault,
-                    catalogStatus = catalogStatus,
-                    catalogFreshness = CatalogAutoInstall.lastRefreshLabel(context),
-                    onUpdateCatalog = downloadCatalog,
-                    playUpdateStatus = playUpdateStatus,
-                    onOpenPlayUpdate = {
-                        openUpdateDistribution(context)
-                    },
-                    timelineFrameRate = timelineFrameRate,
-                    onTimelineFrameRateChange = {
-                        TimelineFrameRateStore.select(context, it)
-                        timelineFrameRate = it
-                    },
-                    onShareAudioDiagnostics = { AudioDiagnostics.share(context) },
-                    onResetAudioEngine = { AudioDiagnostics.resetEngine() },
-                    onBack = { isShowingSettings = false }
-                )
+            if (isShowingAuralQuiz) {
+                AuralQuizScreen(onBack = { isShowingAuralQuiz = false },
+                    defaultInstrument = defaultInstrument, settingsContent = settingsContent,
+                    loadFavoriteSongs = { playlistDao.getSlugsIn(PlaylistIds.FAVORITES).toSet() },
+                    openFullPlayback = openAuralSourcePlayback)
+            } else if (isShowingSettings) {
+                settingsContent { isShowingSettings = false }
             } else if (selectedSongSections == null) {
                 if (selectedArtistSongs != null) {
                     ArtistSongsView(
@@ -711,23 +762,6 @@ internal fun MainScreen(
                         )
                     }
                 } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(
-                            onClick = { isShowingSettings = true },
-                            modifier = Modifier.semantics { contentDescription = "Open settings" }
-                        ) {
-                            Text(
-                                if (playUpdateStatus == PlayUpdateStatus.UPDATE_AVAILABLE) {
-                                    "Settings •"
-                                } else {
-                                    "Settings"
-                                }
-                            )
-                        }
-                    }
                     LibraryView(
                     activeDb = activeDb,
                     playlistDao = playlistDao,
@@ -904,11 +938,22 @@ internal fun MainScreen(
                     },
                     searchResult = searchResult,
                     allSongs = allSongs,
-                    onSongClick = openBrowseSong
+                    onSongClick = openBrowseSong,
+                    onOpenSettings = { isShowingSettings = true },
+                    onOpenAuralQuiz = {
+                        PlaybackController.pause()
+                        AudioEngine.stopAllPlayback()
+                        persistentPlaybackPitchSource.stop()
+                        singingToolPitchSource.stop()
+                        singingDepartureTick++
+                        singingCollapseTick++
+                        isShowingAuralQuiz = true
+                    },
+                    settingsUpdateAvailable = playUpdateStatus == PlayUpdateStatus.UPDATE_AVAILABLE
                 )
                 }
-            } else if (isShowingQuiz) {
-                QuizDestination(
+            } else if (isShowingPlayback) {
+                PlaybackDestination(
                     song = selectedSong!!,
                     sections = selectedSongSections!!,
                     selectedSectionId = selectedSectionId,
@@ -918,10 +963,10 @@ internal fun MainScreen(
                         AppInstrumentSession.selectForSession(it)
                     },
                     globalTranspose = globalTranspose,
-                    quizTempoPercent = quizTempoPercent,
-                    onQuizTempoPercentChange = { quizTempoPercent = it },
-                    quizArpeggioOptionIndex = quizArpeggioOptionIndex,
-                    onQuizArpeggioOptionIndexChange = { quizArpeggioOptionIndex = it },
+                    playbackTempoPercent = playbackTempoPercent,
+                    onPlaybackTempoPercentChange = { playbackTempoPercent = it },
+                    playbackArpeggioOptionIndex = playbackArpeggioOptionIndex,
+                    onPlaybackArpeggioOptionIndexChange = { playbackArpeggioOptionIndex = it },
                     onTransposeChange = {
                         globalTranspose = it
                         AudioEngine.globalTranspose = it
@@ -936,16 +981,16 @@ internal fun MainScreen(
                             selectedArtistSongs = results
                             selectedSongSections = null
                             selectedSong = null
-                            isShowingQuiz = false
+                            isShowingPlayback = false
                         }
                     },
-                    onShowSongInfo = { isShowingQuiz = false },
+                    onShowSongInfo = { isShowingPlayback = false },
                     onSingingTargetsRequested = { request ->
                         singingTargetRequestId++
                         singingTargetRequest = request.copy(requestId = singingTargetRequestId)
                     },
                     octaveOffset = octaveOffset,
-                    persistentPitchSource = persistentQuizPitchSource,
+                    persistentPitchSource = persistentPlaybackPitchSource,
                     isFavorite = isSelectedSongFavorite,
                     onToggleFavorite = toggleSelectedSongFavorite,
                     singingDockExpanded = singingDockExpanded,
@@ -954,7 +999,10 @@ internal fun MainScreen(
                     onPersistentMonitoringChange = { active ->
                         isPersistentMonitoring = active
                     },
-                    onRequestCollapseDock = { singingCollapseTick++ }
+                    onRequestCollapseDock = { singingCollapseTick++ },
+                    initialPassage = auralPlaybackPassage
+                        ?.takeIf { passage -> selectedSectionId == passage.sectionId || selectedSongSections!![selectedSectionId]?.safeSectionName == passage.sectionName }
+                        ?.let { it.startBeat to it.endBeat }
                 )
             } else {
                 SongDetailView(
@@ -971,7 +1019,7 @@ internal fun MainScreen(
 
         }
 
-        HummingIntervalPopup(
+        if (!isShowingAuralQuiz) HummingIntervalPopup(
             sectionSessionKey = singingSessionKey,
             targetRequest = singingTargetRequest,
             globalTranspose = globalTranspose,

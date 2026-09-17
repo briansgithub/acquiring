@@ -129,7 +129,7 @@ internal fun ionianContextPreviewAudioNote(
 ): Int? = ionianContextPreviewAudioNote(SpelledPitch.spellRelative(rootPitch, midiNote), ionianKey, referenceOctave)
 
 /**
- * Returns the one-based staff step used by the quiz melody lane after rotating
+ * Returns the one-based staff step used by the playback melody lane after rotating
  * the written source degree into the relative-major context.
  */
 internal fun relativeIonianStaffDegree(

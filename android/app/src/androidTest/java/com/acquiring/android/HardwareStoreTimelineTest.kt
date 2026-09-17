@@ -23,7 +23,7 @@ import org.junit.runner.RunWith
 /**
  * Regression coverage for the locally stored Weird Al Yankovic song.  This
  * deliberately uses the target application's Room database, so it verifies
- * the same record the Quiz screen plays on a physical device.
+ * the same record the Playback screen plays on a physical device.
  */
 @RunWith(AndroidJUnit4::class)
 class HardwareStoreTimelineTest {
