@@ -176,9 +176,11 @@ internal fun AuralQuizScreen(
         refresh()
         activityJob = scope.launch {
             try {
-                session.listeningStarted()
                 if (playExample != null) playExample(exercise)
-                else audio.play(auralPromptEvents(exercise), exercise.tempo, exercise.instrument)
+                else audio.play(auralPromptEvents(exercise), exercise.tempo, exercise.instrument,
+                    exposureStartBeat = exercise.context.sumOf { it.beats } + 0.75) {
+                    if (token == generation) session.listeningStarted()
+                }
                 if (token == generation) session.played()
             } catch (cancelled: CancellationException) {
                 if (token == generation) session.interrupted()
