@@ -7,25 +7,37 @@ import { exportAnalysis, exportRuntime, familyMapping } from './export.mjs';
 import { loadPopularityArtifact } from './popularity-cli.mjs';
 
 export const BUILD_VERSION = 'aural-build-1';
+function publishPointer(output, snapshotId, limit) {
+  const name = limit ? `latest-sample-${limit}.json` : 'latest.json';
+  const pointer = path.join(output, `${name}.${process.pid}.tmp`);
+  fs.writeFileSync(pointer, stableJson({ snapshotId, path: `snapshots/${snapshotId}`, runtime: `snapshots/${snapshotId}/runtime.db` }));
+  fs.renameSync(pointer, path.join(output, name));
+}
 export async function buildCorpus(options) {
   const started = performance.now(), log = options.log || (() => {});
   const { discoverPatterns, getPattern, occurrences } = await import('./miner.mjs');
   const { selectPatterns, calculateCoverage } = await import('./coverage.mjs');
   const config = { minSongs: options.minSongs ?? 2, structureMinSongs: options.structureMinSongs ?? 5, targetCoverage: options.targetCoverage ?? 0.8 };
-  if (!Number.isInteger(config.minSongs) || config.minSongs < 2 || !Number.isInteger(config.structureMinSongs) || config.structureMinSongs < 2 || config.targetCoverage <= 0 || config.targetCoverage > 1) throw Error('Invalid corpus configuration');
+  if (!Number.isInteger(config.minSongs) || config.minSongs < 2 || !Number.isInteger(config.structureMinSongs) || config.structureMinSongs < 2 || !Number.isFinite(config.targetCoverage) || config.targetCoverage <= 0 || config.targetCoverage > 1) throw Error('Invalid corpus configuration');
   fs.mkdirSync(options.output, { recursive: true });
   const source = updateNormalizedCache({ ...options, normalizedFile: options.normalizedFile || path.join(options.output, options.limit ? `normalized-${options.limit}.db` : 'normalized.db'), log });
   const normalized = readNormalizedCache(source.normalizedFile);
-  let popularity = [];
+  let popularity = [], popularitySnapshotId = 'unavailable', popularityProvenance = null;
   if (options.popularityFile) {
-    popularity = loadPopularityArtifact(options.popularityFile).songs;
+    const artifact = loadPopularityArtifact(options.popularityFile);
+    popularity = artifact.songs;
+    popularitySnapshotId = artifact.snapshotId;
+    popularityProvenance = artifact.manifest || artifact.provenance;
   }
-  const codeFingerprint = hash(['common.mjs','normalize.mjs','source.mjs','miner.mjs','coverage.mjs','export.mjs','build.mjs'].map(name => [name, hashFile(new URL(name, import.meta.url))]));
-  const snapshotId = hash({ build: BUILD_VERSION, codeFingerprint, normalization: NORMALIZER_VERSION, mapping: familyMapping, source: source.sourceHash, config, scope: source.scope, popularity });
+  const codeFingerprint = hash(['common.mjs','normalize.mjs','source.mjs','miner.mjs','coverage.mjs','export.mjs','build.mjs', '../../contracts/aural-corpus/schema.sql'].map(name => [name, hashFile(new URL(name, import.meta.url))]));
+  const catalogHash = hash(source.songs), rejectedSourceHash = hash(source.diagnostics);
+  const snapshotId = hash({ build: BUILD_VERSION, codeFingerprint, normalization: source.normalizationFingerprint, mapping: familyMapping,
+    source: source.sourceHash, catalogHash, rejectedSourceHash, config, scope: source.scope, popularity, popularitySnapshotId });
   const destination = path.join(options.output, 'snapshots', snapshotId);
   if (fs.existsSync(path.join(destination, 'manifest.json'))) {
     const manifest = JSON.parse(fs.readFileSync(path.join(destination, 'manifest.json'), 'utf8'));
     for (const [name, checksum] of Object.entries(manifest.files)) if (hashFile(path.join(destination, name)) !== checksum) throw Error(`Snapshot checksum mismatch: ${name}`);
+    publishPointer(options.output, snapshotId, options.limit);
     return { snapshotId, destination, reusedSnapshot: true, sourceStats: source.stats };
   }
   const stage = path.join(options.output, 'snapshots', `.build-${snapshotId}-${process.pid}`);
@@ -33,31 +45,37 @@ export async function buildCorpus(options) {
   log({ stage: 'discover', runs: normalized.runs.length, tokens: normalized.runs.reduce((n, r) => n + r.tokens.length, 0) });
   const index = discoverPatterns(normalized.runs, { ...config, normalizationVersion: NORMALIZER_VERSION });
   log({ stage: 'select', candidates: index.candidates.length });
-  const selection = selectPatterns(index, normalized.runs, config);
+  const observedTransitionCounts = Object.fromEntries(Object.entries(normalized.denominators).map(([view, d]) => [view, d.observedTransitions]));
+  const selection = selectPatterns(index, index.runs, { ...config, observedTransitionCounts });
   const observedCoverage = Object.fromEntries(Object.entries(normalized.denominators).map(([view, d]) => [view, {
     ...d, coveredTransitions: selection.views[view]?.coveredTransitions ?? 0,
     conservativeCoverage: d.observedTransitions ? (selection.views[view]?.coveredTransitions ?? 0) / d.observedTransitions : null,
     eligibleCoverage: selection.views[view]?.coverage ?? null,
     observedTargetReached: d.observedTransitions > 0 && (selection.views[view]?.coveredTransitions ?? 0) / d.observedTransitions >= config.targetCoverage
   }]));
-  const report = { snapshotId, buildVersion: BUILD_VERSION, codeFingerprint, normalizerVersion: NORMALIZER_VERSION, sourceHash: source.sourceHash,
+  const report = { snapshotId, buildVersion: BUILD_VERSION, codeFingerprint, normalizerVersion: NORMALIZER_VERSION, normalizationFingerprint: source.normalizationFingerprint, sourceHash: source.sourceHash, catalogHash, rejectedSourceHash,
     familyMappingVersion: familyMapping.version, config, scope: source.scope,
+    popularity: { snapshotId: popularitySnapshotId, provenance: popularityProvenance },
     availability: { catalogSongs: source.songs.length, scannedSongs: source.stats.scannedSongs, sections: normalized.sections.length, rejectedSources: source.diagnostics },
     diagnostics: normalized.diagnosticCounts, observedCoverage, selection };
   log({ stage: 'export', selected: selection.selected.length });
-  const runtime = exportRuntime({ file: path.join(stage, 'runtime.db'), index, ...normalized, songs: source.songs, getPattern, snapshotId, popularity });
-  report.curriculumFamilies = runtime.familyGroups.map(g => ({ familyId: g.familyId, view: g.view, occurrenceCount: g.occurrenceCount,
-    distinctSongs: g.distinctSongs, patternIds: g.patterns.map(p => p.id), coverage: calculateCoverage(index, g.patterns, { view: g.view }) }));
+  const runtime = exportRuntime({ file: path.join(stage, 'runtime.db'), index, ...normalized, songs: source.songs, getPattern, snapshotId, popularity, popularitySnapshotId });
+  report.curriculumFamilies = runtime.familyGroups.map(g => {
+    const songs = new Set();
+    for (const pattern of g.patterns) for (const occurrence of occurrences(index, pattern)) songs.add(index.runs[occurrence.runIndex].songId);
+    return { familyId: g.familyId, view: g.view, patternIds: g.patterns.map(p => p.id),
+      discovered: { occurrenceCount: g.patterns.reduce((n,p) => n+p.occurrenceCount, 0), distinctSongs: songs.size,
+        coverage: calculateCoverage(index, g.patterns, { view: g.view, observedTransitionCounts }) },
+      runtimeEligible: { occurrenceCount: g.occurrenceCount, distinctSongs: g.distinctSongs } };
+  });
   delete runtime.familyGroups;
-  const analysis = exportAnalysis({ file: path.join(stage, 'analysis.db'), index, ...normalized, selected: selection.selected, snapshotId, report, occurrences });
+  const analysis = exportAnalysis({ file: path.join(stage, 'analysis.db'), index, ...normalized, selected: selection.selected, snapshotId, report, occurrences, normalizedFile: source.normalizedFile });
   fs.writeFileSync(path.join(stage, 'report.json'), stableJson({ ...report, runtime }));
   const manifest = { schemaVersion: 1, snapshotId, buildVersion: BUILD_VERSION, sourceHash: source.sourceHash,
     files: Object.fromEntries(['analysis.db', 'runtime.db', 'report.json'].map(name => [name, hashFile(path.join(stage, name))])) };
   fs.writeFileSync(path.join(stage, 'manifest.json'), stableJson(manifest));
   fs.renameSync(stage, destination);
-  const pointer = path.join(options.output, `latest-${process.pid}.json`);
-  fs.writeFileSync(pointer, stableJson({ snapshotId, path: `snapshots/${snapshotId}`, runtime: `snapshots/${snapshotId}/runtime.db` }));
-  fs.renameSync(pointer, path.join(options.output, 'latest.json'));
+  publishPointer(options.output, snapshotId, options.limit);
   return { snapshotId, destination, analysis, runtime, coverage: observedCoverage, sourceStats: source.stats,
     elapsedMs: Math.round(performance.now() - started), peakRssBytes: process.resourceUsage().maxRSS * 1024 };
 }

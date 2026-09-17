@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 import { hash, openDatabase, stableJson, transaction, NORMALIZER_VERSION } from './common.mjs';
 import { normalizeChord } from './normalize.mjs';
 
@@ -25,6 +25,11 @@ export function* curriculumOccurrences(runs, index, getPattern, onPattern = () =
       const end = start + binding.degrees.length - 1;
       const positions = run.positions.slice(start, end + 1);
       if (positions.some((p, i) => p.degree !== binding.degrees[i] || p.varyingBass || !eligible[start + i])) continue;
+      // Every exported binding must remain playable in all current skill phases,
+      // including a full model + gap replay at the slowest curriculum tempo.
+      if (positions.some(p => p.endBeat - p.startBeat > 32 || p.endBeat <= p.startBeat ||
+          [...p.notes, p.rootMidi].some(n => !Number.isInteger(n) || n < 1 || n > 115)) ||
+          positions.reduce((n, p) => n + p.endBeat - p.startBeat, 0) > 56) continue;
       const tokens = run.tokens.slice(start, end + 1), lookup = stableJson([run.view, tokens]);
       if (!patterns.has(lookup)) patterns.set(lookup, getPattern(index, { view: run.view, tokens }));
       const pattern = patterns.get(lookup);
@@ -33,7 +38,7 @@ export function* curriculumOccurrences(runs, index, getPattern, onPattern = () =
       const first = positions[0], last = positions.at(-1);
       const occurrenceId = hash(['occurrence', pattern.id, run.sectionId, first.startIndex, last.endIndex]);
       const sourceId = `${run.songId}|${run.sectionId}|${first.startIndex}|${last.endIndex}`;
-      const events = positions.map(p => ({ notes: p.notes, rootMidi: p.rootMidi, bassMidi: p.bassMidi, degree: p.degree,
+      const events = positions.map(p => ({ notes: [...p.notes].sort((a,b) => a-b), rootMidi: p.rootMidi, bassMidi: p.bassMidi, degree: p.degree,
         functionLabel: functionLabel(p.degree), beats: p.endBeat - p.startBeat }));
       const tonic = normalizeChord({ root: 1 }, run.key);
       yield { occurrenceId, sourceId, patternId: pattern.id, songId: run.songId, sectionId: run.sectionId, sourceRevision: run.revision,
@@ -45,7 +50,7 @@ export function* curriculumOccurrences(runs, index, getPattern, onPattern = () =
   }
 }
 
-export function exportRuntime({ file, runs, sections, songs, index, getPattern, snapshotId, popularity = [] }) {
+export function exportRuntime({ file, runs, sections, songs, index, getPattern, snapshotId, popularity = [], popularitySnapshotId }) {
   const db = openDatabase(file), songMap = new Map(songs.map(s => [s.slug, s]));
   const sectionMap = new Map(sections.map(s => [s.id, s]));
   const popMap = new Map(popularity.map(s => [s.songId, s]));
@@ -62,7 +67,7 @@ export function exportRuntime({ file, runs, sections, songs, index, getPattern, 
     transaction(db, () => {
       const meta = db.prepare('INSERT INTO metadata VALUES (?,?)');
       for (const [k, v] of Object.entries({ schema_version: '1', snapshot_id: snapshotId, family_mapping_version: familyMapping.version,
-        normalization_version: NORMALIZER_VERSION, popularity_version: popularity.length ? hash(popularity) : 'unavailable' })) meta.run(k, v);
+        normalization_version: NORMALIZER_VERSION, popularity_version: popularitySnapshotId || (popularity.length ? hash(popularity) : 'unavailable') })) meta.run(k, v);
       const songStmt = db.prepare('INSERT OR IGNORE INTO quiz_song VALUES (?,?,?,?,?)');
       const sectionStmt = db.prepare('INSERT OR IGNORE INTO quiz_section VALUES (?,?,NULL,0)');
       const occurrenceStmt = db.prepare('INSERT OR IGNORE INTO quiz_occurrence VALUES (?,?,?,?,?,?,?,?,?)');
@@ -83,11 +88,12 @@ export function exportRuntime({ file, runs, sections, songs, index, getPattern, 
   } finally { db.close(); }
 }
 
-export function exportAnalysis({ file, index, runs, sections, selected, snapshotId, report, occurrences }) {
+export function exportAnalysis({ file, index, runs, sections, selected, snapshotId, report, occurrences, normalizedFile }) {
   const db = openDatabase(file);
   try {
     db.exec(`CREATE TABLE analysis_snapshot(id TEXT PRIMARY KEY,report TEXT NOT NULL);
       CREATE TABLE section(id TEXT PRIMARY KEY,song_id TEXT,revision TEXT,name TEXT);
+      CREATE TABLE section_source(section_id TEXT PRIMARY KEY,encoding TEXT NOT NULL,payload BLOB NOT NULL);
       CREATE TABLE run(id TEXT PRIMARY KEY,run_index INTEGER UNIQUE,view TEXT,song_id TEXT,section_id TEXT,revision TEXT,tokens TEXT,positions TEXT,transition_ids TEXT);
       CREATE TABLE suffix(rank INTEGER PRIMARY KEY,run_index INTEGER,offset INTEGER,lcp INTEGER);
       CREATE TABLE progression_pattern(id TEXT PRIMARY KEY,view TEXT,length INTEGER,song_count INTEGER,occurrence_count INTEGER,descriptor TEXT);
@@ -99,6 +105,11 @@ export function exportAnalysis({ file, index, runs, sections, selected, snapshot
       db.prepare('INSERT INTO analysis_snapshot VALUES (?,?)').run(snapshotId, stableJson(report));
       const sectionStmt = db.prepare('INSERT INTO section VALUES (?,?,?,?)');
       for (const s of sections) sectionStmt.run(s.id, s.songId, s.revision, s.sectionName || '');
+      if (normalizedFile) {
+        const sourceDb = openDatabase(normalizedFile, true), sourceStmt = db.prepare("INSERT INTO section_source VALUES (?,'gzip-json',?)");
+        try { for (const row of sourceDb.prepare('SELECT id,source FROM sections ORDER BY id').iterate()) sourceStmt.run(row.id, gzipSync(Buffer.from(row.source))); }
+        finally { sourceDb.close(); }
+      }
       const runStmt = db.prepare('INSERT INTO run VALUES (?,?,?,?,?,?,?,?,?)');
       for (const [i, r] of index.runs.entries()) runStmt.run(r.id, i, r.view, r.songId, r.sectionId, r.revision, stableJson(r.tokens), stableJson(r.positions), stableJson(r.transitionIds));
       const patternStmt = db.prepare('INSERT OR IGNORE INTO progression_pattern VALUES (?,?,?,?,?,?)');

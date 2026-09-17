@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { openDatabase, transaction, stableJson, hash, hashFile, NORMALIZER_VERSION } from './common.mjs';
+import { openDatabase, transaction, stableJson, hash, moduleFingerprint, NORMALIZER_VERSION } from './common.mjs';
 import { normalizeSection, sectionIdentity, sectionRevision } from './normalize.mjs';
 
 const urlKey = value => String(value || '').trim().replace(/\/+$/, '');
@@ -12,12 +12,16 @@ export function catalogSongs(file) {
 
 /** Scan source files, but rerun musical interpretation only for changed sections. */
 export function updateNormalizedCache({ catalog, cacheRoot, normalizedFile, limit = 0, log = () => {} }) {
-  const cacheVersion = `${NORMALIZER_VERSION}:${hashFile(new URL('./normalize.mjs', import.meta.url))}`;
+  if (path.resolve(catalog).toLowerCase() === path.resolve(normalizedFile).toLowerCase()) throw Error('Normalized cache must not overwrite the source catalog');
+  const cacheVersion = `${NORMALIZER_VERSION}:${moduleFingerprint(new URL('./normalize.mjs', import.meta.url))}`;
   const songs = catalogSongs(catalog);
   const byUrl = new Map(songs.map(s => [urlKey(s.url), s]));
   const byId = new Map(songs.map(s => [s.slug, s]));
   fs.mkdirSync(path.dirname(normalizedFile), { recursive: true });
   const db = openDatabase(normalizedFile);
+  // This is a rebuildable cache. WAL avoids a durable disk flush for every song;
+  // an interrupted run is safely rescanned and never publishes a snapshot.
+  db.exec('PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL;');
   db.exec(`CREATE TABLE IF NOT EXISTS sections (id TEXT PRIMARY KEY, revision TEXT NOT NULL, version TEXT NOT NULL, song_id TEXT NOT NULL, normalized TEXT NOT NULL, source TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS cache_metadata (key TEXT PRIMARY KEY,value TEXT NOT NULL);`);
   const cacheScope = stableJson({ cacheRoot: path.resolve(cacheRoot), catalog: path.resolve(catalog), limit });
@@ -75,7 +79,7 @@ export function updateNormalizedCache({ catalog, cacheRoot, normalizedFile, limi
       for (const { id } of db.prepare('SELECT id FROM sections').all()) if (!seen.has(id) || conflicts.has(id)) { remove.run(id); stats.deleted++; }
     });
     const manifest = [...seen].filter(([id]) => !conflicts.has(id)).sort(([a], [b]) => a < b ? -1 : 1);
-    return { songs, stats, diagnostics, sourceHash: hash(manifest), normalizedFile, scope: limit ? { limitFolders: limit } : { full: true } };
+    return { songs, stats, diagnostics, sourceHash: hash(manifest), normalizationFingerprint: cacheVersion, normalizedFile, scope: limit ? { limitFolders: limit } : { full: true } };
   } finally { db.close(); }
 }
 
