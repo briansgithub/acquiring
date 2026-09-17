@@ -21,7 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
@@ -331,8 +330,6 @@ internal fun AuralQuizScreen(
 
     val presentation = auralQuestionPresentation(view)
     val exercise = view.exercise
-    val exerciseMode = remember(exercise?.id) { exercise?.harmonicMode() }
-    val numeralColor = auralRomanColor(exerciseMode)
     val selected = AuralCurriculum.families.firstOrNull { it.id == selectedFamily } ?: AuralCurriculum.families.first()
     val namedPractice = exercise?.provenance?.target?.variantId != null
     val inLesson = route == "lesson" && exercise != null
@@ -360,9 +357,13 @@ internal fun AuralQuizScreen(
         }
         if (inLesson && namedPractice) {
             Text(if(exercise?.provenance?.target?.pattern != null) "Song progression" else selected.label, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 16.dp))
-            Text(if(exercise!!.provenance.target.pattern != null && !view.guidanceVisible) "${exercise.events.size} chords" else exercise.fullDegrees.joinToString(" → "), style = MaterialTheme.typography.headlineSmall,
-                color=if(exercise.provenance.target.pattern != null && !view.guidanceVisible) Color.Unspecified else numeralColor,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
+            if (exercise!!.provenance.target.pattern != null && !view.guidanceVisible) {
+                Text("${exercise.events.size} chords", style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
+            } else {
+                Text(auralRomanSequence(exercise.fullDegrees), style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
+            }
             AuralModeTabs(exercise.skillId,songsSelected=songsTab && exercise.provenance.target.pattern!=null,
                 onSongs=if(exercise.provenance.target.pattern!=null) ({ cancel(markInterrupted=true); songsTab=true }) else null) { mode ->
                 songsTab=false
@@ -450,7 +451,7 @@ internal fun AuralQuizScreen(
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = if (presentation.guidance != null) Modifier.testTag("AuralGuidance") else Modifier) {
-                        AuralChordStrip(diagram,mode=exerciseMode)
+                        AuralChordStrip(diagram)
                         if (view.guidanceVisible) Text(
                             AuralCurriculum.families.firstOrNull { it.id == exercise.familyId }?.description ?: "Follow the harmonic movement.",
                             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -480,18 +481,18 @@ internal fun AuralQuizScreen(
                                     colors = ButtonDefaults.outlinedButtonColors(containerColor = if (selectedAnswer) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface),
                                     modifier = Modifier.fillMaxWidth().testTag("AuralChoice-${option.id}").semantics { this.selected = selectedAnswer }) {
                                     if (selectedAnswer) Text("● ")
-                                    Text(option.label,color=numeralColor)
+                                    Text(auralRomanSequence(option.degrees))
                                 }
                             }
                             "sequence" -> {
-                                AuralChordStrip(List(exercise.answer.degrees.size) { answer.getOrNull(it) },mode=exerciseMode)
-                                Text(answer.joinToString(" → ").ifEmpty { "Your answer" }, Modifier.testTag("AuralEntered"), style = MaterialTheme.typography.labelSmall,
-                                    color=if(answer.isEmpty()) Color.Unspecified else numeralColor)
+                                AuralChordStrip(List(exercise.answer.degrees.size) { answer.getOrNull(it) })
+                                if (answer.isEmpty()) Text("Your answer", Modifier.testTag("AuralEntered"), style = MaterialTheme.typography.labelSmall)
+                                else Text(auralRomanSequence(answer), Modifier.testTag("AuralEntered"), style = MaterialTheme.typography.labelSmall)
                                 (exercise.provenance.target.pattern?.let(::auralPatternVocabulary) ?: AuralCurriculum.degrees).chunked(4).forEach { row ->
                                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                         row.forEach { degree ->
                                             OutlinedButton(onClick = { answer = answer + degree }, enabled = !busy && answer.size < exercise.answer.degrees.size,
-                                                modifier = Modifier.weight(1f).testTag("AuralDegree-$degree"), contentPadding = PaddingValues(4.dp)) { Text(degree,color=numeralColor) }
+                                                modifier = Modifier.weight(1f).testTag("AuralDegree-$degree"), contentPadding = PaddingValues(4.dp)) { Text(degree,color=auralRomanColor(degree)) }
                                         }
                                     }
                                 }

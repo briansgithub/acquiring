@@ -4,7 +4,7 @@ Updated 2026-09-17. Implementation route: offline Node/SQLite, Python streaming 
 
 ## Access and behavior
 
-Roman-numeral strings use Playback's existing `playbackLaneTint` mode palette in catalog rows, progression titles/cards, choices, and recall controls. Mode comes from normalized tokens or the source section, not uppercase/lowercase chord quality. Major uses red, Dorian orange, Phrygian yellow, Lydian green, Mixolydian blue, minor purple, and Locrian pink, with the same tint adjustment as Playback. Unknown mode and unrevealed answer slots remain neutral. Color-only update validation: both APK builds passed (`aural-mode-colors`, 15.3 seconds); the two existing hidden-answer/support-fading checks passed (`aural-color-guidance`, 5.8 seconds). Device installation/checks could not run because ADB reported no attached devices; the color update awaits installation when the Pixel is reconnected.
+Roman-numeral strings use the shared Playback scale-degree palette one chord at a time: I red, II orange, III yellow, IV green, V blue, VI purple, and VII pink. Accidentals, quality, inversions, and applied denominators retain the color of their chord’s numerator, so `♭VI`, `V6/V`, and `iiø7` remain readable as degree 6, 5, and 2. Arrows, non-Roman labels, and unrevealed answer slots remain neutral.
 
 Open **Aural Quiz** from the home screen. After the offline catalog loads, search Roman labels or filter by chord count. Tap a progression to practice its whole sequence in **Recognize**, **Recall**, or **Sing**. The guided course remains available; **Review** chooses weaker/due targets from the currently loaded catalog results. Named progression practice is supported practice because selecting the progression already reveals its identity.
 

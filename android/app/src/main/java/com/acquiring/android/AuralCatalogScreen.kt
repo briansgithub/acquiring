@@ -115,8 +115,7 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                         }
                     }
                     Column(Modifier.weight(1f).clickable { onPractice(row.target) }.padding(vertical=12.dp).testTag("AuralPattern-${row.target.id}")) {
-                        Text(row.target.labels.joinToString(" → "),style=MaterialTheme.typography.titleMedium,maxLines=3,
-                            color=remember(row.target.id) { auralRomanColor(row.target.harmonicMode()) })
+                        Text(auralRomanSequence(row.target.labels),style=MaterialTheme.typography.titleMedium,maxLines=3)
                         Text("${row.length} chords · ${row.occurrences} occurrences · ${row.songs} songs",style=MaterialTheme.typography.bodySmall)
                         AuralFamilyProgress(row.target.id, progress)
                     }
