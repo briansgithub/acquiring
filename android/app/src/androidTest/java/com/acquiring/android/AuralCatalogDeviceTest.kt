@@ -34,7 +34,7 @@ class AuralCatalogDeviceTest {
             compose.onNodeWithTag("AuralOutline-2").assertTextEquals("2")
         }
     }
-    @Test fun alphabeticalSongsReturnToTheirScrollPositionAndKeepTheQuizDraft() {
+    @Test fun popularitySongsReturnToTheirScrollPositionAndKeepTheQuizDraft() {
         val context=ApplicationProvider.getApplicationContext<Context>(); AppAudioOutput.initialize(context)
         val session=AuralSession(Store(),seedFor={it})
         AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
@@ -51,6 +51,7 @@ class AuralCatalogDeviceTest {
         compose.waitUntil(30_000) { compose.onAllNodes(songMatcher).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("AuralSongsList").performScrollToIndex(8)
         val chosen=compose.onAllNodes(songMatcher).fetchSemanticsNodes().first().config[SemanticsProperties.TestTag]
+        compose.onNodeWithTag("AuralSongPopularity-${chosen.removePrefix("AuralSong-")}",useUnmergedTree=true).assertExists()
         compose.onNodeWithTag(chosen).performClick()
         compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralReturnFromPlayback").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("← Return to songs").assertExists()
@@ -103,7 +104,9 @@ class AuralCatalogDeviceTest {
                 val songs=catalog.songs(p)
                 assertEquals(row.songs,songs.size)
                 assertEquals(songs.size,songs.map { it.id }.distinct().size)
-                assertEquals(songs.map { it.title.lowercase(java.util.Locale.ROOT) },songs.map { it.title.lowercase(java.util.Locale.ROOT) }.sorted())
+                assertTrue(songs.zipWithNext().all { (a,b) -> (a.popularityScore ?: -1.0) >= (b.popularityScore ?: -1.0) })
+                assertTrue(songs.any { it.popularityScore!=null })
+                songs.forEach { song -> assertEquals(catalog.popularity[song.id]?.score,song.popularityScore) }
                 val selectedSong=songs.last()
                 val selectedPassage=catalog.passage(p,settings,AuralSelectionContext(),0,p.id,selectedSong.id)
                 assertEquals(selectedSong.id,selectedPassage.songId)

@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -28,13 +29,19 @@ internal fun AuralPatternSongs(catalog:AuralCatalog?,target:AuralPatternTarget,b
         catch(_:Exception) { error=true }
     }
     Column(modifier.fillMaxSize().testTag("AuralSongs")) {
-        Text(songs?.let { "${it.size} songs · A–Z" } ?: "Songs · A–Z",Modifier.padding(16.dp),style=MaterialTheme.typography.labelLarge)
+        Text(songs?.let { "${it.size} songs · Popularity ↓" } ?: "Songs · Popularity ↓",Modifier.padding(16.dp),style=MaterialTheme.typography.labelLarge)
         if(busy || songs==null && !error) LinearProgressIndicator(Modifier.fillMaxWidth())
         if(error) TextButton(onClick={ retry++ }) { Text("Could not load songs · Retry") }
         if(songs!=null) LazyColumn(state=scroll,modifier=Modifier.weight(1f).testTag("AuralSongsList")) {
             itemsIndexed(songs.orEmpty(),key={_,song->song.id}) { index,song ->
                 ListItem(headlineContent={Text(song.title)},supportingContent={Text(song.artist)},
-                    leadingContent={Text("${index+1}")},trailingContent={Text("›")},
+                    leadingContent={Text("${index+1}")},trailingContent={
+                        Column(horizontalAlignment=Alignment.End) {
+                            Text("Popularity",style=MaterialTheme.typography.labelSmall)
+                            Text(song.popularityScore?.let { "%.1f / 100".format(it*100) } ?: "No data",
+                                modifier=Modifier.testTag("AuralSongPopularity-${song.id}"),style=MaterialTheme.typography.labelLarge)
+                        }
+                    },
                     modifier=Modifier.fillMaxWidth().clickable(enabled=!busy) { onSong(song) }.testTag("AuralSong-${song.id}"))
                 Divider()
             }
