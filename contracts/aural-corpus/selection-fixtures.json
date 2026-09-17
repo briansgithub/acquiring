@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
-  "selectorVersion": "aural-selector-1",
+  "selectorVersion": "aural-selector-2",
   "notes": [
     "Identifiers are printable ASCII; sort lexicographically by code point.",
     "Unsigned xorshift32: x ^= x << 13; x ^= x >>> 17; x ^= x << 5; convert to uint32 and divide by 4294967296.",
     "Replace zero initial seed with 0x6d2b79f5. Use IEEE-754 double arithmetic for weights and draws.",
     "Ordinary selections draw once per level, even for singleton pools; supported reuse and empty pools draw zero times.",
-    "For assessment, remove all familiar source occurrences globally if any fresh eligible occurrence exists."
+    "For assessment, remove all familiar source occurrences globally if any fresh eligible occurrence exists.",
+    "Version 2 familiarity includes positive overlap of physical transitions in sourceId song|section|start|end. Shared endpoint chords do not overlap. Opaque legacy IDs retain exact matching."
   ],
   "prngVectors": [
     {
@@ -954,6 +955,196 @@
       "expected": {
         "selection": null,
         "draws": []
+      }
+    },
+    {
+      "name": "overlap-long-heard-contained",
+      "input": {
+        "songs": [
+          {
+            "id": "song",
+            "sections": [
+              {
+                "id": "verse",
+                "occurrences": [
+                  {
+                    "id": "contained",
+                    "sourceId": "song|verse|3|5"
+                  },
+                  {
+                    "id": "long",
+                    "sourceId": "song|verse|0|9"
+                  },
+                  {
+                    "id": "endpoint",
+                    "sourceId": "song|verse|7|9"
+                  }
+                ]
+              },
+              {
+                "id": "chorus",
+                "occurrences": [
+                  {
+                    "id": "other-section",
+                    "sourceId": "song|chorus|3|5"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1,
+        "context": {
+          "assessment": true,
+          "heardSourceIds": [
+            "song|verse|2|7",
+            "song|chorus|0|9"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "song",
+          "sectionId": "verse",
+          "occurrenceId": "endpoint",
+          "sourceId": "song|verse|7|9",
+          "familiar": false
+        },
+        "draws": [
+          0.00006295018829405308,
+          0.015747428173199296,
+          0.6164041024167091
+        ]
+      }
+    },
+    {
+      "name": "overlap-short-heard-long",
+      "input": {
+        "songs": [
+          {
+            "id": "song",
+            "sections": [
+              {
+                "id": "verse",
+                "occurrences": [
+                  {
+                    "id": "a-long",
+                    "sourceId": "song|verse|0|9"
+                  },
+                  {
+                    "id": "z-fresh",
+                    "sourceId": "song|verse|10|12"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 42,
+        "context": {
+          "assessment": true,
+          "heardSourceIds": [
+            "song|verse|4|5"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "song",
+          "sectionId": "verse",
+          "occurrenceId": "z-fresh",
+          "sourceId": "song|verse|10|12",
+          "familiar": false
+        },
+        "draws": [
+          0.002643892541527748,
+          0.660311977379024,
+          0.11095708678476512
+        ]
+      }
+    },
+    {
+      "name": "overlap-shared-endpoint-fresh",
+      "input": {
+        "songs": [
+          {
+            "id": "song",
+            "sections": [
+              {
+                "id": "verse",
+                "occurrences": [
+                  {
+                    "id": "endpoint",
+                    "sourceId": "song|verse|7|9"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1,
+        "context": {
+          "assessment": true,
+          "heardSourceIds": [
+            "song|verse|2|7"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "song",
+          "sectionId": "verse",
+          "occurrenceId": "endpoint",
+          "sourceId": "song|verse|7|9",
+          "familiar": false
+        },
+        "draws": [
+          0.00006295018829405308,
+          0.015747428173199296,
+          0.6164041024167091
+        ]
+      }
+    },
+    {
+      "name": "overlap-other-section-fresh",
+      "input": {
+        "songs": [
+          {
+            "id": "song",
+            "sections": [
+              {
+                "id": "chorus",
+                "occurrences": [
+                  {
+                    "id": "other-section",
+                    "sourceId": "song|chorus|3|5"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "seed": 1,
+        "context": {
+          "assessment": true,
+          "heardSourceIds": [
+            "song|verse|2|7"
+          ]
+        }
+      },
+      "expected": {
+        "selection": {
+          "songId": "song",
+          "sectionId": "chorus",
+          "occurrenceId": "other-section",
+          "sourceId": "song|chorus|3|5",
+          "familiar": false
+        },
+        "draws": [
+          0.00006295018829405308,
+          0.015747428173199296,
+          0.6164041024167091
+        ]
       }
     }
   ]

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-export const SELECTOR_VERSION = 'aural-selector-1';
+export const SELECTOR_VERSION = 'aural-selector-2';
 export const DEFAULT_SETTINGS = Object.freeze({ popularity: true, variety: true, favorites: false, distinguishInversions: false });
 const ZERO_SEED = 0x6d2b79f5;
 
@@ -39,6 +39,46 @@ function choose(items, random) {
 }
 function fingerprint(value) { return createHash('sha256').update(JSON.stringify(value)).digest('hex'); }
 
+/** Source spans encode physical transitions [start,end), so shared endpoint chords are fresh. */
+export function parseSourceSpan(sourceId) {
+  if (typeof sourceId !== 'string') return null;
+  const parts = sourceId.split('|');
+  if (parts.length !== 4 || !parts[0] || !parts[1] || !/^\d+$/.test(parts[2]) || !/^\d+$/.test(parts[3])) return null;
+  const start = Number(parts[2]), end = Number(parts[3]);
+  if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || end <= start) return null;
+  return { sectionKey: `${parts[0]}|${parts[1]}`, start, end };
+}
+
+/** Build once per selection: O(history log history), then O(log section history) per candidate. */
+export function createSourceFamiliarity(heardSourceIds) {
+  const exact = new Set(heardSourceIds), sections = new Map();
+  for (const sourceId of exact) {
+    const span = parseSourceSpan(sourceId);
+    if (!span) continue;
+    if (!sections.has(span.sectionKey)) sections.set(span.sectionKey, []);
+    sections.get(span.sectionKey).push({ start: span.start, end: span.end });
+  }
+  for (const [key, spans] of sections) {
+    spans.sort((a, b) => a.start - b.start || a.end - b.end);
+    const merged = [];
+    for (const span of spans) {
+      const last = merged.at(-1);
+      if (last && span.start <= last.end) last.end = Math.max(last.end, span.end);
+      else merged.push({ ...span });
+    }
+    sections.set(key, merged);
+  }
+  return sourceId => {
+    if (exact.has(sourceId)) return true;
+    const span = parseSourceSpan(sourceId);
+    const intervals = span && sections.get(span.sectionKey);
+    if (!intervals) return false;
+    let low = 0, high = intervals.length;
+    while (low < high) { const middle = Math.floor((low + high) / 2); if (intervals[middle].end <= span.start) low = middle + 1; else high = middle; }
+    return low < intervals.length && intervals[low].start < span.end;
+  };
+}
+
 /** Input is already musically eligible. No family, inversion, or context matching happens here. */
 export function selectExample({ songs, seed, settings = {}, context = {}, favoriteSongIds = [], snapshotId = null, popularitySnapshotId = null }) {
   xorshift32(seed); // Validate even when empty or intentionally reusing a passage.
@@ -46,7 +86,7 @@ export function selectExample({ songs, seed, settings = {}, context = {}, favori
   if (Object.keys(effectiveSettings).some(key => !Object.hasOwn(DEFAULT_SETTINGS, key) || typeof effectiveSettings[key] !== 'boolean')) throw new TypeError('unknown or nonboolean setting');
   if (!Array.isArray(songs)) throw new TypeError('songs must be an array');
   unique(songs, 'song');
-  const heard = new Set(context.heardSourceIds ?? []);
+  const isFamiliar = createSourceFamiliarity(context.heardSourceIds ?? []);
   const favorites = new Set(favoriteSongIds);
   const recent = context.recentSongIds ?? [];
   const assessment = context.assessment === true;
@@ -70,7 +110,7 @@ export function selectExample({ songs, seed, settings = {}, context = {}, favori
             if (locations.has(occurrence.id)) throw new TypeError(`occurrence appears in multiple sections: ${occurrence.id}`);
             locations.add(occurrence.id);
             const sourceId = id(occurrence.sourceId ?? occurrence.id, 'sourceId');
-            return { id: occurrence.id, sourceId, familiar: heard.has(sourceId), weight: 1 };
+            return { id: occurrence.id, sourceId, familiar: isFamiliar(sourceId), weight: 1 };
           }).sort(compare),
         };
       }).sort(compare),
@@ -91,7 +131,8 @@ export function selectExample({ songs, seed, settings = {}, context = {}, favori
 
 export function replaySelection(selectionContext) {
   const { groups, seed, supportedOccurrenceId } = selectionContext;
-  if (selectionContext.selectorVersion !== SELECTOR_VERSION) throw new TypeError('unsupported selector version');
+  // v1 contexts already materialize familiar flags and weights; replay must retain their old result.
+  if (!['aural-selector-1', SELECTOR_VERSION].includes(selectionContext.selectorVersion)) throw new TypeError('unsupported selector version');
   if (fingerprint(groups) !== selectionContext.candidateFingerprint) throw new TypeError('candidate context hash mismatch');
   const random = xorshift32(seed);
   if (!groups.length) return { selection: null, fallbackReason: 'no_eligible_occurrences', draws: [] };
