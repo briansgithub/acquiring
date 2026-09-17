@@ -688,7 +688,8 @@ internal fun MainScreen(
         ) {
             if (isShowingAuralQuiz) {
                 AuralQuizScreen(onBack = { isShowingAuralQuiz = false },
-                    defaultInstrument = defaultInstrument, settingsContent = settingsContent)
+                    defaultInstrument = defaultInstrument, settingsContent = settingsContent,
+                    loadFavoriteSongs = { playlistDao.getSlugsIn(PlaylistIds.FAVORITES).toSet() })
             } else if (isShowingSettings) {
                 settingsContent { isShowingSettings = false }
             } else if (selectedSongSections == null) {
