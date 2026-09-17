@@ -1,7 +1,7 @@
 package com.acquiring.android
 
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.*
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -106,5 +106,27 @@ class AuralCorpusSessionTest {
         assertEquals("recall", ex.skillId)
         assertNull(ex.provenance.corpus)
         assertNotNull(ex.provenance.fallbackReason)
+    }
+
+    @Test fun corruptOptionalHistoryKeepsValidRecordsAndProgressWithoutInventingFreshness() {
+        val store = Store()
+        val lesson = session(store)
+        lesson.practice("dominant-return", "recall", variantId = "departure")
+        lesson.played(); lesson.submit(lesson.view().exercise!!.answer.degrees)
+        val progress = lesson.view().progress
+        val original = Json.parseToJsonElement(store.raw!!).jsonObject
+        val valid = Json.encodeToJsonElement(AuralSourceExposure("heard-song|section|0|3", "heard-song", 1000))
+        store.raw = JsonObject(original + ("sourceExposures" to JsonArray(listOf(valid, JsonPrimitive("invalid exposure"))))).toString()
+        val restored = session(store)
+        assertEquals(progress, restored.view().progress)
+        assertTrue(restored.view().storageWarning.contains("kept"))
+        restored.practice("dominant-return", "recall", variantId = "departure")
+        val saved = Json.decodeFromString<AuralSavedSession>(store.raw!!)
+        assertEquals(listOf("heard-song|section|0|3"), saved.sourceExposures.map { it.sourceId })
+        assertFalse(saved.sourceHistoryReliable)
+        assertFalse(restored.view().exercise!!.provenance.corpus!!.familiar)
+        assertFalse(restored.view().exercise!!.provenance.corpus!!.sourceHistoryReliable)
+        assertTrue(restored.view().supported)
+        assertFalse(Json.decodeFromString<AuralSavedSession>(store.raw!!).sourceHistoryReliable)
     }
 }
