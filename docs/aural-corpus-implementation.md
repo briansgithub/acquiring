@@ -1,5 +1,7 @@
 # Aural corpus implementation
 
+> 2026-09-17 update: the exhaustive catalog, populated MusicBrainz/ListenBrainz popularity, and offline quiz–Playback round-trip are now implemented and installed for Pixel 7a testing. See [current catalog design, results, commands, limitations, and checklist](aural-catalog.md). Earlier six-family scope, four-toggle, source-provider, and unavailable-popularity statements below are historical checkpoints, superseded by that document.
+
 ## Accepted scope and sequence
 
 Build an independent offline index from original playback-cache sections, then integrate it into Android Aural Quiz. The old progression index supplies no data and is not modified. iOS will consume the same SQLite/JSON contracts and deterministic selection fixtures; native iOS implementation is deferred.

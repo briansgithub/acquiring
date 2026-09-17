@@ -53,7 +53,8 @@ fun PlaybackDestination(
     singingDockExpanded: Boolean = false,
     stopPersistentSignal: Int = 0,
     onPersistentMonitoringChange: (Boolean) -> Unit = {},
-    onRequestCollapseDock: () -> Unit = {}
+    onRequestCollapseDock: () -> Unit = {},
+    initialPassage: Pair<Double,Double>? = null
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
     val selectedSectionKey = selectedSectionId
@@ -118,6 +119,7 @@ fun PlaybackDestination(
 
         PlaybackTab(
             section = selectedSection,
+            initialPassage = initialPassage,
             isSimpleMode = isSimpleMode,
             onSimpleModeChange = { isSimpleMode = it },
             useRelativeIonianContext = useRelativeIonianContext,

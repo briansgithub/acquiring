@@ -197,7 +197,8 @@ fun PlaybackTab(
     persistentPitchSource: PitchSource,
     modifier: Modifier = Modifier,
     onTransportActions: (Boolean, Boolean, () -> Unit, () -> Unit) -> Unit = { _, _, _, _ -> },
-    onPersistentPracticeActions: (Boolean, () -> Unit, () -> Unit) -> Unit = { _, _, _ -> }
+    onPersistentPracticeActions: (Boolean, () -> Unit, () -> Unit) -> Unit = { _, _, _ -> },
+    initialPassage: Pair<Double,Double>? = null
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("PlaybackTab requires an exclusive persistent pitch source")
@@ -415,6 +416,7 @@ fun PlaybackTab(
             newTimeline = timeline,
             continuePlaying = continuePlaying
         )
+        initialPassage?.let { PlaybackController.seek(it.first.coerceIn(timeline.startBeat,timeline.endBeat),resume=false) }
     }
 
     DisposableEffect(Unit) {
@@ -1267,6 +1269,7 @@ fun PlaybackTab(
                                 if (screenX + w < 0f || screenX > size.width) return@forEach
                                 val isActive = currentBeat >= chord.beat &&
                                     currentBeat < chord.beat + chord.duration
+                                val inQuizPassage = initialPassage?.let { chord.beat < it.second && chord.beat+chord.duration > it.first } == true
                                 drawRect(
                                     color = if (isActive) {
                                         laneTint.copy(alpha = 0.82f)
@@ -1277,11 +1280,11 @@ fun PlaybackTab(
                                     size = Size(w, cLaneHeightPx)
                                 )
                                 drawRect(
-                                    color = if (isActive) Color.White else Color.White.copy(alpha = 0.42f),
+                                    color = if(inQuizPassage) Color(0xFFFFD54F) else if (isActive) Color.White else Color.White.copy(alpha = 0.42f),
                                     topLeft = Offset(x, mLaneHeightPx),
                                     size = Size(w, cLaneHeightPx),
                                     style = androidx.compose.ui.graphics.drawscope.Stroke(
-                                        width = (if (isActive) 2.dp else 1.dp).toPx()
+                                        width = (if (inQuizPassage) 3.dp else if (isActive) 2.dp else 1.dp).toPx()
                                     )
                                 )
                                 chord.display?.let { display ->

@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 @Serializable data class AuralExampleSettings(
     val popularity: Boolean = true, val variety: Boolean = true,
     val favorites: Boolean = false, val distinguishInversions: Boolean = false,
+    val flatList: Boolean = false,
 )
 @Serializable data class AuralSourcePassage(
     val occurrenceId: String, val patternId: String, val songId: String,
@@ -18,6 +19,7 @@ import kotlinx.serialization.json.Json
     val familyId: String, val variantId: String, val keyTonic: String,
     val keyScale: String, val tempo: Int, val events: List<AuralEvent>,
     val context: List<AuralEvent>, val degreeLabels: List<String>,
+    val startBeat: Double = 0.0, val endBeat: Double = 0.0,
 ) {
     // Location, not voicing/instrument/view/pattern ID, determines source familiarity.
     val sourceId: String get() = "$songId|$sectionId|$startIndex|$endIndex"
@@ -136,15 +138,26 @@ internal class SqliteAuralExampleProvider(private val file: File) : AuralExample
     private val pools = linkedMapOf<String, CandidatePool>()
     private var fileStamp: Pair<Long, Long>? = null
     private var cachedPopularityAvailable: Boolean? = null
+    private var overlayStamp: Pair<Long,Long>? = null
+    private var overlayVersion: String? = null
+    private val overlaySongs = mutableMapOf<String,AuralPopularity>()
     private fun refreshCache() {
         val current = file.lastModified() to file.length()
         if (fileStamp != current) { pools.clear(); cachedPopularityAvailable = null; fileStamp = current }
+        val overlay=File(file.parentFile,"aural-popularity.db");val stamp=overlay.lastModified() to overlay.length()
+        if(overlayStamp!=stamp) {
+            overlaySongs.clear();overlayVersion=null;pools.clear();cachedPopularityAvailable=null;overlayStamp=stamp
+            if(overlay.isFile) SQLiteDatabase.openDatabase(overlay.path,null,SQLiteDatabase.OPEN_READONLY).use { db ->
+                db.rawQuery("SELECT song_id,score,confidence FROM popularity WHERE score IS NOT NULL",null).use { c -> while(c.moveToNext()) overlaySongs[c.getString(0)]=AuralPopularity(c.getDouble(1),c.getDouble(2)) }
+                db.rawQuery("SELECT value FROM metadata WHERE key='snapshotId'",null).use { if(it.moveToFirst()) overlayVersion=it.getString(0) }
+            }
+        }
     }
     private fun open(): SQLiteDatabase? = if (!file.isFile) null else
         SQLiteDatabase.openDatabase(file.absolutePath, null, SQLiteDatabase.OPEN_READONLY)
     override val popularityAvailable: Boolean get() = try {
         refreshCache()
-        cachedPopularityAvailable ?: (open()?.use { db -> db.rawQuery("SELECT 1 FROM quiz_song WHERE popularity IS NOT NULL AND confidence > 0 LIMIT 1", null).use { it.moveToFirst() } } ?: false)
+        cachedPopularityAvailable ?: (overlaySongs.isNotEmpty() || (open()?.use { db -> db.rawQuery("SELECT 1 FROM quiz_song WHERE popularity IS NOT NULL AND confidence > 0 LIMIT 1", null).use { it.moveToFirst() } } ?: false))
             .also { cachedPopularityAvailable = it }
     } catch (_: Exception) { false }
     override fun example(base: AuralExercise, settings: AuralExampleSettings, context: AuralSelectionContext): AuralCorpusProvenance? = try {
@@ -166,7 +179,7 @@ internal class SqliteAuralExampleProvider(private val file: File) : AuralExample
                     arrayOf(base.familyId, base.variantId, if (settings.distinguishInversions) "harmony_bass" else "harmony")).use { c ->
                     while (c.moveToNext()) {
                         refs += AuralOccurrenceRef(c.getString(0), c.getString(1), c.getString(2), c.getString(3))
-                        songs[c.getString(1)] = AuralPopularity(if (c.isNull(4)) null else c.getDouble(4), c.getDouble(5))
+                        songs[c.getString(1)] = overlaySongs[c.getString(1)] ?: AuralPopularity(if (c.isNull(4)) null else c.getDouble(4), c.getDouble(5))
                         sections[c.getString(2)] = AuralPopularity(if (c.isNull(6)) null else c.getDouble(6), c.getDouble(7))
                     }
                 }
@@ -181,7 +194,7 @@ internal class SqliteAuralExampleProvider(private val file: File) : AuralExample
             }
             require(passage.occurrenceId == chosen.id && passage.songId == chosen.songId && passage.sectionId == chosen.sectionId && passage.sourceId == chosen.sourceId)
             val exposure = AuralExposureIndex(context.heardSourceIds)
-            AuralCorpusProvenance(metadata.getValue("snapshot_id"), metadata["popularity_version"], metadata["family_mapping_version"] ?: "current-triads-1",
+            AuralCorpusProvenance(metadata.getValue("snapshot_id"), overlayVersion ?: metadata["popularity_version"], metadata["family_mapping_version"] ?: "current-triads-1",
                 passage, settings, seed = base.seed and 0xffffffffL, semitoneShift = base.provenance.target.octaveShift * 12,
                 recentSongIds = context.recentSongIds, favoriteSongIds = context.favoriteSongIds.intersect(pool.songs.keys).sorted(),
                 heardSourceIds = exposure.relevantTo(pool.refs.map { it.sourceId }.toSet()), familiar = exposure.contains(passage.sourceId),
@@ -192,6 +205,7 @@ internal class SqliteAuralExampleProvider(private val file: File) : AuralExample
 
 /** Rebuild answers from validated musical material; never trust saved answer fields. */
 internal fun auralWithCorpus(base: AuralExercise, source: AuralCorpusProvenance): AuralExercise {
+    if (base.provenance.target.pattern != null) return auralWithPatternCorpus(base, source)
     val p = source.passage
     require(source.selectorVersion in setOf("aural-selector-1", "aural-selector-2") && source.seed == (base.seed and 0xffffffffL) && source.snapshotId.isNotBlank())
     require(p.familyId == base.familyId && p.variantId == base.variantId && p.degreeLabels == base.fullDegrees)
