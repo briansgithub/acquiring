@@ -21,7 +21,9 @@ internal data class AuralCatalogRun(val id: Int, val stableId: String, val view:
     val tokens: List<String>, val positions: List<AuralCatalogPosition>, val key: KeyInfo)
 internal data class AuralPlaybackSource(val song: Song, val section: ExtractedSection, val sectionId: String, val startBeat: Double, val endBeat: Double,
     val sections: Map<String,ExtractedSection> = emptyMap())
-internal data class AuralPatternSong(val id:String,val title:String,val artist:String)
+internal data class AuralPatternSong(val id:String,val title:String,val artist:String,val popularityScore:Double?=null)
+internal val auralPatternSongOrder = compareByDescending<AuralPatternSong> { it.popularityScore ?: -1.0 }
+    .thenBy { it.title.lowercase(java.util.Locale.ROOT) }.thenBy { it.artist.lowercase(java.util.Locale.ROOT) }.thenBy { it.id }
 internal fun auralPatternId(tokens: List<String>, view: String): String {
     val multipliers = intArrayOf(16777619, 2246822519L.toInt(), 3266489917L.toInt(), 668265263)
     val hashes = IntArray(4)
@@ -178,9 +180,9 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
         db.rawQuery("""SELECT DISTINCT song.id,song.title,song.artist FROM catalog_suffix s
             JOIN catalog_run r ON r.id=s.run_id JOIN catalog_song song ON song.id=r.song_id
             WHERE s.rank BETWEEN ? AND ? ORDER BY song.title COLLATE NOCASE,song.artist COLLATE NOCASE,song.id""",
-            arrayOf(target.start.toString(),target.end.toString())).use { c -> while(c.moveToNext()) result+=AuralPatternSong(c.getString(0),c.getString(1),c.getString(2)) }
-        return result.sortedWith(compareBy<AuralPatternSong> { it.title.lowercase(java.util.Locale.ROOT) }
-            .thenBy { it.artist.lowercase(java.util.Locale.ROOT) }.thenBy { it.id })
+            arrayOf(target.start.toString(),target.end.toString())).use { c -> while(c.moveToNext()) result+=AuralPatternSong(c.getString(0),c.getString(1),c.getString(2),
+                popularity[c.getString(0)]?.score?.takeIf { it.isFinite() && it in 0.0..1.0 }) }
+        return result.sortedWith(auralPatternSongOrder)
     }
     fun passage(target: AuralPatternTarget, settings: AuralExampleSettings, context: AuralSelectionContext, seed: Long, familyId: String, songId:String?=null): AuralSourcePassage {
         val resolved = requireNotNull(lookup(target.tokens,target.view))
