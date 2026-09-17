@@ -173,9 +173,6 @@ fun LibraryView(
             updateAvailable = settingsUpdateAvailable,
             onOpenSettings = onOpenSettings
         )
-        TextButton(onClick = onOpenAuralQuiz, modifier = Modifier.testTag("OpenAuralQuiz")) {
-            Text("Aural Quiz · learn by ear")
-        }
         if (showChrome) {
             PlaylistsSection(
                 playlistDao = playlistDao,
@@ -280,6 +277,13 @@ fun LibraryView(
         }
 
         Divider(modifier = Modifier.padding(vertical = 12.dp))
+
+        Button(
+            onClick = { focusManager.clearFocus(force = true); onOpenAuralQuiz() },
+            modifier = Modifier.fillMaxWidth().testTag("OpenAuralQuiz")
+        ) {
+            Text("Aural Quiz")
+        }
 
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(allSongs) { song ->
