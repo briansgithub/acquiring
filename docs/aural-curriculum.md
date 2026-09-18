@@ -1,6 +1,6 @@
 # Android Aural Quiz
 
-Status: implemented for human testing. Open **Library → Aural Quiz · learn by ear**. No song or catalog download is required. Browse **family → progression → Recognize / Recall / Sing** for targeted practice. **Next** keeps the progression and tab, choosing the next suitable activity with a new realization. **Adaptive** follows the curriculum scheduler; **Continue** resumes the pending exercise. The existing full-chord/root-only song page is now called **Playback**.
+Status: implemented for human testing. Open **Aural Quiz · learn by ear** below Library search. The main catalog install also provisions the published Aural progression bundle; opening Aural Quiz retries that bundle if it is missing or damaged. Browse **family → progression → Recognize / Recall / Sing** for targeted practice. **Next** keeps the progression and tab, choosing the next suitable activity with a new realization. **Adaptive** follows the curriculum scheduler; **Continue** resumes the pending exercise. The existing full-chord/root-only song page is now called **Playback**.
 
 This is the first part of the project. Song-database selection, popularity weighting, occurrence indexes, native iOS parity, and the web curriculum UI are deliberately excluded pending human feedback.
 

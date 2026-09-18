@@ -300,11 +300,17 @@ internal fun MainScreen(
                 // Skipping this is survivable: the launch-time replay below
                 // picks them up, so a failure delays restoration, never loses it.
                 val restored = runCatching { HarvestLedger.replay(activeDb, userDb) }.getOrDefault(0)
-                catalogStatus = if (restored > 0) {
+                val songCatalogStatus = if (restored > 0) {
                     "Database Refreshed! ($restored harvested song${if (restored == 1) "" else "s"} kept)"
                 } else {
                     "Database Refreshed!"
                 }
+                catalogStatus = "$songCatalogStatus Preparing Aural Quiz data…"
+                val auralResult = AuralCatalogDownloader.ensureInstalled(context) { catalogStatus = it }
+                catalogStatus = auralResult.fold(
+                    onSuccess = { songCatalogStatus },
+                    onFailure = { "$songCatalogStatus Aural Quiz data will retry when opened: ${it.message}" }
+                )
             } else {
                 // A validated install closes Room only immediately before the
                 // atomic swap. Reopen the preserved catalog if needed.

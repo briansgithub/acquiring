@@ -21,21 +21,39 @@ object AuralCatalogDownloader {
     private val requiredFiles = listOf("aural-catalog.db", "aural-evidence.db", "aural-popularity.db")
     private val json = Json { ignoreUnknownKeys = true }
 
-    @Serializable private data class Bundle(
+    @Serializable internal data class Bundle(
         val schemaVersion: String,
         val snapshotId: String,
         val files: List<BundleFile>
     )
-    @Serializable private data class BundleFile(
+    @Serializable internal data class BundleFile(
         val name: String,
         val url: String,
         val checksum: String
     )
 
+    /**
+     * Keeps the Aural bundle aligned with the published manifest without
+     * re-downloading roughly 435 MB when the exact snapshot is already present.
+     */
+    suspend fun ensureInstalled(
+        context: Context,
+        onProgress: (String) -> Unit = {}
+    ): Result<Boolean> = install(context, force = false, onProgress)
+
     suspend fun downloadAndInstall(
         context: Context,
         onProgress: (String) -> Unit = {}
-    ): Result<Unit> = withContext(Dispatchers.IO) {
+    ): Result<Unit> = install(context, force = true, onProgress).map { }
+
+    fun hasInstalledBundleFiles(context: Context): Boolean =
+        requiredFiles.all { File(context.filesDir, it).isFile }
+
+    private suspend fun install(
+        context: Context,
+        force: Boolean,
+        onProgress: (String) -> Unit
+    ): Result<Boolean> = withContext(Dispatchers.IO) {
         runCatching {
             onProgress("Checking progression catalog…")
             val client = OkHttpClient()
@@ -46,6 +64,10 @@ object AuralCatalogDownloader {
             check(manifest.schemaVersion == SCHEMA) { "Unsupported progression catalog version" }
             val entries = manifest.files.associateBy { it.name }
             check(entries.keys.containsAll(requiredFiles)) { "Catalog update is incomplete" }
+            if (!force && installedBundleMatches(context, manifest)) {
+                onProgress("Progression catalog is ready")
+                return@runCatching false
+            }
             val staged = mutableListOf<Pair<BundleFile, File>>()
             try {
                 requiredFiles.forEachIndexed { index, name ->
@@ -53,6 +75,7 @@ object AuralCatalogDownloader {
                     require(entry.checksum.matches(Regex("[a-f0-9]{64}"))) { "Invalid catalog checksum" }
                     val target = File(context.filesDir, "$name.installing")
                     target.delete()
+                    staged += entry to target
                     client.newCall(Request.Builder().url(entry.url).build()).execute().use { response ->
                         check(response.isSuccessful) { "Catalog download failed: HTTP ${response.code}" }
                         val body = requireNotNull(response.body)
@@ -78,7 +101,6 @@ object AuralCatalogDownloader {
                             }
                         }
                     }
-                    staged += entry to target
                 }
                 validate(staged.associate { it.first.name to it.second }, manifest.snapshotId)
                 onProgress("Installing progressions…")
@@ -89,11 +111,38 @@ object AuralCatalogDownloader {
                         check(file.renameTo(destination)) { "Could not install progression catalog" }
                     }
                 }
+                true
             } catch (error: Throwable) {
                 staged.forEach { (_, file) -> file.delete() }
                 throw error
             }
         }
+    }
+
+    internal fun installedBundleMatches(context: Context, manifest: Bundle): Boolean = runCatching {
+        if (manifest.schemaVersion != SCHEMA) return@runCatching false
+        val entries = manifest.files.associateBy { it.name }
+        if (!entries.keys.containsAll(requiredFiles)) return@runCatching false
+        val files = requiredFiles.associateWith { File(context.filesDir, it) }
+        if (files.values.any { !it.isFile }) return@runCatching false
+        if (requiredFiles.any { name -> sha256(requireNotNull(files[name])) != requireNotNull(entries[name]).checksum }) {
+            return@runCatching false
+        }
+        validate(files, manifest.snapshotId)
+        true
+    }.getOrDefault(false)
+
+    private fun sha256(file: File): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        file.inputStream().buffered().use { input ->
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+            while (true) {
+                val count = input.read(buffer)
+                if (count < 0) break
+                digest.update(buffer, 0, count)
+            }
+        }
+        return digest.digest().joinToString("") { "%02x".format(it) }
     }
 
     private fun validate(files: Map<String, File>, snapshotId: String) {

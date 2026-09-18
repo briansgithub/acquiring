@@ -119,7 +119,10 @@ internal fun AuralQuizScreen(
         if(!catalogEnabled) return@LaunchedEffect
         catalogError = null
         catalogStatus = "Opening your progression catalog"
-        try { catalog = withContext(Dispatchers.IO) { AuralCatalog(File(context.filesDir,"aural-catalog.db")) } }
+        try { catalog = withContext(Dispatchers.IO) {
+            check(AuralCatalogDownloader.hasInstalledBundleFiles(context)) { "Progression bundle is incomplete" }
+            AuralCatalog(File(context.filesDir,"aural-catalog.db"))
+        } }
         catch (cancelled: CancellationException) { throw cancelled }
         catch (_: Exception) {
             catalogStatus = "Downloading the progression catalog"
