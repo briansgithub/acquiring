@@ -3144,7 +3144,6 @@ private struct QuizTimelinePairView: View {
         presentationObservationContent
         .onAppear {
             isVisible = true
-            displayModel.setFrameRatePreference(frameRatePreference)
             displayModel.updatePresentations(
                 section: section,
                 sectionID: sectionID,
@@ -3156,6 +3155,7 @@ private struct QuizTimelinePairView: View {
                 sceneIsActive: scenePhase == .active,
                 reduceMotion: reduceMotion
             )
+            displayModel.setFrameRatePreference(frameRatePreference)
         }
         .onDisappear {
             isVisible = false
@@ -3182,6 +3182,9 @@ private struct QuizTimelinePairView: View {
         .onChange(of: frameRateRawValue) { _, _ in
             displayModel.setFrameRatePreference(frameRatePreference)
         }
+        .background {
+            TimelineFrameRateHost(preference: frameRatePreference)
+        }
     }
 
     private var frameRatePreference: TimelineFrameRatePreference {
@@ -3201,8 +3204,36 @@ private struct QuizTimelinePairView: View {
     }
 }
 
+/// Pins the quiz surface to the Settings frame-rate range. Lock in Major
+/// rebuilds the lane views; without this host those new layers can run at the
+/// display maximum even when the display-link request is 60 fps.
+private struct TimelineFrameRateHost: UIViewRepresentable {
+    let preference: TimelineFrameRatePreference
+
+    func makeUIView(context: Context) -> HostView {
+        HostView()
+    }
+
+    func updateUIView(_ view: HostView, context: Context) {
+        view.apply(preference)
+    }
+
+    final class HostView: UIView {
+        func apply(_ preference: TimelineFrameRatePreference) {
+            let range = preference.displayFrameRateRange()
+            preferredFrameRateRange = range
+            window?.rootViewController?.view.preferredFrameRateRange = range
+        }
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            preferredFrameRateRange = TimelineFrameRatePreference.stored.displayFrameRateRange()
+        }
+    }
+}
+
 @MainActor
-final class QuizTimelineDisplayModel: ObservableObject {
+private final class QuizTimelineDisplayModel: ObservableObject {
     @Published private(set) var displayedBeat: Double
     @Published private(set) var melodyPresentation: MelodyTimelinePresentation
     @Published private(set) var chordPresentation: ChordTimelinePresentation
@@ -3220,7 +3251,7 @@ final class QuizTimelineDisplayModel: ObservableObject {
     private var sceneIsActive = false
     private var reduceMotion = false
     private var frameRatePreference = TimelineFrameRatePreference.standard
-    private(set) var displayLink: CADisplayLink?
+    private var displayLink: CADisplayLink?
     private let displayLinkTarget = QuizTimelineDisplayLinkTarget()
 
     init(
@@ -3360,10 +3391,10 @@ final class QuizTimelineDisplayModel: ObservableObject {
             if displayLink == nil {
                 let link = CADisplayLink(target: displayLinkTarget, selector: #selector(QuizTimelineDisplayLinkTarget.tick(_:)))
                 displayLink = link
-                configureFrameRate()
                 link.add(to: .main, forMode: .common)
             }
-            // Presentation and lifecycle changes retain the user's rendering rate.
+            // Lock-in-Major rebuilds the lane views. Re-apply the range every time
+            // the link should run; iOS can drop it when the hosted views change.
             configureFrameRate()
         } else {
             displayLink?.invalidate()

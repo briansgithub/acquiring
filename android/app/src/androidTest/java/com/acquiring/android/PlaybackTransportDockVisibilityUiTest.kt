@@ -146,6 +146,51 @@ class PlaybackTransportDockVisibilityUiTest {
         composeTestRule.onNodeWithText("Current Root").assertExists()
     }
 
+    @Test
+    fun auralPassageKeepsTheEstablishedChordAndMelodyPlayerLayout() {
+        val song = Song(
+            slug = "aural-source-song",
+            artist = "Test Artist",
+            title = "Aural Source Song",
+            url = "https://example.test/aural-source-song",
+            status = "enriched",
+            dataBlob = byteArrayOf()
+        )
+        composeTestRule.setContent {
+            MaterialTheme {
+                PlaybackDestination(
+                    song = song,
+                    sections = linkedMapOf("verse" to section("Verse")),
+                    selectedSectionId = "verse",
+                    onSectionChange = {},
+                    currentWaveform = AudioEngine.Waveform.CLARINET,
+                    onWaveformChange = {},
+                    globalTranspose = 0,
+                    playbackTempoPercent = 100f,
+                    onPlaybackTempoPercentChange = {},
+                    playbackArpeggioOptionIndex = DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,
+                    onPlaybackArpeggioOptionIndexChange = {},
+                    onTransposeChange = {},
+                    onArtistClick = {},
+                    onShowSongInfo = {},
+                    onSingingTargetsRequested = {},
+                    octaveOffset = 0,
+                    persistentPitchSource = FakeExclusivePitchSource(),
+                    isFavorite = false,
+                    onToggleFavorite = {},
+                    onBack = {},
+                    initialPassage = 1.0 to 5.0
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag(PLAYBACK_SCREEN_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Melody").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Chord").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("PlaybackJumpToQuizPassage").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Jump to quiz passage").assertDoesNotExist()
+    }
+
     private fun section(name: String): ExtractedSection = Json.decodeFromString(
         """
         {

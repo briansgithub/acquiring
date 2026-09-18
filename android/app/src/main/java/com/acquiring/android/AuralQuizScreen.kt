@@ -21,7 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
@@ -111,27 +110,28 @@ internal fun AuralQuizScreen(
     var chunkIndex by rememberSaveable { mutableStateOf(-1) }
     var catalog by remember { mutableStateOf<AuralCatalog?>(null) }
     var catalogError by remember { mutableStateOf<String?>(null) }
-    var playbackSource by remember { mutableStateOf<AuralPlaybackSource?>(null) }
+    var catalogStatus by remember { mutableStateOf("Organizing song harmony for practice") }
+    var catalogLoadAttempt by rememberSaveable { mutableStateOf(0) }
     var songsTab by rememberSaveable { mutableStateOf(session.playbackReturn?.fromSongs==true) }
     var reviewPool by remember { mutableStateOf(emptyList<AuralCatalogRow>()) }
     val catalogState = rememberSaveableStateHolder()
-    LaunchedEffect(Unit) {
+    LaunchedEffect(catalogLoadAttempt) {
         if(!catalogEnabled) return@LaunchedEffect
+        catalogError = null
+        catalogStatus = "Opening your progression catalog"
         try { catalog = withContext(Dispatchers.IO) { AuralCatalog(File(context.filesDir,"aural-catalog.db")) } }
         catch (cancelled: CancellationException) { throw cancelled }
-        catch (_: Exception) { catalogError = "Song catalog is not installed. Guided practice is available." }
+        catch (_: Exception) {
+            catalogStatus = "Downloading the progression catalog"
+            val installed = AuralCatalogDownloader.downloadAndInstall(context) { catalogStatus = it }
+            if (installed.isSuccess) {
+                try { catalog = withContext(Dispatchers.IO) { AuralCatalog(File(context.filesDir,"aural-catalog.db")) } }
+                catch (_: Exception) { catalogError = "The progression catalog could not be opened after download." }
+            } else catalogError = installed.exceptionOrNull()?.message ?: "The progression catalog is not available right now."
+        }
     }
     DisposableEffect(catalog) { val current=catalog; onDispose { current?.close() } }
     LaunchedEffect(answer) { session.rememberDraft(answer) }
-    LaunchedEffect(catalog) {
-        if(catalog!=null && session.playbackReturn?.open==true) {
-            try { playbackSource=withContext(Dispatchers.IO) {
-                val returning=session.playbackReturn!!
-                catalog!!.playback(returning.sourcePassage ?: session.view().exercise!!.provenance.corpus!!.passage,wholeSong=returning.fromSongs)
-            } }
-            catch (_: Exception) { session.technical("Source could not reopen. Your quiz is restored."); view=session.view() }
-        }
-    }
 
     fun refresh() { view = session.view() }
     fun cancel(markInterrupted: Boolean = false) {
@@ -176,7 +176,6 @@ internal fun AuralQuizScreen(
     }
     fun back() {
         cancel(markInterrupted = true)
-        if(playbackSource != null) { playbackSource=null; session.returnFromPlayback(); return }
         when (route) {
             "lesson" -> {
                 if (!view.answered) session.interrupted()
@@ -191,48 +190,41 @@ internal fun AuralQuizScreen(
     }
     fun openPassage(passage:AuralSourcePassage, fromSongs:Boolean) {
         val productionPlayback=openFullPlayback
-        if(productionPlayback!=null) {
-            cancel(); busy=true
-            activityJob=scope.launch {
-                try {
-                    // This records answer-revealing Playback as assistance, while keeping
-                    // the quiz route ready to resume after the host Playback screen closes.
-                    session.exploringPlayback(answer,passage,fromSongs); session.returnFromPlayback()
-                    if(!productionPlayback(passage,fromSongs)) session.technical("This song is unavailable in Playback. Your quiz is still here.")
-                } catch(cancelled:CancellationException) { throw cancelled }
-                catch(_:Exception) { session.technical("This song could not open. Your quiz is still here.") }
-                finally { busy=false; refresh() }
-            }
+        if(productionPlayback==null) {
+            session.technical("Full song Playback is unavailable here. Your quiz is still here.")
+            refresh()
             return
         }
-        val currentCatalog=catalog ?: return
         cancel(); busy=true
         activityJob=scope.launch {
             try {
-                val source=withContext(Dispatchers.IO) { currentCatalog.playback(passage,wholeSong=fromSongs) }
-                session.exploringPlayback(answer,passage,fromSongs); playbackSource=source; refresh()
+                // Opening the source reveals the answer, so the attempt remains assisted.
+                // The host loads the ordinary full song blob and opens the same chord-and-
+                // melody Playback destination used by Library and Search.
+                session.exploringPlayback(answer,passage,fromSongs); session.returnFromPlayback()
+                if(!productionPlayback(passage,fromSongs)) session.technical("This song is unavailable in Playback. Your quiz is still here.")
             } catch(cancelled:CancellationException) { throw cancelled }
             catch(_:Exception) { session.technical("This song could not open. Your quiz is still here."); refresh() }
-            finally { busy=false }
+            finally { busy=false; refresh() }
         }
     }
     fun openSong(song:AuralPatternSong) {
         val currentCatalog=catalog ?: return
         val pattern=view.exercise?.provenance?.target?.pattern ?: return
+        val productionPlayback=openFullPlayback
+        if(productionPlayback==null) {
+            session.technical("Full song Playback is unavailable here. Your quiz is still here.")
+            refresh()
+            return
+        }
         cancel(); busy=true
         activityJob=scope.launch {
             try {
                 val passage=withContext(Dispatchers.IO) {
                     currentCatalog.passage(pattern,exampleSettings,AuralSelectionContext(),0,pattern.id,song.id)
                 }
-                val productionPlayback=openFullPlayback
-                if(productionPlayback!=null) {
-                    session.exploringPlayback(answer,passage,fromSongs=true); session.returnFromPlayback()
-                    if(!productionPlayback(passage,true)) session.technical("This song is unavailable in Playback. Your quiz is still here.")
-                } else {
-                    val source=withContext(Dispatchers.IO) { currentCatalog.playback(passage,wholeSong=true) }
-                    session.exploringPlayback(answer,passage,fromSongs=true); playbackSource=source
-                }
+                session.exploringPlayback(answer,passage,fromSongs=true); session.returnFromPlayback()
+                if(!productionPlayback(passage,true)) session.technical("This song is unavailable in Playback. Your quiz is still here.")
                 refresh()
             } catch(cancelled:CancellationException) { throw cancelled }
             catch(_:Exception) { session.technical("This song could not open. Your quiz is still here."); refresh() }
@@ -331,14 +323,10 @@ internal fun AuralQuizScreen(
 
     val presentation = auralQuestionPresentation(view)
     val exercise = view.exercise
-    val exerciseMode = remember(exercise?.id) { exercise?.harmonicMode() }
-    val numeralColor = auralRomanColor(exerciseMode)
     val selected = AuralCurriculum.families.firstOrNull { it.id == selectedFamily } ?: AuralCurriculum.families.first()
     val namedPractice = exercise?.provenance?.target?.variantId != null
     val inLesson = route == "lesson" && exercise != null
-    if (playbackSource != null) {
-        AuralSourcePlayback(playbackSource!!, defaultInstrument, returnLabel=if(songsTab) "Return to songs" else "Return to quiz",onBack={ playbackSource=null; session.returnFromPlayback() })
-    } else if (showExampleSettings) {
+    if (showExampleSettings) {
         AuralExampleSettingsPanel(exampleSettings, session.popularityAvailable || catalog?.popularity?.isNotEmpty()==true,
             onChange = { session.setExampleSettings(it); exampleSettings = it; refresh() }, onBack = { showExampleSettings = false },popularityDescription=catalog?.popularityDescription)
     } else if (showSettings && settingsContent != null) {
@@ -360,9 +348,13 @@ internal fun AuralQuizScreen(
         }
         if (inLesson && namedPractice) {
             Text(if(exercise?.provenance?.target?.pattern != null) "Song progression" else selected.label, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 16.dp))
-            Text(if(exercise!!.provenance.target.pattern != null && !view.guidanceVisible) "${exercise.events.size} chords" else exercise.fullDegrees.joinToString(" → "), style = MaterialTheme.typography.headlineSmall,
-                color=if(exercise.provenance.target.pattern != null && !view.guidanceVisible) Color.Unspecified else numeralColor,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
+            if (exercise!!.provenance.target.pattern != null && !view.guidanceVisible) {
+                Text("${exercise.events.size} chords", style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
+            } else {
+                Text(auralRomanSequence(exercise.fullDegrees), style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
+            }
             AuralModeTabs(exercise.skillId,songsSelected=songsTab && exercise.provenance.target.pattern!=null,
                 onSongs=if(exercise.provenance.target.pattern!=null) ({ cancel(markInterrupted=true); songsTab=true }) else null) { mode ->
                 songsTab=false
@@ -374,17 +366,15 @@ internal fun AuralQuizScreen(
                 AuralPatternSongs(catalog,exercise.provenance.target.pattern!!,busy,::openSong,Modifier.weight(1f))
             }
             if(view.feedback.isNotBlank()) Text(view.feedback,Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.bodySmall)
-        } else if(route == "families" && catalogEnabled && catalog == null && catalogError == null) {
-            Column(Modifier.weight(1f).fillMaxWidth().testTag("AuralCatalogLoading"),
-                horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center) {
-                CircularProgressIndicator()
-                Text("Loading progressions…",Modifier.padding(16.dp),style=MaterialTheme.typography.bodyMedium)
-                if(exercise!=null) TextButton(onClick={ route="lesson" },modifier=Modifier.testTag("AuralContinue")) { Text("Continue quiz") }
-            }
-        } else if(route == "families" && catalog != null) {
-            catalogState.SaveableStateProvider("catalog") {
-                AuralCatalogScreen(catalog!!,exampleSettings,session,{ patternPractice(it,"recognize") },::adaptive,
-                    if(exercise != null) ({ route="lesson" }) else null,Modifier.weight(1f),onReview={ rows -> reviewPool=rows; session.reviewPattern(rows)?.let { patternPractice(it.first,it.second,true) } })
+        } else if(route == "families" && catalogEnabled) {
+            if (catalog == null) {
+                AuralCatalogInterstitial(catalogStatus, catalogError, onRetry = { catalogLoadAttempt++ }, onGuidedCourse = ::adaptive,
+                    modifier = Modifier.weight(1f))
+            } else {
+                catalogState.SaveableStateProvider("catalog") {
+                    AuralCatalogScreen(catalog!!,exampleSettings,session,{ patternPractice(it,"recognize") },::adaptive,
+                        if(exercise != null) ({ route="lesson" }) else null,Modifier.weight(1f),onReview={ rows -> reviewPool=rows; session.reviewPattern(rows)?.let { patternPractice(it.first,it.second,true) } })
+                }
             }
         } else {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -425,7 +415,7 @@ internal fun AuralQuizScreen(
                     }
                     exercise.provenance.corpus?.passage?.let { passage ->
                         Text(listOf(passage.title,passage.artist,passage.sectionName).filter { it.isNotBlank() }.joinToString(" · "),style=MaterialTheme.typography.bodySmall,modifier=Modifier.testTag("AuralSource"))
-                        TextButton(enabled=!busy && (catalog != null || openFullPlayback != null),onClick={
+                        TextButton(enabled=!busy && openFullPlayback != null,onClick={
                             openPassage(passage,fromSongs=false)
                         },modifier=Modifier.testTag("AuralOpenPlayback")) { Text("Open in Playback") }
                     }
@@ -450,7 +440,7 @@ internal fun AuralQuizScreen(
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = if (presentation.guidance != null) Modifier.testTag("AuralGuidance") else Modifier) {
-                        AuralChordStrip(diagram,mode=exerciseMode)
+                        AuralChordStrip(diagram)
                         if (view.guidanceVisible) Text(
                             AuralCurriculum.families.firstOrNull { it.id == exercise.familyId }?.description ?: "Follow the harmonic movement.",
                             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -480,18 +470,18 @@ internal fun AuralQuizScreen(
                                     colors = ButtonDefaults.outlinedButtonColors(containerColor = if (selectedAnswer) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface),
                                     modifier = Modifier.fillMaxWidth().testTag("AuralChoice-${option.id}").semantics { this.selected = selectedAnswer }) {
                                     if (selectedAnswer) Text("● ")
-                                    Text(option.label,color=numeralColor)
+                                    Text(auralRomanSequence(option.degrees))
                                 }
                             }
                             "sequence" -> {
-                                AuralChordStrip(List(exercise.answer.degrees.size) { answer.getOrNull(it) },mode=exerciseMode)
-                                Text(answer.joinToString(" → ").ifEmpty { "Your answer" }, Modifier.testTag("AuralEntered"), style = MaterialTheme.typography.labelSmall,
-                                    color=if(answer.isEmpty()) Color.Unspecified else numeralColor)
+                                AuralChordStrip(List(exercise.answer.degrees.size) { answer.getOrNull(it) })
+                                if (answer.isEmpty()) Text("Your answer", Modifier.testTag("AuralEntered"), style = MaterialTheme.typography.labelSmall)
+                                else Text(auralRomanSequence(answer), Modifier.testTag("AuralEntered"), style = MaterialTheme.typography.labelSmall)
                                 (exercise.provenance.target.pattern?.let(::auralPatternVocabulary) ?: AuralCurriculum.degrees).chunked(4).forEach { row ->
                                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                         row.forEach { degree ->
                                             OutlinedButton(onClick = { answer = answer + degree }, enabled = !busy && answer.size < exercise.answer.degrees.size,
-                                                modifier = Modifier.weight(1f).testTag("AuralDegree-$degree"), contentPadding = PaddingValues(4.dp)) { Text(degree,color=numeralColor) }
+                                                modifier = Modifier.weight(1f).testTag("AuralDegree-$degree"), contentPadding = PaddingValues(4.dp)) { Text(degree,color=auralRomanColor(degree)) }
                                         }
                                     }
                                 }
