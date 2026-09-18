@@ -11,7 +11,6 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import org.junit.Rule
 import kotlinx.coroutines.runBlocking
-import androidx.test.espresso.Espresso
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.unit.dp
@@ -34,15 +33,18 @@ class AuralCatalogDeviceTest {
             compose.onNodeWithTag("AuralOutline-2").assertTextEquals("2")
         }
     }
-    @Test fun popularitySongsReturnToTheirScrollPositionAndKeepTheQuizDraft() {
+    @Test fun popularitySongDelegatesToTheHostAndKeepsTheQuizDraft() {
         val context=ApplicationProvider.getApplicationContext<Context>(); AppAudioOutput.initialize(context)
         val session=AuralSession(Store(),seedFor={it})
+        var opened:AuralSourcePassage?=null
         AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
             val target=catalog.Ranking(AuralExampleSettings(),emptyList(),emptySet(),minLength=3,maxLength=3).page(1).single().target
             runBlocking { session.practicePattern(target,catalog,"recall") }
         }
-        compose.setContent { androidx.compose.material3.MaterialTheme { AuralQuizScreen({},session,playExample={}) } }
-        compose.onNodeWithTag("AuralContinue").performClick()
+        compose.setContent { androidx.compose.material3.MaterialTheme { AuralQuizScreen({},session,
+            openFullPlayback={ passage,_ -> opened=passage; true },playExample={}) } }
+        compose.waitUntil(30_000) { compose.onAllNodesWithText("Continue").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Continue").performClick()
         compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
         val exercise=session.view().exercise!!;val degree=exercise.answer.degrees.first()
         compose.onNodeWithTag("AuralDegree-$degree").performScrollTo().performClick()
@@ -53,10 +55,9 @@ class AuralCatalogDeviceTest {
         val chosen=compose.onAllNodes(songMatcher).fetchSemanticsNodes().first().config[SemanticsProperties.TestTag]
         compose.onNodeWithTag("AuralSongPopularity-${chosen.removePrefix("AuralSong-")}",useUnmergedTree=true).assertExists()
         compose.onNodeWithTag(chosen).performClick()
-        compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralReturnFromPlayback").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText("← Return to songs").assertExists()
-        compose.onNodeWithTag("PlaybackScreen").assertExists()
-        Espresso.pressBack()
+        compose.waitUntil(30_000) { opened!=null }
+        assertEquals(chosen.removePrefix("AuralSong-"),opened!!.songId)
+        compose.onNodeWithTag("PlaybackScreen").assertDoesNotExist()
         compose.waitUntil(30_000) { compose.onAllNodesWithTag(chosen).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag(chosen).assertIsDisplayed()
         compose.onNodeWithTag("AuralMode-songs").assertIsSelected()
@@ -65,24 +66,27 @@ class AuralCatalogDeviceTest {
         assertEquals(exercise.id,session.view().exercise!!.id)
         assertTrue(session.view().supported)
     }
-    @Test fun sourcePlaybackReturnsToSameQuestionAndDraft() {
+    @Test fun sourcePlaybackDelegatesToTheHostAndKeepsTheQuestionAndDraft() {
         val context=ApplicationProvider.getApplicationContext<Context>(); AppAudioOutput.initialize(context)
         val session=AuralSession(Store(),seedFor={it})
+        var opened:AuralSourcePassage?=null
         AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
             val target=catalog.Ranking(AuralExampleSettings(),emptyList(),emptySet(),minLength=3,maxLength=3).page(1).single().target
             runBlocking { session.practicePattern(target,catalog,"recall") }
         }
-        compose.setContent { androidx.compose.material3.MaterialTheme { AuralQuizScreen({},session,playExample={}) } }
-        compose.onNodeWithTag("AuralContinue").performClick()
+        compose.setContent { androidx.compose.material3.MaterialTheme { AuralQuizScreen({},session,
+            openFullPlayback={ passage,_ -> opened=passage; true },playExample={}) } }
+        compose.waitUntil(30_000) { compose.onAllNodesWithText("Continue").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Continue").performClick()
         compose.onNodeWithTag("AuralSource").assertExists()
         compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
         val exercise=session.view().exercise!!;val degree=exercise.answer.degrees.first()
         compose.onNodeWithTag("AuralDegree-$degree").performScrollTo().performClick()
         compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralOpenPlayback").fetchSemanticsNodes().isNotEmpty() && runCatching { compose.onNodeWithTag("AuralOpenPlayback").assertIsEnabled() }.isSuccess }
         compose.onNodeWithTag("AuralOpenPlayback").performScrollTo().performClick()
-        compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralReturnFromPlayback").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithTag("PlaybackScreen").assertExists()
-        compose.onNodeWithTag("AuralReturnFromPlayback").performClick()
+        compose.waitUntil(30_000) { opened!=null }
+        assertEquals(exercise.provenance.corpus!!.passage.sourceId,opened!!.sourceId)
+        compose.onNodeWithTag("PlaybackScreen").assertDoesNotExist()
         compose.onNodeWithTag("AuralEntered").performScrollTo().assertTextEquals(degree)
         assertEquals(exercise.id,session.view().exercise!!.id); assertTrue(session.view().supported)
     }
