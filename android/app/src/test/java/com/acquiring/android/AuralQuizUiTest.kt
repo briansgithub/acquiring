@@ -29,7 +29,7 @@ class AuralQuizUiTest {
         val session = AuralSession(Store(), seedFor = { it })
         session.practice("dominant-return", "recall", variantId = "departure")
         val original = session.view().exercise
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {} } }
         compose.onNodeWithTag("AuralExampleSettings").performClick()
         compose.onAllNodes(isToggleable()).assertCountEquals(5)
         compose.onNodeWithTag("AuralFlatList").assertIsOff().performScrollTo().performClick()
@@ -46,13 +46,21 @@ class AuralQuizUiTest {
         compose.onNodeWithTag("AuralQuiz").assertExists()
     }
 
+    @Test fun missingSongCatalogShowsAnInterstitialInsteadOfRetiredFamilies() {
+        val session = AuralSession(Store(), seedFor = { it })
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.waitUntil(5_000) { compose.onAllNodesWithTag("AuralCatalogInterstitial").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Families").assertDoesNotExist()
+        compose.onAllNodesWithTag("AuralFamily-dominant-return").assertCountEquals(0)
+    }
+
     @Test fun songAndSectionAppearImmediatelyWithoutRevealingTheAnswer() {
         val provider = object : AuralExampleProvider {
             override fun example(base: AuralExercise, settings: AuralExampleSettings, context: AuralSelectionContext) = corpusFixture(base, settings)
         }
         val session = AuralSession(Store(), seedFor = { it }, exampleProvider = provider)
         session.practice("dominant-return", "recall", variantId = "departure")
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {} } }
         compose.onNodeWithTag("AuralContinue").performClick()
         compose.onNodeWithTag("AuralSource").assertExists()
         compose.onNodeWithText("Hidden song", substring = true).assertExists()
@@ -70,19 +78,37 @@ class AuralQuizUiTest {
         val session = AuralSession(Store(), seedFor = { it }, exampleProvider = provider)
         var opened: AuralSourcePassage? = null
         session.practice("dominant-return", "recall", variantId = "departure")
-        val exerciseId = session.view().exercise!!.id
         compose.setContent { MaterialTheme {
             AuralQuizScreen({}, session, catalogEnabled = false, openFullPlayback = { passage, _ ->
                 opened = passage
                 true
             })
         } }
+        compose.waitForIdle()
+        val exerciseId = session.view().exercise!!.id
         compose.onNodeWithTag("AuralContinue").performClick()
         compose.onNodeWithTag("AuralOpenPlayback").performScrollTo().assertIsEnabled().performClick()
         compose.waitUntil(5_000) { opened != null }
         assertEquals("Hidden song", opened!!.title)
+        assertEquals(session.view().exercise!!.provenance.corpus!!.passage.sourceId, opened!!.sourceId)
         assertEquals(exerciseId, session.view().exercise!!.id)
         assertTrue(session.view().supported)
+    }
+
+    @Test fun sourcePlaybackNeverFallsBackToTheCompactCatalogPlayer() {
+        val provider = object : AuralExampleProvider {
+            override fun example(base: AuralExercise, settings: AuralExampleSettings, context: AuralSelectionContext) = corpusFixture(base, settings)
+        }
+        val session = AuralSession(Store(), seedFor = { it }, exampleProvider = provider)
+        session.practice("dominant-return", "recall", variantId = "departure")
+        compose.setContent { MaterialTheme {
+            AuralQuizScreen({}, session, catalogEnabled = false)
+        } }
+
+        compose.onNodeWithTag("AuralContinue").performClick()
+        compose.onNodeWithTag("AuralOpenPlayback").performScrollTo().assertIsNotEnabled()
+        compose.onNodeWithTag(PLAYBACK_SCREEN_TEST_TAG).assertDoesNotExist()
+        compose.onNodeWithTag("AuralReturnFromPlayback").assertDoesNotExist()
     }
 
     @Test fun failedPlaybackDoesNotMakeAnUnheardPassageFamiliar() {
@@ -95,7 +121,7 @@ class AuralQuizUiTest {
         }
         val session = AuralSession(store, seedFor = { it }, exampleProvider = provider)
         session.practice("dominant-return", "recall", variantId = "departure")
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) { error("Audio preparation failed") } } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) { error("Audio preparation failed") } } }
         compose.onNodeWithTag("AuralContinue").performClick()
         compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
         compose.waitForIdle()
@@ -108,7 +134,7 @@ class AuralQuizUiTest {
 
     @Test fun threeTabsReplaceSevenAndIntroductionLeadsStraightIntoRecognition() {
         val session = AuralSession(Store(), seedFor = { it })
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {} } }
         compose.onNodeWithTag("AuralFamily-dominant-return").performClick()
         compose.onNodeWithTag("AuralProgression-direct").performClick()
         compose.onAllNodes(isSelectable()).assertCountEquals(3)
@@ -137,7 +163,7 @@ class AuralQuizUiTest {
             AuralQuizScreen({}, session, defaultInstrument = instrument, settingsContent = { close ->
                 AppSettingsScreen(instrument, { instrument = it }, "", "", {}, PlayUpdateStatus.entries.first(), {},
                     TimelineFrameRatePreference.STANDARD, {}, {}, {}, close)
-            }) { exercise ->
+            }, catalogEnabled = false) { exercise ->
                 played += exercise.instrument
                 if (played.size == 1) try { awaitCancellation() } finally { cancelled = true }
             }
@@ -163,7 +189,7 @@ class AuralQuizUiTest {
 
     @Test fun guidedLearnerCanListenAnswerAndMoveToFreshExample() {
         val session = AuralSession(Store(), seedFor = { it })
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {} } }
         compose.onNodeWithTag("AuralQuizTitle").assertTextEquals("Aural Quiz")
         compose.onNodeWithTag("AuralStart").performClick()
         compose.onNodeWithTag("AuralSubmit").assertDoesNotExist()
@@ -182,7 +208,7 @@ class AuralQuizUiTest {
         val example = AuralCurriculum.generate(AuralTarget("predominant-cadence", "recall", 0), 492L)
         val store = Store(Json.encodeToString(AuralSavedSession(current = example)))
         val session = AuralSession(store)
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {} } }
         compose.onNodeWithTag("AuralContinue").performClick()
         // Even unmerged accessibility semantics must not contain a hidden solution.
         compose.onAllNodesWithTag("AuralGuidance", useUnmergedTree = true).assertCountEquals(0)
@@ -197,7 +223,7 @@ class AuralQuizUiTest {
     @Test fun silentGapQuestionDoesNotRenderMissingChordBeforeAnswer() {
         val example = AuralCurriculum.generate(AuralTarget("secondary-dominant", "audiate", 0), 91L)
         val session = AuralSession(Store(Json.encodeToString(AuralSavedSession(current = example))))
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {} } }
         compose.onNodeWithTag("AuralContinue").performClick()
         compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
         compose.waitForIdle()
@@ -208,7 +234,7 @@ class AuralQuizUiTest {
 
     @Test fun familyProgressionAndPhaseTabsKeepTheChosenProgressionAcrossExamples() {
         val session = AuralSession(Store(), seedFor = { it })
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {} } }
         compose.onNodeWithTag("AuralFamily-predominant-cadence").performScrollTo().performClick()
         compose.onNodeWithTag("AuralProgression-departure").performScrollTo().performClick()
         compose.onNodeWithTag("AuralProgressionTitle").assertTextEquals("I → ii → V → I")
@@ -237,7 +263,7 @@ class AuralQuizUiTest {
     @Test fun everyPhaseIsReachableAndChangingTabCancelsPlaybackWithoutGrading() {
         val session = AuralSession(Store(), seedFor = { it })
         var cancelled = false
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {
             try { awaitCancellation() } finally { cancelled = true }
         } } }
         compose.onNodeWithTag("AuralFamily-dominant-return").performClick()
@@ -258,7 +284,7 @@ class AuralQuizUiTest {
     @Test fun advancedSelectedPracticeStillShowsPracticeAndNoAutomaticSolution() {
         val progress = AuralProgress(cells = listOf("recall", "complete", "audiate").associate { "dominant-return:$it" to AuralCell(practice = 4, practiceCorrect = 4) })
         val session = AuralSession(Store(Json.encodeToString(AuralSavedSession(progress = progress))), seedFor = { it })
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {} } }
         compose.onNodeWithTag("AuralFamily-dominant-return").performClick()
         compose.onNodeWithTag("AuralProgression-direct").performClick()
         compose.onNodeWithTag("AuralMode-recall").performClick()
@@ -271,7 +297,7 @@ class AuralQuizUiTest {
     @Test fun leavingAdaptiveMidListenCancelsAndContinueRemainsSupported() {
         val session = AuralSession(Store(), seedFor = { it })
         var cancelled = false
-        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {
             try { awaitCancellation() } finally { cancelled = true }
         } } }
         compose.onNodeWithTag("AuralStart").performClick()

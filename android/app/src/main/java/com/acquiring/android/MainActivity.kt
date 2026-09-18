@@ -666,14 +666,14 @@ internal fun MainScreen(
     }
 
     /** Uses the normal song blob and normal Playback state, never the compact quiz cache. */
-    val openAuralSourcePlayback: suspend (AuralSourcePassage, Boolean) -> Boolean = openAuralSourcePlayback@ { passage, _ ->
+    val openAuralFullSongPlayback: suspend (AuralSourcePassage, Boolean) -> Boolean = openAuralFullSongPlayback@ { passage, _ ->
         val song = withContext(Dispatchers.IO) { activeDb.songDao().getSongBySlug(passage.songId) }
-            ?: return@openAuralSourcePlayback false
-        val blob = song.dataBlob ?: return@openAuralSourcePlayback false
-        val sections = try { decodeSongSections(blob) } catch (cancelled: CancellationException) { throw cancelled } catch (_: Exception) { return@openAuralSourcePlayback false }
+            ?: return@openAuralFullSongPlayback false
+        val blob = song.dataBlob ?: return@openAuralFullSongPlayback false
+        val sections = try { decodeSongSections(blob) } catch (cancelled: CancellationException) { throw cancelled } catch (_: Exception) { return@openAuralFullSongPlayback false }
         val sectionId = sections[passage.sectionId]?.let { passage.sectionId }
             ?: sections.entries.firstOrNull { (_, section) -> section.safeSectionName == passage.sectionName }?.key
-            ?: return@openAuralSourcePlayback false
+            ?: return@openAuralFullSongPlayback false
         songOctaveOffsetViewModel.clearSession()
         HistoryManager.addSong(context, song.slug)
         HistoryManager.addArtist(context, song.artist)
@@ -729,7 +729,7 @@ internal fun MainScreen(
                 AuralQuizScreen(onBack = { isShowingAuralQuiz = false },
                     defaultInstrument = defaultInstrument, settingsContent = settingsContent,
                     loadFavoriteSongs = { playlistDao.getSlugsIn(PlaylistIds.FAVORITES).toSet() },
-                    openFullPlayback = openAuralSourcePlayback)
+                    openFullPlayback = openAuralFullSongPlayback)
             } else if (isShowingSettings) {
                 settingsContent { isShowingSettings = false }
             } else if (selectedSongSections == null) {
