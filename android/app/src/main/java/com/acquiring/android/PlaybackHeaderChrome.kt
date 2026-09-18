@@ -47,6 +47,7 @@ internal fun PlaybackScreenHeader(
     keyDisplay: PlaybackKeyDisplay?,
     isMonitoring: Boolean,
     onToggleMonitoring: () -> Unit,
+    onJumpToPassage: (() -> Unit)? = null,
     onShowHelp: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -134,6 +135,16 @@ internal fun PlaybackScreenHeader(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                onJumpToPassage?.let { jump ->
+                    TextButton(
+                        onClick = jump,
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                        modifier = Modifier
+                            .height(44.dp)
+                            .testTag("PlaybackJumpToQuizPassage")
+                            .semantics { contentDescription = "Jump to quiz passage" }
+                    ) { Text("Jump") }
+                }
                 Surface(
                     onClick = onToggleMonitoring,
                     modifier = Modifier

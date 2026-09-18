@@ -112,7 +112,6 @@ internal fun AuralQuizScreen(
     var catalogError by remember { mutableStateOf<String?>(null) }
     var catalogStatus by remember { mutableStateOf("Organizing song harmony for practice") }
     var catalogLoadAttempt by rememberSaveable { mutableStateOf(0) }
-    var playbackSource by remember { mutableStateOf<AuralPlaybackSource?>(null) }
     var songsTab by rememberSaveable { mutableStateOf(session.playbackReturn?.fromSongs==true) }
     var reviewPool by remember { mutableStateOf(emptyList<AuralCatalogRow>()) }
     val catalogState = rememberSaveableStateHolder()
@@ -133,15 +132,6 @@ internal fun AuralQuizScreen(
     }
     DisposableEffect(catalog) { val current=catalog; onDispose { current?.close() } }
     LaunchedEffect(answer) { session.rememberDraft(answer) }
-    LaunchedEffect(catalog) {
-        if(catalog!=null && session.playbackReturn?.open==true) {
-            try { playbackSource=withContext(Dispatchers.IO) {
-                val returning=session.playbackReturn!!
-                catalog!!.playback(returning.sourcePassage ?: session.view().exercise!!.provenance.corpus!!.passage,wholeSong=returning.fromSongs)
-            } }
-            catch (_: Exception) { session.technical("Source could not reopen. Your quiz is restored."); view=session.view() }
-        }
-    }
 
     fun refresh() { view = session.view() }
     fun cancel(markInterrupted: Boolean = false) {
@@ -186,7 +176,6 @@ internal fun AuralQuizScreen(
     }
     fun back() {
         cancel(markInterrupted = true)
-        if(playbackSource != null) { playbackSource=null; session.returnFromPlayback(); return }
         when (route) {
             "lesson" -> {
                 if (!view.answered) session.interrupted()
@@ -201,48 +190,41 @@ internal fun AuralQuizScreen(
     }
     fun openPassage(passage:AuralSourcePassage, fromSongs:Boolean) {
         val productionPlayback=openFullPlayback
-        if(productionPlayback!=null) {
-            cancel(); busy=true
-            activityJob=scope.launch {
-                try {
-                    // This records answer-revealing Playback as assistance, while keeping
-                    // the quiz route ready to resume after the host Playback screen closes.
-                    session.exploringPlayback(answer,passage,fromSongs); session.returnFromPlayback()
-                    if(!productionPlayback(passage,fromSongs)) session.technical("This song is unavailable in Playback. Your quiz is still here.")
-                } catch(cancelled:CancellationException) { throw cancelled }
-                catch(_:Exception) { session.technical("This song could not open. Your quiz is still here.") }
-                finally { busy=false; refresh() }
-            }
+        if(productionPlayback==null) {
+            session.technical("Full song Playback is unavailable here. Your quiz is still here.")
+            refresh()
             return
         }
-        val currentCatalog=catalog ?: return
         cancel(); busy=true
         activityJob=scope.launch {
             try {
-                val source=withContext(Dispatchers.IO) { currentCatalog.playback(passage,wholeSong=fromSongs) }
-                session.exploringPlayback(answer,passage,fromSongs); playbackSource=source; refresh()
+                // Opening the source reveals the answer, so the attempt remains assisted.
+                // The host loads the ordinary full song blob and opens the same chord-and-
+                // melody Playback destination used by Library and Search.
+                session.exploringPlayback(answer,passage,fromSongs); session.returnFromPlayback()
+                if(!productionPlayback(passage,fromSongs)) session.technical("This song is unavailable in Playback. Your quiz is still here.")
             } catch(cancelled:CancellationException) { throw cancelled }
             catch(_:Exception) { session.technical("This song could not open. Your quiz is still here."); refresh() }
-            finally { busy=false }
+            finally { busy=false; refresh() }
         }
     }
     fun openSong(song:AuralPatternSong) {
         val currentCatalog=catalog ?: return
         val pattern=view.exercise?.provenance?.target?.pattern ?: return
+        val productionPlayback=openFullPlayback
+        if(productionPlayback==null) {
+            session.technical("Full song Playback is unavailable here. Your quiz is still here.")
+            refresh()
+            return
+        }
         cancel(); busy=true
         activityJob=scope.launch {
             try {
                 val passage=withContext(Dispatchers.IO) {
                     currentCatalog.passage(pattern,exampleSettings,AuralSelectionContext(),0,pattern.id,song.id)
                 }
-                val productionPlayback=openFullPlayback
-                if(productionPlayback!=null) {
-                    session.exploringPlayback(answer,passage,fromSongs=true); session.returnFromPlayback()
-                    if(!productionPlayback(passage,true)) session.technical("This song is unavailable in Playback. Your quiz is still here.")
-                } else {
-                    val source=withContext(Dispatchers.IO) { currentCatalog.playback(passage,wholeSong=true) }
-                    session.exploringPlayback(answer,passage,fromSongs=true); playbackSource=source
-                }
+                session.exploringPlayback(answer,passage,fromSongs=true); session.returnFromPlayback()
+                if(!productionPlayback(passage,true)) session.technical("This song is unavailable in Playback. Your quiz is still here.")
                 refresh()
             } catch(cancelled:CancellationException) { throw cancelled }
             catch(_:Exception) { session.technical("This song could not open. Your quiz is still here."); refresh() }
@@ -344,9 +326,7 @@ internal fun AuralQuizScreen(
     val selected = AuralCurriculum.families.firstOrNull { it.id == selectedFamily } ?: AuralCurriculum.families.first()
     val namedPractice = exercise?.provenance?.target?.variantId != null
     val inLesson = route == "lesson" && exercise != null
-    if (playbackSource != null) {
-        AuralSourcePlayback(playbackSource!!, defaultInstrument, returnLabel=if(songsTab) "Return to songs" else "Return to quiz",onBack={ playbackSource=null; session.returnFromPlayback() })
-    } else if (showExampleSettings) {
+    if (showExampleSettings) {
         AuralExampleSettingsPanel(exampleSettings, session.popularityAvailable || catalog?.popularity?.isNotEmpty()==true,
             onChange = { session.setExampleSettings(it); exampleSettings = it; refresh() }, onBack = { showExampleSettings = false },popularityDescription=catalog?.popularityDescription)
     } else if (showSettings && settingsContent != null) {
@@ -435,7 +415,7 @@ internal fun AuralQuizScreen(
                     }
                     exercise.provenance.corpus?.passage?.let { passage ->
                         Text(listOf(passage.title,passage.artist,passage.sectionName).filter { it.isNotBlank() }.joinToString(" · "),style=MaterialTheme.typography.bodySmall,modifier=Modifier.testTag("AuralSource"))
-                        TextButton(enabled=!busy && (catalog != null || openFullPlayback != null),onClick={
+                        TextButton(enabled=!busy && openFullPlayback != null,onClick={
                             openPassage(passage,fromSongs=false)
                         },modifier=Modifier.testTag("AuralOpenPlayback")) { Text("Open in Playback") }
                     }
