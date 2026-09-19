@@ -34,6 +34,6 @@ import androidx.compose.ui.unit.dp
         PlaybackDestination(song=source.song,sections=sections,selectedSectionId=selectedSection,onSectionChange={ selectedSection=it;loop=false },
             currentWaveform=waveform,onWaveformChange={ waveform=it },globalTranspose=transpose,playbackTempoPercent=tempo,onPlaybackTempoPercentChange={ tempo=it },
             playbackArpeggioOptionIndex=arpeggio,onPlaybackArpeggioOptionIndexChange={ arpeggio=it },onTransposeChange={ transpose=it },onArtistClick={},onShowSongInfo={},onSingingTargetsRequested={},
-            octaveOffset=0,persistentPitchSource=pitch,isFavorite=false,onToggleFavorite={},onBack=onBack,initialPassage=if(matchedSection) source.startBeat to source.endBeat else null)
+            octaveOffset=0,persistentPitchSource=pitch,isFavorite=false,onToggleFavorite={},onBack=onBack)
     }
 }
