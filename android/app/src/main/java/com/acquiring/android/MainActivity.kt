@@ -239,8 +239,7 @@ internal fun MainScreen(
     var isShowingSettings by rememberSaveable { mutableStateOf(false) }
     var isShowingAuralQuiz by rememberSaveable { mutableStateOf(false) }
     // When Playback was opened from an Aural Quiz example, Back returns to the
-    // existing quiz state rather than the Library. The passage also marks the
-    // exact source range inside the ordinary Playback screen.
+    // existing quiz state rather than the Library.
     var auralPlaybackPassage by remember { mutableStateOf<AuralSourcePassage?>(null) }
     var timelineFrameRate by remember {
         mutableStateOf(TimelineFrameRateStore.preference)
@@ -999,10 +998,7 @@ internal fun MainScreen(
                     onPersistentMonitoringChange = { active ->
                         isPersistentMonitoring = active
                     },
-                    onRequestCollapseDock = { singingCollapseTick++ },
-                    initialPassage = auralPlaybackPassage
-                        ?.takeIf { passage -> selectedSectionId == passage.sectionId || selectedSongSections!![selectedSectionId]?.safeSectionName == passage.sectionName }
-                        ?.let { it.startBeat to it.endBeat }
+                    onRequestCollapseDock = { singingCollapseTick++ }
                 )
             } else {
                 SongDetailView(
