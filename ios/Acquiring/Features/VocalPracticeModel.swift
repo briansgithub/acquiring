@@ -11,6 +11,13 @@ struct VocalPitchSample: Equatable, Sendable {
 
     var frequencyHz: Double { MusicTheory.frequency(midi: rawMIDI) }
     var pitchLabel: String { pitch.displayName }
+    func pitchLabel(accidentalPreference: NoteNameAccidentalPreference?) -> String {
+        guard let accidentalPreference else { return pitchLabel }
+        return SpelledPitch.fromMIDI(
+            Int(rawMIDI.rounded()),
+            accidentalPreference: accidentalPreference
+        ).displayName
+    }
     var centsLabel: String { PersistentPitchFeedback.formatCentsError(centsFromReference) }
 }
 
@@ -45,6 +52,7 @@ final class VocalPracticeModel {
     private(set) var isFlipFlopEnabled = false
     private(set) var targetRequest: SingingTargetRequest?
     private(set) var octaveOffset = 0
+    private(set) var noteNameAccidentalPreference: NoteNameAccidentalPreference?
     private(set) var persistentSelection: PersistentPitchSelection?
     private(set) var persistentPhase: VocalPersistentPhase = .idle
     private(set) var liveCentsError: Double?
@@ -497,6 +505,7 @@ final class VocalPracticeModel {
     func updateContext(
         songID: String,
         sectionID: String,
+        firstKey: KeyInfo,
         transpose: Int,
         root: QuizPitchCardTarget?,
         melody: QuizPitchCardTarget?,
@@ -508,7 +517,7 @@ final class VocalPracticeModel {
         beatsPerSecond: Double,
         endBeat: Double
     ) {
-        enterSong(songID: songID, sectionID: sectionID)
+        enterSong(songID: songID, sectionID: sectionID, firstKey: firstKey)
         let selectedTargetChanged: Bool = switch persistentSelection {
         case .simpleRoot:
             rootTarget != root
@@ -556,7 +565,7 @@ final class VocalPracticeModel {
         synchronizeScoringRun()
     }
 
-    func enterSong(songID: String, sectionID: String) {
+    func enterSong(songID: String, sectionID: String, firstKey: KeyInfo? = nil) {
         let contextChanged = self.songID != songID || self.sectionID != sectionID
         if contextChanged {
             cancelPendingCollapseClear()
@@ -576,6 +585,9 @@ final class VocalPracticeModel {
             self.sectionID = sectionID
             discardActiveScore()
             melodyRunScores.removeAll()
+        }
+        noteNameAccidentalPreference = firstKey.map {
+            RelativeIonianContext.noteNameAccidentalPreference(for: $0)
         }
     }
 
@@ -616,6 +628,7 @@ final class VocalPracticeModel {
         melodyRunScores.removeAll()
         discardActiveScore()
         octaveOffset = 0
+        noteNameAccidentalPreference = nil
         songID = nil
         sectionID = nil
         rootTarget = nil

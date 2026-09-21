@@ -22,6 +22,11 @@ internal enum class DiatonicLetter(
     }
 }
 
+internal enum class NoteNameAccidentalPreference {
+    FLATS,
+    SHARPS
+}
+
 /**
  * A written musical pitch.  This is intentionally not a MIDI value: the
  * letter and accidental remain independent so enharmonic spellings survive.
@@ -74,21 +79,44 @@ internal data class SpelledPitch(
             else -> ""
         }
 
-        fun fromMidi(midi: Int): SpelledPitch {
+        fun fromMidi(
+            midi: Int,
+            accidentalPreference: NoteNameAccidentalPreference = NoteNameAccidentalPreference.FLATS
+        ): SpelledPitch {
             val octave = (midi / 12) - 1
             val pc = ((midi % 12) + 12) % 12
             val (letter, accidental) = when (pc) {
                 0 -> DiatonicLetter.C to 0
-                1 -> DiatonicLetter.D to -1 // Db
+                1 -> if (accidentalPreference == NoteNameAccidentalPreference.SHARPS) {
+                    DiatonicLetter.C to 1
+                } else {
+                    DiatonicLetter.D to -1
+                }
                 2 -> DiatonicLetter.D to 0
-                3 -> DiatonicLetter.E to -1 // Eb
+                3 -> if (accidentalPreference == NoteNameAccidentalPreference.SHARPS) {
+                    DiatonicLetter.D to 1
+                } else {
+                    DiatonicLetter.E to -1
+                }
                 4 -> DiatonicLetter.E to 0
                 5 -> DiatonicLetter.F to 0
-                6 -> DiatonicLetter.G to -1 // Gb
+                6 -> if (accidentalPreference == NoteNameAccidentalPreference.SHARPS) {
+                    DiatonicLetter.F to 1
+                } else {
+                    DiatonicLetter.G to -1
+                }
                 7 -> DiatonicLetter.G to 0
-                8 -> DiatonicLetter.A to -1 // Ab
+                8 -> if (accidentalPreference == NoteNameAccidentalPreference.SHARPS) {
+                    DiatonicLetter.G to 1
+                } else {
+                    DiatonicLetter.A to -1
+                }
                 9 -> DiatonicLetter.A to 0
-                10 -> DiatonicLetter.B to -1 // Bb
+                10 -> if (accidentalPreference == NoteNameAccidentalPreference.SHARPS) {
+                    DiatonicLetter.A to 1
+                } else {
+                    DiatonicLetter.B to -1
+                }
                 11 -> DiatonicLetter.B to 0
                 else -> DiatonicLetter.C to 0
             }

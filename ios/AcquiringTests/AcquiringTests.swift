@@ -9,6 +9,36 @@ import UIKit
 
 final class AcquiringTests: XCTestCase {
     @MainActor
+    func testVocalPracticeNoteNamesTrackPlaybackContextAndResetOutsideIt() {
+        let model = VocalPracticeModel(audio: AppAudioSystem())
+
+        model.enterSong(
+            songID: "song",
+            sectionID: "sharp-section",
+            firstKey: KeyInfo(tonic: "G", scale: "major")
+        )
+        XCTAssertEqual(model.noteNameAccidentalPreference, .sharps)
+
+        model.enterSong(
+            songID: "song",
+            sectionID: "flat-section",
+            firstKey: KeyInfo(tonic: "F", scale: "major")
+        )
+        XCTAssertEqual(model.noteNameAccidentalPreference, .flats)
+
+        model.enterSong(songID: "song", sectionID: "flat-section")
+        XCTAssertNil(model.noteNameAccidentalPreference)
+
+        model.enterSong(
+            songID: "song",
+            sectionID: "sharp-section",
+            firstKey: KeyInfo(tonic: "G", scale: "major")
+        )
+        model.leaveSong()
+        XCTAssertNil(model.noteNameAccidentalPreference)
+    }
+
+    @MainActor
     func testOpeningHelpDuringCollapsePreservesSingBackTargets() async throws {
         let model = VocalPracticeModel(audio: AppAudioSystem())
         let request = SingingTargetRequest(
