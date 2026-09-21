@@ -46,6 +46,29 @@ public enum RelativeIonianContext {
         )
     }
 
+    /// Chooses chromatic note names from the signature shared by this mode's relative major.
+    public static func noteNameAccidentalPreference(
+        for sourceKey: KeyInfo
+    ) -> NoteNameAccidentalPreference {
+        let relativeMajor = key(for: sourceKey)
+        let signatureNotes = (1...7).map {
+            MusicTheory.noteLabel(degree: $0, tonic: relativeMajor.tonic, scale: "major")
+        }
+        if signatureNotes.contains(where: { $0.contains("b") || $0.contains("♭") }) {
+            return .flats
+        }
+        if signatureNotes.contains(where: { $0.contains("#") || $0.contains("♯") || $0.contains("x") }) {
+            return .sharps
+        }
+        return .flats
+    }
+
+    public static func noteNameAccidentalPreference(
+        for section: ExtractedSection
+    ) -> NoteNameAccidentalPreference {
+        noteNameAccidentalPreference(for: section.keys[0].key)
+    }
+
     public static func degree(for pitch: SpelledPitch, in key: KeyInfo) -> RelativeIonianDegree? {
         guard let tonic = SpelledPitch.parse(noteName: key.tonic, octave: pitch.octave) else { return nil }
         let degree = floorMod(pitch.letter.rawValue - tonic.letter.rawValue, 7) + 1

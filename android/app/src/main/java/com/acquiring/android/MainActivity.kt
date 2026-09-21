@@ -378,6 +378,14 @@ internal fun MainScreen(
     }
     val json = remember { Json { ignoreUnknownKeys = true } }
     val singingSessionKey = selectedSong?.slug?.let { slug -> "$slug:${selectedSectionId.orEmpty()}" }
+    val singingNoteNamePreference = if (isShowingPlayback) {
+        selectedSectionId
+            ?.let { selectedSongSections?.get(it) }
+            ?.let(::noteNameAccidentalPreference)
+            ?: NoteNameAccidentalPreference.FLATS
+    } else {
+        NoteNameAccidentalPreference.FLATS
+    }
     LaunchedEffect(isShowingPlayback) {
         if (isShowingPlayback) {
             playbackWasShown = true
@@ -1028,6 +1036,7 @@ internal fun MainScreen(
         if (!isShowingAuralQuiz) HummingIntervalPopup(
             sectionSessionKey = singingSessionKey,
             targetRequest = singingTargetRequest,
+            noteNameAccidentalPreference = singingNoteNamePreference,
             globalTranspose = globalTranspose,
             octaveOffset = octaveOffset,
             onOctaveOffsetChange = songOctaveOffsetViewModel::updateOctaveOffset,

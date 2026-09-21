@@ -77,6 +77,54 @@ final class AcquiringCoreTests: XCTestCase {
         )
     }
 
+    func testNoteNamePreferenceFollowsTheRelativeMajorSignature() {
+        for key in [
+            KeyInfo(tonic: "G", scale: "major"),
+            KeyInfo(tonic: "E", scale: "dorian"),
+            KeyInfo(tonic: "F#", scale: "major"),
+            KeyInfo(tonic: "F♯", scale: "major")
+        ] {
+            XCTAssertEqual(RelativeIonianContext.noteNameAccidentalPreference(for: key), .sharps, key.tonic)
+        }
+        for key in [
+            KeyInfo(tonic: "F", scale: "major"),
+            KeyInfo(tonic: "G", scale: "dorian"),
+            KeyInfo(tonic: "Gb", scale: "major"),
+            KeyInfo(tonic: "G♭", scale: "major"),
+            KeyInfo(tonic: "C", scale: "major"),
+            KeyInfo(tonic: "A", scale: "minor"),
+            KeyInfo(tonic: "D", scale: "dorian")
+        ] {
+            XCTAssertEqual(RelativeIonianContext.noteNameAccidentalPreference(for: key), .flats, key.tonic)
+        }
+    }
+
+    func testSectionNoteNamePreferenceUsesOnlyItsFirstChronologicalKey() {
+        let section = ExtractedSection(metadata: [
+            "keys": .array([
+                .object(["tonic": .string("F"), "scale": .string("major"), "beat": .number(8)]),
+                .object(["tonic": .string("G"), "scale": .string("major"), "beat": .number(1)])
+            ])
+        ])
+
+        XCTAssertEqual(RelativeIonianContext.noteNameAccidentalPreference(for: section), .sharps)
+        XCTAssertEqual(
+            RelativeIonianContext.noteNameAccidentalPreference(for: ExtractedSection()),
+            .flats
+        )
+    }
+
+    func testMIDINoteNamesSupportBothEnharmonicPreferences() {
+        let flatNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
+        let sharpNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+
+        XCTAssertEqual((60...71).map { SpelledPitch.fromMIDI($0).noteName }, flatNames)
+        XCTAssertEqual(
+            (60...71).map { SpelledPitch.fromMIDI($0, accidentalPreference: .sharps).noteName },
+            sharpNames
+        )
+    }
+
     func testRelativeIonianScaleDegreesAndStaffPositionsRotateWithoutChangingPitch() throws {
         let key = KeyInfo(tonic: "A", scale: "minor")
         let tonic = try XCTUnwrap(MusicTheory.spelledPitch(scaleDegree: "1", relativeOctave: 0, key: key))

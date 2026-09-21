@@ -12,6 +12,11 @@ public enum DiatonicLetter: Int, CaseIterable, Codable, Sendable {
     }
 }
 
+public enum NoteNameAccidentalPreference: Equatable, Sendable {
+    case flats
+    case sharps
+}
+
 public struct SpelledPitch: Equatable, Sendable {
     public let letter: DiatonicLetter
     public let accidental: Int
@@ -49,13 +54,25 @@ public struct SpelledPitch: Equatable, Sendable {
         return SpelledPitch(letter: letter, accidental: accidental, octave: octave)
     }
 
-    public static func fromMIDI(_ midi: Int) -> SpelledPitch {
+    public static func fromMIDI(
+        _ midi: Int,
+        accidentalPreference: NoteNameAccidentalPreference = .flats
+    ) -> SpelledPitch {
         let octave = Int(floor(Double(midi) / 12)) - 1
         let pitchClass = ((midi % 12) + 12) % 12
         let spelling: (DiatonicLetter, Int) = switch pitchClass {
-        case 0: (.c, 0); case 1: (.d, -1); case 2: (.d, 0); case 3: (.e, -1)
-        case 4: (.e, 0); case 5: (.f, 0); case 6: (.g, -1); case 7: (.g, 0)
-        case 8: (.a, -1); case 9: (.a, 0); case 10: (.b, -1); default: (.b, 0)
+        case 0: (.c, 0)
+        case 1: accidentalPreference == .sharps ? (.c, 1) : (.d, -1)
+        case 2: (.d, 0)
+        case 3: accidentalPreference == .sharps ? (.d, 1) : (.e, -1)
+        case 4: (.e, 0)
+        case 5: (.f, 0)
+        case 6: accidentalPreference == .sharps ? (.f, 1) : (.g, -1)
+        case 7: (.g, 0)
+        case 8: accidentalPreference == .sharps ? (.g, 1) : (.a, -1)
+        case 9: (.a, 0)
+        case 10: accidentalPreference == .sharps ? (.a, 1) : (.b, -1)
+        default: (.b, 0)
         }
         return SpelledPitch(letter: spelling.0, accidental: spelling.1, octave: octave)
     }
