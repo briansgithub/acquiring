@@ -87,6 +87,7 @@ internal fun HummingIntervalPopup(
     modifier: Modifier = Modifier,
     sectionSessionKey: String? = null,
     targetRequest: SingingTargetRequest? = null,
+    noteNameAccidentalPreference: NoteNameAccidentalPreference = NoteNameAccidentalPreference.FLATS,
     globalTranspose: Int = 0,
     octaveOffset: Int = 0,
     onOctaveOffsetChange: (Int) -> Unit = {},
@@ -651,6 +652,7 @@ internal fun HummingIntervalPopup(
                 HummingSlotView(
                     label = activeTarget?.first?.scaleDegreeLabel.orEmpty(),
                     data = displayedSlot1,
+                    noteNameAccidentalPreference = noteNameAccidentalPreference,
                     isRecording = recordingSlot == 1,
                     isListening = activeListenSlot == 1,
                     isInteractionEnabled = !flipFlopEnabled,
@@ -686,6 +688,7 @@ internal fun HummingIntervalPopup(
                 HummingSlotView(
                     label = activeTarget?.second?.scaleDegreeLabel.orEmpty(),
                     data = displayedSlot2,
+                    noteNameAccidentalPreference = noteNameAccidentalPreference,
                     isRecording = recordingSlot == 2,
                     isListening = activeListenSlot == 2,
                     isInteractionEnabled = !flipFlopEnabled,
@@ -821,6 +824,7 @@ internal fun idealIntervalPlaybackMidis(
 internal fun RowScope.HummingSlotView(
     label: String,
     data: PitchData?,
+    noteNameAccidentalPreference: NoteNameAccidentalPreference = NoteNameAccidentalPreference.FLATS,
     isRecording: Boolean,
     isListening: Boolean = false,
     isInteractionEnabled: Boolean,
@@ -894,7 +898,8 @@ internal fun RowScope.HummingSlotView(
                     PitchRollingIndicator(
                         midi = data?.rawMidi ?: 60.0,
                         isRecording = isRecording,
-                        cents = centsValue
+                        cents = centsValue,
+                        noteNameAccidentalPreference = noteNameAccidentalPreference
                     )
 
                     if (data != null) {
@@ -946,6 +951,7 @@ internal fun PitchRollingIndicator(
     midi: Double,
     isRecording: Boolean,
     cents: Double,
+    noteNameAccidentalPreference: NoteNameAccidentalPreference = NoteNameAccidentalPreference.FLATS,
     modifier: Modifier = Modifier
 ) {
     val animatedMidi by animateFloatAsState(targetValue = midi.toFloat(), label = "MidiAnimation")
@@ -969,7 +975,7 @@ internal fun PitchRollingIndicator(
                     val y = centerY - offsetFromCenter
                     
                     if (y > -noteHeight && y < size.height + noteHeight) {
-                        val spelled = SpelledPitch.fromMidi(m)
+                        val spelled = SpelledPitch.fromMidi(m, noteNameAccidentalPreference)
                         val label = spelled.displayName.replace(Regex("\\d+"), "")
                         
                         val style = if (Math.abs(m - animatedMidi) < 0.5) centerNoteStyle else noteStyle
