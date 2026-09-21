@@ -59,3 +59,7 @@ xcuserdata/
 AuthKey_*
 .asc-api-key.json
 acquiring-asc.json
+
+# Separate Android project under active development; it is intentionally not
+# part of the Acquiring repository.
+/Attitude-android/

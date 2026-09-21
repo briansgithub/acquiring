@@ -165,7 +165,9 @@ struct IntervalSingingTool: View {
     }
 
     private var minimizedSummary: String? {
-        let notes = [model.displayedSlot1?.pitchLabel, model.displayedSlot2?.pitchLabel].compactMap { $0 }
+        let notes = [model.displayedSlot1, model.displayedSlot2].compactMap {
+            $0?.pitchLabel(accidentalPreference: model.noteNameAccidentalPreference)
+        }
         guard !notes.isEmpty else { return nil }
         let pitches = notes.joined(separator: " → ")
         guard let interval = model.measuredInterval else { return pitches }
@@ -187,6 +189,7 @@ struct IntervalSingingTool: View {
             remainingMilliseconds: model.captureRemainingMilliseconds,
             isEnabled: !model.isFlipFlopEnabled && !isRecording,
             anchorMIDI: anchorMIDI(slot: slot),
+            noteNameAccidentalPreference: model.noteNameAccidentalPreference,
             play: { model.playSlot(slot) },
             record: { model.toggleRecording(slot: slot) }
         )
@@ -257,6 +260,7 @@ private struct DockPitchCard: View {
     /// frame. The gauge is on screen from the moment recording starts, so there has to be a
     /// pitch under it before the singer has sung one.
     let anchorMIDI: Double
+    let noteNameAccidentalPreference: NoteNameAccidentalPreference?
     let play: () -> Void
     let record: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -276,7 +280,11 @@ private struct DockPitchCard: View {
             }
             .font(.caption).foregroundStyle(.secondary)
             if let sample {
-                DockPitchTape(midi: sample.rawMIDI, color: isReference ? .secondary : Color.pitchFeedback(centsError: sample.centsFromReference))
+                DockPitchTape(
+                    midi: sample.rawMIDI,
+                    color: isReference ? .secondary : Color.pitchFeedback(centsError: sample.centsFromReference),
+                    noteNameAccidentalPreference: noteNameAccidentalPreference ?? .flats
+                )
                     .animation(reduceMotion ? nil : .linear(duration: 0.1), value: sample.rawMIDI)
                 if isReference {
                     Text("Sing this pitch").font(.system(size: 10)).foregroundStyle(.secondary)
@@ -290,7 +298,11 @@ private struct DockPitchCard: View {
                 // Recording runs straight into the gauge: no "Listening…" interstitial to
                 // read and then lose. The tape sits at `anchorMIDI`, dimmed, until the first
                 // voiced frame takes it over, so the card never changes shape mid-take.
-                DockPitchTape(midi: anchorMIDI, color: .secondary)
+                DockPitchTape(
+                    midi: anchorMIDI,
+                    color: .secondary,
+                    noteNameAccidentalPreference: noteNameAccidentalPreference ?? .flats
+                )
                     .opacity(0.45)
                 Text("—")
                     .font(.system(size: 11, weight: .semibold, design: .monospaced))
@@ -334,7 +346,7 @@ private struct DockPitchCard: View {
         .accessibilityElement(children: .ignore)
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(title)
-        .accessibilityValue("\(sample?.pitchLabel ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status)")
+        .accessibilityValue("\(sample?.pitchLabel(accidentalPreference: noteNameAccidentalPreference) ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status)")
         .accessibilityHint(
             isEnabled
                 ? "Single tap replays. Double tap records or stops listening."
@@ -383,6 +395,7 @@ private extension View {
 private struct DockPitchTape: View, @preconcurrency Animatable {
     var midi: Double
     let color: Color
+    let noteNameAccidentalPreference: NoteNameAccidentalPreference
     var animatableData: Double {
         get { midi }
         set { midi = newValue }
@@ -395,7 +408,10 @@ private struct DockPitchTape: View, @preconcurrency Animatable {
             let nearest = Int(midi.rounded())
             ZStack {
                 ForEach((nearest - 3)...(nearest + 3), id: \.self) { note in
-                    let name = SpelledPitch.fromMIDI(note).displayName.filter { !$0.isNumber && $0 != "-" }
+                    let name = SpelledPitch.fromMIDI(
+                        note,
+                        accidentalPreference: noteNameAccidentalPreference
+                    ).displayName.filter { !$0.isNumber && $0 != "-" }
                     let emphasized = abs(Double(note) - midi) < 0.5
                     HStack(spacing: 0) {
                         Rectangle().fill(.secondary.opacity(0.45)).frame(width: 7, height: 1)

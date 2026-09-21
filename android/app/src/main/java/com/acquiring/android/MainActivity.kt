@@ -300,11 +300,17 @@ internal fun MainScreen(
                 // Skipping this is survivable: the launch-time replay below
                 // picks them up, so a failure delays restoration, never loses it.
                 val restored = runCatching { HarvestLedger.replay(activeDb, userDb) }.getOrDefault(0)
-                catalogStatus = if (restored > 0) {
+                val songCatalogStatus = if (restored > 0) {
                     "Database Refreshed! ($restored harvested song${if (restored == 1) "" else "s"} kept)"
                 } else {
                     "Database Refreshed!"
                 }
+                catalogStatus = "$songCatalogStatus Preparing Aural Quiz data…"
+                val auralResult = AuralCatalogDownloader.ensureInstalled(context) { catalogStatus = it }
+                catalogStatus = auralResult.fold(
+                    onSuccess = { songCatalogStatus },
+                    onFailure = { "$songCatalogStatus Aural Quiz data will retry when opened: ${it.message}" }
+                )
             } else {
                 // A validated install closes Room only immediately before the
                 // atomic swap. Reopen the preserved catalog if needed.
@@ -372,6 +378,14 @@ internal fun MainScreen(
     }
     val json = remember { Json { ignoreUnknownKeys = true } }
     val singingSessionKey = selectedSong?.slug?.let { slug -> "$slug:${selectedSectionId.orEmpty()}" }
+    val singingNoteNamePreference = if (isShowingPlayback) {
+        selectedSectionId
+            ?.let { selectedSongSections?.get(it) }
+            ?.let(::noteNameAccidentalPreference)
+            ?: NoteNameAccidentalPreference.FLATS
+    } else {
+        NoteNameAccidentalPreference.FLATS
+    }
     LaunchedEffect(isShowingPlayback) {
         if (isShowingPlayback) {
             playbackWasShown = true
@@ -666,14 +680,14 @@ internal fun MainScreen(
     }
 
     /** Uses the normal song blob and normal Playback state, never the compact quiz cache. */
-    val openAuralSourcePlayback: suspend (AuralSourcePassage, Boolean) -> Boolean = openAuralSourcePlayback@ { passage, _ ->
+    val openAuralFullSongPlayback: suspend (AuralSourcePassage, Boolean) -> Boolean = openAuralFullSongPlayback@ { passage, _ ->
         val song = withContext(Dispatchers.IO) { activeDb.songDao().getSongBySlug(passage.songId) }
-            ?: return@openAuralSourcePlayback false
-        val blob = song.dataBlob ?: return@openAuralSourcePlayback false
-        val sections = try { decodeSongSections(blob) } catch (cancelled: CancellationException) { throw cancelled } catch (_: Exception) { return@openAuralSourcePlayback false }
+            ?: return@openAuralFullSongPlayback false
+        val blob = song.dataBlob ?: return@openAuralFullSongPlayback false
+        val sections = try { decodeSongSections(blob) } catch (cancelled: CancellationException) { throw cancelled } catch (_: Exception) { return@openAuralFullSongPlayback false }
         val sectionId = sections[passage.sectionId]?.let { passage.sectionId }
             ?: sections.entries.firstOrNull { (_, section) -> section.safeSectionName == passage.sectionName }?.key
-            ?: return@openAuralSourcePlayback false
+            ?: return@openAuralFullSongPlayback false
         songOctaveOffsetViewModel.clearSession()
         HistoryManager.addSong(context, song.slug)
         HistoryManager.addArtist(context, song.artist)
@@ -729,7 +743,7 @@ internal fun MainScreen(
                 AuralQuizScreen(onBack = { isShowingAuralQuiz = false },
                     defaultInstrument = defaultInstrument, settingsContent = settingsContent,
                     loadFavoriteSongs = { playlistDao.getSlugsIn(PlaylistIds.FAVORITES).toSet() },
-                    openFullPlayback = openAuralSourcePlayback)
+                    openFullPlayback = openAuralFullSongPlayback)
             } else if (isShowingSettings) {
                 settingsContent { isShowingSettings = false }
             } else if (selectedSongSections == null) {
@@ -1022,6 +1036,7 @@ internal fun MainScreen(
         if (!isShowingAuralQuiz) HummingIntervalPopup(
             sectionSessionKey = singingSessionKey,
             targetRequest = singingTargetRequest,
+            noteNameAccidentalPreference = singingNoteNamePreference,
             globalTranspose = globalTranspose,
             octaveOffset = octaveOffset,
             onOctaveOffsetChange = songOctaveOffsetViewModel::updateOctaveOffset,

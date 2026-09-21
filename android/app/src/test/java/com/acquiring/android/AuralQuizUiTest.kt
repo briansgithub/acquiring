@@ -95,6 +95,22 @@ class AuralQuizUiTest {
         assertTrue(session.view().supported)
     }
 
+    @Test fun sourcePlaybackNeverFallsBackToTheCompactCatalogPlayer() {
+        val provider = object : AuralExampleProvider {
+            override fun example(base: AuralExercise, settings: AuralExampleSettings, context: AuralSelectionContext) = corpusFixture(base, settings)
+        }
+        val session = AuralSession(Store(), seedFor = { it }, exampleProvider = provider)
+        session.practice("dominant-return", "recall", variantId = "departure")
+        compose.setContent { MaterialTheme {
+            AuralQuizScreen({}, session, catalogEnabled = false)
+        } }
+
+        compose.onNodeWithTag("AuralContinue").performClick()
+        compose.onNodeWithTag("AuralOpenPlayback").performScrollTo().assertIsNotEnabled()
+        compose.onNodeWithTag(PLAYBACK_SCREEN_TEST_TAG).assertDoesNotExist()
+        compose.onNodeWithTag("AuralReturnFromPlayback").assertDoesNotExist()
+    }
+
     @Test fun failedPlaybackDoesNotMakeAnUnheardPassageFamiliar() {
         val store = Store()
         val provider = object : AuralExampleProvider {

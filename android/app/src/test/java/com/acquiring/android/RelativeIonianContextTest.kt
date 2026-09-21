@@ -1,6 +1,8 @@
 package com.acquiring.android
 
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
@@ -38,6 +40,67 @@ class RelativeIonianContextTest {
             assertEquals("Failed for ${source.scale}", KeyInfo("C", "major"), relativeIonianKey(source))
         }
         assertEquals(KeyInfo("Ab", "major"), relativeIonianKey(KeyInfo("Bb", "dorian")))
+    }
+
+    @Test
+    fun noteNamePreferenceFollowsTheRelativeMajorSignature() {
+        listOf(
+            KeyInfo("G", "major"),
+            KeyInfo("E", "dorian"),
+            KeyInfo("F#", "major"),
+            KeyInfo("F♯", "major")
+        ).forEach { key ->
+            assertEquals(key.toString(), NoteNameAccidentalPreference.SHARPS, noteNameAccidentalPreference(key))
+        }
+        listOf(
+            KeyInfo("F", "major"),
+            KeyInfo("G", "dorian"),
+            KeyInfo("Gb", "major"),
+            KeyInfo("G♭", "major"),
+            KeyInfo("C", "major"),
+            KeyInfo("A", "minor"),
+            KeyInfo("D", "dorian")
+        ).forEach { key ->
+            assertEquals(key.toString(), NoteNameAccidentalPreference.FLATS, noteNameAccidentalPreference(key))
+        }
+    }
+
+    @Test
+    fun sectionNoteNamePreferenceUsesOnlyItsFirstChronologicalKey() {
+        val section = ExtractedSection(metadata = buildJsonObject {
+            put("keys", buildJsonArray {
+                add(buildJsonObject {
+                    put("tonic", "F")
+                    put("scale", "major")
+                    put("beat", 8)
+                })
+                add(buildJsonObject {
+                    put("tonic", "G")
+                    put("scale", "major")
+                    put("beat", 1)
+                })
+            })
+        })
+
+        assertEquals(NoteNameAccidentalPreference.SHARPS, noteNameAccidentalPreference(section))
+        assertEquals(
+            NoteNameAccidentalPreference.FLATS,
+            noteNameAccidentalPreference(ExtractedSection())
+        )
+    }
+
+    @Test
+    fun midiNoteNamesSupportBothEnharmonicPreferences() {
+        val flatNames = listOf("C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B")
+        val sharpNames = listOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
+
+        assertEquals(flatNames, (60..71).map { SpelledPitch.fromMidi(it).noteName })
+        assertEquals(
+            sharpNames,
+            (60..71).map {
+                SpelledPitch.fromMidi(it, NoteNameAccidentalPreference.SHARPS).noteName
+            }
+        )
     }
 
     @Test

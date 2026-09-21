@@ -43,6 +43,22 @@ internal fun relativeIonianKey(key: KeyInfo): KeyInfo {
     return KeyInfo(tonic, "major")
 }
 
+/** Chooses chromatic note names from the signature shared by this mode's relative major. */
+internal fun noteNameAccidentalPreference(key: KeyInfo): NoteNameAccidentalPreference {
+    val relativeMajor = relativeIonianKey(key)
+    val signatureNotes = (1..7).map { degree ->
+        MusicTheory.getNoteLabel(degree, relativeMajor.tonic, "major")
+    }
+    return when {
+        signatureNotes.any { 'b' in it || '♭' in it } -> NoteNameAccidentalPreference.FLATS
+        signatureNotes.any { '#' in it || '♯' in it || 'x' in it } -> NoteNameAccidentalPreference.SHARPS
+        else -> NoteNameAccidentalPreference.FLATS
+    }
+}
+
+internal fun noteNameAccidentalPreference(section: ExtractedSection): NoteNameAccidentalPreference =
+    noteNameAccidentalPreference(section.getKeys().first().key)
+
 internal fun degreeInKey(pitch: SpelledPitch, key: KeyInfo): RelativeIonianDegree? {
     val tonic = SpelledPitch.parse(key.tonic, octave = pitch.octave) ?: return null
     val degree = Math.floorMod(pitch.letter.index - tonic.letter.index, 7) + 1

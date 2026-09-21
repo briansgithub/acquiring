@@ -208,6 +208,7 @@ struct SongDetailView: View {
               document.orderedSections.contains(where: { $0.key == rememberedID })
         else { return }
         selectedSectionID = rememberedID
+        environment.vocalPractice.enterSong(songID: songID, sectionID: rememberedID)
     }
 
     private func preview(
@@ -1182,7 +1183,11 @@ struct QuizView: View {
         finishTimelineScrub(resumingIfNeeded: false)
         cancelPlaybackCommand()
         environment.vocalPractice.cancelActivity()
-        environment.vocalPractice.enterSong(songID: songID, sectionID: id)
+        environment.vocalPractice.enterSong(
+            songID: songID,
+            sectionID: id,
+            firstKey: selected.section.keys[0].key
+        )
         practiceTargets = nil
         selectedSectionID = id
         environment.rememberQuizSection(songID: songID, sectionID: id)
@@ -1444,6 +1449,7 @@ struct QuizView: View {
         environment.vocalPractice.updateContext(
             songID: songID,
             sectionID: sectionID,
+            firstKey: section.keys[0].key,
             transpose: soundConfiguration.transposeSemitones,
             root: targets.root,
             melody: targets.melody,
@@ -2050,7 +2056,11 @@ struct QuizView: View {
                 sectionID: restored.key
             )
             selectedSectionID = restored.key
-            environment.vocalPractice.enterSong(songID: songID, sectionID: restored.key)
+            environment.vocalPractice.enterSong(
+                songID: songID,
+                sectionID: restored.key,
+                firstKey: restored.section.keys[0].key
+            )
             mode = continuity.mode
             tempoPercent = continuity.tempoPercent
             let restoredSoundConfiguration = continuity.playbackConfiguration.soundConfiguration
