@@ -193,7 +193,8 @@ internal class AuralSession(
         val cell = AuralCurriculum.cell(progressFor(),pattern.id,skill)
         val target = AuralTarget(pattern.id,skill,cell.support,cell.support == 0,microphoneKind=microphoneKind,variantId=if(assessment) null else pattern.id,instrumentOverride=preferredInstrument,octaveShift=1,pattern=pattern)
         val base = AuralCurriculum.generate(target,seed)
-        val settings = saved.exampleSettings.copy(distinguishInversions=pattern.view == "harmony_bass")
+        val settings = saved.exampleSettings.copy(distinguishInversions=pattern.view.endsWith("harmony_bass"),
+            analysis=if(pattern.view.startsWith("relative_")) "relativeMajor" else if(saved.exampleSettings.analysis=="filterMode") "filterMode" else "allModes")
         val context = AuralSelectionContext(recentSongs,saved.sourceExposures.map { it.sourceId }.toSet(),favoriteSongIds,assessment=cell.support == 0,
             supportedOccurrenceId=saved.current?.takeIf { cell.support > 0 && it.familyId == pattern.id && it.skillId != skill }?.provenance?.corpus?.passage?.occurrenceId)
         val passage = withContext(Dispatchers.IO) { catalog.passage(pattern,settings,context,seed,pattern.id) }

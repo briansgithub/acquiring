@@ -16,11 +16,11 @@ export function exportCatalog({ file, index, songs, normalizedFile, snapshotId }
     db.exec(`CREATE TABLE metadata(key TEXT PRIMARY KEY,value TEXT NOT NULL);
       CREATE TABLE catalog_song(id TEXT PRIMARY KEY,title TEXT,artist TEXT,url TEXT);
       CREATE TABLE catalog_section(id TEXT PRIMARY KEY,song_id TEXT,revision TEXT,name TEXT,source BLOB,diagnostics TEXT);
-      CREATE TABLE catalog_run(id INTEGER PRIMARY KEY,stable_id TEXT UNIQUE,view TEXT,song_id TEXT,section_id TEXT,revision TEXT,tokens TEXT,positions TEXT,key_json TEXT);
+      CREATE TABLE catalog_run(id INTEGER PRIMARY KEY,stable_id TEXT UNIQUE,view TEXT,song_id TEXT,section_id TEXT,revision TEXT,tokens TEXT,positions TEXT,key_json TEXT,source_key_json TEXT);
       CREATE TABLE catalog_suffix(rank INTEGER PRIMARY KEY,run_id INTEGER,offset INTEGER,start_index INTEGER,end_index INTEGER);
       CREATE UNIQUE INDEX suffix_location ON catalog_suffix(run_id,offset);
-      CREATE TABLE catalog_range(id INTEGER PRIMARY KEY,view TEXT,start INTEGER,end INTEGER,min_length INTEGER,max_length INTEGER,songs INTEGER,upper_score REAL);
-      CREATE INDEX range_view ON catalog_range(view,upper_score DESC);
+      CREATE TABLE catalog_range(id INTEGER PRIMARY KEY,view TEXT,mode TEXT,start INTEGER,end INTEGER,min_length INTEGER,max_length INTEGER,songs INTEGER,upper_score REAL);
+      CREATE INDEX range_view_mode ON catalog_range(view,mode,upper_score DESC);
       CREATE INDEX run_section ON catalog_run(section_id);
       CREATE TABLE catalog_token(token TEXT PRIMARY KEY,label TEXT,inversion_label TEXT);
       CREATE TABLE popularity(song_id TEXT PRIMARY KEY,score REAL,confidence REAL,provider_url TEXT,measured_at TEXT);
@@ -37,10 +37,10 @@ export function exportCatalog({ file, index, songs, normalizedFile, snapshotId }
         const section = JSON.parse(row.normalized);
         sectionStmt.run(row.id, row.song_id, row.revision, section.sectionName, gzipSync(Buffer.from(row.source)), stableJson(section.diagnostics));
       }
-      const runStmt = db.prepare('INSERT INTO catalog_run VALUES (?,?,?,?,?,?,?,?,?)');
+      const runStmt = db.prepare('INSERT INTO catalog_run VALUES (?,?,?,?,?,?,?,?,?,?)');
       const tokenStmt = db.prepare('INSERT OR IGNORE INTO catalog_token VALUES (?,?,?)');
       index.runs.forEach((r, i) => {
-        runStmt.run(i, r.id, r.view, r.songId, r.sectionId, r.revision, gzipSync(Buffer.from(stableJson(r.tokens))), gzipSync(Buffer.from(stableJson(r.positions))), stableJson(r.key));
+        runStmt.run(i, r.id, r.view, r.songId, r.sectionId, r.revision, gzipSync(Buffer.from(stableJson(r.tokens))), gzipSync(Buffer.from(stableJson(r.positions))), stableJson(r.key), stableJson(r.sourceKey ?? r.key));
         r.tokens.forEach((t, at) => tokenStmt.run(t, r.positions[at].degree, r.positions[at].roman));
       });
       const suffixStmt = db.prepare('INSERT INTO catalog_suffix VALUES (?,?,?,?,?)');
@@ -51,10 +51,12 @@ export function exportCatalog({ file, index, songs, normalizedFile, snapshotId }
         suffixStmt.run(rank, r, offset, position.startIndex,position.endIndex); packed.writeInt32LE(r, rank * 8); packed.writeInt32LE(offset, rank * 8 + 4);
       });
       db.prepare('INSERT INTO catalog_array VALUES (?,?)').run('suffix_locations', packed);
-      const rangeStmt = db.prepare('INSERT INTO catalog_range VALUES (?,?,?,?,?,?,?,?)');
+      const rangeStmt = db.prepare('INSERT INTO catalog_range VALUES (?,?,?,?,?,?,?,?,?)');
       catalogRanges(index).forEach((r, id) => {
         const view = index.runs[index.runAt[index.suffixArray[r.start]]].view;
-        rangeStmt.run(id, view, r.start, r.end, r.minLength, r.maxLength, r.songCount, baseScore(r.maxLength, r.songCount, Math.min(r.end - r.start + 1, 4 * r.songCount)));
+        const source = index.runs[index.runAt[index.suffixArray[r.start]]];
+        const mode = source.sourceKey?.scale ?? source.key.scale;
+        rangeStmt.run(id, view, mode, r.start, r.end, r.minLength, r.maxLength, r.songCount, baseScore(r.maxLength, r.songCount, Math.min(r.end - r.start + 1, 4 * r.songCount)));
         sequenceCount += r.maxLength - r.minLength + 1;
       });
       meta.run('sequence_count', String(sequenceCount));

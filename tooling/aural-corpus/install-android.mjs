@@ -4,6 +4,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { hashFile, openDatabase } from './common.mjs';
+import { CATALOG_VERSION } from './catalog.mjs';
 
 export function inspectBundle(manifestFile, popularityFile, evidenceFile) {
   const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
@@ -17,7 +18,7 @@ export function inspectBundle(manifestFile, popularityFile, evidenceFile) {
     } finally { db.close(); }
   }
   const catalog = metadata(catalogFile), evidence = metadata(evidenceFile), popularity = metadata(popularityFile);
-  if (catalog.schema_version !== 'aural-catalog-1' || catalog.snapshot_id !== manifest.snapshotId || evidence.catalog_snapshot !== manifest.snapshotId) throw Error('Snapshot mismatch');
+  if (catalog.schema_version !== CATALOG_VERSION || catalog.snapshot_id !== manifest.snapshotId || evidence.catalog_snapshot !== manifest.snapshotId) throw Error('Snapshot mismatch');
   if (!popularity.snapshotId || !popularity.provider) throw Error('Invalid popularity overlay');
   return [ ['aural-catalog.db',catalogFile], ['aural-evidence.db',evidenceFile], ['aural-popularity.db',popularityFile] ]
     .map(([name,file]) => ({name,file,checksum:hashFile(file)}));

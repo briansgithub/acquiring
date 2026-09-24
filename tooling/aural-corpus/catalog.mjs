@@ -1,6 +1,6 @@
 import { catalogRanges, descriptor, getPattern, occurrences } from './miner.mjs';
 
-export const CATALOG_VERSION = 'aural-catalog-1';
+export const CATALOG_VERSION = 'aural-catalog-2';
 const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 export const catalogOrder = (a, b) => b.score - a.score || b.songCount - a.songCount || b.length - a.length || compare(a.id, b.id);
 export const baseScore = (length, songs, effective) => Math.log2(length) * Math.log2(1 + songs) * Math.log2(1 + effective);

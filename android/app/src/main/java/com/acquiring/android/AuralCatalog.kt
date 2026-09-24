@@ -12,13 +12,16 @@ import kotlinx.serialization.json.*
 import kotlin.math.log2
 
 @Serializable data class AuralPatternTarget(val id: String, val view: String, val tokens: List<String>, val labels: List<String>, val start: Int, val end: Int, val snapshotId: String)
+internal fun AuralPatternTarget.sourceMode(): String? = runCatching {
+    Json.parseToJsonElement(tokens.first()).jsonObject["mode"]?.jsonPrimitive?.content
+}.getOrNull()
 internal data class AuralCatalogRow(val target: AuralPatternTarget, val songs: Int, val occurrences: Int, val sections: Int, val effective: Int, val score: Double) {
     val length get() = target.tokens.size
 }
 @Serializable internal data class AuralCatalogPosition(val startIndex: Int, val endIndex: Int, val startBeat: Double, val endBeat: Double,
     val degree: String, val roman: String, val notes: List<Int>, val rootMidi: Int, val bassMidi: Int, val varyingBass: Boolean = false)
 internal data class AuralCatalogRun(val id: Int, val stableId: String, val view: String, val song: String, val section: String, val revision: String,
-    val tokens: List<String>, val positions: List<AuralCatalogPosition>, val key: KeyInfo)
+    val tokens: List<String>, val positions: List<AuralCatalogPosition>, val key: KeyInfo, val sourceKey: KeyInfo)
 internal data class AuralPlaybackSource(val song: Song, val section: ExtractedSection, val sectionId: String, val startBeat: Double, val endBeat: Double,
     val sections: Map<String,ExtractedSection> = emptyMap())
 internal data class AuralPatternSong(val id:String,val title:String,val artist:String,val popularityScore:Double?=null)
@@ -41,6 +44,7 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
     private val json = Json { ignoreUnknownKeys = true }
     private val db = SQLiteDatabase.openDatabase(file.path, null, SQLiteDatabase.OPEN_READONLY)
     val snapshotId: String
+    val supportsModeAnalysis: Boolean
     private val suffix: IntArray
     private val songByRun: Array<String>
     private val sectionByRun: Array<String>
@@ -51,7 +55,8 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
     init {
         val metadata = mutableMapOf<String, String>()
         db.rawQuery("SELECT key,value FROM metadata", null).use { while (it.moveToNext()) metadata[it.getString(0)] = it.getString(1) }
-        require(metadata["schema_version"] == "aural-catalog-1")
+        require(metadata["schema_version"] in setOf("aural-catalog-1", "aural-catalog-2"))
+        supportsModeAnalysis = metadata["schema_version"] == "aural-catalog-2"
         snapshotId = requireNotNull(metadata["snapshot_id"])
         val bytes = db.rawQuery("SELECT length(data) FROM catalog_array WHERE name='suffix_locations'", null).use { check(it.moveToFirst()); it.getInt(0) }
         suffix = IntArray(bytes / 4)
@@ -79,15 +84,17 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
         }
     }
     private fun unpack(bytes: ByteArray) = GZIPInputStream(bytes.inputStream()).bufferedReader().use { it.readText() }
-    @Synchronized fun run(id: Int): AuralCatalogRun = runs[id] ?: db.rawQuery("SELECT stable_id,view,song_id,section_id,revision,tokens,positions,key_json FROM catalog_run WHERE id=?", arrayOf(id.toString())).use { c ->
+    @Synchronized fun run(id: Int): AuralCatalogRun = runs[id] ?: db.rawQuery(
+        if (supportsModeAnalysis) "SELECT stable_id,view,song_id,section_id,revision,tokens,positions,key_json,source_key_json FROM catalog_run WHERE id=?"
+        else "SELECT stable_id,view,song_id,section_id,revision,tokens,positions,key_json,key_json FROM catalog_run WHERE id=?", arrayOf(id.toString())).use { c ->
         check(c.moveToFirst())
         AuralCatalogRun(id, c.getString(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4),
-            json.decodeFromString<List<String>>(unpack(c.getBlob(5))), json.decodeFromString<List<AuralCatalogPosition>>(unpack(c.getBlob(6))), json.decodeFromString<KeyInfo>(c.getString(7)))
+            json.decodeFromString<List<String>>(unpack(c.getBlob(5))), json.decodeFromString<List<AuralCatalogPosition>>(unpack(c.getBlob(6))), json.decodeFromString<KeyInfo>(c.getString(7)), json.decodeFromString<KeyInfo>(c.getString(8)))
     }.also { if (runs.size >= 64) runs.remove(runs.keys.first()); runs[id] = it }
     fun target(start: Int, end: Int, length: Int): AuralPatternTarget {
         val run = run(suffix[start * 2]); val offset = suffix[start * 2 + 1]
         val tokens = run.tokens.subList(offset, offset + length)
-        val labels = run.positions.subList(offset, offset + length).map { if (run.view == "harmony_bass") it.roman else it.degree }
+        val labels = run.positions.subList(offset, offset + length).map { if (run.view.endsWith("harmony_bass")) it.roman else it.degree }
         return AuralPatternTarget(auralPatternId(tokens, run.view), run.view, tokens, labels, start, end, snapshotId)
     }
     fun lookup(tokens: List<String>, view: String): AuralPatternTarget? {
@@ -136,8 +143,11 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
             if (order != 0) order else if (a.row == null || b.row == null) (if (a.row == null) 0 else 1) - (if (b.row == null) 0 else 1)
             else rowOrder.compare(a.row, b.row)
         }
-        private val ranges=db.rawQuery("SELECT start,end,min_length,max_length,songs,upper_score FROM catalog_range WHERE view=? AND max_length>=? AND min_length<=? ORDER BY upper_score DESC,id",
-            arrayOf(if (settings.distinguishInversions) "harmony_bass" else "harmony", minLength.toString(), maxLength.toString()))
+        private val view = if (supportsModeAnalysis) settings.catalogView() else if (settings.distinguishInversions) "harmony_bass" else "harmony"
+        private val mode = settings.modeFilter.takeIf { supportsModeAnalysis && settings.analysis == "filterMode" && it in AURAL_MODES }
+        private val ranges=db.rawQuery("SELECT start,end,min_length,max_length,songs,upper_score FROM catalog_range WHERE view=? " +
+            (if (mode == null) "" else "AND mode=? ") + "AND max_length>=? AND min_length<=? ORDER BY upper_score DESC,id",
+            (listOf(view) + listOfNotNull(mode) + listOf(minLength.toString(), maxLength.toString())).toTypedArray())
         private var rangeAvailable=ranges.moveToFirst()
         private fun refineFrontier() {
             while(rangeAvailable && (heap.isEmpty() || ranges.getDouble(5)*multiplier >= heap.peek().bound)) {
@@ -206,7 +216,7 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
         val reference = AuralEvent(tonic.midi.sorted(),requireNotNull(tonic.rootMidi),tonic.midi.min(),"tonic","home",2.0)
         return AuralSourcePassage(chosen.id,target.id,run.song,title.first,title.second,run.section,name,run.revision,
             positions.first().startIndex,positions.last().endIndex,run.view,familyId,target.id,run.key.tonic,run.key.scale,80,events,listOf(reference),target.labels,
-            positions.first().startBeat,positions.last().endBeat)
+            positions.first().startBeat,positions.last().endBeat,run.sourceKey.tonic,run.sourceKey.scale)
     }
     fun playback(passage: AuralSourcePassage, wholeSong:Boolean=false): AuralPlaybackSource {
         val section = db.rawQuery("SELECT source,revision FROM catalog_section WHERE id=? AND song_id=?", arrayOf(passage.sectionId,passage.songId)).use {

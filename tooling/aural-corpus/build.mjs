@@ -46,7 +46,10 @@ export async function buildCorpus(options) {
   const stage = path.join(options.output, 'snapshots', `.build-${snapshotId}-${process.pid}`);
   fs.mkdirSync(stage, { recursive: true });
   log({ stage: 'discover', runs: normalized.runs.length, tokens: normalized.runs.reduce((n, r) => n + r.tokens.length, 0) });
-  const index = discoverPatterns(normalized.runs, { ...config, normalizationVersion: NORMALIZER_VERSION });
+  // Relative-major runs belong to the exhaustive mobile catalog. Keep the
+  // established curriculum/evidence selection in its original modal views.
+  const index = discoverPatterns(normalized.runs.filter(run => !run.view.startsWith('relative_')),
+    { ...config, normalizationVersion: NORMALIZER_VERSION });
   log({ stage: 'select', candidates: index.candidates.length });
   const observedTransitionCounts = Object.fromEntries(Object.entries(normalized.denominators).map(([view, d]) => [view, d.observedTransitions]));
   const selection = selectPatterns(index, index.runs, { ...config, observedTransitionCounts });

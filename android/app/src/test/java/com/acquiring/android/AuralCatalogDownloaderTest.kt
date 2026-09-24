@@ -70,6 +70,15 @@ class AuralCatalogDownloaderTest {
         assertFalse(AuralCatalogDownloader.hasInstalledBundleFiles(context))
     }
 
+    @Test
+    fun schemaTwoBundleIsAcceptedForModeAnalysis() {
+        val snapshot = "mode-analysis"
+        val catalog = database("aural-catalog.db", mapOf("schema_version" to "aural-catalog-2", "snapshot_id" to snapshot))
+        val evidence = database("aural-evidence.db", mapOf("catalog_snapshot" to snapshot))
+        val popularity = database("aural-popularity.db", mapOf("snapshotId" to "popularity-test", "provider" to "test-provider"))
+        assertTrue(AuralCatalogDownloader.installedBundleMatches(context, manifest(snapshot,listOf(catalog,evidence,popularity),"aural-catalog-2")))
+    }
+
     private fun database(name: String, metadata: Map<String, String>): File {
         val file = File(context.filesDir, name)
         file.delete()
@@ -82,8 +91,8 @@ class AuralCatalogDownloaderTest {
         return file
     }
 
-    private fun manifest(snapshot: String, files: List<File>) = AuralCatalogDownloader.Bundle(
-        schemaVersion = "aural-catalog-1",
+    private fun manifest(snapshot: String, files: List<File>, schema: String = "aural-catalog-1") = AuralCatalogDownloader.Bundle(
+        schemaVersion = schema,
         snapshotId = snapshot,
         files = files.map {
             AuralCatalogDownloader.BundleFile(

@@ -1,15 +1,24 @@
 import { interpretChordContract } from '../../web/lib/chordContract.js';
+import { getChordSymbolForDisplayContext } from '../../web/lib/chordDisplayContext.js';
 import { migrateLegacySectionData } from '../../web/lib/hooktheoryDataCompat.js';
 import { noteNameToPc } from '../../web/lib/chordNoteUtils.js';
+import { getNoteLabel } from '../../web/lib/musicScale.js';
 import { NORMALIZER_VERSION, stableJson, hash } from './common.mjs';
 
 export const VIEWS = ['harmony', 'harmony_bass'];
-const modes = new Set(['major', 'minor', 'dorian', 'phrygian', 'lydian', 'mixolydian', 'locrian', 'harmonicMinor', 'phrygianDominant']);
+export const MODES = ['major', 'minor', 'dorian', 'phrygian', 'lydian', 'mixolydian', 'locrian', 'harmonicMinor', 'phrygianDominant'];
+const modes = new Set(MODES);
 const arrays = ['adds', 'omits', 'alterations', 'suspensions', 'substitutions'];
 const flags = ['useMaj7', 'halfDim', 'dimTriad', 'appliedDenomMaj', 'flattenHalfDimB5'];
 const memo = new Map();
 const pc = n => ((n % 12) + 12) % 12;
 const tonicName = s => typeof s === 'string' ? s.trim().replaceAll('♭', 'b').replaceAll('♯', '#') : '';
+const relativeIonianDegree = { major: 1, minor: 3, dorian: 7, phrygian: 6, lydian: 5, mixolydian: 4, locrian: 2, harmonicMinor: 3, phrygianDominant: 6 };
+
+export function relativeIonianKey(key) {
+  const normalized = strictKey(key);
+  return { tonic: getNoteLabel(relativeIonianDegree[normalized.scale], normalized), scale: 'major' };
+}
 
 export function strictKey(entry) {
   if (!entry || !modes.has(entry.scale)) throw Error('missing-or-unsupported-key');
@@ -52,7 +61,19 @@ export function normalizeChord(chord, key) {
     harmony: stableJson(identity),
     harmony_bass: stableJson({ ...identity, inversion: chord.inversion || 0, bassInterval: pc(bassMidi - interpreted.rootMidi) })
   }, degree: rootPosition.roman, roman: interpreted.roman, notes: interpreted.midi,
-  rootMidi: interpreted.rootMidi, bassMidi, key, semantic };
+    rootMidi: interpreted.rootMidi, bassMidi, key, semantic };
+  const ionianKey = relativeIonianKey(key);
+  const { root: _root, borrowed: _borrowed, applied: _applied, ...relativeSemantic } = semantic;
+  const relativeFunction = semantic.applied
+    ? getChordSymbolForDisplayContext({ ...semantic, inversion: 0 }, key, ionianKey)
+    : null;
+  const relativeIdentity = { version: 'aural-relative-1', ...relativeSemantic, function: relativeFunction,
+    rootPc: pc(interpreted.rootMidi - noteNameToPc(ionianKey.tonic)), intervals: identity.intervals };
+  result.relative = { key: ionianKey, tokens: {
+    harmony: stableJson(relativeIdentity),
+    harmony_bass: stableJson({ ...relativeIdentity, inversion: chord.inversion || 0, bassInterval: pc(bassMidi - interpreted.rootMidi) })
+  }, degree: getChordSymbolForDisplayContext({ ...semantic, inversion: 0 }, key, ionianKey),
+  roman: getChordSymbolForDisplayContext({ ...semantic, inversion: chord.inversion || 0 }, key, ionianKey) };
   if (memo.size > 100_000) memo.clear();
   memo.set(memoKey, result);
   return result;
@@ -94,7 +115,10 @@ export function normalizeSection({ songId, section: rawSection, sourceName = '' 
     }
   });
   const denominators = {};
-  for (const view of VIEWS) {
+  for (const { view, relative } of VIEWS.flatMap(base => [
+    { view: base, relative: false },
+    { view: `relative_${base}`, relative: true },
+  ])) {
     let active = null, observedTransitions = 0, uncertainTransitions = 0;
     const flush = () => { if (active) runs.push(active); active = null; };
     for (const event of events) {
@@ -103,28 +127,32 @@ export function normalizeSection({ songId, section: rawSection, sourceName = '' 
       const sounding = previous && !previous.chord.isRest && !previous.chord.rest && !event.chord.isRest && !event.chord.rest;
       const sameKey = previous?.key && event.key && stableJson(previous.key) === stableJson(event.key);
       const possibleAdjacency = previous && (touching || !Number.isFinite(previous.endBeat) || !Number.isFinite(event.beat));
-      if (possibleAdjacency && sounding && (!sameKey || !previous.normalized || !event.normalized || previous.normalized.tokens[view] !== event.normalized.tokens[view])) {
+      const tokenView = relative ? view.slice('relative_'.length) : view;
+      const previousToken = previous?.normalized && (relative ? previous.normalized.relative.tokens[tokenView] : previous.normalized.tokens[tokenView]);
+      const eventToken = event.normalized && (relative ? event.normalized.relative.tokens[tokenView] : event.normalized.tokens[tokenView]);
+      if (possibleAdjacency && sounding && (!sameKey || !previous.normalized || !event.normalized || previousToken !== eventToken)) {
         observedTransitions++;
         if (!sameKey || !previous.normalized || !event.normalized) uncertainTransitions++;
       }
       if (!event.normalized) { flush(); continue; }
       if (!touching || !sameKey) flush();
       const norm = event.normalized;
+      const display = relative ? norm.relative : norm;
       const position = { startIndex: event.index, endIndex: event.index, startBeat: event.beat, endBeat: event.endBeat,
-        degree: norm.degree, roman: norm.roman, notes: norm.notes, rootMidi: norm.rootMidi, bassMidi: norm.bassMidi,
+        degree: display.degree, roman: display.roman, notes: norm.notes, rootMidi: norm.rootMidi, bassMidi: norm.bassMidi,
         key: event.key, inversion: event.chord.inversion || 0, varyingBass: false };
-      if (!active) active = { id: hash([NORMALIZER_VERSION, view, sectionId, event.index]), view, songId, sectionId, revision, tokens: [], positions: [], transitionIds: [], key: event.key };
-      if (active.tokens.at(-1) === norm.tokens[view]) {
+      if (!active) active = { id: hash([NORMALIZER_VERSION, view, sectionId, event.index]), view, songId, sectionId, revision, tokens: [], positions: [], transitionIds: [], key: relative ? norm.relative.key : event.key, sourceKey: event.key };
+      if (active.tokens.at(-1) === eventToken) {
         const last = active.positions.at(-1);
         last.varyingBass ||= last.bassMidi !== position.bassMidi;
         last.endIndex = event.index; last.endBeat = event.endBeat;
       } else {
         if (active.positions.length) active.transitionIds.push(hash(['transition', songId, sectionId, active.positions.at(-1).endIndex, event.index]));
-        active.tokens.push(norm.tokens[view]); active.positions.push(position);
+        active.tokens.push(eventToken); active.positions.push(position);
       }
     }
     flush();
-    denominators[view] = { observedTransitions, uncertainTransitions, eligibleTransitions: runs.filter(r => r.view === view).reduce((n, r) => n + r.transitionIds.length, 0) };
+    if (!relative) denominators[view] = { observedTransitions, uncertainTransitions, eligibleTransitions: runs.filter(r => r.view === view).reduce((n, r) => n + r.transitionIds.length, 0) };
   }
   return { sectionId, songId, revision, sourceName, sectionName: section.sectionName || sourceName, runs, diagnostics, denominators };
 }
