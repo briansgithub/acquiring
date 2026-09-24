@@ -42,7 +42,7 @@ class AuralQuizUiTest {
         assertTrue(session.exampleSettings.favorites)
         assertTrue(session.exampleSettings.distinguishInversions)
         assertEquals(original!!.events, session.view().exercise!!.events)
-        compose.onNodeWithTag("AuralExampleSettingsBack").performScrollTo().performClick()
+        compose.onNodeWithTag("AuralExampleSettingsBack").performClick()
         compose.onNodeWithTag("AuralQuiz").assertExists()
     }
 

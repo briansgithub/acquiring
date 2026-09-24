@@ -98,7 +98,12 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
             OutlinedTextField(minimum,{ minimum=it.filter(Char::isDigit) },label={ Text("Min chords") },singleLine=true,modifier=Modifier.weight(1f))
             OutlinedTextField(maximum,{ maximum=it.filter(Char::isDigit) },label={ Text("Max chords") },singleLine=true,modifier=Modifier.weight(1f))
         }
-        Text(if(settings.flatList) "All sequences · highest score first" else "Progressions · tap › for subsequences",Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.labelSmall)
+        val analysisLabel = when(settings.analysis) {
+            "relativeMajor" -> "Relative major · equivalent modes combined"
+            "filterMode" -> "${auralModeLabel(settings.modeFilter)} only"
+            else -> "All source modes"
+        }
+        Text((if(settings.flatList) "All sequences · highest score first" else "Progressions · tap › for subsequences") + " · $analysisLabel",Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.labelSmall)
         TextButton(onClick={ scope.launch { gaps=withContext(Dispatchers.IO) { catalog.analysisGaps() } } }) { Text("Analysis gaps") }
         error?.let { Text(it,Modifier.padding(12.dp),color=MaterialTheme.colorScheme.error) }
         if(busy) LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -116,6 +121,8 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                     }
                     Column(Modifier.weight(1f).clickable { onPractice(row.target) }.padding(vertical=12.dp).testTag("AuralPattern-${row.target.id}")) {
                         Text(auralRomanSequence(row.target.labels),style=MaterialTheme.typography.titleMedium,maxLines=3)
+                        Text(if(row.target.view.startsWith("relative_")) "Relative major" else row.target.sourceMode()?.let(::auralModeLabel) ?: "Mode unavailable",
+                            style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
                         Text("${row.length} chords · ${row.occurrences} occurrences · ${row.songs} songs",style=MaterialTheme.typography.bodySmall)
                         AuralFamilyProgress(row.target.id, progress)
                     }

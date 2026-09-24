@@ -10,7 +10,20 @@ import kotlinx.serialization.json.Json
     val popularity: Boolean = true, val variety: Boolean = true,
     val favorites: Boolean = false, val distinguishInversions: Boolean = false,
     val flatList: Boolean = false,
+    val analysis: String = "allModes",
+    val modeFilter: String = "major",
 )
+
+internal val AURAL_MODES = listOf("major", "minor", "dorian", "phrygian", "lydian", "mixolydian", "locrian", "harmonicMinor", "phrygianDominant")
+internal fun auralModeLabel(mode: String) = when (mode) {
+    "harmonicMinor" -> "Harmonic minor"
+    "phrygianDominant" -> "Phrygian dominant"
+    else -> mode.replaceFirstChar { it.uppercase() }
+}
+internal fun AuralExampleSettings.catalogView(): String {
+    val base = if (distinguishInversions) "harmony_bass" else "harmony"
+    return if (analysis == "relativeMajor") "relative_$base" else base
+}
 @Serializable data class AuralSourcePassage(
     val occurrenceId: String, val patternId: String, val songId: String,
     val title: String = "", val artist: String = "", val sectionId: String,
@@ -20,6 +33,7 @@ import kotlinx.serialization.json.Json
     val keyScale: String, val tempo: Int, val events: List<AuralEvent>,
     val context: List<AuralEvent>, val degreeLabels: List<String>,
     val startBeat: Double = 0.0, val endBeat: Double = 0.0,
+    val sourceKeyTonic: String? = null, val sourceKeyScale: String? = null,
 ) {
     // Location, not voicing/instrument/view/pattern ID, determines source familiarity.
     val sourceId: String get() = "$songId|$sectionId|$startIndex|$endIndex"

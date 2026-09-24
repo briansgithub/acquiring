@@ -17,7 +17,7 @@ import java.util.zip.GZIPInputStream
 object AuralCatalogDownloader {
     private const val MANIFEST_URL =
         "https://github.com/briansgithub/acquiring/releases/download/v1.0.0-data/aural-catalog-manifest.json"
-    private const val SCHEMA = "aural-catalog-1"
+    private val supportedSchemas = setOf("aural-catalog-1", "aural-catalog-2")
     private val requiredFiles = listOf("aural-catalog.db", "aural-evidence.db", "aural-popularity.db")
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -61,7 +61,7 @@ object AuralCatalogDownloader {
                 check(response.isSuccessful) { "Catalog update failed: HTTP ${response.code}" }
                 json.decodeFromString<Bundle>(requireNotNull(response.body).string())
             }
-            check(manifest.schemaVersion == SCHEMA) { "Unsupported progression catalog version" }
+            check(manifest.schemaVersion in supportedSchemas) { "Unsupported progression catalog version" }
             val entries = manifest.files.associateBy { it.name }
             check(entries.keys.containsAll(requiredFiles)) { "Catalog update is incomplete" }
             if (!force && installedBundleMatches(context, manifest)) {
@@ -120,7 +120,7 @@ object AuralCatalogDownloader {
     }
 
     internal fun installedBundleMatches(context: Context, manifest: Bundle): Boolean = runCatching {
-        if (manifest.schemaVersion != SCHEMA) return@runCatching false
+        if (manifest.schemaVersion !in supportedSchemas) return@runCatching false
         val entries = manifest.files.associateBy { it.name }
         if (!entries.keys.containsAll(requiredFiles)) return@runCatching false
         val files = requiredFiles.associateWith { File(context.filesDir, it) }
@@ -155,7 +155,7 @@ object AuralCatalogDownloader {
         val catalog = metadata(requireNotNull(files["aural-catalog.db"]))
         val evidence = metadata(requireNotNull(files["aural-evidence.db"]))
         val popularity = metadata(requireNotNull(files["aural-popularity.db"]))
-        check(catalog["schema_version"] == SCHEMA && catalog["snapshot_id"] == snapshotId) { "Catalog snapshot mismatch" }
+        check(catalog["schema_version"] in supportedSchemas && catalog["snapshot_id"] == snapshotId) { "Catalog snapshot mismatch" }
         check(evidence["catalog_snapshot"] == snapshotId) { "Catalog evidence mismatch" }
         check(!popularity["snapshotId"].isNullOrBlank() && !popularity["provider"].isNullOrBlank()) { "Popularity data is invalid" }
     }

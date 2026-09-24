@@ -15,15 +15,25 @@ internal fun generatePatternExercise(target: AuralTarget, seed: Long): AuralExer
     val pattern = requireNotNull(target.pattern)
     require(pattern.tokens.size >= 2 && pattern.tokens.size == pattern.labels.size && pattern.id == auralPatternId(pattern.tokens,pattern.view))
     require(target.familyId == pattern.id && target.skillId in AuralCurriculum.skills.map { it.id } && target.support in 0..2)
-    val rng = Random(seed); val mode = Json.parseToJsonElement(pattern.tokens.first()).jsonObject.getValue("mode").jsonPrimitive.content
+    val rng = Random(seed); val relative = pattern.view.startsWith("relative_")
+    val mode = Json.parseToJsonElement(pattern.tokens.first()).jsonObject["mode"]?.jsonPrimitive?.content ?: "major"
     val key = KeyInfo(listOf("C","D","Eb","F","G","A","Bb").random(rng),mode)
     val events = pattern.tokens.mapIndexed { i,token ->
         val chord = Json.parseToJsonElement(token).jsonObject
-        require(chord.getValue("mode").jsonPrimitive.content == mode)
-        val interpreted = ChordInterpreter.interpret(chord,key)
         val shift = target.octaveShift * 12
-        val notes = interpreted.midi.map { it + shift }.sorted(); require(notes.isNotEmpty() && notes.all { it in 1..127 })
-        AuralEvent(notes,requireNotNull(interpreted.rootMidi)+shift,notes.first(),pattern.labels[i],"harmony",2.0)
+        if (relative) {
+            val root = 48 + MusicTheory.NOTE_TO_PC.getValue(key.tonic) + chord.getValue("rootPc").jsonPrimitive.int
+            val intervals = chord.getValue("intervals").jsonArray.map { it.jsonPrimitive.int }
+            val bassInterval = chord["bassInterval"]?.jsonPrimitive?.int ?: 0
+            val bass = root + if (bassInterval == 0) 0 else bassInterval - 12
+            val notes = (intervals.map { root + it } + bass).distinct().sorted().map { it + shift }
+            AuralEvent(notes,root+shift,bass+shift,pattern.labels[i],"harmony",2.0)
+        } else {
+            require(chord.getValue("mode").jsonPrimitive.content == mode)
+            val interpreted = ChordInterpreter.interpret(chord,key)
+            val notes = interpreted.midi.map { it + shift }.sorted(); require(notes.isNotEmpty() && notes.all { it in 1..127 })
+            AuralEvent(notes,requireNotNull(interpreted.rootMidi)+shift,notes.first(),pattern.labels[i],"harmony",2.0)
+        }
     }
     val tonic = ChordInterpreter.interpret(buildJsonObject { put("root",1); put("type",5) },key)
     val shift = target.octaveShift * 12
@@ -67,7 +77,7 @@ internal fun auralWithPatternCorpus(base: AuralExercise, source: AuralCorpusProv
     }
     val events = p.events.mapIndexed { i,e ->
         val token = Json.parseToJsonElement(target.tokens[i]).jsonObject
-        require(token.getValue("mode").jsonPrimitive.content == p.keyScale)
+        require(token["mode"]?.jsonPrimitive?.content?.let { it == p.keyScale } != false)
         require(e.rootMidi%12 == (tonic+token.getValue("rootPc").jsonPrimitive.int)%12)
         val pcs = token.getValue("intervals").jsonArray.map { (e.rootMidi+it.jsonPrimitive.int)%12 }.toSet()
         require(e.notes.map { it%12 }.toSet() == pcs && e.degree == target.labels[i])

@@ -43,4 +43,21 @@ class AuralPatternExerciseTest {
         assertEquals(4,ex.options.map { it.degrees }.distinct().size)
         assertTrue(auralPatternVocabulary(p).any { it !in p.labels })
     }
+    @Test fun relativeMajorPatternUsesMajorReferenceWithoutModalToken() {
+        val tokens = listOf(
+            """{"version":"aural-relative-1","rootPc":2,"intervals":[0,3,7]}""",
+            """{"version":"aural-relative-1","rootPc":7,"intervals":[0,4,7]}"""
+        )
+        val pattern = AuralPatternTarget(auralPatternId(tokens,"relative_harmony"),"relative_harmony",tokens,listOf("ii","V"),0,0,"test")
+        val exercise = AuralCurriculum.generate(AuralTarget(pattern.id,"recall",pattern=pattern),17)
+        assertEquals(listOf("ii","V"),exercise.fullDegrees)
+        assertEquals("tonic",exercise.context.single().degree)
+        assertEquals(2,(exercise.events[0].rootMidi-MusicTheory.NOTE_TO_PC.getValue(exercise.keyTonic)+120)%12)
+        assertEquals(7,(exercise.events[1].rootMidi-MusicTheory.NOTE_TO_PC.getValue(exercise.keyTonic)+120)%12)
+    }
+    @Test fun analysisSettingsResolveOneCatalogView() {
+        assertEquals("harmony",AuralExampleSettings().catalogView())
+        assertEquals("relative_harmony",AuralExampleSettings(analysis="relativeMajor").catalogView())
+        assertEquals("harmony_bass",AuralExampleSettings(distinguishInversions=true,analysis="filterMode",modeFilter="dorian").catalogView())
+    }
 }

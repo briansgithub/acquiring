@@ -23,6 +23,12 @@ test('compact device export preserves source sections and indexed occurrence end
     assert.ok(result.sequenceCount>0);
     const db=openDatabase(file,true);
     assert.deepEqual(JSON.parse(gunzipSync(db.prepare('SELECT source FROM catalog_section').get().source)),source);
+    assert.deepEqual(db.prepare('SELECT DISTINCT view FROM catalog_range ORDER BY view').all().map(row=>row.view),
+      ['harmony','harmony_bass','relative_harmony','relative_harmony_bass']);
+    assert.deepEqual(db.prepare("SELECT DISTINCT mode FROM catalog_range WHERE view='harmony'").all().map(row=>row.mode),['minor']);
+    const relativeRun=db.prepare("SELECT key_json,source_key_json FROM catalog_run WHERE view='relative_harmony'").get();
+    assert.deepEqual(JSON.parse(relativeRun.key_json),{scale:'major',tonic:'F'});
+    assert.deepEqual(JSON.parse(relativeRun.source_key_json),{scale:'minor',tonic:'D'});
     const r=index.runs.find(r=>r.view==='harmony'),p=getPattern(index,{view:'harmony',tokens:r.tokens.slice(0,2),minSongs:1});
     const spans=db.prepare('SELECT s.start_index,e.end_index FROM catalog_suffix s JOIN catalog_suffix e ON e.run_id=s.run_id AND e.offset=s.offset+1 WHERE s.rank BETWEEN ? AND ?').all(p.intervalStart,p.intervalEnd);
     assert.deepEqual(spans.map(s=>[s.start_index,s.end_index]).sort(),[[0,1],[2,3]]);

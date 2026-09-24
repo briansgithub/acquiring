@@ -331,7 +331,8 @@ internal fun AuralQuizScreen(
     val inLesson = route == "lesson" && exercise != null
     if (showExampleSettings) {
         AuralExampleSettingsPanel(exampleSettings, session.popularityAvailable || catalog?.popularity?.isNotEmpty()==true,
-            onChange = { session.setExampleSettings(it); exampleSettings = it; refresh() }, onBack = { showExampleSettings = false },popularityDescription=catalog?.popularityDescription)
+            onChange = { session.setExampleSettings(it); exampleSettings = it; refresh() }, onBack = { showExampleSettings = false },popularityDescription=catalog?.popularityDescription,
+            modeAnalysisAvailable = catalog?.supportsModeAnalysis == true)
     } else if (showSettings && settingsContent != null) {
         Box(Modifier.fillMaxSize().padding(16.dp)) { settingsContent { showSettings = false } }
     } else {
@@ -375,7 +376,8 @@ internal fun AuralQuizScreen(
                     modifier = Modifier.weight(1f))
             } else {
                 catalogState.SaveableStateProvider("catalog") {
-                    AuralCatalogScreen(catalog!!,exampleSettings,session,{ patternPractice(it,"recognize") },::adaptive,
+                    val catalogSettings = if(catalog!!.supportsModeAnalysis) exampleSettings else exampleSettings.copy(analysis="allModes")
+                    AuralCatalogScreen(catalog!!,catalogSettings,session,{ patternPractice(it,"recognize") },::adaptive,
                         if(exercise != null) ({ route="lesson" }) else null,Modifier.weight(1f),onReview={ rows -> reviewPool=rows; session.reviewPattern(rows)?.let { patternPractice(it.first,it.second,true) } })
                 }
             }

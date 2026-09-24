@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeChord, normalizeSection } from './normalize.mjs';
+import { normalizeChord, normalizeSection, relativeIonianKey } from './normalize.mjs';
 const key = { tonic: 'C', scale: 'major' };
 const chord = (root, beat, extra = {}) => ({ root, beat, duration: 1, ...extra });
 const section = chords => ({ songId: 'source', sectionName: 'Verse', chords, metadata: { keys: [{ ...key, beat: 1 }] } });
@@ -27,6 +27,26 @@ test('transposition invariant but qualities, borrowing and applied functions rem
   }
   assert.notEqual(normalizeChord({ root: 5 }, key).tokens.harmony, normalizeChord({ root: 5, type: 7 }, key).tokens.harmony);
   assert.notEqual(normalizeChord({ root: 5, applied: 5 }, key).tokens.harmony, normalizeChord({ root: 2 }, key).tokens.harmony);
+});
+test('relative-major identities combine equivalent modal harmony', () => {
+  const major = normalizeChord({ root: 2 }, { tonic: 'C', scale: 'major' });
+  const dorian = normalizeChord({ root: 1 }, { tonic: 'D', scale: 'dorian' });
+  assert.equal(major.relative.tokens.harmony, dorian.relative.tokens.harmony);
+  assert.equal(major.relative.degree, 'ii');
+  assert.equal(dorian.relative.degree, 'ii');
+  assert.deepEqual(relativeIonianKey({ tonic: 'D', scale: 'dorian' }), { tonic: 'C', scale: 'major' });
+  assert.deepEqual(relativeIonianKey({ tonic: 'A', scale: 'minor' }), { tonic: 'C', scale: 'major' });
+  assert.notEqual(normalizeChord({ root: 5, applied: 5 }, key).relative.tokens.harmony,
+    normalizeChord({ root: 2, borrowed: 'lydian' }, key).relative.tokens.harmony);
+});
+
+test('relative-major runs keep source-mode metadata and key boundaries', () => {
+  const dorian = { songId: 'source', sectionName: 'Verse',
+    chords: [chord(1, 1), chord(4, 2)], metadata: { keys: [{ tonic: 'D', scale: 'dorian', beat: 1 }] } };
+  const run = normalizeSection({ songId: 's', section: dorian }).runs.find(r => r.view === 'relative_harmony');
+  assert.deepEqual(run.positions.map(p => p.degree), ['ii', 'V']);
+  assert.deepEqual(run.key, { tonic: 'C', scale: 'major' });
+  assert.deepEqual(run.sourceKey, { tonic: 'D', scale: 'dorian' });
 });
 test('inversion views collapse differently without discarding source spans', () => {
   const result = normalizeSection({ songId: 's', section: section([chord(1, 1), chord(1, 2, { inversion: 1 }), chord(5, 3)]) });
