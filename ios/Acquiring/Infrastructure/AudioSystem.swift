@@ -159,7 +159,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         guard !recoveryInProgress else { throw CancellationError() }
         recordAudioEvent("preview.cardRequest")
         guard !midiNotes.isEmpty, midiNotes.allSatisfy({ (0...127).contains($0) }) else {
-            throw AcquiringAudioError.invalidRequest("Quiz card previews require valid MIDI notes.")
+            throw AcquiringAudioError.invalidRequest("Playback card previews require valid MIDI notes.")
         }
         let noteGroups: [[Int]]
         if asInterval, midiNotes.count >= 2 {
@@ -650,7 +650,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             throw CancellationError()
         }
         guard quizTimelineLoaded else {
-            throw AcquiringAudioError.invalidRequest("Load a quiz timeline before starting playback.")
+            throw AcquiringAudioError.invalidRequest("Load a Playback timeline before starting playback.")
         }
 
         quizPlaybackRequested = true

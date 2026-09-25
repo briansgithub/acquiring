@@ -1,6 +1,11 @@
-# Aural Quiz catalog: Android human-testing release
+# Aural Quiz catalog
 
 Updated 2026-09-17. Implementation route: offline Node/SQLite, Python streaming import, native Kotlin/Compose; runtime model identity unknown. No model inference or provider calls run in the app. This document supersedes the six-family catalog and unavailable-popularity limitations in the earlier implementation handoff.
+
+iOS native parity was implemented for review on 2026-09-18 at Android reference
+`a857c995` using GPT-5.6 Sol. It consumes the same published three-file bundle;
+Swift/Xcode, simulator, performance, audio, microphone, and human checks remain
+blocked until the development Mac returns. See Group G in `porting-plan.md`.
 
 ## Access and behavior
 

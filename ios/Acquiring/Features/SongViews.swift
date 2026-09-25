@@ -1,4 +1,5 @@
 import AcquiringAudio
+import AcquiringAural
 import AcquiringCore
 import Combine
 import Foundation
@@ -58,10 +59,10 @@ struct SongDetailView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button { dismiss() } label: {
-                    Label("Quiz", systemImage: "questionmark.music.note")
+                    Label("Playback", systemImage: "play.rectangle")
                 }
                 .accessibilityIdentifier("songDetail.quiz")
-                .accessibilityHint("Returns to this song's quiz")
+                .accessibilityHint("Returns to this song's Playback screen")
             }
         }
         .task(id: songID) { await load() }
@@ -896,9 +897,11 @@ private struct SongDetailInfoPreview: View {
 
 struct QuizView: View {
     let songID: String
+    let auralRequest: AuralPlaybackRequest?
     let onOpenArtist: (CatalogSong) -> Void
     @Environment(AppEnvironment.self) private var environment
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dismiss) private var dismiss
     @AppStorage(QuizNavigationPreference.edgeSwipeBackKey, store: QuizNavigationPreference.defaults)
     private var enablesEdgeSwipeBack = false
     @State private var state: FeatureState<SongDocument> = .loading
@@ -931,6 +934,19 @@ struct QuizView: View {
     @State private var quizCardPreviewGeneration = 0
     @State private var practiceTargets: QuizPracticeTargets?
     @State private var notationFontStyle: QuizNotationFontStyle = .palatino
+    @State private var auralSectionID: String?
+    @State private var pendingAuralJump = false
+    @State private var loopsAuralPassage = false
+
+    init(
+        songID: String,
+        auralRequest: AuralPlaybackRequest? = nil,
+        onOpenArtist: @escaping (CatalogSong) -> Void
+    ) {
+        self.songID = songID
+        self.auralRequest = auralRequest
+        self.onOpenArtist = onOpenArtist
+    }
 
     // Retain the temporary sampler for future comparisons, hidden in normal use.
     private let showsFontSampler = ProcessInfo.processInfo.arguments.contains("--preview-notation-fonts")
@@ -939,18 +955,26 @@ struct QuizView: View {
         transportPhase == .playing || transportPhase == .buffering
     }
 
+    private var auralPassageRange: ClosedRange<Double>? {
+        guard let passage = auralRequest?.passage,
+              passage.startBeat.isFinite,
+              passage.endBeat.isFinite,
+              passage.endBeat > passage.startBeat else { return nil }
+        return passage.startBeat...passage.endBeat
+    }
+
     var body: some View {
         Group {
             switch state {
             case .idle, .loading:
-                ProgressView("Preparing quiz…")
+                ProgressView("Preparing Playback…")
                     .accessibilityIdentifier("quiz.status.loading")
             case .empty:
-                ContentUnavailableView("No quiz data", systemImage: "questionmark.music.note")
+                ContentUnavailableView("No Playback data", systemImage: "questionmark.music.note")
                     .accessibilityIdentifier("quiz.status.empty")
             case let .failure(message):
                 ContentUnavailableView {
-                    Label("Unable to open quiz", systemImage: "exclamationmark.triangle")
+                    Label("Unable to open Playback", systemImage: "exclamationmark.triangle")
                 } description: {
                     Text(message)
                 } actions: {
@@ -1015,6 +1039,19 @@ struct QuizView: View {
                         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                 }
             }
+            if let auralRequest {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(
+                            auralRequest.fromSongs ? "Return to songs" : "Return to quiz",
+                            systemImage: "arrow.uturn.backward"
+                        )
+                    }
+                    .accessibilityIdentifier("playback.returnToAural")
+                }
+            }
         }
         .task(id: songID) { await load() }
         .task(id: transportObservationGeneration) { await observeTransport() }
@@ -1065,6 +1102,7 @@ struct QuizView: View {
         // sweeps the playhead across runs the singer never sang, and the model suppresses
         // scoring only while it knows a scrub is in progress.
         .onChange(of: timelineScrub != nil) { _, _ in updatePracticeContext() }
+        .onChange(of: progress) { _, _ in enforceAuralPassageLoopIfNeeded() }
         .alert("Audio", isPresented: errorAlertBinding) {
             Button("Share Audio Diagnostics") { showsAudioDiagnostics = true }
             Button("Reset Audio and Retry") { requestAudioRecovery() }
@@ -1085,7 +1123,7 @@ struct QuizView: View {
     }
 
     private var navigationTitle: String {
-        guard case let .content(document) = state else { return "Quiz" }
+        guard case let .content(document) = state else { return "Playback" }
         return "\(document.song.displayTitle) by \(document.song.displayArtist)"
     }
 
@@ -1099,6 +1137,14 @@ struct QuizView: View {
             let maximumControlType: DynamicTypeSize = viewport.size.height >= 760 ? .xxxLarge : .large
             Group {
                 VStack(spacing: 4) {
+                    if let request = auralRequest {
+                        AuralPlaybackPassageBar(
+                            passage: request.passage,
+                            isInSourceSection: selected?.id == auralSectionID,
+                            loopsPassage: $loopsAuralPassage,
+                            jump: jumpToAuralPassage
+                        )
+                    }
                     if let selected {
                         QuizHeader(
                             initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
@@ -1206,6 +1252,7 @@ struct QuizView: View {
                     tempoPercent: tempoPercent,
                     usesRelativeIonianContext: usesRelativeIonianContext,
                     isPlaying: transportPhase == .playing && timelineScrub == nil,
+                        passageRange: selected.id == auralSectionID ? auralPassageRange : nil,
                     seekGeneration: seekGeneration,
                     isSeekEnabled: canSeek,
                     onSeek: { requestTimelineTap(to: $0, in: section) },
@@ -1281,7 +1328,7 @@ struct QuizView: View {
                 .buttonStyle(QuizIconButtonStyle())
                 .disabled(!sectionLoadStatus.isReady || playbackCommandPending || transportPhase == .buffering)
                 .accessibilityIdentifier("quiz.reset")
-                .accessibilityLabel("Reset quiz playback")
+                .accessibilityLabel("Reset Playback")
                 .accessibilityHint("Stops playback and returns to the beginning")
                 QuizTransportButton(
                     phase: transportPhase,
@@ -1313,7 +1360,7 @@ struct QuizView: View {
                         width: QuizTransportLayout.modeSelectorWidth,
                         expandsToAvailableWidth: false,
                         accessibilityIdentifier: "quiz.mode",
-                        accessibilityLabel: "Quiz mode",
+                        accessibilityLabel: "Playback mode",
                         isEnabled: sectionLoadStatus.isReady && !playbackCommandPending,
                         onSelect: { id in
                             guard let selectedMode = QuizDisplayMode(rawValue: id) else { return }
@@ -1333,7 +1380,7 @@ struct QuizView: View {
                         width: nil,
                         expandsToAvailableWidth: true,
                         accessibilityIdentifier: "quiz.section",
-                        accessibilityLabel: "Quiz section",
+                        accessibilityLabel: "Playback section",
                         isEnabled: true,
                         onSelect: { id in selectSection(id, sections: sections) }
                     )
@@ -1367,7 +1414,7 @@ struct QuizView: View {
             )
             .disabled(!canSeek || endBeat <= PlaybackTiming.firstBeat)
             .accessibilityIdentifier("quiz.rootSeek")
-            .accessibilityLabel("Quiz position")
+            .accessibilityLabel("Playback position")
             .accessibilityValue("Beat \(currentBeat(in: section).formatted(.number.precision(.fractionLength(0...2))))")
             .accessibilityHint("Adjusts the current beat")
         }
@@ -1503,7 +1550,7 @@ struct QuizView: View {
                 width: 44,
                 expandsToAvailableWidth: false,
                 accessibilityIdentifier: "quiz.instrument",
-                accessibilityLabel: "Quiz instrument",
+                accessibilityLabel: "Playback instrument",
                 isEnabled: sectionLoadStatus.isReady && !playbackCommandPending && timelineScrub == nil,
                 onSelect: { id in
                     guard let waveform = SynthWaveform(rawValue: id) else { return }
@@ -2042,9 +2089,30 @@ struct QuizView: View {
                 selectedSectionID = nil
                 return
             }
-            let remembered = environment.quizContinuity(for: songID)
-            let restored = document.orderedSections.first { $0.key == remembered?.sectionID }
-                ?? selected
+            let restored: (key: String, section: ExtractedSection)
+            if let request = auralRequest {
+                let sourceData = try await environment.auralCatalog.sourceSectionJSON(
+                    for: request.passage
+                )
+                let source = try JSONDecoder().decode(ExtractedSection.self, from: sourceData)
+                let matches = document.orderedSections.filter { candidate in
+                    if candidate.section == source { return true }
+                    guard !source.safeNumericID.isEmpty else { return false }
+                    return candidate.section.safeNumericID == source.safeNumericID
+                        && candidate.section.sectionIndex == source.sectionIndex
+                        && candidate.section.chords == source.chords
+                }
+                guard matches.count == 1, let exact = matches.first else {
+                    throw AuralCatalogError.missingSource(request.passage.sourceId)
+                }
+                restored = exact
+                auralSectionID = exact.key
+                pendingAuralJump = true
+            } else {
+                let remembered = environment.quizContinuity(for: songID)
+                restored = document.orderedSections.first { $0.key == remembered?.sectionID }
+                    ?? selected
+            }
             let continuity = environment.rememberQuizSection(
                 songID: songID,
                 sectionID: restored.key
@@ -2078,10 +2146,60 @@ struct QuizView: View {
                 activeQuizRevision = revision
                 sectionLoadStatus = .ready(restored.section.safeSectionName)
                 activatePlaybackOwnerIfReady()
+                performPendingAuralJump(in: restored.section, sectionID: restored.key)
             } else {
                 scheduleSectionLoad(restored.section, id: restored.key, position: .restart)
             }
         } catch { state = .failure(error.localizedDescription) }
+    }
+
+    private func jumpToAuralPassage() {
+        guard let request = auralRequest,
+              case let .content(document) = state,
+              let sectionID = auralSectionID,
+              let section = document.orderedSections.first(where: { $0.key == sectionID })
+        else {
+            error = "The exact quiz passage is unavailable."
+            return
+        }
+        pendingAuralJump = true
+        if selectedSectionID != sectionID {
+            let sections = document.orderedSections.map {
+                QuizSection(id: $0.key, section: $0.section)
+            }
+            selectSection(sectionID, sections: sections)
+        } else {
+            performPendingAuralJump(in: section.section, sectionID: sectionID)
+        }
+        if request.passage.startBeat >= request.passage.endBeat {
+            error = "The saved quiz passage has an invalid beat range."
+        }
+    }
+
+    private func performPendingAuralJump(in section: ExtractedSection, sectionID: String) {
+        guard pendingAuralJump,
+              sectionID == auralSectionID,
+              let passage = auralRequest?.passage,
+              passage.startBeat.isFinite,
+              passage.endBeat.isFinite,
+              passage.endBeat > passage.startBeat,
+              sectionLoadStatus.isReady
+        else { return }
+        pendingAuralJump = false
+        requestSeek(to: passage.startBeat, in: section)
+    }
+
+    private func enforceAuralPassageLoopIfNeeded() {
+        guard loopsAuralPassage,
+              transportPhase == .playing,
+              let passage = auralRequest?.passage,
+              selectedSectionID == auralSectionID,
+              case let .content(document) = state,
+              let selectedSectionID,
+              let section = document.orderedSections.first(where: { $0.key == selectedSectionID })?.section,
+              currentBeat(in: section) >= passage.endBeat
+        else { return }
+        requestSeek(to: passage.startBeat, in: section)
     }
 
     private func scheduleSectionLoad(
@@ -2162,6 +2280,7 @@ struct QuizView: View {
                 }
                 sectionLoadStatus = .ready(section.safeSectionName)
                 activatePlaybackOwnerIfReady()
+                performPendingAuralJump(in: section, sectionID: id)
                 sectionLoadTask = nil
             } catch is CancellationError {
                 // A newer section superseded this load.
@@ -2617,7 +2736,7 @@ private struct StableQuizMenuButton: UIViewRepresentable {
     }
 }
 
-#Preview("Quiz Play and Pause") {
+#Preview("Playback Play and Pause") {
     VStack(spacing: 16) {
         QuizTransportButton(phase: .paused, isReady: false, isPlaybackEnabled: true, commandPending: false, action: {})
         QuizTransportButton(phase: .paused, isReady: true, isPlaybackEnabled: true, commandPending: false, action: {})
@@ -2626,6 +2745,43 @@ private struct StableQuizMenuButton: UIViewRepresentable {
     }
     .padding()
     .preferredColorScheme(.dark)
+}
+
+private struct AuralPlaybackPassageBar: View {
+    let passage: AuralPassage
+    let isInSourceSection: Bool
+    @Binding var loopsPassage: Bool
+    let jump: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Quiz passage · \(passage.sectionName)")
+                    .font(.caption.weight(.semibold))
+                Text("Source key: \(passage.keyTonic) \(passage.keyScale)")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Button(action: jump) {
+                Label("Jump to quiz passage", systemImage: "scope")
+            }
+            .buttonStyle(.bordered)
+            Toggle(isOn: $loopsPassage) {
+                Image(systemName: "repeat")
+            }
+            .toggleStyle(.button)
+            .accessibilityLabel("Loop quiz passage")
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            isInSourceSection ? Color.yellow.opacity(0.12) : Color.secondary.opacity(0.12),
+            in: RoundedRectangle(cornerRadius: 8)
+        )
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("playback.auralPassage")
+    }
 }
 
 private struct QuizSection: Identifiable {
@@ -2760,7 +2916,7 @@ private struct QuizHeader: View {
         .buttonStyle(QuizIconButtonStyle())
         .accessibilityLabel(quizHelp?.isPresented == true ? "Hide tooltips" : "Show tooltips")
         .accessibilityValue(quizHelp?.isPresented == true ? "On" : "Off")
-        .accessibilityHint("Labels the less obvious quiz controls")
+        .accessibilityHint("Labels the less obvious Playback controls")
         .accessibilityIdentifier("quiz.help")
         .accessibilityFocused($helpButtonIsFocused)
     }
@@ -3006,6 +3162,7 @@ private struct QuizTimelinePairView: View {
     let tempoPercent: Double
     let usesRelativeIonianContext: Bool
     let isPlaying: Bool
+    let passageRange: ClosedRange<Double>?
     let seekGeneration: Int
     let isSeekEnabled: Bool
     let onSeek: (Double) -> Void
@@ -3030,6 +3187,7 @@ private struct QuizTimelinePairView: View {
         tempoPercent: Double,
         usesRelativeIonianContext: Bool,
         isPlaying: Bool,
+        passageRange: ClosedRange<Double>? = nil,
         seekGeneration: Int,
         isSeekEnabled: Bool,
         onSeek: @escaping (Double) -> Void,
@@ -3046,6 +3204,7 @@ private struct QuizTimelinePairView: View {
         self.tempoPercent = tempoPercent
         self.usesRelativeIonianContext = usesRelativeIonianContext
         self.isPlaying = isPlaying
+        self.passageRange = passageRange
         self.seekGeneration = seekGeneration
         self.isSeekEnabled = isSeekEnabled
         self.onSeek = onSeek
@@ -3072,6 +3231,7 @@ private struct QuizTimelinePairView: View {
                 presentation: displayModel.melodyPresentation,
                 currentBeat: currentBeat,
                 displayedBeat: displayModel.displayedBeat,
+                passageRange: passageRange,
                 isSeekEnabled: isSeekEnabled,
                 onSeek: onSeek,
                 onDragStart: onDragStart,
@@ -3857,6 +4017,7 @@ private struct ChordTimelineView: View {
     let presentation: ChordTimelinePresentation
     let currentBeat: Double
     let displayedBeat: Double
+    let passageRange: ClosedRange<Double>?
     let isSeekEnabled: Bool
     let onSeek: (Double) -> Void
     let onDragStart: () -> Void
@@ -3871,6 +4032,7 @@ private struct ChordTimelineView: View {
         presentation: ChordTimelinePresentation,
         currentBeat: Double,
         displayedBeat: Double,
+        passageRange: ClosedRange<Double>? = nil,
         isSeekEnabled: Bool = false,
         onSeek: @escaping (Double) -> Void = { _ in },
         onDragStart: @escaping () -> Void = {},
@@ -3881,6 +4043,7 @@ private struct ChordTimelineView: View {
         self.presentation = presentation
         self.currentBeat = currentBeat
         self.displayedBeat = displayedBeat
+        self.passageRange = passageRange
         self.isSeekEnabled = isSeekEnabled
         self.onSeek = onSeek
         self.onDragStart = onDragStart
@@ -3902,7 +4065,14 @@ private struct ChordTimelineView: View {
                 ZStack(alignment: .topLeading) {
                     ForEach(presentation.visuals) { visual in
                         if presentation.width(for: visual) > 0 {
-                            chordBlock(visual, isActive: active?.id == visual.id)
+                            chordBlock(
+                                visual,
+                                isActive: active?.id == visual.id,
+                                isQuizPassage: passageRange.map {
+                                    visual.beat < $0.upperBound
+                                        && visual.beat + visual.duration > $0.lowerBound
+                                } ?? false
+                            )
                         }
                     }
                 }
@@ -3987,14 +4157,18 @@ private struct ChordTimelineView: View {
         }
     }
 
-    private func chordBlock(_ visual: ChordTimelineVisual, isActive: Bool) -> some View {
+    private func chordBlock(
+        _ visual: ChordTimelineVisual,
+        isActive: Bool,
+        isQuizPassage: Bool
+    ) -> some View {
         RoundedRectangle(cornerRadius: 5)
             .fill(isActive ? laneTint.opacity(0.82) : Color.white.opacity(0.16))
             .overlay {
                 RoundedRectangle(cornerRadius: 5)
                     .stroke(
-                        isActive ? Color.white : Color.white.opacity(0.42),
-                        lineWidth: isActive ? 2 : 1
+                        isQuizPassage ? Color.yellow : isActive ? Color.white : Color.white.opacity(0.42),
+                        lineWidth: isQuizPassage ? 3 : isActive ? 2 : 1
                     )
             }
             .overlay {

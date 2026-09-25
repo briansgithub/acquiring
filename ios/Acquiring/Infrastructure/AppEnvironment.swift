@@ -1,4 +1,5 @@
 import AcquiringAudio
+import AcquiringAural
 import AcquiringCatalog
 import AcquiringCore
 import CryptoKit
@@ -384,6 +385,11 @@ final class QuizInstrumentSession {
 @Observable
 final class AppEnvironment {
     let catalog: CatalogCoordinator
+    let auralConfiguration: AuralBundleConfiguration
+    let auralInstaller: AuralBundleInstaller
+    let auralCatalog: AuralCatalogReader
+    let auralSession: AuralSession
+    let auralRestoration: AuralRestorationStore
     let maintenance: any CatalogMaintenanceService
     let catalogAssetMetadata: any CatalogAssetMetadataService
     let externalBetaUpdates: any ExternalBetaUpdateService
@@ -437,6 +443,26 @@ final class AppEnvironment {
         let coordinator = CatalogCoordinator(configuration: configuration)
         catalog = coordinator
         catalogConfiguration = configuration
+        let selectedAuralConfiguration: AuralBundleConfiguration
+        if let uiTestSession {
+            selectedAuralConfiguration = AuralBundleConfiguration(
+                directoryURL: uiTestSession.catalogDirectoryURL
+                    .deletingLastPathComponent()
+                    .appending(path: "\(uiTestSession.identifier)-aural", directoryHint: .isDirectory),
+                manifestURL: URL(string: "https://example.invalid/aural-catalog-manifest.json")!
+            )
+        } else {
+            selectedAuralConfiguration = try AuralBundleConfiguration.live()
+        }
+        auralConfiguration = selectedAuralConfiguration
+        auralInstaller = AuralBundleInstaller(configuration: selectedAuralConfiguration)
+        auralCatalog = AuralCatalogReader(configuration: selectedAuralConfiguration)
+        auralSession = AuralSession(
+            fileURL: selectedAuralConfiguration.directoryURL.appending(path: "session-v1.json")
+        )
+        auralRestoration = AuralRestorationStore(
+            fileURL: selectedAuralConfiguration.directoryURL.appending(path: "restore-v1.json")
+        )
 #if DEBUG
         let selectedAssetMetadata: any CatalogAssetMetadataService
         if isUITesting {
