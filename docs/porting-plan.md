@@ -2353,3 +2353,42 @@ passed. When the Mac is available:
    validated revisions. The Android tests passed separately, but the Pixel 7a
    was offline, so device review is pending there too. No remote upload or
    release was requested for this search work.
+
+### Aural Quiz repeated-loop reduction — 2026-09-25, Mac validation pending
+
+`[implemented in iOS source; NOT compiled or simulator-tested]` The new
+`AuralLoopReduction.swift` applies the same versioned rule as the catalog
+exporter and Android reader: a whole sequence must contain two complete
+copies of its shortest normalized chord cycle, with an optional partial copy.
+For a redundant sequence, it selects the earliest longest contiguous window
+without a repeated directed transition. `I–V–I–V–I` selects `I–V–I`;
+`X–I–V–I–V–Y` remains available. The catalog reader filters ranked pages
+and promotes the nearest retained endpoint descendants in recursive browsing.
+Original source runs, pattern IDs, occurrence spans, and learning history are
+not rewritten. Older catalog bundles remain readable; their group headers
+may still include a category with no retained results. The new schema-v3
+bundle records `sequence_reduction_version=unique-transitions-1` and accurate
+retained counts.
+
+`AuralLoopReductionTests.swift` reads the same JSON fixtures as the Node and
+Android tests, including modified chords and inversion distinctions. Source
+diff whitespace checks passed on Windows. The Mac is still unreachable, so
+Swift tests, an Xcode build, simulator install/launch, and UI/accessibility
+review remain **unrun**. The existing dirty flexible-grouping and button-search
+port remains preserved; do not commit or merge it as validated iOS work.
+
+Next Mac session: inspect the worktree, run
+`swift test --filter AuralLoopReductionTests` alongside the pending grouping
+and query tests, fix and rerun any affected checks, then build/install/launch
+on the warm iPhone 17 simulator. Test a repeated loop in modal, relative-major,
+and inversion views; confirm pages contain retained patterns, recursive paths
+skip redundant intermediates, Review uses retained rows, and a previously
+restored long exercise still opens. Transfer and checksum-verify the new full
+catalog, matching evidence, and popularity overlay before full-catalog tests.
+The Android/shared checkpoint `020f8ef8` and `docs/aural-catalog.md` record
+the exact snapshot, counts, and hashes. On 2026-09-25 the validated full
+bundle, evidence, and popularity files were installed on the Pixel 7a;
+direct private-file hashes matched, and both focused catalog instrumentation
+tests passed against the new snapshot. Android human visual review remains
+pending. This does not validate the uncompiled iOS implementation. No iOS
+release was requested.
