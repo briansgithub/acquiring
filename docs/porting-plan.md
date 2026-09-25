@@ -2392,3 +2392,29 @@ direct private-file hashes matched, and both focused catalog instrumentation
 tests passed against the new snapshot. Android human visual review remains
 pending. This does not validate the uncompiled iOS implementation. No iOS
 release was requested.
+
+### Aural Quiz longest-first groups and bounded progression header — 2026-09-25
+
+`[implemented in iOS source; NOT compiled or simulator-tested]` Visible
+sequence-length groups and the length subgroups under Starting chord now sort
+from longest to shortest. Ranking and pagination within each bucket are
+unchanged. Pattern detail no longer puts an unbounded chord HStack above its
+activity tabs: long progressions show a short preview and a **Show full
+progression** control; both preview and full sequence scroll horizontally
+within the available width. Short progressions also scroll horizontally if
+needed. The Songs tab remains outside that scrolling header.
+
+This change is in the already dirty, uncommitted iOS grouping/search/loop port.
+The Mac remains unreachable, so the Swift build, focused tests, simulator
+install/launch, and accessibility/visual review are **unrun**. Next Mac
+session: build the current iOS worktree, open a long source progression,
+confirm its tabs and Songs list remain reachable with the header collapsed and
+expanded, verify both grouping priorities sort lengths descending, then run
+the focused grouping tests and record their result here. Do not merge or
+release the iOS source before this validation.
+
+Android checkpoint `0c9b4917` validates this change separately: the focused
+Robolectric UI test and both Debug APK builds passed after one fix. The focused
+Pixel 7a instrumentation test passed with the long header expanded and the
+Songs tab reachable. The Android app was installed and relaunched without
+replacing its full catalog. These results do not establish iOS correctness.
