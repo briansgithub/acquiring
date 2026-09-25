@@ -206,3 +206,25 @@ is reachable, check common families and More variants under modal/relative
 views, test inversion toggling and rapid edits, and review the chip layout.
 The iOS source and deferred Mac checks are recorded in `docs/porting-plan.md`
 in the iOS worktree. No remote push or release was performed.
+
+### Pixel 7a upload — 2026-09-25
+
+Device `3C081JEHN14930` connected. Installed the Debug app from Android
+checkpoint `0373d5dd` with `adb install -r`, preserving app data. The existing
+local full schema-v3 catalog snapshot
+`e18eadf5a212f441afb69f44ca779b577d7476c3baaefca73fd74b9c9ee83cfb`,
+its matching evidence, and the full ListenBrainz popularity overlay were
+installed using `tooling/aural-corpus/install-android.mjs`. The installer's
+host, transfer, and app-private checksum checks passed; direct checks of all
+three active private files matched SHA-256 values listed above. Only the two
+large, exact temporary catalog/evidence transfer copies created for this
+upload were removed from `/data/local/tmp` after validation. The host copies
+and app-private files remain. The phone had 2.6 GiB available afterward.
+
+The `app-debug-androidTest.apk` was installed, and
+`AuralCatalogDeviceTest#exhaustiveCatalogRanksAndResolvesOfflinePassages`
+passed on the Pixel (1 test, 21.03 seconds). The app was launched again after
+the test. The new button-builder layout and interactions have not yet received
+human visual review; test the common families, catalog-backed More options,
+modal/relative views, inversion toggle, and rapid edits before integration.
+No remote push or store release was performed.
