@@ -79,6 +79,18 @@ class AuralCatalogDownloaderTest {
         assertTrue(AuralCatalogDownloader.installedBundleMatches(context, manifest(snapshot,listOf(catalog,evidence,popularity),"aural-catalog-2")))
     }
 
+    @Test
+    fun validatedSchemaThreeBundleIsNotDowngradedByOlderPublishedManifest() {
+        val snapshot = "grouped-catalog"
+        val catalog = database("aural-catalog.db", mapOf("schema_version" to "aural-catalog-3", "snapshot_id" to snapshot))
+        val evidence = database("aural-evidence.db", mapOf("catalog_snapshot" to snapshot))
+        val popularity = database("aural-popularity.db", mapOf("snapshotId" to "popularity-test", "provider" to "test-provider"))
+        assertTrue(AuralCatalogDownloader.installedBundleIsNewer(context, manifest("published-v1",listOf(catalog,evidence,popularity))))
+        assertFalse(AuralCatalogDownloader.installedBundleIsNewer(context, manifest(snapshot,listOf(catalog,evidence,popularity),"aural-catalog-3")))
+        database("aural-evidence.db", mapOf("catalog_snapshot" to "wrong"))
+        assertFalse(AuralCatalogDownloader.installedBundleIsNewer(context, manifest("published-v1",listOf(catalog,evidence,popularity))))
+    }
+
     private fun database(name: String, metadata: Map<String, String>): File {
         val file = File(context.filesDir, name)
         file.delete()

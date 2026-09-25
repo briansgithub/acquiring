@@ -107,3 +107,68 @@ The catalog is structural discovery, not an automatically authored exhaustive fu
 Offline pipeline checkpoint: `79df88b5` on `codex/aural-corpus-index`. The following Android checkpoint contains this handoff. Generated inputs, pilot report/audit, measurements, and installed snapshot files remain under ignored `acquiring_data/`; other-agent `docs/INDEX.md` and `docs/aural-popularity-enrichment-agent.md` were preserved outside these commits. The installer was executed successfully against the Pixel with all three private-file checksums verified. Popularity overlay SHA-256: `53c2aa8024f85d00115c08d014e43f56831ee88e0e81e15b66d2219d4c3e9337`.
 
 Pause for human testing before further curriculum/product expansion. No remote push, store release, or iOS UI implementation was performed.
+
+## Flexible grouping and mode controls — 2026-09-25 work in progress
+
+This newer section supersedes the older access/settings description above for
+the current `codex/aural-mode-analysis` worktree. The Aural Quiz catalog now
+shows **Relative major** (new default), **Mixed Modes** (the persisted
+`allModes` identifier), and **Filter by mode** directly below search. The mode
+picker appears only for filtering; Min/Max chord fields are removed. The
+one-time v1 selection migration changes prior All Modes defaults to Relative
+major, while subsequent explicit Mixed Modes choices are retained. Older v1/v2
+catalogs remain readable and expose only supported controls.
+
+Length and starting chord are interchangeable primary/subgroup dimensions.
+The v3 catalog stores a starting-chord ID and label on every compact range;
+the UI discovers only real length/start combinations from those ranges. Both
+levels initially collapse, each leaf pages independently at 30 rows, and the
+last active leaf/page/scroll position is stored separately from live cursors.
+Recursive endpoint children stay under the parent occurrence path. Flat list
+hides children without changing the grouping. Review this subgroup freezes
+the first 30 ranked rows for that leaf. Selected progressions have neutral
+containers and individual chord-colored borders; hidden choices stay neutral.
+The Android installer validates all staged databases before replacement, keeps
+old files for rollback if replacement fails, and does not replace a validated
+schema-v3 bundle with the older published schema-v1 manifest.
+
+The current full source normalization cache is
+`H:/Desktop/Acquiring/Acquiring/acquiring_data/aural-corpus/normalized-mode-v2.db`
+(41,099 songs, 77,772 sections). A **99-song sample only** schema-v3 catalog
+was exported under
+`H:/Desktop/Acquiring/Acquiring/acquiring_data/aural-catalog-v3-sample/`;
+the sample snapshot is
+`6ac7534af0eb090859d8cf56839c8c754770e39092787beb25fc660c47a288cf`.
+Sample validation is not full-catalog validation. A full v3 export completed
+in 781.207 seconds under
+`H:/Desktop/Acquiring/Acquiring/acquiring_data/aural-catalog-v3/`: snapshot
+`e18eadf5a212f441afb69f44ca779b577d7476c3baaefca73fd74b9c9ee83cfb`,
+18,557,875 structural sequences, 1,672,982,528 bytes, catalog SHA-256
+`3c40175c0e6cd9688473ae0b60b399c8a075fddc04ba03a65b843a7931a41449`.
+Matching evidence exported from the full analysis snapshot: 75,242 records,
+45,502,464 bytes, SHA-256
+`91681dc3280c25a87ddf2c3b88a8fea49205510157ae79797dd7d5571b292e6a`.
+The exporter ran SQLite integrity checking. Do not delete the ignored prior
+`.tmp` file without inspecting its exact ownership.
+The full catalog, matching evidence, and existing full ListenBrainz popularity
+overlay passed `inspectBundle` checksum/snapshot validation. This validates
+the offline bundle, not its behavior on a device.
+`node --test tooling/aural-corpus/catalog-export.test.mjs` passed both schema-v3
+cases. Android `:app:testDebugUnitTest`, `:app:assembleDebug`, and
+`:app:assembleDebugAndroidTest` passed together after the browse restoration
+fix, then again after installer rollback support. The final Kotlin compile
+after the exact-bucket `DISTINCT` query passed; the focused
+`AuralCatalogDownloaderTest` and Debug APK build passed after the no-downgrade
+guard was added. A full-catalog
+SQL probe found 3,158,873 compact ranges, 246 starting-chord IDs, and zero
+null group identifiers/labels; the `harmony` group-discovery query returned
+39,292 distinct range shapes in 3.883 seconds on this Windows disk. Device
+performance remains unmeasured.
+
+Remaining gates: install the validated bundle
+and app on the Pixel 7a when `adb devices` lists it; run the focused catalog
+instrumentation test; and visually compare modal controls, group order,
+pagination, recursive paths, restoration, and chord borders in the app. The
+Pixel was not connected when this section was written. The iOS port and its
+deferred Mac checks are documented separately in `docs/porting-plan.md` on
+`codex/ios-aural-quiz-port`. No release or remote upload was requested.

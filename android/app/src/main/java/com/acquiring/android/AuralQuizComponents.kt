@@ -51,7 +51,10 @@ internal fun AuralChordStrip(degrees: List<String?>, modifier: Modifier = Modifi
         degrees.forEachIndexed { index, degree ->
             if (index > 0) Text("→", color = MaterialTheme.colorScheme.onSurfaceVariant)
             Surface(shape = MaterialTheme.shapes.medium,
-                color = if (degree == null) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.secondaryContainer,
+                color = if (degree == null) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface,
+                border = BorderStroke(if (degree == null) 1.dp else 2.dp,
+                    degree?.let(::auralRomanColor)?.takeUnless { it == androidx.compose.ui.graphics.Color.Unspecified }
+                        ?: MaterialTheme.colorScheme.outline),
                 modifier = if(degrees.size > 6) Modifier.width(72.dp) else Modifier.weight(1f)) {
                 Box(Modifier.heightIn(min = 52.dp).padding(horizontal = 4.dp, vertical = 12.dp), contentAlignment = Alignment.Center) {
                     Text(degree ?: "?", style = MaterialTheme.typography.titleMedium,

@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 
 @Serializable
 internal data class AuralSavedSession(
-    val version: Int = 1,
+    val version: Int = 2,
     val progress: AuralProgress = AuralProgress(),
     val serial: Long = 0,
     val microphoneEnabled: Boolean = true,
@@ -83,7 +83,8 @@ internal class AuralSession(
             if (raw != null) {
                 val envelope = json.parseToJsonElement(raw).jsonObject
                 // Earlier/default serializers omit default-valued version fields.
-                require(envelope["version"] == null || envelope["version"]?.jsonPrimitive?.intOrNull == 1)
+                val savedVersion = envelope["version"]?.jsonPrimitive?.intOrNull ?: 1
+                require(savedVersion in 1..2)
                 var recoveredMetadata = false
                 var damagedExposure = false
                 fun <T> readField(name: String, default: T, onFailure: () -> Unit = {}, decode: (JsonElement) -> T): T {
@@ -104,11 +105,13 @@ internal class AuralSession(
                         } catch (_: Exception) { recoveredMetadata = true; damagedExposure = true; null }
                     }.asReversed().distinctBy { it.sourceId }.asReversed()
                 }
+                val decodedSettings = readField("exampleSettings", AuralExampleSettings()) { json.decodeFromJsonElement<AuralExampleSettings>(it) }
+                    .let { if (savedVersion == 1 && it.analysis == "allModes") it.copy(analysis = "relativeMajor") else it }
                 val decoded = AuralSavedSession(
                     progress = readField("progress", AuralProgress()) { json.decodeFromJsonElement<AuralProgress>(it) },
                     serial = readField("serial", 0L) { requireNotNull(it.jsonPrimitive.longOrNull).coerceAtLeast(0L) },
                     microphoneEnabled = readField("microphoneEnabled", true) { requireNotNull(it.jsonPrimitive.booleanOrNull) },
-                    exampleSettings = readField("exampleSettings", AuralExampleSettings()) { json.decodeFromJsonElement<AuralExampleSettings>(it) },
+                    exampleSettings = decodedSettings,
                     inversionProgress = readField("inversionProgress", AuralProgress()) { AuralCurriculum.normalize(json.decodeFromJsonElement<AuralProgress>(it)) },
                     sourceExposures = exposures,
                     sourceHistoryReliable = reliableHistory && !damagedExposure,

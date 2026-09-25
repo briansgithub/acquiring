@@ -376,9 +376,10 @@ internal fun AuralQuizScreen(
                     modifier = Modifier.weight(1f))
             } else {
                 catalogState.SaveableStateProvider("catalog") {
-                    val catalogSettings = if(catalog!!.supportsModeAnalysis) exampleSettings else exampleSettings.copy(analysis="allModes")
-                    AuralCatalogScreen(catalog!!,catalogSettings,session,{ patternPractice(it,"recognize") },::adaptive,
-                        if(exercise != null) ({ route="lesson" }) else null,Modifier.weight(1f),onReview={ rows -> reviewPool=rows; session.reviewPattern(rows)?.let { patternPractice(it.first,it.second,true) } })
+                    AuralCatalogScreen(catalog!!,exampleSettings,session,{ patternPractice(it,"recognize") },::adaptive,
+                        if(exercise != null) ({ route="lesson" }) else null,Modifier.weight(1f),
+                        onReview={ rows -> reviewPool=rows; session.reviewPattern(rows)?.let { patternPractice(it.first,it.second,true) } },
+                        onSettingsChange={ session.setExampleSettings(it);exampleSettings=it;refresh() })
                 }
             }
         } else {
@@ -472,10 +473,12 @@ internal fun AuralQuizScreen(
                             "choice" -> exercise.options.forEach { option ->
                                 val selectedAnswer = answer == listOf(option.id)
                                 OutlinedButton(onClick = { answer = listOf(option.id) }, enabled = !busy,
-                                    colors = ButtonDefaults.outlinedButtonColors(containerColor = if (selectedAnswer) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface),
+                                    colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.surface),
                                     modifier = Modifier.fillMaxWidth().testTag("AuralChoice-${option.id}").semantics { this.selected = selectedAnswer }) {
-                                    if (selectedAnswer) Text("● ")
-                                    Text(auralRomanSequence(option.degrees))
+                                    if (selectedAnswer) {
+                                        Text("✓ ")
+                                        AuralChordStrip(option.degrees,Modifier.weight(1f))
+                                    } else Text(auralRomanSequence(option.degrees))
                                 }
                             }
                             "sequence" -> {

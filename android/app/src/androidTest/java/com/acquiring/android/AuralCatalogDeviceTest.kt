@@ -21,16 +21,20 @@ class AuralCatalogDeviceTest {
     @Test fun outlineExpansionHasLargeTargetsAndStableSiblingNumbers() {
         val context=ApplicationProvider.getApplicationContext<Context>()
         AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
+            val start = requireNotNull(catalog.groupedBuckets(AuralExampleSettings())[3]?.firstOrNull())
+            val leaf = "3|${start.id}"
             compose.setContent { androidx.compose.material3.MaterialTheme {
                 AuralCatalogScreen(catalog,AuralExampleSettings(),AuralSession(Store()),{}, {},null)
             } }
-            compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralExpand-1").fetchSemanticsNodes().isNotEmpty() }
-            compose.onNodeWithTag("AuralExpand-1").assertWidthIsAtLeast(48.dp).assertHeightIsAtLeast(48.dp).performClick()
-            compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralOutline-1.1").fetchSemanticsNodes().isNotEmpty() }
-            compose.onNodeWithTag("AuralOutline-1.1").assertTextEquals("1.1")
-            compose.onNodeWithTag("AuralExpand-1").performClick()
-            compose.onNodeWithTag("AuralOutline-1.1").assertDoesNotExist()
-            compose.onNodeWithTag("AuralOutline-2").assertTextEquals("2")
+            compose.onNodeWithTag("AuralPrimary-length:3").performScrollTo().performClick()
+            compose.onNodeWithTag("AuralSubgroup-$leaf").performScrollTo().performClick()
+            compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralExpand-$leaf-1").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("AuralExpand-$leaf-1").assertWidthIsAtLeast(48.dp).assertHeightIsAtLeast(48.dp).performClick()
+            compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralOutline-$leaf-1.1").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("AuralOutline-$leaf-1.1").assertTextEquals("1.1")
+            compose.onNodeWithTag("AuralExpand-$leaf-1").performClick()
+            compose.onNodeWithTag("AuralOutline-$leaf-1.1").assertDoesNotExist()
+            compose.onNodeWithTag("AuralOutline-$leaf-2").assertTextEquals("2")
         }
     }
     @Test fun popularitySongDelegatesToTheHostAndKeepsTheQuizDraft() {
