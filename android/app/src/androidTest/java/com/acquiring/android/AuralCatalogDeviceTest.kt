@@ -130,9 +130,53 @@ class AuralCatalogDeviceTest {
                     val ex=auralWithCorpus(base,AuralCorpusProvenance(catalog.snapshotId,null,"structural-patterns-1",passage,settings,seed=42,semitoneShift=12))
                     assertEquals(p.labels,ex.fullDegrees); assertEquals(p.tokens.size,ex.events.size); prepared++
                 }
-                if(row.length>2) assertTrue(catalog.children(p,settings,emptyList(),emptySet()).all { it.length==row.length-1 })
+                if(row.length>2) assertTrue(catalog.children(p,settings,emptyList(),emptySet()).all {
+                    it.length < row.length && !auralReduceLoop(it.target.tokens).redundant &&
+                        p.tokens.windowed(it.length).contains(it.target.tokens)
+                })
             }
             Log.i("AuralCatalogValidation","loadMs=${loaded-started} rank20Ms=${ranked-loaded} prepared=$prepared totalMs=${SystemClock.elapsedRealtime()-started}")
+        }
+    }
+
+    @Test fun loopReductionFiltersPagesAndPreservesOriginalLookup() {
+        val context=ApplicationProvider.getApplicationContext<Context>()
+        val file=File(context.filesDir,"aural-catalog.db")
+        AuralCatalog(file).use { catalog ->
+            val settings=AuralExampleSettings()
+            val started=SystemClock.elapsedRealtime()
+            val group=requireNotNull(catalog.groupedBuckets(settings)[4]?.firstOrNull {
+                it.degree==1 && it.accidental.isEmpty() && it.quality=="major" && it.seventhQuality=="none"
+            })
+            val discovered=SystemClock.elapsedRealtime()
+            val rank=catalog.Ranking(settings,emptyList(),emptySet(),4,4,startGroup=group.id)
+            try {
+                val first=rank.page(30)
+                val opened=SystemClock.elapsedRealtime()
+                val rows=first+rank.page(30)
+                Log.i("AuralLoopValidation","groupsMs=${discovered-started} firstPageMs=${opened-discovered} secondPageMs=${SystemClock.elapsedRealtime()-opened} snapshot=${catalog.snapshotId}")
+                assertEquals(60,rows.size)
+                assertEquals(60,rows.map { it.target.id }.distinct().size)
+                assertTrue(rows.all { !auralReduceLoop(it.target.tokens).redundant })
+                assertEquals(rows.sortedWith(AuralCatalog.rowOrder),rows)
+            } finally { rank.close() }
+            var repeated:List<String>?=null
+            android.database.sqlite.SQLiteDatabase.openDatabase(file.path,null,android.database.sqlite.SQLiteDatabase.OPEN_READONLY).use { db ->
+                db.rawQuery("SELECT tokens FROM catalog_run WHERE view=?",arrayOf(settings.catalogView())).use { cursor ->
+                    while(repeated==null && cursor.moveToNext()) {
+                        val raw=java.util.zip.GZIPInputStream(cursor.getBlob(0).inputStream()).bufferedReader().use { it.readText() }
+                        val tokens=kotlinx.serialization.json.Json.decodeFromString<List<String>>(raw)
+                        repeated=tokens.windowed(4).firstOrNull { auralReduceLoop(it).redundant }
+                    }
+                }
+            }
+            val tokens=requireNotNull(repeated)
+            val original=requireNotNull(catalog.lookup(tokens,settings.catalogView()))
+            val reduction=auralReduceLoop(tokens)
+            val representative=requireNotNull(catalog.lookup(tokens.subList(reduction.start,reduction.start+reduction.length),settings.catalogView()))
+            assertFalse(auralReduceLoop(representative.tokens).redundant)
+            assertTrue(catalog.songs(representative).map { it.id }.containsAll(catalog.songs(original).map { it.id }))
+            assertTrue(catalog.children(original,settings,emptyList(),emptySet()).all { !auralReduceLoop(it.target.tokens).redundant })
         }
     }
 }

@@ -5,7 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { normalizeSection } from './normalize.mjs';
-import { discoverPatterns, getPattern } from './miner.mjs';
+import { discoverPatterns, getPattern, descriptor } from './miner.mjs';
+import { LOOP_REDUCTION_VERSION, reduceLoop } from './loop-reduction.mjs';
 import { exportCatalog } from './catalog-export.mjs';
 import { hashFile, openDatabase } from './common.mjs';
 import { inspectBundle } from './install-android.mjs';
@@ -34,6 +35,16 @@ test('compact device export preserves source sections and indexed occurrence end
     const result=exportCatalog({file,index,songs:[{slug:'song',title:'Title',artist:'Artist'}],normalizedFile:cacheFile,snapshotId:'test'});
     assert.ok(result.sequenceCount>0);
     const db=openDatabase(file,true);
+    const metadata=Object.fromEntries(db.prepare('SELECT key,value FROM metadata').all().map(r=>[r.key,r.value]));
+    assert.equal(metadata.sequence_reduction_version,LOOP_REDUCTION_VERSION);
+    assert.ok(Number(metadata.raw_sequence_count)>Number(metadata.sequence_count));
+    let retained=0;
+    for(const range of db.prepare('SELECT start,end,min_length,max_length FROM catalog_range').all()) {
+      for(let length=range.min_length;length<=range.max_length;length++) {
+        assert.equal(reduceLoop(descriptor(index,range,length).tokens).redundant,false);retained++;
+      }
+    }
+    assert.equal(retained,Number(metadata.sequence_count));
     assert.deepEqual(JSON.parse(gunzipSync(db.prepare('SELECT source FROM catalog_section').get().source)),source);
     assert.deepEqual(db.prepare('SELECT DISTINCT view FROM catalog_range ORDER BY view').all().map(row=>row.view),
       ['harmony','harmony_bass','relative_harmony','relative_harmony_bass']);

@@ -48,7 +48,7 @@ Coverage evidence remains separate from ranking. The selected curriculum overlay
 
 The existing normalized cache reprocesses changed sections; global discovery, coverage, and ranking are rebuilt from that cache. Current catalog snapshot hashes include source database bytes and producer code, so SQLite file reorganization can produce a new snapshot even without musical changes; structural IDs remain stable. This release does not implement incremental suffix-array mutation. Periodic clean/incremental normalization comparisons remain the validation route.
 
-Artifacts are immutable, checksummed, and excluded from Git. `install-android.mjs` checks host SQLite integrity and catalog/evidence identity, stages and verifies device checksums, stops the app, then atomically replaces each database without resetting preferences/progress. Evidence checks protect against mixed snapshots; popularity is independent. Installation is not a multi-file transaction. The `v1.0.0-data` GitHub release publishes the manifest plus all three gzip assets. Android verifies and installs that bundle automatically after the main song catalog is installed or refreshed; entering Aural Quiz also retries a missing or damaged bundle. Development ADB provisioning remains available for local snapshots.
+Artifacts are immutable, checksummed, and excluded from Git. `install-android.mjs` checks host SQLite integrity and catalog/evidence identity, streams into app-private staging files, verifies their checksums, then atomically replaces each database without resetting preferences/progress. Evidence checks protect against mixed snapshots; popularity is independent. Installation is not a multi-file transaction. The `v1.0.0-data` GitHub release publishes the manifest plus all three gzip assets. Android verifies and installs that bundle automatically after the main song catalog is installed or refreshed; entering Aural Quiz also retries a missing or damaged bundle. Development ADB provisioning remains available for local snapshots.
 
 ## Real popularity
 
@@ -129,7 +129,7 @@ hides children without changing the grouping. Review this subgroup freezes
 the first 30 ranked rows for that leaf. Selected progressions have neutral
 containers and individual chord-colored borders; hidden choices stay neutral.
 The Android installer validates all staged databases before replacement, keeps
-old files for rollback if replacement fails, and does not replace a validated
+the active files untouched until staging succeeds, and does not replace a validated
 schema-v3 bundle with the older published schema-v1 manifest.
 
 The current full source normalization cache is
@@ -228,3 +228,68 @@ the test. The new button-builder layout and interactions have not yet received
 human visual review; test the common families, catalog-backed More options,
 modal/relative views, inversion toggle, and rapid edits before integration.
 No remote push or store release was performed.
+
+## Repeated-loop reduction — 2026-09-25
+
+The catalog now omits whole-sequence repeats of a shortest normalized chord
+cycle once two full cycles appear. It retains the earliest longest contiguous
+window without a repeated directed transition, so `I–V–I–V–I` points to the
+already indexed `I–V–I`; a mixed-context `X–I–V–I–V–Y` remains available.
+Reduction uses full normalized tokens per modal/relative and inversion view.
+It does not change source runs, occurrence locations, passage timing, pattern
+IDs, prior mastery, or a restored exercise. Recursive endpoint expansion
+promotes the nearest retained descendants. New readers filter legacy bundles
+as well; only rebuilt bundles have accurately reduced range/group counts.
+
+The additive schema-v3 metadata is `sequence_reduction_version=
+unique-transitions-1`, `raw_sequence_count`, and the retained
+`sequence_count`. Compact ranges are split around omitted lengths and each
+segment receives its own conservative score bound. The exporter checks SQLite
+integrity, and the evidence overlay is rebuilt for the new snapshot. A
+single-source JSON fixture is copied identically to the iOS worktree.
+
+The **99-song sample only** under
+`H:/Desktop/Acquiring/Acquiring/acquiring_data/aural-catalog-loop-sample/`
+retains 57,359 of 63,384 sequences; matching sample evidence and the full
+popularity overlay passed `inspectBundle`. This sample is not full-catalog
+validation.
+
+The full bundle under
+`H:/Desktop/Acquiring/Acquiring/acquiring_data/aural-catalog-loop-full/`
+has snapshot `dbbac5ef03ceec5e8d5e0f5b04e68e8a9ac968a44cf0b848fbea9cd44d5c8c2f`.
+It retains **17,272,900 of 18,557,875** structural sequences (1,284,975
+removed, 6.9%). Exact `(view,length,starting chord)` groups fall from 58,280
+to 55,037; compact range rows fall from 3,158,873 to 2,961,531. The catalog
+is 1,628,401,664 bytes versus 1,672,982,528 bytes before (44,580,864 bytes
+smaller). One full export took 686.468 seconds; this is not a repeatable speed
+benchmark. The catalog SHA-256 is
+`09cdc2d28e5ab1c54e1090d5c2bb745ae08dddea7ed22e73095d649441b5a685`.
+Its 75,242-record evidence overlay is 45,502,464 bytes with SHA-256
+`01793fee42343aedaa3620540bc75a8c188014f143f4358ad536442847f0ad73`.
+The existing popularity overlay SHA-256 is
+`53c2aa8024f85d00115c08d014e43f56831ee88e0e81e15b66d2219d4c3e9337`.
+`inspectBundle` passed host integrity, checksums, and catalog/evidence identity.
+
+Validation: the shared test suite passed 105 tests and skipped two opt-in
+stress tests; the independent brute-force oracle checked 256 eight-chord
+inputs. The focused Android `Aural*` JVM tests and both Debug APK builds
+passed. The updated Pixel 7a test against the older v3 bundle passed (1 test,
+23.311 seconds), confirming legacy filtering and source lookup. On that single
+device run, discovering groups took 7,884 ms, the first 30 rows in one
+four-chord/start-I bucket took 489 ms, and the second page took 147 ms.
+The rebuilt full bundle and matching evidence/popularity files were installed
+in the Pixel 7a app-private directory using verified, resumable chunks; the
+active SHA-256 checks matched the three host checksums above. The validated
+Debug app and instrumentation APK were installed, and the app was relaunched.
+Against snapshot `dbbac5ef03ceec5e8d5e0f5b04e68e8a9ac968a44cf0b848fbea9cd44d5c8c2f`,
+`AuralCatalogDeviceTest#loopReductionFiltersPagesAndPreservesOriginalLookup`
+passed (1 test, 21.778 seconds), as did
+`#exhaustiveCatalogRanksAndResolvesOfflinePassages` (1 test, 15.85 seconds).
+One rebuilt-bundle run measured 7,281 ms to discover groups, 478 ms for the
+first 30 rows in the same four-chord/start-I bucket, and 144 ms for the next
+page. These are single-run diagnostic measurements, not a performance claim.
+The phone had 2.5 GiB free afterward. Human visual review of grouping, loop
+removal, recursive expansion, Review, and chord borders remains pending. The
+Mac is unreachable, so iOS Swift/simulator checks remain pending in
+`docs/porting-plan.md` on `codex/ios-aural-quiz-port`. No remote push or store
+release occurred.
