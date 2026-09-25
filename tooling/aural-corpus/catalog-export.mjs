@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { catalogRanges, discoverPatterns } from './miner.mjs';
 import { CATALOG_VERSION, baseScore, startingRomanGroup } from './catalog.mjs';
+import { LOOP_REDUCTION_VERSION, reducedCatalogRanges } from './loop-reduction.mjs';
 import { hash, hashFile, openDatabase, stableJson, transaction, NORMALIZER_VERSION } from './common.mjs';
 import { readNormalizedCache, catalogSongs } from './source.mjs';
 
@@ -53,7 +54,10 @@ export function exportCatalog({ file, index, songs, normalizedFile, snapshotId }
       });
       db.prepare('INSERT INTO catalog_array VALUES (?,?)').run('suffix_locations', packed);
       const rangeStmt = db.prepare('INSERT INTO catalog_range VALUES (?,?,?,?,?,?,?,?,?,?,?)');
-      catalogRanges(index).forEach((r, id) => {
+      const rawRanges = catalogRanges(index);
+      const rawSequenceCount = rawRanges.reduce((sum, r) => sum + r.maxLength - r.minLength + 1, 0);
+      let id = 0;
+      for (const r of reducedCatalogRanges(index, rawRanges)) {
         const view = index.runs[index.runAt[index.suffixArray[r.start]]].view;
         const source = index.runs[index.runAt[index.suffixArray[r.start]]];
         const sourceOffset = index.offsetAt[index.suffixArray[r.start]];
@@ -61,9 +65,11 @@ export function exportCatalog({ file, index, songs, normalizedFile, snapshotId }
         const startGroup = startingRomanGroup(firstLabel, JSON.parse(source.tokens[sourceOffset]));
         if (!startGroup) throw Error(`Cannot group starting Roman numeral: ${firstLabel}`);
         const mode = source.sourceKey?.scale ?? source.key.scale;
-        rangeStmt.run(id, view, mode, startGroup.id, startGroup.label, r.start, r.end, r.minLength, r.maxLength, r.songCount, baseScore(r.maxLength, r.songCount, Math.min(r.end - r.start + 1, 4 * r.songCount)));
+        rangeStmt.run(id++, view, mode, startGroup.id, startGroup.label, r.start, r.end, r.minLength, r.maxLength, r.songCount, baseScore(r.maxLength, r.songCount, Math.min(r.end - r.start + 1, 4 * r.songCount)));
         sequenceCount += r.maxLength - r.minLength + 1;
-      });
+      }
+      meta.run('raw_sequence_count', String(rawSequenceCount));
+      meta.run('sequence_reduction_version', LOOP_REDUCTION_VERSION);
       meta.run('sequence_count', String(sequenceCount));
     });
     if (db.prepare('PRAGMA integrity_check').get().integrity_check !== 'ok') throw Error('Catalog integrity failure');
@@ -75,7 +81,7 @@ export async function buildCatalog({ normalizedFile, catalog, output }) {
   const started = performance.now(), normalized = readNormalizedCache(normalizedFile);
   const songs = catalogSongs(catalog);
   const snapshotId = hash({ catalog: CATALOG_VERSION, normalizer: NORMALIZER_VERSION, source: hashFile(normalizedFile), songs,
-    code: ['catalog-export.mjs','catalog.mjs','miner.mjs'].map(name => hashFile(new URL(name, import.meta.url))) });
+    code: ['catalog-export.mjs','catalog.mjs','miner.mjs','loop-reduction.mjs'].map(name => hashFile(new URL(name, import.meta.url))) });
   fs.mkdirSync(output, { recursive: true });
   const destination = path.join(output, snapshotId + '.db');
   if (fs.existsSync(destination)) return { snapshotId, destination, reused: true };

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { discoverPatterns, getPattern, catalogRanges, descriptor } from './miner.mjs';
 import { CatalogSession, catalogStats, catalogOrder, catalogChildren } from './catalog.mjs';
+import { reduceLoop } from './loop-reduction.mjs';
 
 const run = (song, sequence, section = 'verse') => ({ id: song + '/' + section, songId: song, sectionId: song + '/' + section, view: 'harmony',
   tokens: sequence.split(' '), transitionIds: sequence.split(' ').slice(1).map((_, i) => song + '/' + section + '/' + i) });
@@ -23,7 +24,7 @@ test('lazy pagination equals exhaustive integrated sorting under every toggle co
   const context = { popularity: { a: { score: 1, confidence: 1 }, b: { score: 0, confidence: .8 } }, favoriteSongIds: ['c'], recentSongIds: ['a'] };
   for (let mask = 0; mask < 8; mask++) {
     const preferences = { popularity: !!(mask & 1), favorites: !!(mask & 2), variety: !!(mask & 4) };
-    const expected = brute(index).map(p => catalogStats(index, p, preferences, context)).sort(catalogOrder);
+    const expected = brute(index).filter(p => !reduceLoop(p.tokens).redundant).map(p => catalogStats(index, p, preferences, context)).sort(catalogOrder);
     const session = new CatalogSession(index, { preferences, context });
     const actual = []; while (session.hasMore) actual.push(...session.page(3));
     assert.deepEqual(actual.map(p => p.id), expected.map(p => p.id));

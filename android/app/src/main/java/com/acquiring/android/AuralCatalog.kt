@@ -223,6 +223,7 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
                 if (e.low != e.high) { val mid = (e.low + e.high) ushr 1; add(e.start,e.end,e.low,mid,e.songs); add(e.start,e.end,mid+1,e.high,e.songs) }
                 else {
                     val target = target(e.start,e.end,e.low)
+                    if (auralReduceLoop(target.tokens).redundant) continue
                     if (!supportsStartGrouping && startGroup != null && auralStartGroup(target.labels.firstOrNull().orEmpty())?.id != startGroup) continue
                     val roots = if (query.chords.any { it.exact != null } && view.endsWith("harmony_bass")) rootLabels(target.tokens) else target.labels
                     if (!query.matches(target.labels, roots)) continue
@@ -237,7 +238,7 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
     }
     private data class Entry(val start: Int, val end: Int, val low: Int, val high: Int, val songs: Int, val bound: Double, val row: AuralCatalogRow? = null)
     fun children(target: AuralPatternTarget, settings: AuralExampleSettings, recent: List<String>, favorites: Set<String>): List<AuralCatalogRow> =
-        if (target.tokens.size <= 2) emptyList() else listOf(target.tokens.dropLast(1), target.tokens.drop(1)).mapNotNull { lookup(it,target.view) }
+        auralRetainedChildren(target.tokens).mapNotNull { lookup(it,target.view) }
             .distinctBy { it.id }.map { stats(it,settings,recent,favorites) }.sortedWith(rowOrder)
     /** One entry per supporting song, regardless of repeated loops or sections. */
     fun songs(target:AuralPatternTarget):List<AuralPatternSong> {

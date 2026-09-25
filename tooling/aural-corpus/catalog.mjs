@@ -1,4 +1,5 @@
 import { catalogRanges, descriptor, getPattern, occurrences } from './miner.mjs';
+import { reducedCatalogRanges, retainedChildren } from './loop-reduction.mjs';
 
 export const CATALOG_VERSION = 'aural-catalog-3';
 const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
@@ -82,7 +83,7 @@ export class CatalogSession {
     this.index = index; this.preferences = structuredClone(preferences); this.context = structuredClone(context);
     this.search = search.trim().toLowerCase(); this.heap = new CatalogHeap();
     this.factorBound = (preferences.popularity ? 1.5 : 1) * (preferences.favorites ? 1.5 : 1);
-    for (const range of catalogRanges(index)) {
+    for (const range of reducedCatalogRanges(index)) {
       if (index.runs[index.runAt[index.suffixArray[range.start]]].view !== view) continue;
       this.pushRange({ ...range, minLength: Math.max(minLength, range.minLength), maxLength: Math.min(maxLength, range.maxLength) });
     }
@@ -118,7 +119,7 @@ export class CatalogSession {
 export function catalogChildren(index, pattern, preferences = {}, context = {}) {
   if (pattern.length <= 2) return [];
   const tokens = pattern.tokens ?? index.runs[index.runAt[pattern.sourcePosition]].tokens.slice(index.offsetAt[pattern.sourcePosition], index.offsetAt[pattern.sourcePosition] + pattern.length);
-  return [...new Map([tokens.slice(0, -1), tokens.slice(1)].map(tokens => {
+  return [...new Map(retainedChildren(tokens).map(tokens => {
     const p = getPattern(index, { view: pattern.view, tokens, minSongs: 1 });
     return [p.id, catalogStats(index, p, preferences, context)];
   })).values()].sort(catalogOrder);
