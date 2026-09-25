@@ -1,8 +1,16 @@
-# Android Aural Quiz
+# Aural Quiz curriculum
 
 Status: implemented for human testing. Open **Aural Quiz · learn by ear** below Library search. The main catalog install also provisions the published Aural progression bundle; opening Aural Quiz retries that bundle if it is missing or damaged. Browse **family → progression → Recognize / Recall / Sing** for targeted practice. **Next** keeps the progression and tab, choosing the next suitable activity with a new realization. **Adaptive** follows the curriculum scheduler; **Continue** resumes the pending exercise. The existing full-chord/root-only song page is now called **Playback**.
 
-This is the first part of the project. Song-database selection, popularity weighting, occurrence indexes, native iOS parity, and the web curriculum UI are deliberately excluded pending human feedback.
+Native iOS parity is implemented for review on `codex/ios-aural-quiz-port`.
+It retains this evidence engine and three-tab presentation while integrating the
+exhaustive catalog, real popularity, and full Playback route. Apple-platform
+build, simulator, microphone, and human validation are pending Mac availability;
+Group G in `porting-plan.md` is the execution record.
+
+The earlier exclusion of song-database selection, popularity weighting,
+occurrence indexes, and native iOS parity is superseded by `aural-catalog.md`
+and Group G. The web curriculum UI remains outside this native implementation.
 
 ## Curriculum navigation
 

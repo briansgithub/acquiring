@@ -248,9 +248,17 @@ actor ExternalBetaUpdateManifestService: ExternalBetaUpdateService {
 enum AppRoute: Hashable {
     case artist(String)
     case allSongs
+    case auralQuiz
+    case auralPattern(AuralPattern)
+    case auralPlayback(AuralPlaybackRequest)
     case playlist(String)
     case songDetail(String)
     case quiz(String)
+}
+
+struct AuralPlaybackRequest: Hashable {
+    let passage: AuralPassage
+    let fromSongs: Bool
 }
 
 enum SearchScope: String, CaseIterable, Identifiable {
@@ -359,6 +367,7 @@ final class LibraryStore {
     private let externalBetaUpdates: any ExternalBetaUpdateService
     private let history: HistoryStore
     private let prepareCatalog: @MainActor () async throws -> Void
+    private let prepareAural: @MainActor () async -> Void
     private let downloadURL: URL
     private let expectedSongCount: Int
     @ObservationIgnored private var searchTask: Task<Void, Never>?
@@ -438,6 +447,14 @@ final class LibraryStore {
             history: environment.history,
             userLibrary: environment.userLibrary,
             prepareCatalog: { try await environment.prepare() },
+            prepareAural: {
+                do {
+                    _ = try await environment.auralInstaller.ensureInstalled()
+                    try await environment.auralCatalog.reload()
+                } catch {
+                    // Aural Quiz retries with visible recovery when opened.
+                }
+            },
             downloadURL: environment.catalogConfiguration.downloadURL,
             expectedSongCount: environment.catalogConfiguration.contract.minimumBrowseRows
         )
@@ -451,6 +468,7 @@ final class LibraryStore {
         history: HistoryStore,
         userLibrary: UserLibraryStore,
         prepareCatalog: @escaping @MainActor () async throws -> Void,
+        prepareAural: @escaping @MainActor () async -> Void = {},
         downloadURL: URL = URL(string: "https://example.invalid/catalog.db.gz")!,
         expectedSongCount: Int = 0
     ) {
@@ -462,6 +480,7 @@ final class LibraryStore {
         self.browse = AllSongsBrowseStore(catalog: catalog)
         self.userContent = UserLibraryViewModel(catalog: catalog, userLibrary: userLibrary)
         self.prepareCatalog = prepareCatalog
+        self.prepareAural = prepareAural
         self.downloadURL = downloadURL
         self.expectedSongCount = expectedSongCount
     }
@@ -651,6 +670,10 @@ final class LibraryStore {
         path.append(.quiz(song.id))
     }
 
+    func openAuralQuiz() {
+        path.append(.auralQuiz)
+    }
+
     func openArtist(from song: CatalogSong) async {
         let artist = song.artist?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !artist.isEmpty else { return }
@@ -659,7 +682,7 @@ final class LibraryStore {
 
         trimTrailingSongRoutes: while let route = path.last {
             switch route {
-            case .quiz, .songDetail:
+            case .quiz, .songDetail, .auralPlayback:
                 path.removeLast()
             default:
                 break trimTrailingSongRoutes
@@ -795,6 +818,9 @@ final class LibraryStore {
                         scheduleSearch(debounced: false)
                     }
                     await refreshUserContent()
+                    if operation == .downloadAndInstall, count > 0 {
+                        await prepareAural()
+                    }
                     guard generation == maintenanceGeneration, !Task.isCancelled else { return }
                     maintenanceState = .completed(operation: operation, songCount: count)
                     if operation == .downloadAndInstall {

@@ -407,6 +407,65 @@ available. Never add the retired magnifier or expose inactive practice controls.
 2. `[review]` **F2 Background/interruption/route recovery (F027, F036, F038–F039, F041–F049; old 7.2/7.4). Sol/high.** Output recovery, session transitions, cleanup and stale-result rejection are implemented. Device-specific verification follows explicit approval; hardware behavior is not verified by the simulator.
 3. `[review]` **F3 Remaining layout/accessibility implementation (F014, F025, F054; old 6.6, implementation part of 9.1). Terra/high.** Adaptive practice controls/sheets, named VoiceOver alternatives, Dynamic Type and reduced-motion behavior, compact seek controls and adaptive key/Lock-in-Major header. Broad focus/orientation/iPad/VoiceOver audit remains gated.
 
+### G — Port Android Aural Quiz
+
+Group G extends the older iOS parity baseline with the final Android Aural Quiz
+experience at `a857c995`. It does not change earlier statuses or approve full-app
+testing. The Windows worktree has no Swift/Xcode toolchain, Mac, simulator, or
+iPhone; implementation checks are recorded honestly at each handoff and all
+native build, simulator, perceptual, and device checks remain in GV.
+
+1. `[review]` **G1 Playback naming and Aural entry (F056, F064; Terra/medium).** Rename only user-facing Quiz copy to Playback while preserving internal APIs, routes, persisted keys, diagnostics, and test identifiers. Add the Aural Quiz entry below home search, a typed route, a non-flashing loading state, and Settings access.
+2. `[review]` **G2 Aural bundle and reader (F057; Sol/high).** Install the published catalog/evidence/popularity bundle with streaming decompression, checksums, SQLite validation, snapshot compatibility, atomic replacement, retry, and measured provenance UI. Open immutable databases read-only without materializing the corpus.
+3. `[review]` **G3 Exact catalog ranking and hierarchy (F058; Terra/high).** Port range-bound exact pagination, ranking/counts, stable IDs, endpoint-only children, outline numbering, accessible expansion, and asynchronous lazy queries.
+4. `[review]` **G4 Discovery controls and coverage (F058; Terra/medium).** Add Roman search, chord-count filters, all five settings, complete flat mode, per-view restoration, mode-aware Roman colors, and physical-transition versus longer-window coverage explanations.
+5. `[review]` **G5 Curriculum and evidence engine (F059; Terra/medium).** Port prerequisites, adaptive target generation, gradual support removal, spaced review, transfer checks, and engine-enforced independent mastery while retaining separate family/pattern and skill identity.
+6. `[review]` **G6 Recognize/Recall/Sing and audio (F060; Sol/high).** Implement the three presentation tabs, graphical responses, bounded streaming, shared Default Instrument, +12-semitone register, 20 ms overlap, 0.75-beat separators, intentional silence, chunking, and lifecycle-safe ownership.
+7. `[review]` **G7 Singing assessment (F061; Sol/high).** Implement root, actual bass, scale-degree, and ordered-root tasks with octave equivalence and technical uncertainty distinct from musical mistakes.
+8. `[review]` **G8 Corpus selection and popularity (F062; Terra/high).** Port cross-language PRNG/hash/order contracts, target-first song/section/occurrence selection, scaffolded reuse, exposure, favorites/variety/popularity factors, real ListenBrainz metadata, and complete provenance.
+9. `[review]` **G9 Songs and full Playback round-trip (F063–F064; Terra/high/Sol/high).** Sort all supporting songs by unrounded popularity, open the normal full Playback route, resolve exact source identity, highlight/jump/loop the passage, stop quiz capture/audio, record assistance, and return natively without losing work.
+10. `[review]` **G10 Durable restoration (F065; Terra/high).** Version and restore exercise, seed, phase, draft, attempts, selected tab, song/catalog positions, filters, expansion, and scroll state across view destruction, backgrounding, and process recreation; retain recoverable corrupt/missing-data behavior.
+11. `[blocked-external]` **GV Native validation catch-up.** When the development Mac returns, incrementally build/install/launch each queued checkpoint, run focused parity tests, measure the 658 MB catalog on the warm iPhone 17 simulator, and complete the recorded human scripts. Use physical hardware only for microphone and route/background checks. The separate full-app testing gate and release authorization remain unchanged.
+
+#### G implementation handoff — 2026-09-18
+
+Implemented in the existing `codex/ios-aural-quiz-port` worktree using the current
+runtime model, GPT-5.6 Sol. The branch was fast-forwarded to Android reference
+`a857c995` without touching the preserved untracked Swift draft or unrelated
+changes in the reference checkout. `AcquiringAural` now owns immutable bundle
+installation, GRDB readers, exact ranking, curriculum/evidence, source selection,
+audio planning, pitch assessment, and versioned session state. Native SwiftUI
+owns the home/catalog/curriculum/exercise/Songs UI and reuses the existing full
+Playback, AVAudioEngine, microphone lease, Settings, Favorites, and catalog
+boundaries. No WebView, runtime mining, legacy transition database, `runtime.db`,
+provider credentials, or older Playback-statistics migration was added.
+
+Checks on Windows: `npm run test:aural-corpus` passed 98 tests with 0 failures
+and 2 opt-in stress tests skipped; this verifies the authoritative normalization,
+catalog, ranking/pagination, hierarchy, popularity, and shared selector contracts,
+not the new Swift implementation. `git diff --check` passed. Two read-only static
+Swift reviews found no definite project-wiring, access-control, actor-isolation,
+or compile blocker after corrections. Swift/Xcode, simulator, native tests,
+audio/microphone behavior, real bundle installation, scrolling/memory
+measurements, screenshots, physical hardware, and full-app testing were unrun
+because the Mac and Apple devices are unavailable. No commit, TestFlight upload,
+or release was made.
+
+Queued human review when GV becomes available: (1) inspect Roman notation,
+mode colors, hierarchy/outline counts, search/filtering, all ranking preferences,
+Flat-list completeness, and coverage explanations; (2) exercise Recognize,
+Recall, and Sing, including root/bass/scale-degree/ordered-root targets, a long
+sequence, chunking, audio overlap/separators/silence, and microphone uncertainty;
+(3) confirm popularity-descending Songs with decimal 0–100 scores and No data
+last; (4) open a song and an active example in full Playback, confirm melody,
+all sections, Favorites/Info/singing tools, exact source section, gold passage
+highlight, Jump and loop, and source-versus-model key text; (5) explore another
+section, Jump back, then use Return, Back, and edge swipe and verify the exact
+answer draft, attempt, tab, Songs/catalog positions, filters, and expansion;
+(6) background/terminate/relaunch at each navigation depth and verify recovery
+or a recoverable exact-source error without silent substitution. Stop for critique
+before the separately authorized full-app testing gate.
+
 #### E/F implementation handoff — 2026-09-05
 
 Routes: Sol/high for microphone ownership, platform audio and practice orchestration;
