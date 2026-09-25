@@ -3,7 +3,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { catalogRanges, discoverPatterns } from './miner.mjs';
-import { CATALOG_VERSION, baseScore } from './catalog.mjs';
+import { CATALOG_VERSION, baseScore, startingRomanGroup } from './catalog.mjs';
 import { hash, hashFile, openDatabase, stableJson, transaction, NORMALIZER_VERSION } from './common.mjs';
 import { readNormalizedCache, catalogSongs } from './source.mjs';
 
@@ -19,8 +19,9 @@ export function exportCatalog({ file, index, songs, normalizedFile, snapshotId }
       CREATE TABLE catalog_run(id INTEGER PRIMARY KEY,stable_id TEXT UNIQUE,view TEXT,song_id TEXT,section_id TEXT,revision TEXT,tokens TEXT,positions TEXT,key_json TEXT,source_key_json TEXT);
       CREATE TABLE catalog_suffix(rank INTEGER PRIMARY KEY,run_id INTEGER,offset INTEGER,start_index INTEGER,end_index INTEGER);
       CREATE UNIQUE INDEX suffix_location ON catalog_suffix(run_id,offset);
-      CREATE TABLE catalog_range(id INTEGER PRIMARY KEY,view TEXT,mode TEXT,start INTEGER,end INTEGER,min_length INTEGER,max_length INTEGER,songs INTEGER,upper_score REAL);
-      CREATE INDEX range_view_mode ON catalog_range(view,mode,upper_score DESC);
+      CREATE TABLE catalog_range(id INTEGER PRIMARY KEY,view TEXT,mode TEXT,start_group TEXT,start_group_label TEXT,start INTEGER,end INTEGER,min_length INTEGER,max_length INTEGER,songs INTEGER,upper_score REAL);
+      CREATE INDEX range_view_mode ON catalog_range(view,mode,start_group,upper_score DESC);
+      CREATE INDEX range_view_start ON catalog_range(view,start_group,upper_score DESC);
       CREATE INDEX run_section ON catalog_run(section_id);
       CREATE TABLE catalog_token(token TEXT PRIMARY KEY,label TEXT,inversion_label TEXT);
       CREATE TABLE popularity(song_id TEXT PRIMARY KEY,score REAL,confidence REAL,provider_url TEXT,measured_at TEXT);
@@ -51,12 +52,16 @@ export function exportCatalog({ file, index, songs, normalizedFile, snapshotId }
         suffixStmt.run(rank, r, offset, position.startIndex,position.endIndex); packed.writeInt32LE(r, rank * 8); packed.writeInt32LE(offset, rank * 8 + 4);
       });
       db.prepare('INSERT INTO catalog_array VALUES (?,?)').run('suffix_locations', packed);
-      const rangeStmt = db.prepare('INSERT INTO catalog_range VALUES (?,?,?,?,?,?,?,?,?)');
+      const rangeStmt = db.prepare('INSERT INTO catalog_range VALUES (?,?,?,?,?,?,?,?,?,?,?)');
       catalogRanges(index).forEach((r, id) => {
         const view = index.runs[index.runAt[index.suffixArray[r.start]]].view;
         const source = index.runs[index.runAt[index.suffixArray[r.start]]];
+        const sourceOffset = index.offsetAt[index.suffixArray[r.start]];
+        const firstLabel = source.positions[sourceOffset].degree;
+        const startGroup = startingRomanGroup(firstLabel, JSON.parse(source.tokens[sourceOffset]));
+        if (!startGroup) throw Error(`Cannot group starting Roman numeral: ${firstLabel}`);
         const mode = source.sourceKey?.scale ?? source.key.scale;
-        rangeStmt.run(id, view, mode, r.start, r.end, r.minLength, r.maxLength, r.songCount, baseScore(r.maxLength, r.songCount, Math.min(r.end - r.start + 1, 4 * r.songCount)));
+        rangeStmt.run(id, view, mode, startGroup.id, startGroup.label, r.start, r.end, r.minLength, r.maxLength, r.songCount, baseScore(r.maxLength, r.songCount, Math.min(r.end - r.start + 1, 4 * r.songCount)));
         sequenceCount += r.maxLength - r.minLength + 1;
       });
       meta.run('sequence_count', String(sequenceCount));

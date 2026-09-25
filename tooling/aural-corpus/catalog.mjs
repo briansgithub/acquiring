@@ -1,9 +1,30 @@
 import { catalogRanges, descriptor, getPattern, occurrences } from './miner.mjs';
 
-export const CATALOG_VERSION = 'aural-catalog-2';
+export const CATALOG_VERSION = 'aural-catalog-3';
 const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 export const catalogOrder = (a, b) => b.score - a.score || b.songCount - a.songCount || b.length - a.length || compare(a.id, b.id);
 export const baseScore = (length, songs, effective) => Math.log2(length) * Math.log2(1 + songs) * Math.log2(1 + effective);
+
+/** Canonical, deliberately broad starting-chord bucket used by both apps.
+ * Applied targets, inversions, suspensions, alterations and borrowing tags do
+ * not split a bucket. Ninth/eleventh/thirteenth chords count as seventh-bearing.
+ */
+export function startingRomanGroup(label, semantic = null) {
+  const normalized = String(label ?? '').trim().replace(/^[b#]+/, value => value.replaceAll('b', '♭').replaceAll('#', '♯'));
+  const match = normalized.match(/^([♭♯]*)([ivIV]+)([^/(]*)/);
+  if (!match) return null;
+  const accidental = match[1], numeral = match[2], detail = match[3];
+  const degree = ({ I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7 })[numeral.toUpperCase()];
+  if (!degree) return null;
+  const major = numeral === numeral.toUpperCase();
+  const quality = /ø/.test(detail) ? 'halfDiminished' : /[°o]/.test(detail) ? 'diminished' : /\+/.test(detail) ? 'augmented' : major ? 'major' : 'minor';
+  const cleanDetail = detail.replace(/(?:add|sus)\d+/g, '');
+  const seventh = semantic ? semantic.type >= 7 : /(?:7|9|11|13|65|43|42)/.test(cleanDetail);
+  const seventhQuality = !seventh ? 'none' : /[△Δ]/.test(detail) || semantic?.useMaj7 ? 'major' : quality === 'diminished' ? 'diminished' : 'minor';
+  const symbol = ({ halfDiminished: 'ø', diminished: '°', augmented: '+' })[quality] ?? '';
+  return { id: `${accidental || 'natural'}:${degree}:${major ? 'upper' : 'lower'}:${quality}:${seventhQuality}`,
+    label: `${accidental}${numeral}${symbol}${seventhQuality === 'major' ? '△' : ''}${seventh ? '7' : ''}`, degree, accidental, quality, seventhQuality };
+}
 export function songFactor(id, preferences = {}, context = {}) {
   const popularity = context.popularity?.[id];
   const p = preferences.popularity && Number.isFinite(popularity?.score)

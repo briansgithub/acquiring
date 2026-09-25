@@ -9,6 +9,18 @@ import { discoverPatterns, getPattern } from './miner.mjs';
 import { exportCatalog } from './catalog-export.mjs';
 import { hashFile, openDatabase } from './common.mjs';
 import { inspectBundle } from './install-android.mjs';
+import { startingRomanGroup } from './catalog.mjs';
+
+test('starting chord groups retain accidental degree case quality and seventh',()=>{
+  assert.deepEqual(startingRomanGroup('bVII13sus4/V'),startingRomanGroup('♭VII7'));
+  assert.deepEqual(startingRomanGroup('#ivø7(lyd)'),startingRomanGroup('♯ivø9'));
+  for (const inversion of ['V65','V43','V42']) assert.deepEqual(startingRomanGroup(inversion),startingRomanGroup('V7'));
+  assert.deepEqual(startingRomanGroup('Iadd9sus4'),startingRomanGroup('I'));
+  const labels=['I','i','I7','I△7','ii°','iiø7','III+'];
+  assert.equal(new Set(labels.map(label=>startingRomanGroup(label).id)).size,labels.length);
+  assert.notEqual(startingRomanGroup('IV').id,startingRomanGroup('iv').id);
+  assert.notEqual(startingRomanGroup('V').id,startingRomanGroup('V7').id);
+});
 
 test('compact device export preserves source sections and indexed occurrence endpoint spans',()=>{
   const directory=fs.mkdtempSync(path.join(os.tmpdir(),'aural-catalog-'));
@@ -26,6 +38,7 @@ test('compact device export preserves source sections and indexed occurrence end
     assert.deepEqual(db.prepare('SELECT DISTINCT view FROM catalog_range ORDER BY view').all().map(row=>row.view),
       ['harmony','harmony_bass','relative_harmony','relative_harmony_bass']);
     assert.deepEqual(db.prepare("SELECT DISTINCT mode FROM catalog_range WHERE view='harmony'").all().map(row=>row.mode),['minor']);
+    assert.ok(db.prepare("SELECT count(*) n FROM catalog_range WHERE start_group IS NOT NULL AND start_group_label IS NOT NULL").get().n>0);
     const relativeRun=db.prepare("SELECT key_json,source_key_json FROM catalog_run WHERE view='relative_harmony'").get();
     assert.deepEqual(JSON.parse(relativeRun.key_json),{scale:'major',tonic:'F'});
     assert.deepEqual(JSON.parse(relativeRun.source_key_json),{scale:'minor',tonic:'D'});

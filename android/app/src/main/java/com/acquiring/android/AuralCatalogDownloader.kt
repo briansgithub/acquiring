@@ -17,7 +17,7 @@ import java.util.zip.GZIPInputStream
 object AuralCatalogDownloader {
     private const val MANIFEST_URL =
         "https://github.com/briansgithub/acquiring/releases/download/v1.0.0-data/aural-catalog-manifest.json"
-    private val supportedSchemas = setOf("aural-catalog-1", "aural-catalog-2")
+    private val supportedSchemas = setOf("aural-catalog-1", "aural-catalog-2", "aural-catalog-3")
     private val requiredFiles = listOf("aural-catalog.db", "aural-evidence.db", "aural-popularity.db")
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -64,6 +64,10 @@ object AuralCatalogDownloader {
             check(manifest.schemaVersion in supportedSchemas) { "Unsupported progression catalog version" }
             val entries = manifest.files.associateBy { it.name }
             check(entries.keys.containsAll(requiredFiles)) { "Catalog update is incomplete" }
+            if (installedBundleIsNewer(context, manifest)) {
+                onProgress("Newer progression catalog is ready")
+                return@runCatching false
+            }
             if (!force && installedBundleMatches(context, manifest)) {
                 onProgress("Progression catalog is ready")
                 return@runCatching false
@@ -104,12 +108,32 @@ object AuralCatalogDownloader {
                 }
                 validate(staged.associate { it.first.name to it.second }, manifest.snapshotId)
                 onProgress("Installing progressions…")
-                staged.forEach { (entry, file) ->
-                    val destination = File(context.filesDir, entry.name)
-                    if (!file.renameTo(destination)) {
-                        destination.delete()
-                        check(file.renameTo(destination)) { "Could not install progression catalog" }
+                val backups = mutableMapOf<File, File>()
+                val replacements = mutableListOf<File>()
+                try {
+                    staged.forEach { (entry, _) ->
+                        val destination = File(context.filesDir, entry.name)
+                        val backup = File(context.filesDir, "${entry.name}.backup")
+                        check(!backup.exists()) { "An earlier catalog backup needs recovery" }
+                        if (destination.exists()) {
+                            check(destination.renameTo(backup)) { "Could not preserve installed progression catalog" }
+                            backups[destination] = backup
+                        }
                     }
+                    staged.forEach { (entry, file) ->
+                        val destination = File(context.filesDir, entry.name)
+                        check(file.renameTo(destination)) { "Could not install progression catalog" }
+                        replacements += destination
+                    }
+                    backups.values.forEach { it.delete() }
+                } catch (error: Throwable) {
+                    var recoveryFailed = false
+                    replacements.forEach { if (it.exists() && !it.delete()) recoveryFailed = true }
+                    backups.forEach { (destination, backup) ->
+                        if (backup.exists() && !backup.renameTo(destination)) recoveryFailed = true
+                    }
+                    if (recoveryFailed) throw IllegalStateException("Catalog update failed; previous files remain in .backup for recovery", error)
+                    throw error
                 }
                 true
             } catch (error: Throwable) {
@@ -129,6 +153,21 @@ object AuralCatalogDownloader {
             return@runCatching false
         }
         validate(files, manifest.snapshotId)
+        true
+    }.getOrDefault(false)
+
+    internal fun installedBundleIsNewer(context: Context, manifest: Bundle): Boolean = runCatching {
+        if (!hasInstalledBundleFiles(context)) return@runCatching false
+        val catalogFile = File(context.filesDir, "aural-catalog.db")
+        val installed = SQLiteDatabase.openDatabase(catalogFile.path, null, SQLiteDatabase.OPEN_READONLY).use { db ->
+            db.rawQuery("SELECT key,value FROM metadata WHERE key IN ('schema_version','snapshot_id')", null).use { cursor ->
+                buildMap { while (cursor.moveToNext()) put(cursor.getString(0), cursor.getString(1)) }
+            }
+        }
+        val localVersion = installed["schema_version"]?.substringAfterLast('-')?.toIntOrNull() ?: return@runCatching false
+        val offeredVersion = manifest.schemaVersion.substringAfterLast('-').toIntOrNull() ?: return@runCatching false
+        if (localVersion <= offeredVersion) return@runCatching false
+        validate(requiredFiles.associateWith { File(context.filesDir, it) }, installed["snapshot_id"] ?: return@runCatching false)
         true
     }.getOrDefault(false)
 

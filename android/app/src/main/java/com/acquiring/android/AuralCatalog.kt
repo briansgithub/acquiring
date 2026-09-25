@@ -45,6 +45,7 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
     private val db = SQLiteDatabase.openDatabase(file.path, null, SQLiteDatabase.OPEN_READONLY)
     val snapshotId: String
     val supportsModeAnalysis: Boolean
+    val supportsStartGrouping: Boolean
     private val suffix: IntArray
     private val songByRun: Array<String>
     private val sectionByRun: Array<String>
@@ -55,8 +56,9 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
     init {
         val metadata = mutableMapOf<String, String>()
         db.rawQuery("SELECT key,value FROM metadata", null).use { while (it.moveToNext()) metadata[it.getString(0)] = it.getString(1) }
-        require(metadata["schema_version"] in setOf("aural-catalog-1", "aural-catalog-2"))
-        supportsModeAnalysis = metadata["schema_version"] == "aural-catalog-2"
+        require(metadata["schema_version"] in setOf("aural-catalog-1", "aural-catalog-2", "aural-catalog-3"))
+        supportsModeAnalysis = metadata["schema_version"] != "aural-catalog-1"
+        supportsStartGrouping = metadata["schema_version"] == "aural-catalog-3"
         snapshotId = requireNotNull(metadata["snapshot_id"])
         val bytes = db.rawQuery("SELECT length(data) FROM catalog_array WHERE name='suffix_locations'", null).use { check(it.moveToFirst()); it.getInt(0) }
         suffix = IntArray(bytes / 4)
@@ -133,11 +135,31 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
         val score = auralCatalogBase(target.tokens.size, grouped.size, effective) * grouped.keys.sumOf { factor(it, settings, recent, favorites) } / grouped.size
         return AuralCatalogRow(target, grouped.size, target.end - target.start + 1, sections.size, effective, score)
     }
-    inner class Ranking(settings: AuralExampleSettings, recent: List<String>, favorites: Set<String>, minLength: Int = 2, maxLength: Int = Int.MAX_VALUE, search: String = "") {
+    fun groupedBuckets(settings: AuralExampleSettings): Map<Int, List<AuralStartGroup>> {
+        val view = if (supportsModeAnalysis) settings.catalogView() else if (settings.distinguishInversions) "harmony_bass" else "harmony"
+        val mode = settings.modeFilter.takeIf { supportsModeAnalysis && settings.analysis == "filterMode" && it in AURAL_MODES }
+        val found = mutableMapOf<Int, MutableMap<String, AuralStartGroup>>()
+        val columns = if (supportsStartGrouping) "min_length,max_length,start_group,start_group_label" else "min_length,max_length"
+        db.rawQuery("SELECT DISTINCT $columns FROM catalog_range WHERE view=? " +
+            (if (mode == null) "" else "AND mode=? "), (listOf(view) + listOfNotNull(mode)).toTypedArray()).use { c ->
+            while (c.moveToNext()) {
+                if(c.isNull(0)) continue
+                val group = if (supportsStartGrouping) {
+                    val parsed = auralStartGroup(c.getString(3)) ?: continue
+                    parsed.copy(id = c.getString(2), label = c.getString(3))
+                } else AuralStartGroup("", "All starting chords", 0, "", true, false)
+                for (length in c.getInt(0)..c.getInt(1)) found.getOrPut(length) { mutableMapOf() }[group.id] = group
+            }
+        }
+        return found.toSortedMap().mapValues { it.value.values.sortedWith(auralStartGroupOrder) }
+    }
+
+    inner class Ranking(settings: AuralExampleSettings, recent: List<String>, favorites: Set<String>, minLength: Int = 2, maxLength: Int = Int.MAX_VALUE, search: String = "", startGroup: String? = null) {
         private val settings = settings.copy(); private val recent = recent.toList(); private val favorites = favorites.toSet()
         private val search = search.trim().lowercase()
         private val multiplier = (if (settings.popularity) maxOf(1.0,popularity.values.maxOfOrNull { 1 + it.confidence.coerceIn(0.0,1.0) * ((it.score ?: .5)-.5) } ?: 1.0) else 1.0) * (if (settings.favorites && favorites.isNotEmpty()) 1.5 else 1.0)
         private val minimum=minLength; private val maximum=maxLength
+        private val startGroup = startGroup
         private val heap = PriorityQueue<Entry> { a, b ->
             val order = b.bound.compareTo(a.bound)
             if (order != 0) order else if (a.row == null || b.row == null) (if (a.row == null) 0 else 1) - (if (b.row == null) 0 else 1)
@@ -146,8 +168,9 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
         private val view = if (supportsModeAnalysis) settings.catalogView() else if (settings.distinguishInversions) "harmony_bass" else "harmony"
         private val mode = settings.modeFilter.takeIf { supportsModeAnalysis && settings.analysis == "filterMode" && it in AURAL_MODES }
         private val ranges=db.rawQuery("SELECT start,end,min_length,max_length,songs,upper_score FROM catalog_range WHERE view=? " +
-            (if (mode == null) "" else "AND mode=? ") + "AND max_length>=? AND min_length<=? ORDER BY upper_score DESC,id",
-            (listOf(view) + listOfNotNull(mode) + listOf(minLength.toString(), maxLength.toString())).toTypedArray())
+            (if (mode == null) "" else "AND mode=? ") + (if (supportsStartGrouping && startGroup != null) "AND start_group=? " else "") +
+            "AND max_length>=? AND min_length<=? ORDER BY upper_score DESC,id",
+            (listOf(view) + listOfNotNull(mode) + listOfNotNull(startGroup.takeIf { supportsStartGrouping }) + listOf(minLength.toString(), maxLength.toString())).toTypedArray())
         private var rangeAvailable=ranges.moveToFirst()
         private fun refineFrontier() {
             while(rangeAvailable && (heap.isEmpty() || ranges.getDouble(5)*multiplier >= heap.peek().bound)) {
@@ -169,6 +192,7 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
                 if (e.low != e.high) { val mid = (e.low + e.high) ushr 1; add(e.start,e.end,e.low,mid,e.songs); add(e.start,e.end,mid+1,e.high,e.songs) }
                 else {
                     val target = target(e.start,e.end,e.low)
+                    if (!supportsStartGrouping && startGroup != null && auralStartGroup(target.labels.firstOrNull().orEmpty())?.id != startGroup) continue
                     if (search.isNotEmpty() && !target.labels.joinToString(" ").lowercase().contains(search)) continue
                     val row = stats(target, this.settings, this.recent, this.favorites)
                     heap.add(e.copy(bound = row.score, row = row))

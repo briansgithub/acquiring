@@ -56,7 +56,8 @@ class AuralPatternExerciseTest {
         assertEquals(7,(exercise.events[1].rootMidi-MusicTheory.NOTE_TO_PC.getValue(exercise.keyTonic)+120)%12)
     }
     @Test fun analysisSettingsResolveOneCatalogView() {
-        assertEquals("harmony",AuralExampleSettings().catalogView())
+        assertEquals("relative_harmony",AuralExampleSettings().catalogView())
+        assertEquals("harmony",AuralExampleSettings(analysis="allModes").catalogView())
         assertEquals("relative_harmony",AuralExampleSettings(analysis="relativeMajor").catalogView())
         assertEquals("harmony_bass",AuralExampleSettings(distinguishInversions=true,analysis="filterMode",modeFilter="dorian").catalogView())
     }

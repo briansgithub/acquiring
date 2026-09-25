@@ -32,43 +32,6 @@ internal fun AuralExampleSettingsPanel(settings: AuralExampleSettings, popularit
             description = "Track bass-sensitive practice separately") { onChange(settings.copy(distinguishInversions = it)) }
         AuralExampleSwitch("Flat list", "AuralFlatList", settings.flatList,
             description = "All sequences · highest combined score first") { onChange(settings.copy(flatList = it)) }
-        Divider(Modifier.padding(vertical = 12.dp))
-        Text("Mode handling", style = MaterialTheme.typography.titleMedium)
-        Text(if (modeAnalysisAvailable) "Choose one catalog analysis" else "Update the progression catalog to enable mode analysis",
-            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        AuralAnalysisChoice("All modes", "Original modal labels", settings.analysis == "allModes", true, "AuralAnalysisAll") {
-            onChange(settings.copy(analysis = "allModes"))
-        }
-        AuralAnalysisChoice("Relative major", "Combine equivalent sequences across modes", settings.analysis == "relativeMajor", modeAnalysisAvailable, "AuralAnalysisRelative") {
-            onChange(settings.copy(analysis = "relativeMajor"))
-        }
-        AuralAnalysisChoice("Filter by mode", "Only sequences from one source mode", settings.analysis == "filterMode", modeAnalysisAvailable, "AuralAnalysisFilter") {
-            onChange(settings.copy(analysis = "filterMode"))
-        }
-        if (settings.analysis == "filterMode" && modeAnalysisAvailable) {
-            var expanded by remember { mutableStateOf(false) }
-            Box(Modifier.fillMaxWidth()) {
-                OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth().testTag("AuralModeFilter")) {
-                    Text(auralModeLabel(settings.modeFilter))
-                }
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    AURAL_MODES.forEach { mode -> DropdownMenuItem(text = { Text(auralModeLabel(mode)) }, onClick = {
-                        expanded = false; onChange(settings.copy(modeFilter = mode))
-                    }) }
-                }
-            }
-        }
-        }
-    }
-}
-
-@Composable
-private fun AuralAnalysisChoice(label: String, description: String, selected: Boolean, enabled: Boolean, tag: String, onClick: () -> Unit) {
-    Row(Modifier.fillMaxWidth().testTag(tag).padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-        RadioButton(selected = selected, onClick = onClick, enabled = enabled)
-        Column(Modifier.weight(1f)) {
-            Text(label, color = if(enabled) LocalContentColor.current else MaterialTheme.colorScheme.onSurface.copy(alpha=.38f))
-            Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

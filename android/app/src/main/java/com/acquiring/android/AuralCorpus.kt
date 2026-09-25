@@ -10,8 +10,9 @@ import kotlinx.serialization.json.Json
     val popularity: Boolean = true, val variety: Boolean = true,
     val favorites: Boolean = false, val distinguishInversions: Boolean = false,
     val flatList: Boolean = false,
-    val analysis: String = "allModes",
+    val analysis: String = "relativeMajor",
     val modeFilter: String = "major",
+    val groupingPriority: String = "length",
 )
 
 internal val AURAL_MODES = listOf("major", "minor", "dorian", "phrygian", "lydian", "mixolydian", "locrian", "harmonicMinor", "phrygianDominant")
@@ -19,6 +20,33 @@ internal fun auralModeLabel(mode: String) = when (mode) {
     "harmonicMinor" -> "Harmonic minor"
     "phrygianDominant" -> "Phrygian dominant"
     else -> mode.replaceFirstChar { it.uppercase() }
+}
+
+internal data class AuralStartGroup(val id: String, val label: String, val degree: Int,
+    val accidental: String, val major: Boolean, val seventh: Boolean, val quality: String = "major", val seventhQuality: String = "none")
+
+internal val auralStartGroupOrder = compareBy<AuralStartGroup> { it.degree }
+    .thenBy { it.accidental.count { c -> c == '♯' } - it.accidental.count { c -> c == '♭' } }
+    .thenBy { listOf("major", "minor", "diminished", "halfDiminished", "augmented").indexOf(it.quality) }
+    .thenBy { listOf("none", "minor", "major", "diminished").indexOf(it.seventhQuality) }
+    .thenBy { it.id }
+
+/** Groups by accidental, degree, numeral case, chord quality, and seventh quality. */
+internal fun auralStartGroup(label: String): AuralStartGroup? {
+    val normalized = label.trim().replace(Regex("^[b#]+")) { it.value.replace('b', '♭').replace('#', '♯') }
+    val match = Regex("^([♭♯]*)([ivIV]+)([^/(]*)").find(normalized) ?: return null
+    val accidental = match.groupValues[1]
+    val numeral = match.groupValues[2]
+    val degree = when (numeral.uppercase()) { "I" -> 1; "II" -> 2; "III" -> 3; "IV" -> 4; "V" -> 5; "VI" -> 6; "VII" -> 7; else -> return null }
+    val major = numeral == numeral.uppercase()
+    val detail = match.groupValues[3]
+    val quality = when { 'ø' in detail -> "halfDiminished"; '°' in detail || 'o' in detail -> "diminished"; '+' in detail -> "augmented"; major -> "major"; else -> "minor" }
+    val seventh = Regex("(?:7|9|11|13|65|43|42)").containsMatchIn(detail.replace(Regex("(?:add|sus)\\d+"), ""))
+    val seventhQuality = when { !seventh -> "none"; '△' in detail || 'Δ' in detail -> "major"; quality == "diminished" -> "diminished"; else -> "minor" }
+    val symbol = when (quality) { "halfDiminished" -> "ø"; "diminished" -> "°"; "augmented" -> "+"; else -> "" }
+    val canonical = if (major) numeral.uppercase() else numeral.lowercase()
+    return AuralStartGroup("${accidental.ifEmpty { "natural" }}:$degree:${if (major) "upper" else "lower"}:$quality:$seventhQuality",
+        "$accidental$canonical$symbol${if (seventhQuality == "major") "△" else ""}${if (seventh) "7" else ""}", degree, accidental, major, seventh, quality, seventhQuality)
 }
 internal fun AuralExampleSettings.catalogView(): String {
     val base = if (distinguishInversions) "harmony_bass" else "harmony"
