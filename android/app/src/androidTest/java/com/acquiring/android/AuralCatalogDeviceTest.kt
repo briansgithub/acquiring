@@ -9,6 +9,9 @@ import org.junit.Test
 import java.io.File
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import org.junit.Rule
 import kotlinx.coroutines.runBlocking
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -18,6 +21,17 @@ import androidx.compose.ui.unit.dp
 class AuralCatalogDeviceTest {
     @get:Rule val compose=createComposeRule()
     private class Store:AuralPersistence { var raw:String?=null; override fun read()=raw;override fun write(value:String):Boolean { raw=value;return true } }
+    @Test fun longProgressionHeaderDoesNotHideSongTab() {
+        val degrees=List(129) { if(it % 2 == 0) "I(no3)(no5)" else "V(no3)(no5)" }
+        compose.setContent { androidx.compose.material3.MaterialTheme { Column(Modifier.fillMaxSize()) {
+            AuralProgressionHeading("long-device-progression",degrees,countOnly=false)
+            AuralModeTabs("compare",onSongs={}) {}
+        } } }
+        compose.onNodeWithTag("AuralProgressionExpand").assertIsDisplayed().performClick()
+        compose.onNodeWithTag("AuralMode-songs").assertIsDisplayed().performClick()
+        compose.onNodeWithTag("AuralProgressionExpand").assertIsDisplayed().performClick()
+        compose.onNodeWithTag("AuralMode-songs").assertIsDisplayed()
+    }
     @Test fun outlineExpansionHasLargeTargetsAndStableSiblingNumbers() {
         val context=ApplicationProvider.getApplicationContext<Context>()
         AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->

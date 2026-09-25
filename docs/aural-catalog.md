@@ -293,3 +293,30 @@ removal, recursive expansion, Review, and chord borders remains pending. The
 Mac is unreachable, so iOS Swift/simulator checks remain pending in
 `docs/porting-plan.md` on `codex/ios-aural-quiz-port`. No remote push or store
 release occurred.
+
+## Longest-first catalog browsing and bounded practice header — 2026-09-25
+
+The catalog UI now presents sequence-length groups from longest to shortest.
+When Starting chord is primary, its length subgroups use the same descending
+order. Ranking within each exact bucket and loaded pages is unchanged. An
+existing saved scroll index is migrated once to the active group's header so
+the reversed order does not restore the user to an unrelated position.
+
+The practice screen caps the named progression heading at two lines, with a
+**Show full progression** control for longer sequences. Expanded text scrolls
+within a bounded header, keeping the activity tabs and Songs entry reachable.
+Independent exercise content and source passages are unchanged. The user
+reported the issue with a 129-chord source progression on the Pixel 7a.
+
+Validation: `AuralQuizUiTest` had 15 prior tests pass and one new test fail
+because its expand control relied only on a layout-overflow callback. After
+making the control explicit for long sequences, the focused UI test and both
+Debug APK builds passed (`aural-long-title-recheck`, 71.4 seconds). The app and
+instrumentation APK were installed on Pixel 7a `3C081JEHN14930` with app data
+preserved; `AuralCatalogDeviceTest#longProgressionHeaderDoesNotHideSongTab`
+passed (1 test, 1.851 seconds). The installed full catalog checksum remained
+`09cdc2d28e5ab1c54e1090d5c2bb745ae08dddea7ed22e73095d649441b5a685`.
+The app was relaunched. Human visual review of the 129-chord case and both
+grouping priorities remains pending; no screenshot was taken. iOS source
+parity is documented in `docs/porting-plan.md` on the iOS worktree and still
+needs Mac validation. No remote push or release occurred.

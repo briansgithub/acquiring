@@ -1,11 +1,14 @@
 package com.acquiring.android
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.Modifier
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.coroutines.awaitCancellation
@@ -23,6 +26,18 @@ class AuralQuizUiTest {
     private class Store(var raw: String? = null) : AuralPersistence {
         override fun read() = raw
         override fun write(value: String): Boolean { raw = value; return true }
+    }
+
+    @Test fun longProgressionHeaderKeepsPracticeTabsReachable() {
+        val degrees = List(129) { if (it % 2 == 0) "I(no3)(no5)" else "V(no3)(no5)" }
+        compose.setContent { MaterialTheme { Column(Modifier.fillMaxSize()) {
+            AuralProgressionHeading("long-progression", degrees, countOnly = false)
+            AuralModeTabs("compare", onSongs = {}) {}
+        } } }
+        compose.onNodeWithTag("AuralProgressionExpand").assertIsDisplayed().performClick()
+        compose.onNodeWithTag("AuralMode-songs").assertIsDisplayed().performClick()
+        compose.onNodeWithTag("AuralProgressionExpand").assertIsDisplayed().performClick()
+        compose.onNodeWithTag("AuralMode-songs").assertIsDisplayed()
     }
 
     @Test fun fivePreferencesApplyNextExerciseAndUnavailablePopularityIsDisabled() {
