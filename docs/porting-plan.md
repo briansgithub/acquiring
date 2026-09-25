@@ -2306,3 +2306,50 @@ listed by ADB, so device installation and instrumentation/human review remain
 pending. The iOS feature files listed above are deliberately uncommitted until
 Mac compilation/simulator validation resolves any findings; the prior port
 checkpoint `e9c2e96b` remains intact.
+
+### Aural Quiz button-based progression search — 2026-09-25, Mac validation pending
+
+`[implemented in source; NOT compiled or simulator-tested]` The new search work
+is in the same dirty `codex/ios-aural-quiz-port` worktree as the flexible
+grouping port above. Do not treat Windows static review as Swift/Xcode
+validation, and do not merge or release the iOS feature until the Mac checks
+below pass. The user confirmed the Mac is unavailable for now.
+
+The Aural Quiz catalog now has seven Roman-degree buttons and an ordered chip
+list instead of an open-ended search field. A chip editor offers flat/natural/
+sharp, Any/Major/Minor/7/maj7/m7 families, and catalog-backed **More options**
+for exact modified chord forms. Chips can be reordered, removed, and cleared;
+the maximum is 32. A versioned structured query is persisted in the browser
+snapshot. The old string search is cleared rather than inferred as a new
+query. Empty means all sequences; otherwise the query matches contiguous,
+whole chord labels anywhere in a top-level sequence, using the active
+relative-major or modal analysis. Recursive children remain under their
+parent. Catalog-backed exact forms use the root-position label and can also
+constrain an inversion when inversion distinction is enabled; turning that
+setting off clears only the inversion constraint. Ranking-page filtering,
+subgroup Review, debounce, stale-request rejection, and cursor ownership
+continue through the existing catalog/store flow.
+
+Added `AuralProgressionQueryTests.swift` for contiguous matching, accidentals,
+families, exact forms, JSON round-trip, and root/inversion behavior.
+`git diff --check` passed on Windows. No Swift package tests, Xcode build, app install,
+simulator interaction, or human visual review ran; none should be marked
+passed. When the Mac is available:
+
+1. Inspect this worktree's dirty state and diff before edits. Run
+   `swift test --filter AuralProgressionQueryTests` and the prior focused
+   grouping/core tests from `ios/Packages/AcquiringKit`; fix compiler/test
+   failures and rerun affected checks.
+2. Build, install, and launch the incremental Debug app on a warm iPhone 17
+   simulator as described above. Use a validated schema-v3 catalog and also
+   confirm v1/v2 fallback behavior.
+3. Test adding/reordering/removing/clearing chips; flat/natural/sharp,
+   quality-family and catalog-backed exact choices; relative-major versus
+   modal labels; exact/inversion behavior across the Distinguish inversions
+   toggle; no-match state; independent group pagination and subgroup Review;
+   rapid edits and relaunch restoration. Review the builder and chip layout
+   with VoiceOver/accessibility labels as well as visually.
+4. Record exact commands/results here, then checkpoint and integrate only
+   validated revisions. The Android tests passed separately, but the Pixel 7a
+   was offline, so device review is pending there too. No remote upload or
+   release was requested for this search work.
