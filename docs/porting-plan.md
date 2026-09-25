@@ -2232,3 +2232,77 @@ then complete the normal incremental build/install/launch on the warm iPhone 17.
 Review: choose 60 fps, play `500 Miles`, toggle Lock in Major repeatedly, then
 repeat with Maximum and return to 60 fps. Earlier pending reviews remain pending.
 No release, full-app suite or screenshots; unrelated Android work is preserved.
+
+### Aural Quiz flexible grouping and mode controls — 2026-09-25, Mac validation pending
+
+`[implemented in source; iOS build, simulator, and human review not run]` The
+Windows worktree `H:/Desktop/Acquiring/Acquiring-ios-aural-quiz` is on
+`codex/ios-aural-quiz-port`. Commit `e9c2e96b` is the earlier Aural Quiz iOS
+catalog-port checkpoint; the changes for this specific feature are in the
+working tree. The Mac, Xcode, and simulator were unreachable when this handoff
+was written. **Do not describe this feature as iOS-validated or merge it into
+main on the strength of the Windows checks.**
+
+Implemented in the current iOS source:
+
+- Schema v1/v2/v3 catalog readers remain accepted. Schema v3 discovers exact
+  length/starting-chord buckets from indexed compact ranges and constrains
+  ranked queries to a selected bucket; v1/v2 show their available capabilities.
+  The installer will not replace a validated v3 bundle with the older published
+  v1 manifest, even when a manual update is requested.
+- Aural Quiz displays Relative major, Mixed Modes, Filter by mode and a mode
+  picker; Relative major is the default, while persisted `allModes` remains the
+  Mixed Modes identifier. Existing pre-feature sessions have no browser choice
+  and therefore migrate to Relative major; subsequent explicit choices persist.
+- Group first can switch Length/Starting chord without reranking or dropping
+  loaded pages. Both levels start collapsed, remember an active bucket, page
+  count and scroll identity, and retain recursive children under their parent.
+  Flat list hides those children. Search is debounced; catalog requests reject
+  stale results and actor-owned ranking handles are closed on invalidation.
+- Each leaf offers Review this subgroup using its first 30 ranked rows frozen
+  when Review starts. The existing adaptive progress data selects skills in
+  that pool. The selected transition uses neutral containers and individual
+  chord-colored borders, with hidden answers remaining neutral.
+- Core tests for legacy/default analysis settings, bucket ordering, and
+  relative-token mode were added in `AcquiringAuralTests/AuralGroupingTests.swift`.
+
+Required next Mac session, in order (do not mark any of these as passed yet):
+
+1. Inspect `git status --short --branch` and the iOS diff; preserve this dirty
+   worktree and unrelated changes. Run focused package tests from
+   `ios/Packages/AcquiringKit` with `swift test --filter AuralGroupingTests`
+   and existing `AuralCurriculumTests`/`AuralSelectionParityTests`. Resolve any
+   Swift compile/API errors and rerun affected checks.
+2. On a warm iPhone 17 simulator run an incremental Debug `xcodebuild build`
+   for `ios/Acquiring.xcodeproj`, scheme `Acquiring`, simulator destination,
+   `CODE_SIGNING_ALLOWED=NO`. Terminate the stale app, install the newly built
+   app, and launch it. Do not clean DerivedData or reset the simulator unless
+   a specific stale-state failure requires it.
+3. Exercise a validated schema-v3 catalog in the simulator: confirm each mode
+   control, filtering, both grouping orders and exact bucket membership,
+   independent pagination, recursion, Flat list, search-empty state, subgroup
+   Review, restore after relaunch, and rapid query changes. Also open v1/v2
+   catalogs to verify the disabled/available UI and installation compatibility.
+   Inspect selection borders and accessibility selection/checkmark text with
+   human review. No screenshots are required.
+4. Inspect and fix any findings, record exact commands/results here, then
+   request the established human feature critique. Only after successful Mac
+   validation and review should this iOS source be checkpointed/integrated.
+
+The full v3 export, Android device install, and full-catalog validation are
+separate delivery gates. iOS has not been built, installed, launched, tested,
+or released for this feature. No TestFlight upload was requested.
+The schema-v3 full catalog/evidence and existing popularity overlay currently
+live only under the Windows checkout's ignored
+`H:/Desktop/Acquiring/Acquiring/acquiring_data/` tree; they are not in Git or
+on the Mac. Transfer and checksum-verify all three SQLite files, or rebuild
+them from the same sources, before the simulator's v3 checks. The full catalog
+snapshot is `e18eadf5a212f441afb69f44ca779b577d7476c3baaefca73fd74b9c9ee83cfb`;
+the Android/shared handoff in `docs/aural-catalog.md` records the checksums.
+The Android/shared feature checkpoint is `4c7ddd56` on
+`codex/aural-mode-analysis`: focused Node tests, Android JVM tests, both Debug
+APKs, and full-bundle checksum/snapshot checks passed. The Pixel 7a was not
+listed by ADB, so device installation and instrumentation/human review remain
+pending. The iOS feature files listed above are deliberately uncommitted until
+Mac compilation/simulator validation resolves any findings; the prior port
+checkpoint `e9c2e96b` remains intact.
