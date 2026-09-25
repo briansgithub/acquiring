@@ -70,7 +70,9 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
     val mutex = remember { Mutex() }
     val liveRankings = remember { mutableSetOf<AuralCatalog.Ranking>() }
     val scope = rememberCoroutineScope()
-    val scroll = rememberLazyListState(storage.getInt("scrollIndex",0),storage.getInt("scrollOffset",0))
+    var migrateLengthOrder by remember { mutableStateOf(storage.getInt("lengthOrderVersion",0) < 1) }
+    val scroll = rememberLazyListState(if(migrateLengthOrder) 0 else storage.getInt("scrollIndex",0),
+        if(migrateLengthOrder) 0 else storage.getInt("scrollOffset",0))
     val effective = if (catalog.supportsModeAnalysis) settings else settings.copy(analysis="allModes")
     val rankingPreferences = effective.copy(flatList=false,groupingPriority="length")
     val queryKey = "${catalog.snapshotId}|$rankingPreferences|$appliedQuery"
@@ -118,8 +120,17 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
     val allStarts = buckets.values.flatten().associateBy { it.id }.values.sortedWith(auralStartGroupOrder)
     val startFirst = settings.groupingPriority == "start" && catalog.supportsStartGrouping
     val primaryGroups = if (startFirst) allStarts.map { start ->
-        AuralPrimaryGroup("start:${start.id}", "Starts with ${start.label}", buckets.filterValues { groups -> groups.any { it.id==start.id } }.keys.map { AuralLeaf(it,start) })
-    } else buckets.map { (length,starts) -> AuralPrimaryGroup("length:$length", "$length chords", starts.map { AuralLeaf(length,it) }) }
+        AuralPrimaryGroup("start:${start.id}", "Starts with ${start.label}", buckets.filterValues { groups -> groups.any { it.id==start.id } }.keys.sortedDescending().map { AuralLeaf(it,start) })
+    } else buckets.keys.sortedDescending().map { length ->
+        AuralPrimaryGroup("length:$length", "$length chords", buckets.getValue(length).map { AuralLeaf(length,it) })
+    }
+    LaunchedEffect(loadedKey, primaryGroups, migrateLengthOrder) {
+        if(migrateLengthOrder && loadedKey==queryKey && !loadingGroups) {
+            scroll.scrollToItem(primaryGroups.indexOfFirst { it.id==activePrimary }.coerceAtLeast(0))
+            storage.edit().putInt("lengthOrderVersion",1).apply()
+            migrateLengthOrder=false
+        }
+    }
 
     fun load(leaf: AuralLeaf, more: Boolean = false) {
         if (pages[leaf.id]?.busy == true || loadedKey!=queryKey || disposed) return

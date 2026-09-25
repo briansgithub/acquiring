@@ -29,6 +29,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -351,18 +352,14 @@ internal fun AuralQuizScreen(
             }, modifier = Modifier.testTag("AuralSettings")) { Icon(Icons.Default.Settings, contentDescription = "Open settings") }
         }
         if (inLesson && namedPractice) {
-            Text(if(exercise?.provenance?.target?.pattern != null) "Song progression" else selected.label, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 16.dp))
-            if (exercise!!.provenance.target.pattern != null && !view.guidanceVisible) {
-                Text("${exercise.events.size} chords", style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
-            } else {
-                Text(auralRomanSequence(exercise.fullDegrees), style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
-            }
-            AuralModeTabs(exercise.skillId,songsSelected=songsTab && exercise.provenance.target.pattern!=null,
-                onSongs=if(exercise.provenance.target.pattern!=null) ({ cancel(markInterrupted=true); songsTab=true }) else null) { mode ->
+            val namedExercise = exercise!!
+            Text(if(namedExercise.provenance.target.pattern != null) "Song progression" else selected.label, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 16.dp))
+            AuralProgressionHeading(namedExercise.id, namedExercise.fullDegrees,
+                namedExercise.provenance.target.pattern != null && !view.guidanceVisible)
+            AuralModeTabs(namedExercise.skillId,songsSelected=songsTab && namedExercise.provenance.target.pattern!=null,
+                onSongs=if(namedExercise.provenance.target.pattern!=null) ({ cancel(markInterrupted=true); songsTab=true }) else null) { mode ->
                 songsTab=false
-                if(mode!=AuralPracticeModes.forSkill(exercise.skillId).id) practice(exercise.familyId, exercise.variantId, mode)
+                if(mode!=AuralPracticeModes.forSkill(namedExercise.skillId).id) practice(namedExercise.familyId, namedExercise.variantId, mode)
             }
         }
         if(inLesson && songsTab && exercise!!.provenance.target.pattern!=null) {
@@ -539,4 +536,33 @@ internal fun AuralQuizScreen(
                 cancel(); session.enableMicrophone(false); resetResponse(); refresh()
             } else { session.setMicrophonePreference(enabled); refresh() }
         })
+}
+
+/** Keep the practice tabs visible even when a source progression spans many lines. */
+@Composable
+internal fun AuralProgressionHeading(exerciseId: String, degrees: List<String>, countOnly: Boolean) {
+    if (countOnly) {
+        Text("${degrees.size} chords", style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
+        return
+    }
+    var expanded by rememberSaveable(exerciseId) { mutableStateOf(false) }
+    var truncated by remember(exerciseId) { mutableStateOf(false) }
+    val sequence = auralRomanSequence(degrees)
+    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        if (expanded) {
+            Box(Modifier.fillMaxWidth().heightIn(max = 180.dp).verticalScroll(rememberScrollState())) {
+                Text(sequence, style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.testTag("AuralProgressionTitle"))
+            }
+        } else {
+            Text(sequence, style = MaterialTheme.typography.headlineSmall, maxLines = 2,
+                overflow = TextOverflow.Ellipsis, onTextLayout = { truncated = it.hasVisualOverflow },
+                modifier = Modifier.fillMaxWidth().testTag("AuralProgressionTitle"))
+        }
+        if (degrees.size > 4 || truncated || expanded) TextButton(onClick = { expanded = !expanded },
+            modifier = Modifier.testTag("AuralProgressionExpand")) {
+            Text(if (expanded) "Collapse progression" else "Show full progression")
+        }
+    }
 }
