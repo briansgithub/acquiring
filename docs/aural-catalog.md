@@ -172,3 +172,37 @@ pagination, recursive paths, restoration, and chord borders in the app. The
 Pixel was not connected when this section was written. The iOS port and its
 deferred Mac checks are documented separately in `docs/porting-plan.md` on
 `codex/ios-aural-quiz-port`. No release or remote upload was requested.
+
+## Button-based progression search — 2026-09-25
+
+On `codex/aural-mode-analysis`, the open-ended Roman-label search field has
+been replaced with a constrained sequence builder. Tap I–VII to append chords;
+tap a chip to choose flat/natural/sharp and Any, Major, Minor, 7, maj7, or m7.
+**More options** lists exact chord forms found in the installed catalog for
+that degree and accidental, including catalog-supported modifications. Chips
+can be moved, removed, or cleared. An empty query shows all sequences. A
+nonempty query matches whole, consecutive chords anywhere within each
+top-level sequence; recursive endpoint children retain their existing display
+behavior. The selected analysis view supplies relative-major or modal labels.
+Old free-text search content is intentionally not converted into a chord query.
+
+The versioned query is persisted independently of live ranking cursors and
+debounced before re-ranking. Exact forms compare their root-position catalog
+label; when inversion distinction is on, a selected inversion can additionally
+constrain the displayed inversion label. Turning inversion distinction off
+clears only that additional constraint. Within each available group, ranking,
+subgroup Review, and pagination use the same filtered top-level result set.
+Query controls permit at most 32 chords to bound accidental unworkable input.
+
+Validation: `AuralProgressionQueryTest` passed, including contiguous matching,
+family/accidental/exact forms, serialization, and root-versus-inversion checks.
+From `android/`, with `ANDROID_HOME` set to the local SDK,
+`:app:testDebugUnitTest`, `:app:assembleDebug`, and
+`:app:assembleDebugAndroidTest` passed via `scripts/compact_check.py`
+(`aural-search-all-android-unit`, 121.9 seconds). The Pixel 7a was not listed
+by `adb devices -l`, so the new search UI and full-catalog query latency are
+not device-validated. Next: install the validated app/catalog when the Pixel
+is reachable, check common families and More variants under modal/relative
+views, test inversion toggling and rapid edits, and review the chip layout.
+The iOS source and deferred Mac checks are recorded in `docs/porting-plan.md`
+in the iOS worktree. No remote push or release was performed.
