@@ -25,6 +25,7 @@ internal data class AuralCatalogRun(val id: Int, val stableId: String, val view:
 internal data class AuralPlaybackSource(val song: Song, val section: ExtractedSection, val sectionId: String, val startBeat: Double, val endBeat: Double,
     val sections: Map<String,ExtractedSection> = emptyMap())
 internal data class AuralPatternSong(val id:String,val title:String,val artist:String,val popularityScore:Double?=null)
+internal data class AuralChordVariant(val label: String, val root: String)
 internal val auralPatternSongOrder = compareByDescending<AuralPatternSong> { it.popularityScore ?: -1.0 }
     .thenBy { it.title.lowercase(java.util.Locale.ROOT) }.thenBy { it.artist.lowercase(java.util.Locale.ROOT) }.thenBy { it.id }
 internal fun auralPatternId(tokens: List<String>, view: String): String {
@@ -50,6 +51,8 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
     private val songByRun: Array<String>
     private val sectionByRun: Array<String>
     private val runs = linkedMapOf<Int, AuralCatalogRun>()
+    private val chordVariantCache = mutableMapOf<String, List<AuralChordVariant>>()
+    private var rootLabelsByToken: Map<String, String>? = null
     val popularity = mutableMapOf<String, AuralPopularity>()
     var popularityVersion: String? = null; private set
     var popularityDescription = "No popularity measurements installed"; private set
@@ -154,9 +157,37 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
         return found.toSortedMap().mapValues { it.value.values.sortedWith(auralStartGroupOrder) }
     }
 
-    inner class Ranking(settings: AuralExampleSettings, recent: List<String>, favorites: Set<String>, minLength: Int = 2, maxLength: Int = Int.MAX_VALUE, search: String = "", startGroup: String? = null) {
+    @Synchronized fun chordVariants(settings: AuralExampleSettings, chord: AuralChordConstraint): List<AuralChordVariant> {
+        val relative = supportsModeAnalysis && settings.analysis == "relativeMajor"
+        val mode = settings.modeFilter.takeIf { settings.analysis == "filterMode" }
+        val field = if (settings.distinguishInversions) "inversion_label" else "label"
+        val cacheKey = "$relative|$mode|$field|${chord.degree}|${chord.accidental}"
+        chordVariantCache[cacheKey]?.let { return it }
+        val found = linkedSetOf<AuralChordVariant>()
+        db.rawQuery("SELECT label,inversion_label,token FROM catalog_token", null).use { cursor -> while (cursor.moveToNext()) {
+            val token = runCatching { json.parseToJsonElement(cursor.getString(2)).jsonObject }.getOrNull() ?: continue
+            if ((token["version"]?.jsonPrimitive?.content == "aural-relative-1") != relative) continue
+            if (mode != null && token["mode"]?.jsonPrimitive?.content != mode) continue
+            val label = if (settings.distinguishInversions) cursor.getString(1) else cursor.getString(0)
+            val group = auralStartGroup(label) ?: continue
+            if (group.degree == chord.degree && group.accidental == chord.accidental)
+                found += AuralChordVariant(auralCanonicalChord(label), auralCanonicalChord(cursor.getString(0)))
+        } }
+        return found.sortedWith(compareBy<AuralChordVariant> { it.label.length }.thenBy { it.label }).also { chordVariantCache[cacheKey] = it }
+    }
+
+    @Synchronized private fun rootLabels(tokens: List<String>): List<String> {
+        if (rootLabelsByToken == null) {
+            val found = mutableMapOf<String, String>()
+            db.rawQuery("SELECT token,label FROM catalog_token", null).use { cursor -> while (cursor.moveToNext()) found[cursor.getString(0)] = cursor.getString(1) }
+            rootLabelsByToken = found
+        }
+        return tokens.map { rootLabelsByToken?.get(it).orEmpty() }
+    }
+
+    inner class Ranking(settings: AuralExampleSettings, recent: List<String>, favorites: Set<String>, minLength: Int = 2, maxLength: Int = Int.MAX_VALUE, query: AuralProgressionQuery = AuralProgressionQuery(), startGroup: String? = null) {
         private val settings = settings.copy(); private val recent = recent.toList(); private val favorites = favorites.toSet()
-        private val search = search.trim().lowercase()
+        private val query = query
         private val multiplier = (if (settings.popularity) maxOf(1.0,popularity.values.maxOfOrNull { 1 + it.confidence.coerceIn(0.0,1.0) * ((it.score ?: .5)-.5) } ?: 1.0) else 1.0) * (if (settings.favorites && favorites.isNotEmpty()) 1.5 else 1.0)
         private val minimum=minLength; private val maximum=maxLength
         private val startGroup = startGroup
@@ -193,7 +224,8 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
                 else {
                     val target = target(e.start,e.end,e.low)
                     if (!supportsStartGrouping && startGroup != null && auralStartGroup(target.labels.firstOrNull().orEmpty())?.id != startGroup) continue
-                    if (search.isNotEmpty() && !target.labels.joinToString(" ").lowercase().contains(search)) continue
+                    val roots = if (query.chords.any { it.exact != null } && view.endsWith("harmony_bass")) rootLabels(target.tokens) else target.labels
+                    if (!query.matches(target.labels, roots)) continue
                     val row = stats(target, this.settings, this.recent, this.favorites)
                     heap.add(e.copy(bound = row.score, row = row))
                 }

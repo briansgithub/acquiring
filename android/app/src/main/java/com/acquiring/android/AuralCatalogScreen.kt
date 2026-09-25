@@ -28,6 +28,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 private data class AuralLeaf(val length: Int, val start: AuralStartGroup) { val id = "$length|${start.id}" }
 private data class AuralLeafPage(val rows: List<AuralCatalogRow> = emptyList(), val ranking: AuralCatalog.Ranking? = null,
@@ -42,8 +45,10 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
     onPractice: (AuralPatternTarget) -> Unit, onAdaptive: () -> Unit, onContinue: (() -> Unit)?, modifier: Modifier = Modifier,
     onReview: (List<AuralCatalogRow>) -> Unit = {}, onSettingsChange: (AuralExampleSettings) -> Unit = {}) {
     val storage = LocalContext.current.applicationContext.getSharedPreferences("aural_catalog_browse", android.content.Context.MODE_PRIVATE)
-    var search by rememberSaveable { mutableStateOf(storage.getString("search", "").orEmpty()) }
-    var appliedSearch by remember { mutableStateOf(search) }
+    var query by remember { mutableStateOf(runCatching {
+        Json.decodeFromString<AuralProgressionQuery>(storage.getString("progressionQuery", "").orEmpty())
+    }.getOrDefault(AuralProgressionQuery())) }
+    var appliedQuery by remember { mutableStateOf(query) }
     var activeLeaf by rememberSaveable { mutableStateOf(storage.getString("leaf", "").orEmpty()) }
     var activePrimary by rememberSaveable { mutableStateOf(storage.getString("primary", "").orEmpty()) }
     var expandedPrimary by rememberSaveable { mutableStateOf(emptyList<String>()) }
@@ -68,7 +73,7 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
     val scroll = rememberLazyListState(storage.getInt("scrollIndex",0),storage.getInt("scrollOffset",0))
     val effective = if (catalog.supportsModeAnalysis) settings else settings.copy(analysis="allModes")
     val rankingPreferences = effective.copy(flatList=false,groupingPriority="length")
-    val queryKey = "${catalog.snapshotId}|$rankingPreferences|$appliedSearch"
+    val queryKey = "${catalog.snapshotId}|$rankingPreferences|$appliedQuery"
     val frozenRecent = remember(queryKey) { session.recentSongs.toList() }
     val frozenFavorites = remember(queryKey) { session.favorites.toSet() }
     val progress = session.view().progress
@@ -77,8 +82,14 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
         disposed=true; generation++
         scope.launch(NonCancellable + Dispatchers.IO) { mutex.withLock { liveRankings.forEach { it.close() };liveRankings.clear() } }
     } }
-    LaunchedEffect(search) { delay(250);appliedSearch=search }
-    LaunchedEffect(catalog, rankingPreferences, appliedSearch) {
+    LaunchedEffect(settings.distinguishInversions) {
+        if (!settings.distinguishInversions && query.chords.any { it.inversion != null }) {
+            query = query.copy(chords = query.chords.map { it.copy(inversion = null) })
+            storage.edit().putString("progressionQuery", Json.encodeToString(query)).apply()
+        }
+    }
+    LaunchedEffect(query) { delay(250);appliedQuery=query }
+    LaunchedEffect(catalog, rankingPreferences, appliedQuery) {
         generation++; val expected=generation
         val restore=loadedKey.isEmpty() && storage.getString("context","")==queryKey
         pendingRestorePages=if(restore) storage.getInt("pages",1).coerceAtLeast(1) else 1
@@ -121,7 +132,7 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                 val loaded=withContext(Dispatchers.IO) { mutex.withLock {
                     if(disposed || expected!=generation) return@withLock null
                     val ranking = prior?.ranking ?: catalog.Ranking(rankingPreferences,frozenRecent,frozenFavorites,
-                        leaf.length,leaf.length,appliedSearch,leaf.start.id.takeIf(String::isNotEmpty)).also { liveRankings.add(it) }
+                        leaf.length,leaf.length,appliedQuery,leaf.start.id.takeIf(String::isNotEmpty)).also { liveRankings.add(it) }
                     val rows=buildList { repeat(requestedPages) { if(ranking.hasMore) addAll(ranking.page()) } }
                     AuralLeafPage((if(more) prior?.rows.orEmpty() else emptyList())+rows,ranking,false,hasMore=ranking.hasMore)
                 } }
@@ -165,10 +176,10 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
             expandedSecondary=(expandedSecondary+activeLeaf).distinct()
         }
     }
-    LaunchedEffect(loadedKey,activeLeaf,activePrimary,pages,search) {
+    LaunchedEffect(loadedKey,activeLeaf,activePrimary,pages,query) {
         if(loadedKey==queryKey) {
             val editor=storage.edit().putString("context",queryKey).putString("leaf",activeLeaf)
-            .putString("primary",activePrimary).putString("search",search)
+            .putString("primary",activePrimary).putString("progressionQuery",Json.encodeToString(query))
             val loaded=pages[activeLeaf]
             if(loaded!=null && !loaded.busy) editor.putInt("pages",((loaded.rows.size+29)/30).coerceAtLeast(1))
             else if(activeLeaf.isEmpty()) editor.putInt("pages",1)
@@ -184,7 +195,7 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
             TextButton(onClick=onAdaptive) { Text("Guided course") }
             if(onContinue!=null) TextButton(onClick=onContinue) { Text("Continue") }
         }
-        OutlinedTextField(search,{search=it},label={Text("Search progressions")},singleLine=true,modifier=Modifier.fillMaxWidth().padding(horizontal=12.dp).testTag("AuralCatalogSearch"))
+        AuralProgressionSearch(query,{ query=it;storage.edit().putString("progressionQuery",Json.encodeToString(it)).apply() },catalog,effective)
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal=12.dp,vertical=6.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
             listOf("relativeMajor" to "Relative major","allModes" to "Mixed Modes","filterMode" to "Filter by mode").forEach { (id,label) ->
                 FilterChip(selected=effective.analysis==id,onClick={if(catalog.supportsModeAnalysis || id=="allModes") onSettingsChange(settings.copy(analysis=id))},
@@ -226,7 +237,7 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                     }
                     if(leaf.id in expandedSecondary) {
                         item(key="review:${leaf.id}") { TextButton(onClick={ onReview(pages[leaf.id]?.rows.orEmpty().take(30).toList()) },
-                            enabled=pages[leaf.id]?.rows?.isNotEmpty()==true && !loadingGroups && search==appliedSearch) {Text("Review this subgroup")} }
+                            enabled=pages[leaf.id]?.rows?.isNotEmpty()==true && !loadingGroups && query==appliedQuery) {Text("Review this subgroup")} }
                         items(displays(leaf),key={it.key}) { entry ->
                             val row=entry.row
                             Row(Modifier.fillMaxWidth().padding(start=(24+minOf(entry.depth,4)*8).dp,end=8.dp,top=4.dp,bottom=4.dp),verticalAlignment=Alignment.CenterVertically) {
@@ -252,7 +263,7 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                             if(page?.busy==true) LinearProgressIndicator(Modifier.fillMaxWidth())
                             page?.error?.let{Text(it,Modifier.padding(16.dp),color=MaterialTheme.colorScheme.error)}
                             if(page?.error!=null) TextButton(onClick={load(leaf,page.rows.isNotEmpty())}) {Text("Retry")}
-                            if(page?.hasMore==true) TextButton(onClick={load(leaf,true)},enabled=page.busy!=true && search==appliedSearch,modifier=Modifier.fillMaxWidth()){Text("More")}
+                            if(page?.hasMore==true) TextButton(onClick={load(leaf,true)},enabled=page.busy!=true && query==appliedQuery,modifier=Modifier.fillMaxWidth()){Text("More")}
                             else if(page?.busy==false && page.rows.isEmpty()) Text("No matching sequences",Modifier.padding(16.dp))
                         }
                     }
