@@ -29,19 +29,38 @@ internal fun SongQueueControls(
     Column(Modifier.fillMaxSize().testTag("SongQueueScreen")) {
         Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement=Arrangement.spacedBy(8.dp)) {
             TextButton(onClick=onBack) { Text("Back") }
-            Text("${if(queue.entries.isEmpty()) 0 else queue.index+1} of ${queue.entries.size}",Modifier.weight(1f).padding(top=12.dp))
-            TextButton(onClick={showQueue=true},enabled=queue.entries.isNotEmpty()) { Text("Queue") }
+            Text(if(queue.started) "${queue.index+1} of ${queue.entries.size}" else "Song examples",
+                Modifier.weight(1f).padding(top=12.dp),style=MaterialTheme.typography.titleMedium)
+            if(queue.started) TextButton(onClick={showQueue=true}) { Text("Queue") }
         }
         Row(Modifier.fillMaxWidth().padding(horizontal=8.dp),horizontalArrangement=Arrangement.SpaceEvenly) {
-            TextButton(onClick={ queue.select(queue.index-1,PlaybackController.isPlaybackRequested) },enabled=queue.index>0) { Text("Previous") }
-            TextButton(onClick={ queue.select(queue.index+1,PlaybackController.isPlaybackRequested) },enabled=queue.index<queue.entries.lastIndex) { Text("Next") }
-            TextButton(onClick={queue.shuffleRemaining()},enabled=queue.entries.size-queue.index>2,
-                modifier=Modifier.testTag("ShuffleQueue")) { Text("Shuffle") }
+            if(queue.started) {
+                TextButton(onClick={ queue.select(queue.index-1,PlaybackController.isPlaybackRequested) },enabled=queue.index>0) { Text("Previous") }
+                TextButton(onClick={ queue.select(queue.index+1,PlaybackController.isPlaybackRequested) },enabled=queue.index<queue.entries.lastIndex) { Text("Next") }
+            }
+            FilterChip(selected=queue.shuffleEnabled,onClick={queue.toggleShuffle()},enabled=queue.entries.size>1,
+                label={Text("Shuffle")},modifier=Modifier.heightIn(min=48.dp).testTag("ShuffleQueue"))
+            Text(if(queue.shuffleEnabled) "Random order" else if(queue.originQuiz) "Popularity order" else "Saved order",
+                Modifier.padding(top=14.dp),style=MaterialTheme.typography.labelMedium)
         }
         queue.notice?.let { Text(it,Modifier.padding(horizontal=16.dp),color=MaterialTheme.colorScheme.onSurfaceVariant) }
         if(queue.loading) { CircularProgressIndicator(Modifier.padding(20.dp)); Text("Finding matching songs…",Modifier.padding(16.dp)) }
         else if(queue.entries.isEmpty()) Text("No matching songs to play or save.",Modifier.padding(16.dp))
-        else Box(Modifier.weight(1f)) { player() }
+        else if(!queue.started) {
+            Row(Modifier.fillMaxWidth().padding(horizontal=16.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                Button(onClick=queue::start,modifier=Modifier.heightIn(min=48.dp).testTag("PlaySongQueue")) {
+                    Text("Play queue")
+                }
+                TextButton(onClick={showSave=true}) { Text("Save playlist") }
+            }
+            LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
+                itemsIndexed(queue.entries) { i, song ->
+                    TextButton(onClick={queue.select(i,true)},modifier=Modifier.fillMaxWidth()) {
+                        Text("${i+1}. ${song.title} — ${song.artist} · ${song.sectionName}",Modifier.fillMaxWidth())
+                    }
+                }
+            }
+        } else Box(Modifier.weight(1f)) { player() }
     }
     if(showQueue) ModalBottomSheet(onDismissRequest={showQueue=false}) {
         Text("Song queue",Modifier.padding(16.dp),style=MaterialTheme.typography.titleLarge)

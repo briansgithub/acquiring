@@ -58,7 +58,12 @@ internal class SongQueueViewModel : ViewModel() {
         private set
     var entries by mutableStateOf(emptyList<QueuedSong>())
         private set
+    private var originalEntries = emptyList<QueuedSong>()
     var index by mutableStateOf(0)
+        private set
+    var started by mutableStateOf(false)
+        private set
+    var shuffleEnabled by mutableStateOf(false)
         private set
     var originQuiz by mutableStateOf(false)
         private set
@@ -85,7 +90,10 @@ internal class SongQueueViewModel : ViewModel() {
         active = true
         loading = true
         entries = emptyList()
+        originalEntries = emptyList()
         index = 0
+        started = false
+        shuffleEnabled = false
         this.originQuiz = originQuiz
         suggestedName = name
         savedPlaylistId = null
@@ -96,9 +104,11 @@ internal class SongQueueViewModel : ViewModel() {
         return generation
     }
 
-    fun finishPreparation(expected: Int, songs: List<QueuedSong>, playlistId: String? = null) {
+    fun finishPreparation(expected: Int, songs: List<QueuedSong>, playlistId: String? = null, shuffled: Boolean = false) {
         if (!active || expected != generation) return
-        entries = songs
+        originalEntries = songs
+        shuffleEnabled = shuffled
+        entries = if (shuffled) songs.shuffled() else songs
         savedPlaylistId = playlistId
         loading = false
         if (songs.isEmpty()) notice = "No matching songs are available."
@@ -112,15 +122,29 @@ internal class SongQueueViewModel : ViewModel() {
     fun showNotice(message: String) { notice = message }
     fun markSaved(id: String) { savedPlaylistId = id; notice = "Playlist saved" }
 
-    fun shuffleRemaining(random: Random = Random.Default) {
-        if (entries.size - index < 3) return
-        entries = entries.take(index + 1) + entries.drop(index + 1).shuffled(random)
+    fun toggleShuffle(random: Random = Random.Default) {
+        if (entries.size < 2) return
+        val current = entries.getOrNull(index)
+        shuffleEnabled = !shuffleEnabled
+        val shuffled = originalEntries.shuffled(random)
+        entries = if (shuffleEnabled) {
+            if (shuffled == originalEntries) shuffled.drop(1) + shuffled.first() else shuffled
+        } else originalEntries
+        index = if (started && current != null) entries.indexOf(current).coerceAtLeast(0) else 0
         savedPlaylistId = null
-        notice = "Remaining songs shuffled"
+        notice = if (shuffleEnabled) "Queue shuffled" else "Original order restored"
+    }
+
+    fun start() {
+        if (entries.isEmpty()) return
+        started = true
+        autoStart = true
+        loadToken = UUID.randomUUID().toString()
     }
 
     fun select(position: Int, resume: Boolean) {
         if (position !in entries.indices) return
+        started = true
         index = position
         unavailableCount = 0
         exhausted = false
@@ -169,6 +193,8 @@ internal class SongQueueViewModel : ViewModel() {
         active = false
         loading = false
         entries = emptyList()
+        originalEntries = emptyList()
+        started = false
         PlaybackController.pause()
     }
 }
