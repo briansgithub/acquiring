@@ -765,16 +765,16 @@ internal fun MainScreen(
                         val song=songs[entry.slug]
                         QueuedSong(entry.slug,song?.displayTitle ?: entry.slug,song?.displayArtist ?: "",
                             entry.sectionId.orEmpty(),entry.sectionName ?: "First section")
-                    }.let { if(shuffle) it.shuffled() else it }
+                    }
                 }
-                songQueue.finishPreparation(expected,entries,if(shuffle)null else playlistId)
+                songQueue.finishPreparation(expected,entries,if(shuffle)null else playlistId,shuffled=shuffle)
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) { songQueue.error(expected,"Could not open this playlist.") }
         }
     }
 
-    LaunchedEffect(songQueue.active,songQueue.loading,songQueue.loadToken,activeDb) {
-        if (!songQueue.active || songQueue.loading || songQueue.entries.isEmpty()) return@LaunchedEffect
+    LaunchedEffect(songQueue.active,songQueue.loading,songQueue.started,songQueue.loadToken,activeDb) {
+        if (!songQueue.active || songQueue.loading || !songQueue.started || songQueue.entries.isEmpty()) return@LaunchedEffect
         val token=songQueue.loadToken
         val entry=songQueue.entries[songQueue.index]
         readyQueueToken=null

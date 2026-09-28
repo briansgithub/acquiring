@@ -38,6 +38,26 @@ after the final code changes. No human listening or extended background/audio-
 focus session was performed; those are useful follow-up checks. This is
 Android-only; the existing iOS validation gate is unchanged.
 
+## Queue-first Examples control — 2026-09-28
+
+The progression action is now a prominent, labeled **Examples** button below
+each playable row, including recursive children. It opens a queue preview
+before playback. The preview lists every matching song in descending
+popularity order, offers Play queue or direct selection of a song, and can
+save the list without first playing it. Shuffle is an on/off control: on
+randomizes the complete order; off restores the original popularity order.
+Toggling during playback keeps the current song playing and moves its queue
+position to match the new order. Saved-playlist queues restore their saved
+order when Shuffle is turned off. The earlier immediate-autoplay and
+unplayed-remainder-only shuffle behavior above is superseded by this section.
+
+Focused `SongQueueTest` and `AuralQuizUiTest` passed, and `assembleDebug`
+passed. The revised APK was installed without clearing Pixel 7a app data.
+On-device accessibility-tree review confirmed that Examples opens the
+227-song queue preview, Shuffle changes its visible order, turning Shuffle
+off restores the popularity order, and Play queue enters active playback.
+No screenshot or human listening check was performed.
+
 ## Current frequency-first browsing — 2026-09-27
 
 The default catalog is one ungrouped list sorted by distinct supporting songs

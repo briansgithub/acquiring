@@ -25,19 +25,46 @@ class SongQueueTest {
         assertTrue(queue.first().sectionId in setOf("section-a","section-b"))
     }
 
-    @Test fun shuffleKeepsCurrentSongAndCompletionAdvancesOnce() {
+    @Test fun queuePreviewsPopularityOrderAndShuffleCanBeTurnedOff() {
         val state=SongQueueViewModel()
         val generation=state.begin(true,"I–V")
         val songs=(0..9).map { QueuedSong("song-$it","Song $it","Artist","section","Section") }
         state.finishPreparation(generation,songs)
+        assertFalse(state.started)
+        assertFalse(state.shuffleEnabled)
+        assertEquals(songs,state.entries)
+        state.toggleShuffle(Random(8))
+        assertTrue(state.shuffleEnabled)
+        assertEquals(songs.toSet(),state.entries.toSet())
+        assertFalse(songs==state.entries)
+        state.toggleShuffle()
+        assertFalse(state.shuffleEnabled)
+        assertEquals(songs,state.entries)
+        state.start()
+        assertTrue(state.started)
         val token=state.loadToken
-        state.shuffleRemaining(Random(8))
-        assertEquals("song-0",state.entries.first().slug)
-        assertEquals(songs.map { it.slug }.toSet(),state.entries.map { it.slug }.toSet())
+        val current=state.entries[state.index]
+        state.toggleShuffle(Random(8))
+        assertEquals(current,state.entries[state.index])
+        assertEquals(token,state.loadToken)
+        state.toggleShuffle()
+        assertEquals(songs,state.entries)
+        assertEquals(current,state.entries[state.index])
         assertTrue(state.completed(token))
         assertFalse(state.completed(token))
         assertEquals(1,state.index)
         state.dismiss()
         assertFalse(state.completed(state.loadToken))
+    }
+
+    @Test fun savedShufflePlayRestoresSavedOrderWhenTurnedOff() {
+        val state=SongQueueViewModel()
+        val songs=(0..5).map { QueuedSong("song-$it","Song $it","Artist","section","Section") }
+        state.finishPreparation(state.begin(false,"Playlist"),songs,shuffled=true)
+        assertTrue(state.shuffleEnabled)
+        state.toggleShuffle()
+        assertFalse(state.shuffleEnabled)
+        assertEquals(songs,state.entries)
+        assertFalse(state.started)
     }
 }

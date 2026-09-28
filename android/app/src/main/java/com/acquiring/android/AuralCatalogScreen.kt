@@ -388,20 +388,26 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                                         Icon(if(open) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight,if(open) "Collapse ${entry.number}" else "Expand ${entry.number}")
                                     }
                                 }
-                                Column(Modifier.weight(1f).clickable(enabled=loadedKey==queryKey && !loadingGroups){onPractice(row.target)}.padding(vertical=12.dp).testTag("AuralPattern-${row.target.id}")) {
-                                    Text(auralRomanSequence(row.target.labels),style=MaterialTheme.typography.titleMedium,maxLines=3)
-                                    Text(if(row.target.view.startsWith("relative_")) "Relative major" else row.target.sourceMode()?.let(::auralModeLabel) ?: "Mode unavailable",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
-                                    Text("${row.length} chords · ${row.globalSongs} songs overall" +
-                                        if(minimumPopularityPercent!=null) " · ${row.songs} matching" else " · ${row.globalOccurrences} uses",
-                                        style=MaterialTheme.typography.bodySmall)
-                                    AuralFamilyProgress(row.target.id,progress)
+                                Column(Modifier.weight(1f)) {
+                                    Column(Modifier.fillMaxWidth().clickable(enabled=loadedKey==queryKey && !loadingGroups){onPractice(row.target)}.padding(vertical=12.dp).testTag("AuralPattern-${row.target.id}")) {
+                                        Text(auralRomanSequence(row.target.labels),style=MaterialTheme.typography.titleMedium,maxLines=3)
+                                        Text(if(row.target.view.startsWith("relative_")) "Relative major" else row.target.sourceMode()?.let(::auralModeLabel) ?: "Mode unavailable",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text("${row.length} chords · ${row.globalSongs} songs overall" +
+                                            if(minimumPopularityPercent!=null) " · ${row.songs} matching" else " · ${row.globalOccurrences} uses",
+                                            style=MaterialTheme.typography.bodySmall)
+                                        AuralFamilyProgress(row.target.id,progress)
+                                    }
+                                    Row(verticalAlignment=Alignment.CenterVertically) {
+                                        Button(onClick={onPlayMatchingSongs(row.target)},
+                                            enabled=loadedKey==queryKey && !loadingGroups && row.songs>0,
+                                            modifier=Modifier.heightIn(min=48.dp).testTag("AuralPlaySongs-${row.target.id}")) {
+                                            Icon(Icons.Default.PlayArrow,contentDescription=null)
+                                            Spacer(Modifier.width(4.dp))
+                                            Text("Examples")
+                                        }
+                                        TextButton(onClick={info=row;evidence="Loading coverage…";scope.launch{evidence=try{withContext(Dispatchers.IO){catalog.evidence(row.target)}}catch(_:Exception){"Coverage unavailable for this snapshot."}}}){Text("ⓘ")}
+                                    }
                                 }
-                                IconButton(onClick={onPlayMatchingSongs(row.target)},
-                                    enabled=loadedKey==queryKey && !loadingGroups && row.songs>0,
-                                    modifier=Modifier.size(48.dp).testTag("AuralPlaySongs-${row.target.id}")) {
-                                    Icon(Icons.Default.PlayArrow,contentDescription="Play all matching songs for ${auralRomanSequence(row.target.labels)}")
-                                }
-                                TextButton(onClick={info=row;evidence="Loading coverage…";scope.launch{evidence=try{withContext(Dispatchers.IO){catalog.evidence(row.target)}}catch(_:Exception){"Coverage unavailable for this snapshot."}}}){Text("ⓘ")}
                             }
                             Divider()
                         }
