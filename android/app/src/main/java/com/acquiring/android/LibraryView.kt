@@ -142,7 +142,8 @@ fun LibraryView(
     onSongClick: (SongBrowseRow) -> Unit,
     onOpenSettings: () -> Unit,
     settingsUpdateAvailable: Boolean = false,
-    onOpenAuralQuiz: () -> Unit = {}
+    onOpenAuralQuiz: () -> Unit = {},
+    onPlayPlaylist: (String, Boolean) -> Unit = { _, _ -> }
 ) {
     var searchScope by rememberSaveable { mutableStateOf(LibrarySearchScope.SONGS) }
     var searchFocused by remember { mutableStateOf(false) }
@@ -177,7 +178,8 @@ fun LibraryView(
             PlaylistsSection(
                 playlistDao = playlistDao,
                 songDao = activeDb.songDao(),
-                onSongClick = onSongClick
+                onSongClick = onSongClick,
+                onPlayPlaylist = onPlayPlaylist
             )
         }
         

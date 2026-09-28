@@ -91,6 +91,18 @@ class PlaylistDaoTest {
     }
 
     @Test
+    fun savedQueueRetainsSongOrderAndMatchingSections() = runBlocking {
+        val playlist=Playlist("queue-1","I–V songs",false,1L)
+        dao.saveGeneratedPlaylist(playlist,listOf(
+            PlaylistEntry(playlist.id,"popular",2L,0,"section-b","Verse"),
+            PlaylistEntry(playlist.id,"less-popular",2L,1,"section-a","Chorus")
+        ))
+        assertEquals(listOf("popular","less-popular"),dao.getSlugsIn(playlist.id))
+        assertEquals(listOf("section-b","section-a"),dao.getEntriesIn(playlist.id).map { it.sectionId })
+        assertEquals(listOf(0,1),dao.getEntriesIn(playlist.id).map { it.position })
+    }
+
+    @Test
     fun membershipIsScopedToItsOwnPlaylist() = runBlocking {
         seedFavorites()
         dao.insertPlaylist(Playlist("practice", "Practice", isBuiltIn = false, createdAt = 2_000L))

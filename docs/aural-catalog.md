@@ -1,5 +1,43 @@
 # Aural Quiz catalog: Android human-testing release
 
+## Progression song queues — implementation started 2026-09-28
+
+Starting from clean `main` at `1c95ef0b`, implementing the approved Android
+progression queue and fixed saved-playlist plan on `codex/aural-song-queues`.
+No uncommitted or untracked files were present. Prior Android builds and JVM
+checks passed at `ee37a312`; this feature needs its own engine, migration,
+queue, and Pixel validation. Work stays in the primary checkout; the separate
+iOS work remains outside this change. Next: add distinct matching-section
+selection, play-once completion, queue UI, and durable playlist entries.
+
+## Progression song queues — validated 2026-09-28
+
+The Android progression rows, including recursive children, now have a separate
+Play matching songs button. The queue includes each eligible supporting song
+once, chooses one random matching section per song, and defaults to descending
+song-popularity order. Shuffle reorders only the unplayed remainder. The player
+opens immediately, loads song data on demand, starts automatically, and advances
+after the selected section's final audio drains. Previous, Next, and the Queue
+sheet preserve the current play/pause intent. A queue can be named and saved as
+an ordered snapshot; Library → Playlists offers Play and Shuffle play. Song
+lookup uses the catalog section hash, with a unique-name fallback for an older
+source section whose identity changed. Missing or ambiguous entries are skipped
+with a visible notice, not substituted. Returning from a generated queue
+restores the Aural Quiz browse state. The user-data database moves from schema
+3 to 4 without clearing Favorites or legacy playlists; their prior ordering is
+preserved.
+
+On Pixel 7a `3C081JEHN14930`, a 227-song progression queue loaded, began
+playback, advanced automatically, saved a 227-entry playlist without pausing,
+and reopened it from Library. Back returned to the original Quiz browse row.
+Two full-catalog device tests passed: complete membership beyond one browse
+page, and safe section resolution for 30 sampled songs. The final Debug app
+was installed again without clearing app data and launched. The full Android
+`testDebugUnitTest`, `assembleDebug`, and `assembleDebugAndroidTest` run passed
+after the final code changes. No human listening or extended background/audio-
+focus session was performed; those are useful follow-up checks. This is
+Android-only; the existing iOS validation gate is unchanged.
+
 ## Current frequency-first browsing — 2026-09-27
 
 The default catalog is one ungrouped list sorted by distinct supporting songs

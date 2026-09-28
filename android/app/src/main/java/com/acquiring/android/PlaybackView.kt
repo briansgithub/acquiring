@@ -198,7 +198,10 @@ fun PlaybackTab(
     modifier: Modifier = Modifier,
     onTransportActions: (Boolean, Boolean, () -> Unit, () -> Unit) -> Unit = { _, _, _, _ -> },
     onPersistentPracticeActions: (Boolean, () -> Unit, () -> Unit) -> Unit = { _, _, _ -> },
-    initialPassage: Pair<Double,Double>? = null
+    initialPassage: Pair<Double,Double>? = null,
+    playOnceKey: String? = null,
+    autoStart: Boolean = false,
+    onSectionComplete: (String) -> Unit = {}
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("PlaybackTab requires an exclusive persistent pitch source")
@@ -397,7 +400,12 @@ fun PlaybackTab(
         PlaybackController.seek(playbackBeat() - beatsToSkip, resume = isPlaying)
     }
 
-    LaunchedEffect(timeline, sessionKey) {
+    val latestSectionComplete by rememberUpdatedState(onSectionComplete)
+    LaunchedEffect(playbackState) {
+        if (playbackState.completionKey == playOnceKey && playOnceKey != null &&
+            PlaybackController.isCurrentCompletion(playbackState)) latestSectionComplete(playOnceKey)
+    }
+    LaunchedEffect(timeline, sessionKey, playOnceKey) {
         cancelInertia()
         intervalPreviewJob?.cancel()
         AudioEngine.stopPreviewPlayback()
@@ -412,9 +420,9 @@ fun PlaybackTab(
         wasPlayingBeforeScrub = false
         scrubBeat = timeline.startBeat
         PlaybackController.load(
-            identity = sessionKey,
-            newTimeline = timeline,
-            continuePlaying = continuePlaying
+            identity = playOnceKey ?: sessionKey,
+            newTimeline = timeline.copy(completionKey = playOnceKey),
+            continuePlaying = continuePlaying || autoStart
         )
         initialPassage?.let { PlaybackController.seek(it.first.coerceIn(timeline.startBeat,timeline.endBeat),resume=false) }
     }

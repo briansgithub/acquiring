@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -70,6 +71,7 @@ private fun AuralCatalogChoice(label: String, value: String, options: List<Pair<
 internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSettings, session: AuralSession,
     onPractice: (AuralPatternTarget) -> Unit, onAdaptive: () -> Unit, onContinue: (() -> Unit)?, modifier: Modifier = Modifier,
     onReview: (List<AuralCatalogRow>) -> Unit = {}, onSettingsChange: (AuralExampleSettings) -> Unit = {},
+    onPlayMatchingSongs: (AuralPatternTarget) -> Unit = {},
     minimumPopularityPercent: Int? = null, onMinimumPopularityChange: (Int) -> Unit = {},
     minimumCoreLength: Int = 2, onMinimumCoreLengthChange: (Int) -> Unit = {},
     browseStorageName: String = "aural_catalog_browse") {
@@ -393,6 +395,11 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                                         if(minimumPopularityPercent!=null) " · ${row.songs} matching" else " · ${row.globalOccurrences} uses",
                                         style=MaterialTheme.typography.bodySmall)
                                     AuralFamilyProgress(row.target.id,progress)
+                                }
+                                IconButton(onClick={onPlayMatchingSongs(row.target)},
+                                    enabled=loadedKey==queryKey && !loadingGroups && row.songs>0,
+                                    modifier=Modifier.size(48.dp).testTag("AuralPlaySongs-${row.target.id}")) {
+                                    Icon(Icons.Default.PlayArrow,contentDescription="Play all matching songs for ${auralRomanSequence(row.target.labels)}")
                                 }
                                 TextButton(onClick={info=row;evidence="Loading coverage…";scope.launch{evidence=try{withContext(Dispatchers.IO){catalog.evidence(row.target)}}catch(_:Exception){"Coverage unavailable for this snapshot."}}}){Text("ⓘ")}
                             }

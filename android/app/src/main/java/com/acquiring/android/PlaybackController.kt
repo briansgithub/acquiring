@@ -41,6 +41,7 @@ internal object PlaybackController {
     val state: StateFlow<PlaybackState> = mutableState.asStateFlow()
 
     val isPlaybackRequested: Boolean get() = engine?.isPlaybackRequested == true
+    fun isCurrentCompletion(state: PlaybackState): Boolean = engine?.isCurrentCompletion(state) == true
 
     private val becomingNoisy = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {

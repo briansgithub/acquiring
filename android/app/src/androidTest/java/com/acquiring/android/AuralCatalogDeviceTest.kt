@@ -18,10 +18,54 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.mutableStateOf
+import androidx.room.Room
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 class AuralCatalogDeviceTest {
     @get:Rule val compose=createComposeRule()
     private class Store:AuralPersistence { var raw:String?=null; override fun read()=raw;override fun write(value:String):Boolean { raw=value;return true } }
+    @Test fun progressionQueueCoversEveryEligibleSongBeyondFirstBrowsePage() {
+        val context=ApplicationProvider.getApplicationContext<Context>()
+        AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
+            val ranking=catalog.Ranking(AuralExampleSettings(),emptyList(),emptySet(),minimumPopularityPercent=80)
+            val row=try { ranking.page(1).single() } finally { ranking.close() }
+            val expected=catalog.songs(row.target,80).map { it.id }.toSet()
+            val candidates=catalog.queueCandidates(row.target)
+            val queue=orderedQueue(candidates,80,kotlin.random.Random(8))
+            assertTrue("Fixture should exercise more than one page of songs",expected.size>30)
+            assertEquals(expected,queue.map { it.slug }.toSet())
+            assertEquals(expected.size,queue.size)
+            assertTrue(queue.zipWithNext().all { (a,b) ->
+                val sa=candidates.first { it.song.slug==a.slug }.score ?: -1.0
+                val sb=candidates.first { it.song.slug==b.slug }.score ?: -1.0
+                sa>=sb
+            })
+        }
+    }
+    @Test fun queueSectionReferencesResolveAgainstSongLibrary() = runBlocking {
+        val context=ApplicationProvider.getApplicationContext<Context>()
+        val db=Room.databaseBuilder(context,AppDatabase::class.java,AppDatabase.DB_NAME)
+            .addMigrations(AppDatabase.MIGRATION_1_2,AppDatabase.MIGRATION_2_3).build()
+        try {
+            AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
+                val rank=catalog.Ranking(AuralExampleSettings(),emptyList(),emptySet(),minimumPopularityPercent=80)
+                val target=try { rank.page(1).single().target } finally { rank.close() }
+                val entries=orderedQueue(catalog.queueCandidates(target),80)
+                var exact=0
+                val resolvable=entries.take(30).count { entry ->
+                    val song=db.songDao().getSongBySlug(entry.slug)
+                    val sections=song?.dataBlob?.let { blob -> runCatching {
+                        HooktheoryDataCompat.migrateSections(Json { ignoreUnknownKeys=true }.decodeFromString<Map<String,ExtractedSection>>(DataUtils.decompress(blob)))
+                    }.onFailure { Log.i("AuralQueueResolve","decode ${entry.slug}: ${it.javaClass.simpleName}: ${it.message?.take(160)}") }.getOrNull() }
+                    if(sections?.entries?.any { (key,section) -> auralSectionIdentity(entry.slug,key,section)==entry.sectionId }==true) exact++
+                    sections?.let { resolveQueuedSection(entry.slug,entry,it) }!=null
+                }
+                assertEquals("Every sampled section should resolve without ambiguity",30,resolvable)
+                assertTrue("Stable identities should resolve sampled sections",exact>0)
+            }
+        } finally { db.close() }
+    }
     @Test fun warmCatalogReusesReaderAndHidesUnmatchedGroups() = runBlocking {
         val context=ApplicationProvider.getApplicationContext<Context>()
         val store=AuralCatalogStore.get(context)

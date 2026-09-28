@@ -42,7 +42,10 @@ data class Playlist(
 data class PlaylistEntry(
     val playlistId: String,
     val slug: String,
-    val addedAt: Long
+    val addedAt: Long,
+    val position: Int? = null,
+    val sectionId: String? = null,
+    val sectionName: String? = null
 )
 
 /** A playlist plus its size, for the collapsible section's headings. */

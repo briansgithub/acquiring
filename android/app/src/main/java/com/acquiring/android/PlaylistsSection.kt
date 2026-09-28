@@ -23,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,6 +63,7 @@ fun PlaylistsSection(
     playlistDao: PlaylistDao,
     songDao: SongDao,
     onSongClick: (SongBrowseRow) -> Unit,
+    onPlayPlaylist: (String, Boolean) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
     var isSectionExpanded by rememberSaveable { mutableStateOf(true) }
@@ -213,6 +215,10 @@ fun PlaylistsSection(
                     }
 
                     if (isPlaylistExpanded) {
+                        if(summary.songCount>0) Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                            TextButton(onClick={onPlayPlaylist(summary.id,false)}) { Text("Play") }
+                            TextButton(onClick={onPlayPlaylist(summary.id,true)}) { Text("Shuffle play") }
+                        }
                         when {
                             loadError != null -> Text(
                                 text = loadError ?: "Unable to load this playlist",

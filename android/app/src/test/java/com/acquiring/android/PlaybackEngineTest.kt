@@ -128,6 +128,34 @@ class PlaybackEngineTest {
     }
 
     @Test
+    fun renderer_playOnceStopsAtEndInsteadOfLooping() {
+        val timeline=PlaybackTimeline(endBeat=1.5,
+            events=listOf(event(7,1.0,1.1,PlaybackAudioLayer.MELODY,60)),completionKey="entry-1")
+        val renderer=PlaybackPcmRenderer(timeline,config(),sampleRate=1_000)
+        val rendered=renderer.renderInto(ShortArray(1_100))
+        assertEquals(listOf(0),rendered.startedEvents.map { it.frameOffset })
+        assertEquals(1.5,renderer.currentBeat,0.0)
+        assertTrue(renderer.finished)
+    }
+
+    @Test
+    fun engine_signalsCompletionOnlyAfterWrittenAudioDrains() {
+        val sink=FakeSink(blockAfterPlay=true)
+        val engine=PlaybackEngine(config(),sampleRate=1_000) { sink }
+        try {
+            engine.load(PlaybackTimeline(endBeat=1.05,events=emptyList(),completionKey="queue-entry"),true)
+            awaitPhase(engine,PlaybackPhase.PLAYING)
+            assertFalse(engine.state.value.phase==PlaybackPhase.COMPLETED)
+            sink.advancePlaybackHeadToWritten()
+            awaitPhase(engine,PlaybackPhase.COMPLETED)
+            assertEquals("queue-entry",engine.state.value.completionKey)
+            assertTrue(engine.isCurrentCompletion(engine.state.value))
+            engine.pause()
+            assertFalse(engine.isCurrentCompletion(engine.state.value))
+        } finally { sink.unblockWrites();engine.release() }
+    }
+
+    @Test
     fun renderer_seekToEndRemainsAtEndUntilRenderingResumes() {
         val timeline = PlaybackTimeline(
             endBeat = 4.0,
@@ -462,5 +490,6 @@ class PlaybackEngineTest {
         }
 
         fun unblockWrites() = writeGate.countDown()
+        fun advancePlaybackHeadToWritten() { playedFrames.set(writtenFrames.get()) }
     }
 }

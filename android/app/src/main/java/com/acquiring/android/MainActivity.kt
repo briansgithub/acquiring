@@ -115,6 +115,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
     private lateinit var userDb: UserDataDatabase
     private val songOctaveOffsetViewModel by viewModels<SongOctaveOffsetViewModel>()
+    private val songQueueViewModel by viewModels<SongQueueViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,7 +141,8 @@ class MainActivity : ComponentActivity() {
         userDb = Room.databaseBuilder(
             applicationContext,
             UserDataDatabase::class.java, UserDataDatabase.DB_NAME
-        ).addMigrations(UserDataDatabase.MIGRATION_1_2, UserDataDatabase.MIGRATION_2_3).build()
+        ).addMigrations(UserDataDatabase.MIGRATION_1_2, UserDataDatabase.MIGRATION_2_3,
+            UserDataDatabase.MIGRATION_3_4).build()
         songOctaveOffsetViewModel.attachDao(userDb.songOctaveOffsetDao())
 
         val neutralContainer = Color(0xFF3A3A3A)
@@ -183,7 +185,7 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     } else {
-                        MainScreen(db, userDb, songOctaveOffsetViewModel)
+                        MainScreen(db, userDb, songOctaveOffsetViewModel, songQueueViewModel)
                     }
                 }
             }
@@ -207,7 +209,8 @@ class MainActivity : ComponentActivity() {
 internal fun MainScreen(
     db: AppDatabase,
     userDb: UserDataDatabase,
-    songOctaveOffsetViewModel: SongOctaveOffsetViewModel
+    songOctaveOffsetViewModel: SongOctaveOffsetViewModel,
+    songQueue: SongQueueViewModel = remember { SongQueueViewModel() }
 ) {
     var activeDb by remember { mutableStateOf(db) }
     val searchFocusManager = LocalFocusManager.current
@@ -242,6 +245,8 @@ internal fun MainScreen(
     // existing quiz state rather than the Library. The passage also marks the
     // exact source range inside the ordinary Playback screen.
     var auralPlaybackPassage by remember { mutableStateOf<AuralSourcePassage?>(null) }
+    val auralScreenState = rememberSaveableStateHolder()
+    var readyQueueToken by remember { mutableStateOf<String?>(null) }
     var timelineFrameRate by remember {
         mutableStateOf(TimelineFrameRateStore.preference)
     }
@@ -272,11 +277,13 @@ internal fun MainScreen(
     var isTitlePaging by remember { mutableStateOf(false) }
     var isArtistPaging by remember { mutableStateOf(false) }
     var browseOpenJob by remember { mutableStateOf<Job?>(null) }
+    var queuePreparationJob by remember { mutableStateOf<Job?>(null) }
     var catalogAutoInstallStarted by remember { mutableStateOf(false) }
     var playUpdateStatus by remember { mutableStateOf(PlayUpdateStatus.UNAVAILABLE) }
     
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
+    val queueStore = remember(context) { AuralCatalogStore.get(context) }
     LaunchedEffect(Unit) {
         // Let the home screen draw before reading the progression index on the I/O dispatcher.
         withFrameNanos { }
@@ -484,7 +491,18 @@ internal fun MainScreen(
     val returnToParent = {
         browseOpenJob?.cancel()
         browseOpenJob = null
-        if (auralPlaybackPassage != null && selectedSongSections != null) {
+        if (songQueue.active) {
+            queuePreparationJob?.cancel()
+            queuePreparationJob = null
+            val returnToQuiz = songQueue.originQuiz
+            songQueue.dismiss()
+            selectedSong = null
+            selectedSongSections = null
+            selectedSectionId = null
+            readyQueueToken = null
+            isShowingPlayback = false
+            isShowingAuralQuiz = returnToQuiz
+        } else if (auralPlaybackPassage != null && selectedSongSections != null) {
             PlaybackController.pause()
             AudioEngine.stopAllPlayback()
             persistentPlaybackPitchSource.stop()
@@ -526,7 +544,7 @@ internal fun MainScreen(
 
     // Match the visible Back control while a selected song or artist is open.
     BackHandler(
-        enabled = isShowingAuralQuiz || isShowingSettings || selectedSongSections != null || selectedArtistSongs != null || isShowingAllSongs
+        enabled = songQueue.active || isShowingAuralQuiz || isShowingSettings || selectedSongSections != null || selectedArtistSongs != null || isShowingAllSongs
     ) {
         returnToParent()
     }
@@ -596,6 +614,11 @@ internal fun MainScreen(
     }
 
     val openSong: (Song) -> Unit = { song ->
+        if (songQueue.active) {
+            queuePreparationJob?.cancel()
+            queuePreparationJob = null
+            songQueue.dismiss()
+        }
         // Opening a song is a new load even if it happens to be the song that
         // was open previously, so its tessitura session starts unadjusted.
         songOctaveOffsetViewModel.clearSession()
@@ -705,6 +728,83 @@ internal fun MainScreen(
         true
     }
 
+    val startProgressionQueue: (AuralPatternTarget, Int) -> Unit = { target, cutoff ->
+        queuePreparationJob?.cancel()
+        val shortName=target.labels.take(4).joinToString(" → ") + if(target.labels.size>4) "…" else ""
+        val expected = songQueue.begin(originQuiz=true, name="Songs with $shortName")
+        PlaybackController.pause()
+        selectedSong = null
+        selectedSongSections = null
+        readyQueueToken = null
+        isShowingAuralQuiz = false
+        queuePreparationJob = scope.launch {
+            var lease: AuralPreparedResource<AuralCatalog>.Lease? = null
+            try {
+                lease = withContext(Dispatchers.IO) { queueStore.acquire() }
+                val entries = withContext(Dispatchers.IO) { orderedQueue(lease.value.queueCandidates(target),cutoff) }
+                songQueue.finishPreparation(expected,entries)
+            } catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: Exception) { songQueue.error(expected,"Could not prepare matching songs. Try again.") }
+            finally { lease?.release() }
+        }
+    }
+
+    val startSavedQueue: (String, Boolean) -> Unit = { playlistId, shuffle ->
+        queuePreparationJob?.cancel()
+        val expected = songQueue.begin(originQuiz=false, name="Playlist")
+        PlaybackController.pause()
+        selectedSong = null
+        selectedSongSections = null
+        readyQueueToken = null
+        queuePreparationJob = scope.launch {
+            try {
+                val entries = withContext(Dispatchers.IO) {
+                    val stored=playlistDao.getEntriesIn(playlistId)
+                    val songs=activeDb.songDao().getBrowseSongsBySlugs(stored.map { it.slug }).associateBy { it.slug }
+                    stored.map { entry ->
+                        val song=songs[entry.slug]
+                        QueuedSong(entry.slug,song?.displayTitle ?: entry.slug,song?.displayArtist ?: "",
+                            entry.sectionId.orEmpty(),entry.sectionName ?: "First section")
+                    }.let { if(shuffle) it.shuffled() else it }
+                }
+                songQueue.finishPreparation(expected,entries,if(shuffle)null else playlistId)
+            } catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: Exception) { songQueue.error(expected,"Could not open this playlist.") }
+        }
+    }
+
+    LaunchedEffect(songQueue.active,songQueue.loading,songQueue.loadToken,activeDb) {
+        if (!songQueue.active || songQueue.loading || songQueue.entries.isEmpty()) return@LaunchedEffect
+        val token=songQueue.loadToken
+        val entry=songQueue.entries[songQueue.index]
+        readyQueueToken=null
+        PlaybackController.pause()
+        try {
+            val loaded=withContext(Dispatchers.IO) {
+                val song=activeDb.songDao().getSongBySlug(entry.slug) ?: return@withContext null
+                val blob=song.dataBlob ?: return@withContext null
+                song to decodeSongSections(blob)
+            }
+            if (token != songQueue.loadToken || !songQueue.active) return@LaunchedEffect
+            val song=loaded?.first
+            val sections=loaded?.second
+            val requestedSection=songQueue.sectionOverride ?: entry.sectionId
+            val sectionId=sections?.let { resolveQueuedSection(entry.slug,entry.copy(sectionId=requestedSection),it) }
+            if(song==null || sections==null || sectionId==null) {
+                songQueue.unavailable(token,"Skipped ${entry.title}: song or saved section unavailable.")
+                return@LaunchedEffect
+            }
+            selectedSong=song
+            selectedSongSections=sections
+            selectedSectionId=sectionId
+            auralPlaybackPassage=null
+            isShowingPlayback=true
+            readyQueueToken=token
+            HistoryManager.addSong(context,song.slug)
+        } catch (cancelled: CancellationException) { throw cancelled }
+        catch (_: Exception) { songQueue.unavailable(token,"Skipped ${entry.title}: could not load song.") }
+    }
+
     val settingsContent: @Composable (() -> Unit) -> Unit = { closeSettings ->
         AppSettingsScreen(
             defaultInstrument = defaultInstrument,
@@ -744,11 +844,48 @@ internal fun MainScreen(
                     if (isShowingPlayback || isShowingAuralQuiz) Modifier else Modifier.padding(16.dp)
                 )
         ) {
-            if (isShowingAuralQuiz) {
-                AuralQuizScreen(onBack = { isShowingAuralQuiz = false },
+            if (songQueue.active) {
+                SongQueueControls(songQueue,playlistDao,returnToParent) {
+                    if(readyQueueToken==songQueue.loadToken && selectedSong!=null && selectedSongSections!=null) {
+                        PlaybackDestination(
+                            song=selectedSong!!,sections=selectedSongSections!!,selectedSectionId=selectedSectionId,
+                            onSectionChange={ songQueue.changeSection(it,PlaybackController.isPlaybackRequested) },
+                            currentWaveform=currentWaveform,onWaveformChange={AppInstrumentSession.selectForSession(it)},
+                            globalTranspose=globalTranspose,playbackTempoPercent=playbackTempoPercent,
+                            onPlaybackTempoPercentChange={playbackTempoPercent=it},
+                            playbackArpeggioOptionIndex=playbackArpeggioOptionIndex,
+                            onPlaybackArpeggioOptionIndexChange={playbackArpeggioOptionIndex=it},
+                            onTransposeChange={globalTranspose=it;AudioEngine.globalTranspose=it},
+                            onArtistClick={ artistName ->
+                                queuePreparationJob?.cancel();queuePreparationJob=null
+                                songQueue.dismiss();selectedSongSections=null;selectedSong=null;isShowingPlayback=false
+                                scope.launch { selectedArtistSongs=activeDb.songDao().getBrowseSongsByArtist(artistName)
+                                    selectedArtistName=canonicalArtistName(artistName) }
+                            },
+                            onShowSongInfo={ queuePreparationJob?.cancel();queuePreparationJob=null
+                                songQueue.dismiss();isShowingPlayback=false },
+                            onSingingTargetsRequested={ request ->
+                                singingTargetRequestId++;singingTargetRequest=request.copy(requestId=singingTargetRequestId)
+                            },
+                            octaveOffset=octaveOffset,persistentPitchSource=persistentPlaybackPitchSource,
+                            isFavorite=isSelectedSongFavorite,onToggleFavorite=toggleSelectedSongFavorite,
+                            singingDockExpanded=singingDockExpanded,onBack=returnToParent,
+                            stopPersistentSignal=stopPersistentTick,
+                            onPersistentMonitoringChange={isPersistentMonitoring=it},
+                            onRequestCollapseDock={singingCollapseTick++},
+                            playOnceKey=songQueue.loadToken,autoStart=songQueue.autoStart,
+                            onSectionComplete={songQueue.completed(it)}
+                        )
+                    } else if(!songQueue.loading && songQueue.entries.isNotEmpty() && !songQueue.exhausted) {
+                        CircularProgressIndicator(Modifier.padding(24.dp))
+                    }
+                }
+            } else if (isShowingAuralQuiz) {
+                auralScreenState.SaveableStateProvider("aural-quiz") { AuralQuizScreen(onBack = { isShowingAuralQuiz = false },
                     defaultInstrument = defaultInstrument, settingsContent = settingsContent,
                     loadFavoriteSongs = { playlistDao.getSlugsIn(PlaylistIds.FAVORITES).toSet() },
-                    openFullPlayback = openAuralFullSongPlayback)
+                    openFullPlayback = openAuralFullSongPlayback,
+                    onPlayMatchingSongs=startProgressionQueue) }
             } else if (isShowingSettings) {
                 settingsContent { isShowingSettings = false }
             } else if (selectedSongSections == null) {
@@ -958,6 +1095,7 @@ internal fun MainScreen(
                     searchResult = searchResult,
                     allSongs = allSongs,
                     onSongClick = openBrowseSong,
+                    onPlayPlaylist = startSavedQueue,
                     onOpenSettings = { isShowingSettings = true },
                     onOpenAuralQuiz = {
                         PlaybackController.pause()
