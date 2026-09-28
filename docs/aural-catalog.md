@@ -551,3 +551,14 @@ Compose state fixed that. Subgroup headers now report loading, errors, and
 loaded-row counts. The app was installed without clearing its catalog. Human
 review of narrow width, large text, and visual spacing is still pending; no
 screenshots were taken. No commit, push, merge, or release was performed.
+
+## Merged Android catalog work — 2026-09-28
+
+The complete Android Aural Quiz catalog series was fast-forwarded from
+`codex/aural-mode-analysis` into `main` and published to `origin/main` at
+`ee37a31293cd1ea1b9c9c67165c2c9e1279a8d22` (**Complete Aural Quiz catalog
+browsing controls**). The branch contained the prior six catalog commits plus
+that validated final checkpoint. The full Android JVM suite and both Debug APK
+builds passed at the final checkpoint; the affected Node catalog/export tests
+passed 7/7. The separate iOS worktree remains unmerged and its Mac validation
+gate is unchanged. The clean Android sibling worktree can now be retired.
