@@ -561,4 +561,7 @@ browsing controls**). The branch contained the prior six catalog commits plus
 that validated final checkpoint. The full Android JVM suite and both Debug APK
 builds passed at the final checkpoint; the affected Node catalog/export tests
 passed 7/7. The separate iOS worktree remains unmerged and its Mac validation
-gate is unchanged. The clean Android sibling worktree can now be retired.
+gate is unchanged. The Android worktree registration and local feature branch
+were retired after confirming reachability. Windows left a non-Git residual
+folder at its former path because of a path-length deletion error; it was left
+untouched rather than force-deleting filesystem contents.
