@@ -108,32 +108,34 @@ object AuralCatalogDownloader {
                 }
                 validate(staged.associate { it.first.name to it.second }, manifest.snapshotId)
                 onProgress("Installing progressions…")
-                val backups = mutableMapOf<File, File>()
-                val replacements = mutableListOf<File>()
-                try {
-                    staged.forEach { (entry, _) ->
-                        val destination = File(context.filesDir, entry.name)
-                        val backup = File(context.filesDir, "${entry.name}.backup")
-                        check(!backup.exists()) { "An earlier catalog backup needs recovery" }
-                        if (destination.exists()) {
-                            check(destination.renameTo(backup)) { "Could not preserve installed progression catalog" }
-                            backups[destination] = backup
+                AuralCatalogStore.get(context).replaceInstalled {
+                    val backups = mutableMapOf<File, File>()
+                    val replacements = mutableListOf<File>()
+                    try {
+                        staged.forEach { (entry, _) ->
+                            val destination = File(context.filesDir, entry.name)
+                            val backup = File(context.filesDir, "${entry.name}.backup")
+                            check(!backup.exists()) { "An earlier catalog backup needs recovery" }
+                            if (destination.exists()) {
+                                check(destination.renameTo(backup)) { "Could not preserve installed progression catalog" }
+                                backups[destination] = backup
+                            }
                         }
+                        staged.forEach { (entry, file) ->
+                            val destination = File(context.filesDir, entry.name)
+                            check(file.renameTo(destination)) { "Could not install progression catalog" }
+                            replacements += destination
+                        }
+                        backups.values.forEach { it.delete() }
+                    } catch (error: Throwable) {
+                        var recoveryFailed = false
+                        replacements.forEach { if (it.exists() && !it.delete()) recoveryFailed = true }
+                        backups.forEach { (destination, backup) ->
+                            if (backup.exists() && !backup.renameTo(destination)) recoveryFailed = true
+                        }
+                        if (recoveryFailed) throw IllegalStateException("Catalog update failed; previous files remain in .backup for recovery", error)
+                        throw error
                     }
-                    staged.forEach { (entry, file) ->
-                        val destination = File(context.filesDir, entry.name)
-                        check(file.renameTo(destination)) { "Could not install progression catalog" }
-                        replacements += destination
-                    }
-                    backups.values.forEach { it.delete() }
-                } catch (error: Throwable) {
-                    var recoveryFailed = false
-                    replacements.forEach { if (it.exists() && !it.delete()) recoveryFailed = true }
-                    backups.forEach { (destination, backup) ->
-                        if (backup.exists() && !backup.renameTo(destination)) recoveryFailed = true
-                    }
-                    if (recoveryFailed) throw IllegalStateException("Catalog update failed; previous files remain in .backup for recovery", error)
-                    throw error
                 }
                 true
             } catch (error: Throwable) {

@@ -56,21 +56,21 @@ export async function installAndroid({ adb, serial, manifest, popularity, eviden
     if (!resume) run('shell','run-as',app,'dd','if=/dev/null',`of=${stage}`);
     const chunkBytes=16*1024*1024;
     for (let offset=resume;offset<size;offset+=chunkBytes) {
-      const child=spawn(adb,['-s',serial,'exec-in','run-as',app,'dd',`of=${stage}`,'bs=4096',`seek=${offset/4096}`,'conv=notrunc'],
-        {stdio:['pipe','pipe','pipe'],windowsHide:true});
-      let output='',error='';
-      child.stdout.setEncoding('utf8').on('data',chunk=>{output=(output+chunk).slice(-4096);});
-      child.stderr.setEncoding('utf8').on('data',chunk=>{error=(error+chunk).slice(-4096);});
-      const finished=new Promise((resolve,reject)=>{
-        child.on('error',reject);
-        child.on('close',code=>code===0?resolve():reject(Error(error||output||`adb exited ${code}`)));
-      });
-      await Promise.all([pipeline(fs.createReadStream(f.file,{start:offset,end:Math.min(size,offset+chunkBytes)-1}),child.stdin),finished]);
       const expected=Math.min(size,offset+chunkBytes);
-      let actual=Number(run('shell','run-as',app,'stat','-c','%s',stage));
-      if (actual!==expected) {
-        await new Promise(resolve=>setTimeout(resolve,200));
+      let actual=offset;
+      for (let attempt=0;attempt<3 && actual!==expected;attempt++) {
+        const child=spawn(adb,['-s',serial,'exec-in','run-as',app,'dd',`of=${stage}`,'bs=4096',`seek=${offset/4096}`,'conv=notrunc'],
+          {stdio:['pipe','pipe','pipe'],windowsHide:true});
+        let output='',error='';
+        child.stdout.setEncoding('utf8').on('data',chunk=>{output=(output+chunk).slice(-4096);});
+        child.stderr.setEncoding('utf8').on('data',chunk=>{error=(error+chunk).slice(-4096);});
+        const finished=new Promise((resolve,reject)=>{
+          child.on('error',reject);
+          child.on('close',code=>code===0?resolve():reject(Error(error||output||`adb exited ${code}`)));
+        });
+        await Promise.all([pipeline(fs.createReadStream(f.file,{start:offset,end:expected-1}),child.stdin),finished]);
         actual=Number(run('shell','run-as',app,'stat','-c','%s',stage));
+        if(actual!==expected) await new Promise(resolve=>setTimeout(resolve,200));
       }
       if (actual!==expected) throw Error(`Short private transfer at byte ${offset}: expected ${expected}, received ${actual}`);
     }

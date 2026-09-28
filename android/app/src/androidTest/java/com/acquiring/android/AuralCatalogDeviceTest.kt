@@ -17,10 +17,45 @@ import kotlinx.coroutines.runBlocking
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.mutableStateOf
 
 class AuralCatalogDeviceTest {
     @get:Rule val compose=createComposeRule()
     private class Store:AuralPersistence { var raw:String?=null; override fun read()=raw;override fun write(value:String):Boolean { raw=value;return true } }
+    @Test fun warmCatalogReusesReaderAndHidesUnmatchedGroups() = runBlocking {
+        val context=ApplicationProvider.getApplicationContext<Context>()
+        val store=AuralCatalogStore.get(context)
+        val started=SystemClock.elapsedRealtime()
+        val first=store.acquire()
+        val prepared=SystemClock.elapsedRealtime()
+        val catalog=first.value
+        first.release()
+        val second=store.acquire()
+        assertSame(catalog,second.value)
+        val reused=SystemClock.elapsedRealtime()
+        try {
+            val settings=AuralExampleSettings()
+            val buckets=catalog.matchingBuckets(settings,minimumPopularityPercent=90)
+            val grouped=SystemClock.elapsedRealtime()
+            assertTrue(buckets.isNotEmpty())
+            val v=requireNotNull(auralStartGroup("V")).id
+            assertFalse(buckets[385].orEmpty().any { it.id==v })
+            assertSame(buckets,catalog.matchingBuckets(settings.copy(groupingPriority="start"),minimumPopularityPercent=90))
+            val widened=catalog.matchingBuckets(settings,minimumPopularityPercent=80)
+            assertTrue(widened.values.sumOf { it.size } >= buckets.values.sumOf { it.size })
+            val filtered=SystemClock.elapsedRealtime()
+            val query=AuralProgressionQuery(chords=listOf(AuralChordConstraint(5),AuralChordConstraint(1)))
+            val searched=catalog.matchingBuckets(settings,query,90)
+            assertTrue(searched.isNotEmpty())
+            searched[3].orEmpty().take(5).forEach { group ->
+                val ranking=catalog.Ranking(settings,emptyList(),emptySet(),3,3,query,group.id,90)
+                try { assertTrue("Visible group must have a match: ${group.label}",ranking.page(1).isNotEmpty()) }
+                finally { ranking.close() }
+            }
+            Log.i("AuralCatalogLoad","device: prepare=${prepared-started}ms reuse=${reused-prepared}ms groups=${grouped-reused}ms cutoffChange=${filtered-grouped}ms search+ranking=${SystemClock.elapsedRealtime()-filtered}ms buckets=${buckets.values.sumOf { it.size }}")
+        } finally { second.release() }
+        Unit
+    }
     @Test fun longProgressionHeaderDoesNotHideSongTab() {
         val degrees=List(129) { if(it % 2 == 0) "I(no3)(no5)" else "V(no3)(no5)" }
         compose.setContent { androidx.compose.material3.MaterialTheme { Column(Modifier.fillMaxSize()) {
@@ -32,22 +67,134 @@ class AuralCatalogDeviceTest {
         compose.onNodeWithTag("AuralProgressionExpand").assertIsDisplayed().performClick()
         compose.onNodeWithTag("AuralMode-songs").assertIsDisplayed()
     }
-    @Test fun outlineExpansionHasLargeTargetsAndStableSiblingNumbers() {
+    @Test fun emptyLongStartGroupWithPopularityCutoffLoadsWithoutError() {
         val context=ApplicationProvider.getApplicationContext<Context>()
         AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
-            val start = requireNotNull(catalog.groupedBuckets(AuralExampleSettings())[3]?.firstOrNull())
+            val buckets=catalog.groupedBuckets(AuralExampleSettings())
+            val length=requireNotNull(buckets.keys.maxOrNull())
+            val start=requireNotNull(buckets.getValue(length).firstOrNull { it.label=="V" })
+            val ranking=catalog.Ranking(AuralExampleSettings(),emptyList(),emptySet(),length,length,startGroup=start.id,minimumPopularityPercent=90)
+            try {
+                val rows=ranking.page()
+                assertTrue(length>=100)
+                assertTrue(rows.isEmpty())
+                assertFalse(ranking.hasMore)
+                assertTrue(ranking.page().isEmpty())
+            } finally { ranking.close() }
+        }
+    }
+    @Test fun popularityCutoffFiltersRowsSongsAndChosenSource() {
+        val context=ApplicationProvider.getApplicationContext<Context>()
+        AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
+            val settings=AuralExampleSettings()
+            val ranking=catalog.Ranking(settings,emptyList(),emptySet(),minLength=3,maxLength=3,minimumPopularityPercent=80)
+            val rows=try { ranking.page(8) } finally { ranking.close() }
+            assertTrue(rows.isNotEmpty())
+            rows.forEach { row ->
+                val songs=catalog.songs(row.target,80)
+                assertEquals(row.songs,songs.size)
+                assertTrue(songs.isNotEmpty())
+                assertTrue(songs.all { (it.popularityScore ?: -1.0) >= 0.8 })
+                assertTrue(catalog.songs(row.target).size >= songs.size)
+            }
+            val first=rows.first().target
+            val passage=catalog.passage(first,settings,AuralSelectionContext(),42,first.id,minimumPopularityPercent=80)
+            assertTrue((catalog.popularity[passage.songId]?.score ?: -1.0) >= 0.8)
+        }
+    }
+    @Test fun globalFrequencyPagesStayOrderedAndIgnoreSongEligibilityForCounts() {
+        val context=ApplicationProvider.getApplicationContext<Context>()
+        AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
+            val started=SystemClock.elapsedRealtime()
+            val settings=AuralExampleSettings()
+            val ranking=catalog.Ranking(settings,emptyList(),emptySet(),minimumPopularityPercent=80)
+            val initialized=SystemClock.elapsedRealtime()
+            val rows=try {
+                val first=ranking.page(30)
+                val firstPage=SystemClock.elapsedRealtime()
+                val second=ranking.page(30)
+                Log.i("AuralCatalogLoad","device: globalFrequency init=${initialized-started}ms first=${firstPage-initialized}ms second=${SystemClock.elapsedRealtime()-firstPage}ms")
+                first+second
+            } finally { ranking.close() }
+            assertEquals(60,rows.size)
+            assertEquals(rows.sortedWith(AuralCatalog.rowOrder("mostSongs")),rows)
+            rows.take(8).forEach { row ->
+                assertEquals(catalog.songs(row.target).size,row.globalSongs)
+                assertEquals(catalog.songs(row.target,80).size,row.songs)
+                assertTrue(row.globalSongs>=row.songs)
+            }
+            val longer=catalog.Ranking(settings,emptyList(),emptySet(),minLength=4,minimumPopularityPercent=80)
+            try { assertTrue(longer.page(30).all { it.length>=4 }) } finally { longer.close() }
+            Log.i("AuralCatalogLoad","device: globalFrequency60=${SystemClock.elapsedRealtime()-started}ms")
+        }
+    }
+    @Test fun defaultCatalogShowsUngroupedFrequencyResults() {
+        val context=ApplicationProvider.getApplicationContext<Context>()
+        AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
+            val settings=mutableStateOf(AuralExampleSettings())
+            val coreLength=mutableStateOf(2)
+            compose.setContent { androidx.compose.material3.MaterialTheme {
+                AuralCatalogScreen(catalog,settings.value,AuralSession(Store()),{}, {},null,
+                    onSettingsChange={settings.value=it},minimumPopularityPercent=80,
+                    minimumCoreLength=coreLength.value,onMinimumCoreLengthChange={coreLength.value=it})
+            } }
+            compose.onNodeWithTag("AuralSort").assertExists()
+            compose.onNodeWithTag("AuralSort").performClick()
+            compose.onNodeWithTag("AuralSort-mostSongs").assertExists()
+            compose.onNodeWithTag("AuralSort-recommended").performClick()
+            assertEquals("recommended",settings.value.sortOrder)
+            compose.onNodeWithTag("AuralSort").performClick()
+            compose.onNodeWithTag("AuralSort-mostSongs").performClick()
+            compose.onNodeWithTag("AuralMoreBrowsingOptions").performClick()
+            compose.onNodeWithTag("AuralMinimumPopularity").assertExists()
+            compose.onNodeWithTag("AuralCoreLengthIncrease").performClick()
+            assertEquals(3,coreLength.value)
+            compose.onNodeWithText("Core ≥3 chords",substring=true).assertExists()
+            compose.onNodeWithTag("AuralFlatList").assertExists()
+            compose.onNodeWithTag("AuralInversions").assertExists()
+            compose.onNodeWithTag("AuralGroup-length").performScrollTo().performClick()
+            assertEquals("length",settings.value.groupingPriority)
+            compose.onNodeWithTag("AuralGroup-none").performScrollTo().performClick()
+            compose.onNodeWithTag("AuralMoreBrowsingOptions").performScrollTo().performClick()
+            compose.onNodeWithTag("AuralPrimary-length:3").assertDoesNotExist()
+            val sequence=SemanticsMatcher("global progression") {
+                it.config.getOrNull(SemanticsProperties.TestTag)?.startsWith("AuralPattern-")==true
+            }
+            compose.waitUntil(60_000) { compose.onAllNodes(sequence).fetchSemanticsNodes().isNotEmpty() }
+            assertTrue(compose.onAllNodes(sequence).fetchSemanticsNodes().isNotEmpty())
+        }
+    }
+    @Test fun outlineExpansionHasLargeTargetsAndStableSiblingNumbers() {
+        val context=ApplicationProvider.getApplicationContext<Context>()
+        val browseStorageName="aural_catalog_outline_device_test"
+        context.getSharedPreferences(browseStorageName,Context.MODE_PRIVATE).edit().clear().commit()
+        AuralCatalog(File(context.filesDir,"aural-catalog.db")).use { catalog ->
+            val tonicGroup = requireNotNull(auralStartGroup("I")).id
+            val start = requireNotNull(catalog.groupedBuckets(AuralExampleSettings())[3]?.firstOrNull { it.id==tonicGroup })
             val leaf = "3|${start.id}"
             compose.setContent { androidx.compose.material3.MaterialTheme {
-                AuralCatalogScreen(catalog,AuralExampleSettings(),AuralSession(Store()),{}, {},null)
+                AuralCatalogScreen(catalog,AuralExampleSettings(groupingPriority="length"),AuralSession(Store()),{}, {},null,
+                    browseStorageName=browseStorageName)
             } }
-            compose.onNodeWithTag("AuralPrimary-length:3").performScrollTo().performClick()
-            compose.onNodeWithTag("AuralSubgroup-$leaf").performScrollTo().performClick()
-            compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralExpand-$leaf-1").fetchSemanticsNodes().isNotEmpty() }
+            compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralCatalogLoading").fetchSemanticsNodes().isEmpty() }
+            val matching=catalog.matchingBuckets(AuralExampleSettings(),minimumPopularityPercent=null)
+            val groupIndex=matching.keys.sortedDescending().indexOf(3)+1
+            val subgroupIndex=groupIndex+1+requireNotNull(matching[3]).indexOfFirst { it.id==start.id }
+            compose.onNodeWithTag("AuralCatalog").performScrollToIndex(groupIndex)
+            compose.onNodeWithTag("AuralPrimary-length:3").performClick()
+            compose.onNodeWithTag("AuralCatalog").performScrollToIndex(subgroupIndex)
+            compose.onNodeWithTag("AuralSubgroup-$leaf").performClick()
+            compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralSubgroupReady-$leaf",useUnmergedTree=true).fetchSemanticsNodes().isNotEmpty() }
+            repeat(8) {
+                if(compose.onAllNodesWithTag("AuralExpand-$leaf-1").fetchSemanticsNodes().isNotEmpty()) return@repeat
+                compose.onNodeWithTag("AuralCatalog").performTouchInput { swipeUp() }
+            }
+            compose.onNodeWithTag("AuralExpand-$leaf-1").assertExists()
             compose.onNodeWithTag("AuralExpand-$leaf-1").assertWidthIsAtLeast(48.dp).assertHeightIsAtLeast(48.dp).performClick()
             compose.waitUntil(30_000) { compose.onAllNodesWithTag("AuralOutline-$leaf-1.1").fetchSemanticsNodes().isNotEmpty() }
             compose.onNodeWithTag("AuralOutline-$leaf-1.1").assertTextEquals("1.1")
             compose.onNodeWithTag("AuralExpand-$leaf-1").performClick()
-            compose.onNodeWithTag("AuralOutline-$leaf-1.1").assertDoesNotExist()
+            compose.waitUntil(5_000) { compose.onAllNodesWithTag("AuralOutline-$leaf-1.1").fetchSemanticsNodes().isEmpty() }
             compose.onNodeWithTag("AuralOutline-$leaf-2").assertTextEquals("2")
         }
     }

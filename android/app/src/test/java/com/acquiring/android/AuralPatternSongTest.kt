@@ -4,6 +4,16 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class AuralPatternSongTest {
+    @Test fun minimumPopularityIsInclusiveAndExcludesMissingOrInvalidScores() {
+        assertEquals(true,auralMeetsMinimumPopularity(0.8,80))
+        assertEquals(false,auralMeetsMinimumPopularity(0.7999,80))
+        assertEquals(false,auralMeetsMinimumPopularity(null,80))
+        assertEquals(false,auralMeetsMinimumPopularity(Double.NaN,80))
+        assertEquals(false,auralMeetsMinimumPopularity(1.1,80))
+        assertEquals(true,auralMeetsMinimumPopularity(0.0,0))
+        assertEquals(false,auralMeetsMinimumPopularity(null,0))
+        assertEquals(true,auralMeetsMinimumPopularity(null,null))
+    }
     @Test fun popularityRanksAboveAlphabeticalOrderAndZeroRanksAboveUnknown() {
         val songs=listOf(
             AuralPatternSong("unknown","A missing score","Artist"),

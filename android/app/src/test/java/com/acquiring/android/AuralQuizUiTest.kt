@@ -40,22 +40,20 @@ class AuralQuizUiTest {
         compose.onNodeWithTag("AuralMode-songs").assertIsDisplayed()
     }
 
-    @Test fun fivePreferencesApplyNextExerciseAndUnavailablePopularityIsDisabled() {
+    @Test fun examplePreferencesApplyNextExerciseAndUnavailablePopularityIsDisabled() {
         val session = AuralSession(Store(), seedFor = { it })
         session.practice("dominant-return", "recall", variantId = "departure")
         val original = session.view().exercise
         compose.setContent { MaterialTheme { AuralQuizScreen({}, session, catalogEnabled = false) {} } }
         compose.onNodeWithTag("AuralExampleSettings").performClick()
-        compose.onAllNodes(isToggleable()).assertCountEquals(5)
-        compose.onNodeWithTag("AuralFlatList").assertIsOff().performScrollTo().performClick()
-        assertTrue(session.exampleSettings.flatList)
+        compose.onAllNodes(isToggleable()).assertCountEquals(3)
+        compose.onNodeWithTag("AuralFlatList").assertDoesNotExist()
+        compose.onNodeWithTag("AuralInversions").assertDoesNotExist()
         compose.onNodeWithTag("AuralPopularity").assertIsNotEnabled().assertIsOff()
         compose.onNodeWithTag("AuralVariety").assertIsOn().performClick()
         compose.onNodeWithTag("AuralFavorites").assertIsOff().performClick()
-        compose.onNodeWithTag("AuralInversions").assertIsOff().performClick()
         assertFalse(session.exampleSettings.variety)
         assertTrue(session.exampleSettings.favorites)
-        assertTrue(session.exampleSettings.distinguishInversions)
         assertEquals(original!!.events, session.view().exercise!!.events)
         compose.onNodeWithTag("AuralExampleSettingsBack").performClick()
         compose.onNodeWithTag("AuralQuiz").assertExists()

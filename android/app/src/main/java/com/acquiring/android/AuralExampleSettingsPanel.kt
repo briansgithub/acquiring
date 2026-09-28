@@ -22,22 +22,17 @@ internal fun AuralExampleSettingsPanel(settings: AuralExampleSettings, popularit
             Text("Examples", style = MaterialTheme.typography.titleLarge)
         }
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal=16.dp,vertical=8.dp)) {
-        Text("Catalog and next example", style = MaterialTheme.typography.bodySmall)
+        Text("Next song example", style = MaterialTheme.typography.bodySmall)
         AuralExampleSwitch("Prefer popular songs", "AuralPopularity", settings.popularity && popularityAvailable, popularityAvailable,
             popularityDescription ?: if (!popularityAvailable) "Popularity data unavailable" else null) { onChange(settings.copy(popularity = it)) }
         AuralExampleSwitch("Keep examples varied", "AuralVariety", settings.variety) { onChange(settings.copy(variety = it)) }
         AuralExampleSwitch("Favor my favorites", "AuralFavorites", settings.favorites) { onChange(settings.copy(favorites = it)) }
-        Divider(Modifier.padding(vertical = 12.dp))
-        AuralExampleSwitch("Distinguish inversions", "AuralInversions", settings.distinguishInversions,
-            description = "Track bass-sensitive practice separately") { onChange(settings.copy(distinguishInversions = it)) }
-        AuralExampleSwitch("Flat list", "AuralFlatList", settings.flatList,
-            description = "All sequences · highest combined score first") { onChange(settings.copy(flatList = it)) }
         }
     }
 }
 
 @Composable
-private fun AuralExampleSwitch(label: String, tag: String, checked: Boolean, enabled: Boolean = true,
+internal fun AuralExampleSwitch(label: String, tag: String, checked: Boolean, enabled: Boolean = true,
                                description: String? = null, onChange: (Boolean) -> Unit) {
     Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {

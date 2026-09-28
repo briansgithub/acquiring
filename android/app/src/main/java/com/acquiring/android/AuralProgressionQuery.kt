@@ -13,9 +13,16 @@ import kotlinx.serialization.Serializable
         require(degree in 1..7 && accidental in setOf("", "♭", "♯"))
         require(family in setOf("any", "major", "minor", "7", "maj7", "m7"))
     }
-    val label: String get() = inversion ?: exact ?: "$accidental${listOf("I", "II", "III", "IV", "V", "VI", "VII")[degree - 1]} · ${when (family) {
-        "any" -> "Any quality"; "major" -> "Major"; "minor" -> "Minor"; "7" -> "7"; "maj7" -> "maj7"; else -> "m7"
-    }}"
+    val label: String get() = inversion ?: exact ?: buildString {
+        append(accidental)
+        append(listOf("I", "II", "III", "IV", "V", "VI", "VII")[degree - 1])
+        if (family != "any") {
+            append(" · ")
+            append(when (family) {
+                "major" -> "Major"; "minor" -> "Minor"; "7" -> "7"; "maj7" -> "maj7"; else -> "m7"
+            })
+        }
+    }
 }
 
 @Serializable internal data class AuralProgressionQuery(val version: Int = 1, val chords: List<AuralChordConstraint> = emptyList()) {

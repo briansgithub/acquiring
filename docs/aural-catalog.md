@@ -1,5 +1,23 @@
 # Aural Quiz catalog: Android human-testing release
 
+## Current frequency-first browsing — 2026-09-27
+
+The default catalog is one ungrouped list sorted by distinct supporting songs
+across the installed database, then total source occurrences, chord count, and
+structural ID. The analysis and inversion view define sequence identity. The
+song-popularity cutoff (80% by default), constrained chord search, and mode
+controls determine which rows and example songs qualify; they do not change
+the global support counts used by **Most songs**. Rows distinguish overall
+support from matching songs. **Recommended** retains the previous combined
+score and example preferences; **Longest first** and **Shortest first** use
+global song frequency to break ties. Grouping is separately selectable as
+None, Length → Starting chord, or Starting chord → Length. Grouped views keep
+independent pages and contextual subgroup Review. **Show subsequences**
+controls recursive children; it does not choose the global/grouped layout.
+
+The sections below record the implementation history; superseded descriptions
+of the default order and Flat list refer to earlier builds.
+
 Updated 2026-09-17. Implementation route: offline Node/SQLite, Python streaming import, native Kotlin/Compose; runtime model identity unknown. No model inference or provider calls run in the app. This document supersedes the six-family catalog and unavailable-popularity limitations in the earlier implementation handoff.
 
 ## Access and behavior
@@ -320,3 +338,216 @@ The app was relaunched. Human visual review of the 129-chord case and both
 grouping priorities remains pending; no screenshot was taken. iOS source
 parity is documented in `docs/porting-plan.md` on the iOS worktree and still
 needs Mac validation. No remote push or release occurred.
+
+## Minimum song-popularity filter — 2026-09-25
+
+The Aural Quiz catalog now has a 0–100% minimum song-popularity slider,
+defaulting to **80%** for new browsing state. It is a hard inclusive cutoff
+on the overlay's normalized song score, separate from **Prefer popular songs**
+(which only changes ranking). Unscored, nonfinite, and out-of-range scores
+do not qualify, including when the cutoff is 0%. The full overlay currently
+has 5,192 of 25,977 scored songs at or above 80%.
+
+Ranking pages and recursive children include only progressions supported by
+at least one qualifying song. Displayed song, section, and occurrence counts
+reflect that subset; full-corpus coverage evidence remains unchanged. The
+Songs tab and new practice-source selection use the same cutoff. Existing
+restored exercises and other non-catalog callers keep their original sources.
+The selected percentage persists across app launches; changing it invalidates
+the catalog query and loaded pages. The later filtered-group change below hides
+categories without a qualifying sequence.
+
+Validation: the focused `AuralPatternSongTest` and both Debug APK builds
+passed (`aural-popularity-android-recheck`, 37.5 seconds) after one Kotlin/
+Compose API correction. The Debug app and instrumentation APK were installed
+on Pixel 7a `3C081JEHN14930` without clearing app data. The focused
+`AuralCatalogDeviceTest#popularityCutoffFiltersRowsSongsAndChosenSource`
+passed (1 test, 23.424 seconds), as did the existing Songs-to-Playback/draft
+test (1 test, 29.986 seconds). Active catalog and popularity overlay hashes
+remained unchanged. The app was relaunched. A 385-chord group starting on V still has catalog
+ranges, but none of its songs meet a 90% cutoff. The pager treated that empty
+result as a failed load (`NoSuchElementException`, shown as “Could not load
+this group”). It now returns no rows, and the group shows the no-matches
+message. On Pixel 7a `3C081JEHN14930`,
+`AuralCatalogDeviceTest#emptyLongStartGroupWithPopularityCutoffLoadsWithoutError`
+passed against that installed catalog. A later instrumentation reinstall removed
+the private catalog. The same snapshot, evidence, and popularity files were
+restored, and the device checksums again matched
+`09cdc2d28e5ab1c54e1090d5c2bb745ae08dddea7ed22e73095d649441b5a685`,
+`01793fee42343aedaa3620540bc75a8c188014f143f4358ad536442847f0ad73`, and
+`53c2aa8024f85d00115c08d014e43f56831ee88e0e81e15b66d2219d4c3e9337`.
+Human visual review of the slider
+and a high-cutoff no-results state is pending. iOS source parity is recorded
+in `docs/porting-plan.md` on the iOS worktree; Mac tests are unrun. No remote
+push or release occurred.
+
+### Empty-group load fix — note for the continuing agent, 2026-09-25
+
+Worktree `H:/Desktop/Acquiring/Acquiring-aural-mode-analysis`, branch
+`codex/aural-mode-analysis`. Still uncommitted on top of `0c9b4917`. The
+popularity-slider edits and this fix are in the same dirty tree. Do not
+commit unless asked.
+
+Reported failure: with the minimum song-popularity slider at 90%, the longest
+catalog group (385 chords) → **Starts with V** showed “Could not load this
+group.” `groupedBuckets` still lists that leaf (`385|natural:5:upper:major:none`)
+because group discovery does not apply the cutoff. `Ranking.page()` then
+pulled catalog ranges, `add()` skipped every range because no suffix rank in
+them met 90%, the heap stayed empty, and `heap.remove()` threw
+`NoSuchElementException`. The screen catch turned that into the load error.
+Eligibility itself succeeded: 317,603 of 4,249,822 ranks qualify at 90%.
+
+Fix, in `AuralCatalog.Ranking.page()`: after `refineFrontier()`, if the heap
+is empty, stop and return the rows gathered so far. The existing empty-state
+text then applies: “No matching sequences with songs at 90% popularity or
+higher.” Temporary device logs used to catch the exception were removed.
+
+Device test added:
+`AuralCatalogDeviceTest#emptyLongStartGroupWithPopularityCutoffLoadsWithoutError`.
+It opens the installed catalog, takes the longest length whose start label is
+V, pages that bucket at 90%, and requires a non-throwing empty page with
+`hasMore == false`. It passed once on Pixel 7a `3C081JEHN14930` while the
+catalog was still present. A later `connectedDebugAndroidTest` install removed
+`com.acquiring.android` private files, so a repeat of that test failed with
+`aural-catalog.db` missing. The catalog was restored with
+`tooling/aural-corpus/install-android.mjs` from
+`Acquiring/acquiring_data/aural-catalog-loop-full/` plus
+`popularity/listenbrainz/full-pop-7a28550b0605de8f29218df622586aa8e1ea6aca963949852a6fe896a5cdaef9-popularity.db`.
+Device checksums matched the three hashes in the paragraph above. The debug
+app is installed again and was launched. App data from before that reinstall
+is gone; only this restored bundle is on the phone.
+
+Retest on the Pixel, with data retained:
+
+1. Open Aural Quiz. Set Minimum song popularity to 90%.
+2. Open the top length group (385 chords), then **Starts with V**.
+3. Expect the no-matches sentence. “Could not load this group” must not appear.
+4. Lower the slider until a populated length group shows rows, and confirm a
+   normal group still loads.
+
+Do not run another `connectedDebugAndroidTest` until you know that Gradle
+install will not uninstall the app. The one-method command that passed, from
+`android/` with `ANDROID_HOME` set, was:
+
+`python scripts/compact_check.py --name aural-empty-v-group -- .\gradlew.bat connectedDebugAndroidTest "-Pandroid.testInstrumentationRunnerArguments.class=com.acquiring.android.AuralCatalogDeviceTest#emptyLongStartGroupWithPopularityCutoffLoadsWithoutError" --console=plain`
+
+Before running it, confirm `run-as com.acquiring.android` can see
+`files/aural-catalog.db`. After it, confirm that file is still there. Human
+visual review of the slider and the empty state is still open. iOS parity
+remains in `docs/porting-plan.md` on `codex/ios-aural-quiz-port`. No push or
+release.
+
+## Prepared Android catalog and filtered groups — 2026-09-27
+
+The Aural Quiz index remains a prebuilt offline database. Once the home screen
+draws, Android opens the installed catalog on an I/O thread, prepares the saved
+search/grouping/popularity view, and shares that reader across Quiz visits for
+the app process. An early Quiz visit joins the same load. Validated bundle
+replacement waits for active Quiz readers to finish, then invalidates and
+rewarms the cache. An unchanged published bundle does not invalidate it.
+
+Primary length/starting-chord families and their leaf subgroups now appear
+only if a retained progression has at least one song meeting the active
+analysis, chord search, and minimum popularity. Both grouping priorities use
+the same discovered buckets. A global no-results message appears if all
+groups are filtered out. Catalog ranges and recent group results are cached
+per installed reader; sparse suffix eligibility uses bounded constant-time
+range checks. Older catalog schemas continue to apply native loop reduction.
+The earlier empty 385-chord V group at 90% is now hidden in the UI, although
+the underlying pager still safely returns an empty page to legacy callers.
+
+Focused JVM tests passed for shared loading/replacement, batch boundaries,
+exact bucket membership, and sparse range checks. Debug and instrumentation
+APKs built. On Pixel 7a `3C081JEHN14930`,
+`AuralCatalogDeviceTest#warmCatalogReusesReaderAndHidesUnmatchedGroups` and
+`#popularitySongDelegatesToTheHostAndKeepsTheQuizDraft` each passed (one test
+per run). The full-catalog run measured 5,200 ms for background reader
+preparation, 2 ms for reuse, 9,867 ms for first group discovery, and 2,332 ms
+for an 90%-to-80% cutoff change. Those are single device measurements, not
+latency percentiles. Both APKs were installed without clearing app data; the
+catalog, evidence, and popularity checksums remained identical to those above.
+Human visual review of groups after filtering is pending. iOS warmup work is
+outside this Android-first change; the Mac validation gate is unchanged.
+These changes remain uncommitted alongside the earlier popularity work in
+`codex/aural-mode-analysis`.
+
+## Global frequency-first catalog — 2026-09-28
+
+The default Aural Quiz browser is now ungrouped and orders retained progressions
+by the number of distinct supporting songs across the full installed catalog.
+Ties use total occurrences, then longer length, then stable structural ID. The
+80% minimum song-popularity filter and other search criteria decide which
+progressions and examples qualify, but do not change those global sort counts.
+The visible Sort control also offers Recommended (the prior adaptive score),
+Longest, and Shortest. Optional grouping offers Length first or Starting chord
+first; pagination, recursive subsequences, and subgroup Review remain available.
+The former Flat list setting is labeled Show subsequences with the inverse
+on/off presentation. Existing saved browser settings migrate to the new global
+default once; subsequent explicit sort/group choices persist.
+
+The shared catalog exporter adds frequency-oriented indexes without changing
+schema v3. Focused Node catalog/export tests passed (7 tests). Android
+the focused UI test and both Debug APK builds passed after the final
+valid-song correction. The final full `:app:testDebugUnitTest` rerun passed
+(483 tests, 2 skipped; 85.3 s). Its first run exposed two fixture catalogs
+without the real `catalog_song` table; those fixtures were corrected before
+the passing rerun. The new 60-row Pixel pagination test passed on the
+indexed full catalog, including exact global/matching song counts for its first
+eight rows. Pixel 7a `3C081JEHN14930` also passed the default ungrouped-list
+UI test (1 test, 25.757 s) and the app was relaunched. Single-run device
+timings for the indexed bundle: catalog reader initialization 9,287 ms,
+first 30 ranked rows 948 ms, second page 280 ms. These are not percentiles.
+
+The full schema-v3 bundle and matching evidence were rebuilt and validated:
+snapshot `64cfa299cc740dd9a1daf2cefc837bf1db80be9b2caa00626f674ea04b0c2243`,
+17,272,900 retained sequences, catalog SHA-256
+`561ee85ecdc26448d0b5bac754a762cce3c4f040100c211c948b649e7a224982`,
+evidence SHA-256
+`e905eb8b6700a31fc79c7a234949df14cb7d7290334ea4f9be505c7fcfb4ccd3`.
+The existing popularity overlay SHA-256 remains
+`53c2aa8024f85d00115c08d014e43f56831ee88e0e81e15b66d2219d4c3e9337`.
+All three host/device checksums matched after installation; app data was not
+cleared. The source cache contains 122 run song IDs absent from `catalog_song`;
+native ranking now excludes those IDs so displayed support matches available
+example songs. Catalog range bounds remain conservative.
+
+The Android/shared worktree is still dirty on `codex/aural-mode-analysis` at
+`0c9b4917`, together with earlier in-progress changes. No commit, push, merge,
+or release was performed. iOS source parity is in the separate dirty
+`codex/ios-aural-quiz-port` worktree; Mac tests and simulator validation remain
+pending as recorded in `docs/porting-plan.md`. Human review of sort clarity,
+group navigation, and long-list performance on both platforms remains open.
+
+## Android Aural Quiz browse controls — 2026-09-28
+
+The Android catalog now uses one scrolling page for chord search, Analysis and
+Sort dropdowns, and results. The default search chips show concise Roman
+numerals and wrap to new lines with their arrows. Chord edit controls wrap,
+remain scrollable on small displays, and have named reorder actions. The
+expanded **More browsing options** panel contains minimum core length, song
+popularity, grouping, Show subsequences, and inversion matching; its collapsed summary reports
+active choices. Example preferences now contains only next-song selection
+preferences. Analysis gaps is reached from the Quiz information dialog.
+Existing search, sort, grouping, and popularity settings retain their stored
+identifiers. Minimum core length defaults to two chords, accepts 2–9999, and
+is saved with browse settings. It filters top-level progressions and group
+availability; recursive children can be shorter than the core. The prior
+saved browse path is migrated at the default minimum. The LazyColumn migration
+offsets the prior saved result index by one to account for its new control
+header. The panel's expansion survives rotation and practice navigation via
+saveable state.
+
+Focused `AuralQuizUiTest` and `AuralProgressionQueryTest` passed with both
+Debug APK builds. On Pixel 7a `3C081JEHN14930`, the new default catalog
+control/result test passed again (one test, 25.801 seconds), including sort-menu
+selection, grouping changes, minimum core length 2→3, and the expanded
+options. The full catalog frequency test passed (one test, 20.082 seconds),
+including a minimum-four-chord page whose rows all met that threshold. The
+legacy three-chord outline expansion test now passes with an isolated browse
+state and common `I` starting subgroup (one test, 30.564 seconds). The earlier
+failure also exposed a real lazy-list update bug: its expansion icon collapsed
+but the child row remained; moving visible-row calculation into observed
+Compose state fixed that. Subgroup headers now report loading, errors, and
+loaded-row counts. The app was installed without clearing its catalog. Human
+review of narrow width, large text, and visual spacing is still pending; no
+screenshots were taken. No commit, push, merge, or release was performed.

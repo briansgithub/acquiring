@@ -1,7 +1,6 @@
 package com.acquiring.android
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
@@ -17,8 +16,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
@@ -31,6 +37,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlin.math.roundToInt
 
 private data class AuralLeaf(val length: Int, val start: AuralStartGroup) { val id = "$length|${start.id}" }
 private data class AuralLeafPage(val rows: List<AuralCatalogRow> = emptyList(), val ranking: AuralCatalog.Ranking? = null,
@@ -38,18 +45,41 @@ private data class AuralLeafPage(val rows: List<AuralCatalogRow> = emptyList(), 
 private data class AuralPrimaryGroup(val id: String, val label: String, val leaves: List<AuralLeaf>)
 private data class AuralDisplay(val row: AuralCatalogRow, val depth: Int, val key: String, val number: String)
 
+@Composable
+private fun AuralCatalogChoice(label: String, value: String, options: List<Pair<String,String>>,
+    onSelect: (String) -> Unit, modifier: Modifier = Modifier, tag: String) {
+    var open by remember { mutableStateOf(false) }
+    Column(modifier) {
+        Text(label, style = MaterialTheme.typography.labelMedium)
+        Box {
+            OutlinedButton(onClick = { open = true }, modifier = Modifier.fillMaxWidth().testTag(tag)) {
+                Text(value, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
+            }
+            DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+                options.forEach { (id, name) -> DropdownMenuItem(text = { Text(name) },
+                    onClick = { open = false; onSelect(id) }, modifier = Modifier.testTag("$tag-$id")) }
+            }
+        }
+    }
+}
+
 /** Two-dimensional catalog: either chord count or starting numeral may be the primary grouping. */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSettings, session: AuralSession,
     onPractice: (AuralPatternTarget) -> Unit, onAdaptive: () -> Unit, onContinue: (() -> Unit)?, modifier: Modifier = Modifier,
-    onReview: (List<AuralCatalogRow>) -> Unit = {}, onSettingsChange: (AuralExampleSettings) -> Unit = {}) {
-    val storage = LocalContext.current.applicationContext.getSharedPreferences("aural_catalog_browse", android.content.Context.MODE_PRIVATE)
+    onReview: (List<AuralCatalogRow>) -> Unit = {}, onSettingsChange: (AuralExampleSettings) -> Unit = {},
+    minimumPopularityPercent: Int? = null, onMinimumPopularityChange: (Int) -> Unit = {},
+    minimumCoreLength: Int = 2, onMinimumCoreLengthChange: (Int) -> Unit = {},
+    browseStorageName: String = "aural_catalog_browse") {
+    val storage = LocalContext.current.applicationContext.getSharedPreferences(browseStorageName, android.content.Context.MODE_PRIVATE)
     var query by remember { mutableStateOf(runCatching {
         Json.decodeFromString<AuralProgressionQuery>(storage.getString("progressionQuery", "").orEmpty())
     }.getOrDefault(AuralProgressionQuery())) }
     var appliedQuery by remember { mutableStateOf(query) }
     var activeLeaf by rememberSaveable { mutableStateOf(storage.getString("leaf", "").orEmpty()) }
+    var lastGroupedLeaf by rememberSaveable { mutableStateOf(storage.getString("groupedLeaf", "").orEmpty()) }
     var activePrimary by rememberSaveable { mutableStateOf(storage.getString("primary", "").orEmpty()) }
     var expandedPrimary by rememberSaveable { mutableStateOf(emptyList<String>()) }
     var expandedSecondary by rememberSaveable { mutableStateOf(emptyList<String>()) }
@@ -61,8 +91,7 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
     var catalogError by remember { mutableStateOf<String?>(null) }
     var info by remember { mutableStateOf<AuralCatalogRow?>(null) }
     var evidence by remember { mutableStateOf("") }
-    var gaps by remember { mutableStateOf<List<String>?>(null) }
-    var modeMenu by remember { mutableStateOf(false) }
+    var moreOptions by rememberSaveable { mutableStateOf(false) }
     var generation by remember { mutableStateOf(0) }
     var loadedKey by remember { mutableStateOf("") }
     var pendingRestorePages by remember { mutableStateOf(storage.getInt("pages",1).coerceAtLeast(1)) }
@@ -71,11 +100,22 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
     val liveRankings = remember { mutableSetOf<AuralCatalog.Ranking>() }
     val scope = rememberCoroutineScope()
     var migrateLengthOrder by remember { mutableStateOf(storage.getInt("lengthOrderVersion",0) < 1) }
-    val scroll = rememberLazyListState(if(migrateLengthOrder) 0 else storage.getInt("scrollIndex",0),
+    val savedIndex = storage.getInt("scrollIndex",0)
+    val migratedIndex = if(storage.getInt("browseLayoutVersion",0) == 0 && storage.contains("scrollIndex")) savedIndex + 1 else savedIndex
+    val scroll = rememberLazyListState(if(migrateLengthOrder) 0 else migratedIndex,
         if(migrateLengthOrder) 0 else storage.getInt("scrollOffset",0))
     val effective = if (catalog.supportsModeAnalysis) settings else settings.copy(analysis="allModes")
     val rankingPreferences = effective.copy(flatList=false,groupingPriority="length")
-    val queryKey = "${catalog.snapshotId}|$rankingPreferences|$appliedQuery"
+    val ungrouped = settings.groupingPriority == "none"
+    val globalLeaf = remember { AuralLeaf(0,AuralStartGroup("","All starting chords",0,"",true,false)) }
+    val priorQueryKey = "${catalog.snapshotId}|${catalog.popularityVersion}|$rankingPreferences|$appliedQuery|$minimumPopularityPercent"
+    val queryKey = "$priorQueryKey|$minimumCoreLength"
+    var draftPopularity by rememberSaveable(minimumPopularityPercent) { mutableStateOf((minimumPopularityPercent ?: 80).toFloat()) }
+    var coreLengthDraft by rememberSaveable(minimumCoreLength) { mutableStateOf(minimumCoreLength.toString()) }
+    LaunchedEffect(coreLengthDraft) {
+        delay(350)
+        coreLengthDraft.toIntOrNull()?.takeIf { it in 2..9999 && it!=minimumCoreLength }?.let(onMinimumCoreLengthChange)
+    }
     val frozenRecent = remember(queryKey) { session.recentSongs.toList() }
     val frozenFavorites = remember(queryKey) { session.favorites.toSet() }
     val progress = session.view().progress
@@ -91,9 +131,10 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
         }
     }
     LaunchedEffect(query) { delay(250);appliedQuery=query }
-    LaunchedEffect(catalog, rankingPreferences, appliedQuery) {
+    LaunchedEffect(catalog, rankingPreferences, appliedQuery, minimumPopularityPercent, minimumCoreLength) {
         generation++; val expected=generation
-        val restore=loadedKey.isEmpty() && storage.getString("context","")==queryKey
+        val storedContext=storage.getString("context","")
+        val restore=loadedKey.isEmpty() && (storedContext==queryKey || minimumCoreLength==2 && storedContext==priorQueryKey)
         pendingRestorePages=if(restore) storage.getInt("pages",1).coerceAtLeast(1) else 1
         loadedKey=""; buckets=emptyMap(); pages=emptyMap(); children=emptyMap(); expandedRows=emptyList()
         if(!restore) { expandedPrimary=emptyList();expandedSecondary=emptyList();activeLeaf="";activePrimary="";scroll.scrollToItem(0) }
@@ -101,14 +142,15 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
         try {
             val result=withContext(Dispatchers.IO) { mutex.withLock {
                 liveRankings.forEach { it.close() };liveRankings.clear()
-                catalog.groupedBuckets(rankingPreferences)
+                runInterruptible { catalog.matchingBuckets(rankingPreferences,appliedQuery,minimumPopularityPercent).filterKeys { it >= minimumCoreLength } }
             } }
             if(expected!=generation) return@LaunchedEffect
             buckets=result
-            val validLeaf=result.any { (length,starts) -> starts.any { "$length|${it.id}"==activeLeaf } }
+            val validLeaf=(ungrouped && activeLeaf==globalLeaf.id && result.isNotEmpty()) ||
+                result.any { (length,starts) -> starts.any { "$length|${it.id}"==activeLeaf } }
             if(restore && validLeaf) {
                 expandedSecondary=listOf(activeLeaf)
-                activePrimary=if(settings.groupingPriority=="start") "start:${activeLeaf.substringAfter('|')}" else "length:${activeLeaf.substringBefore('|')}"
+                activePrimary=if(ungrouped) "global" else if(settings.groupingPriority=="start") "start:${activeLeaf.substringAfter('|')}" else "length:${activeLeaf.substringBefore('|')}"
                 expandedPrimary=listOf(activePrimary)
             } else if(restore) { activeLeaf="";activePrimary="";expandedPrimary=emptyList();expandedSecondary=emptyList() }
             loadedKey=queryKey
@@ -119,17 +161,22 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
 
     val allStarts = buckets.values.flatten().associateBy { it.id }.values.sortedWith(auralStartGroupOrder)
     val startFirst = settings.groupingPriority == "start" && catalog.supportsStartGrouping
-    val primaryGroups = if (startFirst) allStarts.map { start ->
+    val primaryGroups = if (ungrouped) {
+        if(buckets.isEmpty()) emptyList() else listOf(AuralPrimaryGroup("global","All progressions",listOf(globalLeaf)))
+    } else if (startFirst) allStarts.map { start ->
         AuralPrimaryGroup("start:${start.id}", "Starts with ${start.label}", buckets.filterValues { groups -> groups.any { it.id==start.id } }.keys.sortedDescending().map { AuralLeaf(it,start) })
     } else buckets.keys.sortedDescending().map { length ->
         AuralPrimaryGroup("length:$length", "$length chords", buckets.getValue(length).map { AuralLeaf(length,it) })
     }
     LaunchedEffect(loadedKey, primaryGroups, migrateLengthOrder) {
         if(migrateLengthOrder && loadedKey==queryKey && !loadingGroups) {
-            scroll.scrollToItem(primaryGroups.indexOfFirst { it.id==activePrimary }.coerceAtLeast(0))
+            scroll.scrollToItem(if(activePrimary.isNotEmpty()) primaryGroups.indexOfFirst { it.id==activePrimary }.coerceAtLeast(0) + 1 else 0)
             storage.edit().putInt("lengthOrderVersion",1).apply()
             migrateLengthOrder=false
         }
+    }
+    LaunchedEffect(loadedKey,loadingGroups) {
+        if(loadedKey==queryKey && !loadingGroups) storage.edit().putInt("browseLayoutVersion",1).apply()
     }
 
     fun load(leaf: AuralLeaf, more: Boolean = false) {
@@ -143,7 +190,8 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                 val loaded=withContext(Dispatchers.IO) { mutex.withLock {
                     if(disposed || expected!=generation) return@withLock null
                     val ranking = prior?.ranking ?: catalog.Ranking(rankingPreferences,frozenRecent,frozenFavorites,
-                        leaf.length,leaf.length,appliedQuery,leaf.start.id.takeIf(String::isNotEmpty)).also { liveRankings.add(it) }
+                        if(leaf.length==0) minimumCoreLength else leaf.length,if(leaf.length==0) Int.MAX_VALUE else leaf.length,
+                        appliedQuery,leaf.start.id.takeIf(String::isNotEmpty),minimumPopularityPercent).also { liveRankings.add(it) }
                     val rows=buildList { repeat(requestedPages) { if(ranking.hasMore) addAll(ranking.page()) } }
                     AuralLeafPage((if(more) prior?.rows.orEmpty() else emptyList())+rows,ranking,false,hasMore=ranking.hasMore)
                 } }
@@ -162,7 +210,7 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
         val expected=generation
         scope.launch {
             try {
-                val result=withContext(Dispatchers.IO) { mutex.withLock { catalog.children(row.target,rankingPreferences,frozenRecent,frozenFavorites) } }
+                val result=withContext(Dispatchers.IO) { mutex.withLock { catalog.children(row.target,rankingPreferences,frozenRecent,frozenFavorites,minimumPopularityPercent) } }
                 if(expected==generation && !disposed) { children=children+(entry.key to result);expandedRows=expandedRows+entry.key }
             } catch (cancelled:CancellationException) { throw cancelled }
             catch (_:Exception) { if(expected==generation) catalogError="Could not load subsequences." }
@@ -177,20 +225,29 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
         }
         pages[leaf.id]?.rows.orEmpty().forEachIndexed { index,row -> append(row,0,row.target.id,"${index+1}") }
     }
-    LaunchedEffect(loadedKey,expandedSecondary) {
-        if(loadedKey==queryKey) primaryGroups.flatMap { it.leaves }.filter { it.id in expandedSecondary && pages[it.id]==null }.forEach { load(it) }
+    // Read expansion state in the composable scope so LazyColumn rebuilds its item set on collapse.
+    val visibleRows=primaryGroups.flatMap { it.leaves }.filter { pages[it.id]!=null }
+        .associate { it.id to displays(it) }
+    LaunchedEffect(loadedKey,expandedSecondary,settings.groupingPriority) {
+        if(loadedKey==queryKey) primaryGroups.flatMap { it.leaves }.filter { (ungrouped || it.id in expandedSecondary) && pages[it.id]==null }.forEach { load(it) }
     }
-    LaunchedEffect(startFirst) {
-        if(activeLeaf.isNotEmpty()) {
+    LaunchedEffect(settings.groupingPriority) {
+        if(ungrouped) {
+            if(activeLeaf.isNotEmpty() && activeLeaf!=globalLeaf.id) lastGroupedLeaf=activeLeaf
+            activeLeaf=globalLeaf.id;activePrimary="global"
+        } else {
+            if(activeLeaf==globalLeaf.id) activeLeaf=lastGroupedLeaf
+            if(activeLeaf.isNotEmpty()) {
             activePrimary=if(startFirst) "start:${activeLeaf.substringAfter('|')}" else "length:${activeLeaf.substringBefore('|')}"
             expandedPrimary=listOf(activePrimary)
             expandedSecondary=(expandedSecondary+activeLeaf).distinct()
+            }
         }
     }
     LaunchedEffect(loadedKey,activeLeaf,activePrimary,pages,query) {
         if(loadedKey==queryKey) {
             val editor=storage.edit().putString("context",queryKey).putString("leaf",activeLeaf)
-            .putString("primary",activePrimary).putString("progressionQuery",Json.encodeToString(query))
+            .putString("primary",activePrimary).putString("groupedLeaf",lastGroupedLeaf).putString("progressionQuery",Json.encodeToString(query))
             val loaded=pages[activeLeaf]
             if(loaded!=null && !loaded.busy) editor.putInt("pages",((loaded.rows.size+29)/30).coerceAtLeast(1))
             else if(activeLeaf.isEmpty()) editor.putInt("pages",1)
@@ -201,37 +258,99 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
         if(!loadingGroups && loadedKey==queryKey) storage.edit().putInt("scrollIndex",index).putInt("scrollOffset",offset).apply()
     } }
 
-    Column(modifier.fillMaxSize().testTag("AuralCatalog")) {
-        Row(Modifier.padding(horizontal=12.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            TextButton(onClick=onAdaptive) { Text("Guided course") }
-            if(onContinue!=null) TextButton(onClick=onContinue) { Text("Continue") }
-        }
-        AuralProgressionSearch(query,{ query=it;storage.edit().putString("progressionQuery",Json.encodeToString(it)).apply() },catalog,effective)
-        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal=12.dp,vertical=6.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            listOf("relativeMajor" to "Relative major","allModes" to "Mixed Modes","filterMode" to "Filter by mode").forEach { (id,label) ->
-                FilterChip(selected=effective.analysis==id,onClick={if(catalog.supportsModeAnalysis || id=="allModes") onSettingsChange(settings.copy(analysis=id))},
-                    enabled=catalog.supportsModeAnalysis || id=="allModes",label={Text(label)},modifier=Modifier.testTag("AuralAnalysis-$id"))
+    LazyColumn(state=scroll, modifier=modifier.fillMaxSize().testTag("AuralCatalog")) {
+        item(key="browse-controls") {
+            Column(Modifier.fillMaxWidth()) {
+                Row(Modifier.padding(horizontal=12.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                    TextButton(onClick=onAdaptive) { Text("Guided course") }
+                    if(onContinue!=null) TextButton(onClick=onContinue) { Text("Continue practice") }
+                }
+                AuralProgressionSearch(query,{ query=it;storage.edit().putString("progressionQuery",Json.encodeToString(it)).apply() },catalog,effective)
+                Row(Modifier.fillMaxWidth().padding(horizontal=12.dp,vertical=6.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                    val analysisOptions = if(catalog.supportsModeAnalysis)
+                        listOf("relativeMajor" to "Relative major","allModes" to "Mixed Modes","filterMode" to "Filter by mode")
+                    else listOf("allModes" to "Mixed Modes")
+                    AuralCatalogChoice("Analysis",analysisOptions.firstOrNull { it.first==effective.analysis }?.second ?: "Mixed Modes",
+                        analysisOptions,{onSettingsChange(settings.copy(analysis=it))},Modifier.weight(1f),"AuralAnalysis")
+                    val sortOptions=listOf("mostSongs" to "Most songs","recommended" to "Recommended","longest" to "Longest first","shortest" to "Shortest first")
+                    AuralCatalogChoice("Sort by",sortOptions.firstOrNull { it.first==settings.sortOrder }?.second ?: "Most songs",
+                        sortOptions,{onSettingsChange(settings.copy(sortOrder=it))},Modifier.weight(1f),"AuralSort")
+                }
+                if(effective.analysis=="filterMode") AuralCatalogChoice("Mode",auralModeLabel(effective.modeFilter),
+                    AURAL_MODES.map { it to auralModeLabel(it) },{onSettingsChange(settings.copy(modeFilter=it))},
+                    Modifier.fillMaxWidth().padding(horizontal=12.dp),"AuralModeFilter")
+                if(settings.sortOrder=="mostSongs") Text("Ordered by use across the full song database.",
+                    Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                TextButton(onClick={moreOptions=!moreOptions},modifier=Modifier.padding(horizontal=12.dp).testTag("AuralMoreBrowsingOptions")) {
+                    Icon(if(moreOptions) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight,null)
+                    Text("More browsing options")
+                }
+                Text(buildList {
+                    if(minimumPopularityPercent!=null) add("Song popularity ≥${minimumPopularityPercent}%")
+                    add("Core ≥$minimumCoreLength chords")
+                    add(when(settings.groupingPriority) { "length" -> "Length first"; "start" -> "Starting chord first"; else -> "No grouping" })
+                    if(settings.distinguishInversions) add("Inversions distinguished")
+                }.joinToString(" · "),Modifier.padding(start=16.dp,end=16.dp,bottom=8.dp),
+                    style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines=2,overflow=TextOverflow.Ellipsis)
+                if(moreOptions) Column(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=4.dp)) {
+                    Text("Minimum core progression length",style=MaterialTheme.typography.titleSmall)
+                    Row(verticalAlignment=Alignment.CenterVertically) {
+                        OutlinedButton(onClick={onMinimumCoreLengthChange((minimumCoreLength-1).coerceAtLeast(2))},
+                            enabled=minimumCoreLength>2,modifier=Modifier.testTag("AuralCoreLengthDecrease")) { Text("−") }
+                        OutlinedTextField(value=coreLengthDraft,onValueChange={ value ->
+                            if(value.length<=4 && value.all(Char::isDigit)) coreLengthDraft=value
+                        },singleLine=true,keyboardOptions=KeyboardOptions(keyboardType=KeyboardType.Number,imeAction=ImeAction.Done),
+                            keyboardActions=KeyboardActions(onDone={
+                                coreLengthDraft.toIntOrNull()?.takeIf { it in 2..9999 }?.let(onMinimumCoreLengthChange)
+                                    ?: run { coreLengthDraft=minimumCoreLength.toString() }
+                            }),
+                            isError=coreLengthDraft.toIntOrNull()?.let { it !in 2..9999 } ?: true,
+                            modifier=Modifier.width(96.dp).testTag("AuralMinimumCoreLength"),label={Text("Chords")})
+                        OutlinedButton(onClick={onMinimumCoreLengthChange((minimumCoreLength+1).coerceAtMost(9999))},
+                            enabled=minimumCoreLength<9999,modifier=Modifier.testTag("AuralCoreLengthIncrease")) { Text("+") }
+                    }
+                    Text("A 4-chord core contains 3 transitions. Shorter subsequences can still appear beneath it.",
+                        style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                    if(coreLengthDraft.toIntOrNull()?.let { it !in 2..9999 } ?: true)
+                        Text("Enter 2–9999 chords.",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.error)
+                    Divider(Modifier.padding(vertical=8.dp))
+                    Text("Song popularity",style=MaterialTheme.typography.titleSmall)
+                    if(minimumPopularityPercent!=null) {
+                        Text("Show songs scored ${draftPopularity.roundToInt()}% or higher",style=MaterialTheme.typography.bodySmall)
+                        Slider(value=draftPopularity,onValueChange={draftPopularity=it},valueRange=0f..100f,
+                            onValueChangeFinished={onMinimumPopularityChange(draftPopularity.roundToInt())},
+                            modifier=Modifier.testTag("AuralMinimumPopularity").semantics { contentDescription="Minimum song popularity" })
+                        Text(if(catalog.popularity.isEmpty()) "No popularity scores are installed; this filter has no matches."
+                            else "Songs without a measured score are excluded. This does not change the song counts used for Most songs.",
+                            style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Divider(Modifier.padding(vertical=8.dp))
+                    Text("Grouping",style=MaterialTheme.typography.titleSmall)
+                    Column {
+                        listOf("none" to "No grouping","length" to "Length → Starting chord","start" to "Starting chord → Length").forEach { (id,label) ->
+                            RadioButtonRow(label,settings.groupingPriority==id,catalog.supportsStartGrouping || id!="start",
+                                {onSettingsChange(settings.copy(groupingPriority=id))},"AuralGroup-$id")
+                        }
+                    }
+                    if(!catalog.supportsStartGrouping) Text("Update the progression catalog to group by starting chord.",
+                        style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                    AuralExampleSwitch("Show subsequences","AuralFlatList",!settings.flatList,
+                        description="Expand shorter sequences under a progression") { onSettingsChange(settings.copy(flatList=!it)) }
+                    Divider(Modifier.padding(vertical=8.dp))
+                    Text("Chord matching",style=MaterialTheme.typography.titleSmall)
+                    AuralExampleSwitch("Distinguish inversions","AuralInversions",settings.distinguishInversions,
+                        description="Include the bass note when matching a chord") { onSettingsChange(settings.copy(distinguishInversions=it)) }
+                }
+                catalogError?.let {Text(it,Modifier.padding(12.dp),color=MaterialTheme.colorScheme.error)}
+                if(loadingGroups) LinearProgressIndicator(Modifier.fillMaxWidth().testTag("AuralCatalogLoading"))
             }
         }
-        if(effective.analysis=="filterMode") Box(Modifier.fillMaxWidth().padding(horizontal=12.dp)) {
-            OutlinedButton(onClick={modeMenu=true},modifier=Modifier.fillMaxWidth().testTag("AuralModeFilter")) { Text(auralModeLabel(effective.modeFilter)) }
-            DropdownMenu(expanded=modeMenu,onDismissRequest={modeMenu=false}) { AURAL_MODES.forEach { mode ->
-                DropdownMenuItem(text={Text(auralModeLabel(mode))},onClick={modeMenu=false;onSettingsChange(settings.copy(modeFilter=mode))})
-            } }
-        }
-        Row(Modifier.fillMaxWidth().padding(horizontal=12.dp,vertical=4.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            Text("Group first:",style=MaterialTheme.typography.labelLarge,modifier=Modifier.align(Alignment.CenterVertically))
-            FilterChip(selected=settings.groupingPriority!="start",onClick={onSettingsChange(settings.copy(groupingPriority="length"))},label={Text("Length")})
-            FilterChip(selected=settings.groupingPriority=="start",onClick={onSettingsChange(settings.copy(groupingPriority="start"))},
-                enabled=catalog.supportsStartGrouping,label={Text("Starting chord")})
-        }
-        if(!catalog.supportsStartGrouping) Text("Update the progression catalog to group by starting chord.",Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
-        TextButton(onClick={scope.launch {gaps=withContext(Dispatchers.IO){catalog.analysisGaps()}}}) {Text("Analysis gaps")}
-        catalogError?.let {Text(it,Modifier.padding(12.dp),color=MaterialTheme.colorScheme.error)}
-        if(loadingGroups) LinearProgressIndicator(Modifier.fillMaxWidth())
-        LazyColumn(state=scroll,modifier=Modifier.weight(1f)) {
+            if (!loadingGroups && catalogError == null && primaryGroups.isEmpty()) item(key="no-matches") {
+                Text("No progressions with at least $minimumCoreLength chords match your filters.",Modifier.padding(16.dp).testTag("AuralNoMatchingGroups"))
+            }
             primaryGroups.forEach { primary ->
-                item(key=primary.id) {
+                if(!ungrouped) item(key=primary.id) {
                     val open=primary.id in expandedPrimary
                     ListItem(headlineContent={Text(primary.label,style=MaterialTheme.typography.titleMedium)},
                         supportingContent={Text(if(startFirst) "${primary.leaves.size} sequence lengths" else "${primary.leaves.size} starting-chord groups")},
@@ -239,17 +358,25 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                         modifier=Modifier.clickable { activePrimary=if(open) "" else primary.id;expandedPrimary=if(open) expandedPrimary-primary.id else expandedPrimary+primary.id }.testTag("AuralPrimary-${primary.id}"))
                     Divider()
                 }
-                if(primary.id in expandedPrimary) primary.leaves.forEach { leaf ->
-                    item(key="sub:${primary.id}:${leaf.id}") {
+                if(ungrouped || primary.id in expandedPrimary) primary.leaves.forEach { leaf ->
+                    if(!ungrouped) item(key="sub:${primary.id}:${leaf.id}") {
                         val open=leaf.id in expandedSecondary
                         val label=if(startFirst) "${leaf.length} chords" else "Starts with ${leaf.start.label}"
-                        ListItem(headlineContent={Text(label)},leadingContent={Icon(if(open) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight,null)},
+                        val page=pages[leaf.id]
+                        ListItem(headlineContent={Text(label)},
+                            supportingContent={if(open) Text(when {
+                                page==null || page.busy -> "Loading progressions…"
+                                page.error!=null -> page.error
+                                page.rows.isEmpty() -> "No matching progressions"
+                                else -> "${page.rows.size} progressions loaded"
+                            },modifier=Modifier.testTag(if(page!=null && !page.busy && page.rows.isNotEmpty()) "AuralSubgroupReady-${leaf.id}" else "AuralSubgroupStatus-${leaf.id}"))},
+                            leadingContent={Icon(if(open) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight,null)},
                             modifier=Modifier.padding(start=16.dp).clickable{toggleLeaf(leaf)}.testTag("AuralSubgroup-${leaf.id}"))
                     }
-                    if(leaf.id in expandedSecondary) {
-                        item(key="review:${leaf.id}") { TextButton(onClick={ onReview(pages[leaf.id]?.rows.orEmpty().take(30).toList()) },
+                    if(ungrouped || leaf.id in expandedSecondary) {
+                        if(!ungrouped) item(key="review:${leaf.id}") { TextButton(onClick={ onReview(pages[leaf.id]?.rows.orEmpty().take(30).toList()) },
                             enabled=pages[leaf.id]?.rows?.isNotEmpty()==true && !loadingGroups && query==appliedQuery) {Text("Review this subgroup")} }
-                        items(displays(leaf),key={it.key}) { entry ->
+                        items(visibleRows[leaf.id].orEmpty(),key={it.key}) { entry ->
                             val row=entry.row
                             Row(Modifier.fillMaxWidth().padding(start=(24+minOf(entry.depth,4)*8).dp,end=8.dp,top=4.dp,bottom=4.dp),verticalAlignment=Alignment.CenterVertically) {
                                 Column(Modifier.widthIn(min=48.dp,max=88.dp).padding(end=8.dp),horizontalAlignment=Alignment.CenterHorizontally) {
@@ -259,10 +386,12 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                                         Icon(if(open) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight,if(open) "Collapse ${entry.number}" else "Expand ${entry.number}")
                                     }
                                 }
-                                Column(Modifier.weight(1f).clickable{onPractice(row.target)}.padding(vertical=12.dp).testTag("AuralPattern-${row.target.id}")) {
+                                Column(Modifier.weight(1f).clickable(enabled=loadedKey==queryKey && !loadingGroups){onPractice(row.target)}.padding(vertical=12.dp).testTag("AuralPattern-${row.target.id}")) {
                                     Text(auralRomanSequence(row.target.labels),style=MaterialTheme.typography.titleMedium,maxLines=3)
                                     Text(if(row.target.view.startsWith("relative_")) "Relative major" else row.target.sourceMode()?.let(::auralModeLabel) ?: "Mode unavailable",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
-                                    Text("${row.length} chords · ${row.occurrences} occurrences · ${row.songs} songs",style=MaterialTheme.typography.bodySmall)
+                                    Text("${row.length} chords · ${row.globalSongs} songs overall" +
+                                        if(minimumPopularityPercent!=null) " · ${row.songs} matching" else " · ${row.globalOccurrences} uses",
+                                        style=MaterialTheme.typography.bodySmall)
                                     AuralFamilyProgress(row.target.id,progress)
                                 }
                                 TextButton(onClick={info=row;evidence="Loading coverage…";scope.launch{evidence=try{withContext(Dispatchers.IO){catalog.evidence(row.target)}}catch(_:Exception){"Coverage unavailable for this snapshot."}}}){Text("ⓘ")}
@@ -275,13 +404,21 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
                             page?.error?.let{Text(it,Modifier.padding(16.dp),color=MaterialTheme.colorScheme.error)}
                             if(page?.error!=null) TextButton(onClick={load(leaf,page.rows.isNotEmpty())}) {Text("Retry")}
                             if(page?.hasMore==true) TextButton(onClick={load(leaf,true)},enabled=page.busy!=true && query==appliedQuery,modifier=Modifier.fillMaxWidth()){Text("More")}
-                            else if(page?.busy==false && page.rows.isEmpty()) Text("No matching sequences",Modifier.padding(16.dp))
+                            else if(page?.busy==false && page.rows.isEmpty()) Text(
+                                minimumPopularityPercent?.let { "No matching sequences with songs at ${it}% popularity or higher" } ?: "No matching sequences",
+                                Modifier.padding(16.dp))
                         }
                     }
                 }
             }
-        }
     }
-    info?.let { row -> AlertDialog(onDismissRequest={info=null},title={Text("Sequence evidence")},text={Text("${row.occurrences} occurrences across ${row.songs} songs and ${row.sections} sections.\n${row.effective} effective occurrences for ranking.\nCombined score: ${"%.2f".format(row.score)}\nCounts include overlaps and always describe the full corpus.\nSong popularity is separate from harmonic frequency.\n\n$evidence",Modifier.verticalScroll(rememberScrollState()))},confirmButton={TextButton(onClick={info=null}){Text("Close")}}) }
-    gaps?.let { entries -> AlertDialog(onDismissRequest={gaps=null},title={Text("Analysis gaps")},text={LazyColumn(Modifier.heightIn(max=420.dp)){item{Text("These passages cannot be graded reliably. Valid passages elsewhere in each section remain available.",Modifier.padding(bottom=12.dp))};items(entries){Text(it,Modifier.padding(vertical=8.dp),style=MaterialTheme.typography.bodySmall)};item{TextButton(onClick={scope.launch{val next=withContext(Dispatchers.IO){catalog.analysisGaps(entries.size)};gaps=entries+next}}){Text("More")}}}},confirmButton={TextButton(onClick={gaps=null}){Text("Close")}}) }
+    info?.let { row -> AlertDialog(onDismissRequest={info=null},title={Text("Sequence evidence")},text={Text("${row.globalOccurrences} uses across ${row.globalSongs} songs overall.\n${row.occurrences} uses across ${row.songs} matching songs and ${row.sections} sections.\nRecommended score: ${"%.2f".format(row.score)}\n\n$evidence",Modifier.verticalScroll(rememberScrollState()))},confirmButton={TextButton(onClick={info=null}){Text("Close")}}) }
+}
+
+@Composable
+private fun RadioButtonRow(label:String,selected:Boolean,enabled:Boolean,onClick:()->Unit,tag:String) {
+    Row(Modifier.fillMaxWidth().clickable(enabled=enabled,onClick=onClick).testTag(tag),verticalAlignment=Alignment.CenterVertically) {
+        RadioButton(selected=selected,onClick=onClick,enabled=enabled)
+        Text(label,modifier=Modifier.padding(start=8.dp))
+    }
 }

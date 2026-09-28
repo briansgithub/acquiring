@@ -12,7 +12,8 @@ import kotlinx.serialization.json.Json
     val flatList: Boolean = false,
     val analysis: String = "relativeMajor",
     val modeFilter: String = "major",
-    val groupingPriority: String = "length",
+    val groupingPriority: String = "none",
+    val sortOrder: String = "mostSongs",
 )
 
 internal val AURAL_MODES = listOf("major", "minor", "dorian", "phrygian", "lydian", "mixolydian", "locrian", "harmonicMinor", "phrygianDominant")
