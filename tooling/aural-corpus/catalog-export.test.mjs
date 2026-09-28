@@ -50,6 +50,8 @@ test('compact device export preserves source sections and indexed occurrence end
       ['harmony','harmony_bass','relative_harmony','relative_harmony_bass']);
     assert.deepEqual(db.prepare("SELECT DISTINCT mode FROM catalog_range WHERE view='harmony'").all().map(row=>row.mode),['minor']);
     assert.ok(db.prepare("SELECT count(*) n FROM catalog_range WHERE start_group IS NOT NULL AND start_group_label IS NOT NULL").get().n>0);
+    assert.deepEqual(db.prepare("SELECT name FROM sqlite_master WHERE name IN ('range_frequency','range_mode_frequency') ORDER BY name").all().map(row=>row.name),
+      ['range_frequency','range_mode_frequency']);
     const relativeRun=db.prepare("SELECT key_json,source_key_json FROM catalog_run WHERE view='relative_harmony'").get();
     assert.deepEqual(JSON.parse(relativeRun.key_json),{scale:'major',tonic:'F'});
     assert.deepEqual(JSON.parse(relativeRun.source_key_json),{scale:'minor',tonic:'D'});

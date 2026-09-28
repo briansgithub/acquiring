@@ -6,6 +6,8 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
@@ -39,6 +41,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.awaitCancellation
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import java.io.File
 
@@ -86,6 +89,7 @@ internal fun AuralQuizScreen(
     playExample: (suspend (AuralExercise) -> Unit)? = null
 ) {
     val context = LocalContext.current
+    val browseStorage = remember(context) { context.applicationContext.getSharedPreferences("aural_catalog_browse", android.content.Context.MODE_PRIVATE) }
     val lifecycleOwner = LocalLifecycleOwner.current
     val session = remember { sessionOverride ?: AuralSession(AuralPreferences(context), exampleProvider = SqliteAuralExampleProvider(File(context.filesDir, "aural-corpus.db"))) }
     val audio = remember { AuralAudio(context.applicationContext) }
@@ -101,6 +105,7 @@ internal fun AuralQuizScreen(
     var route by rememberSaveable { mutableStateOf(if(session.playbackReturn!=null) "lesson" else "families") }
     var selectedFamily by rememberSaveable { mutableStateOf(AuralCurriculum.families.first().id) }
     var showInfo by remember { mutableStateOf(false) }
+    var analysisGaps by remember { mutableStateOf<List<String>?>(null) }
     var showSettings by rememberSaveable { mutableStateOf(false) }
     var showExampleSettings by rememberSaveable { mutableStateOf(false) }
     var exampleSettings by remember { mutableStateOf(session.exampleSettings) }
@@ -114,27 +119,32 @@ internal fun AuralQuizScreen(
     var catalogStatus by remember { mutableStateOf("Organizing song harmony for practice") }
     var catalogLoadAttempt by rememberSaveable { mutableStateOf(0) }
     var songsTab by rememberSaveable { mutableStateOf(session.playbackReturn?.fromSongs==true) }
+    var minimumPopularityPercent by rememberSaveable { mutableStateOf(browseStorage.getInt("minimumPopularityPercent",80).coerceIn(0,100)) }
+    var minimumCoreLength by rememberSaveable { mutableStateOf(browseStorage.getInt("minimumCoreLength",2).coerceIn(2,9999)) }
     var reviewPool by remember { mutableStateOf(emptyList<AuralCatalogRow>()) }
     val catalogState = rememberSaveableStateHolder()
+    val catalogStore = remember(context) { AuralCatalogStore.get(context) }
     LaunchedEffect(catalogLoadAttempt) {
         if(!catalogEnabled) return@LaunchedEffect
         catalogError = null
         catalogStatus = "Opening your progression catalog"
-        try { catalog = withContext(Dispatchers.IO) {
-            check(AuralCatalogDownloader.hasInstalledBundleFiles(context)) { "Progression bundle is incomplete" }
-            AuralCatalog(File(context.filesDir,"aural-catalog.db"))
-        } }
-        catch (cancelled: CancellationException) { throw cancelled }
-        catch (_: Exception) {
-            catalogStatus = "Downloading the progression catalog"
-            val installed = AuralCatalogDownloader.downloadAndInstall(context) { catalogStatus = it }
-            if (installed.isSuccess) {
-                try { catalog = withContext(Dispatchers.IO) { AuralCatalog(File(context.filesDir,"aural-catalog.db")) } }
-                catch (_: Exception) { catalogError = "The progression catalog could not be opened after download." }
-            } else catalogError = installed.exceptionOrNull()?.message ?: "The progression catalog is not available right now."
+        var lease: AuralPreparedResource<AuralCatalog>.Lease? = null
+        try {
+            lease = try { catalogStore.acquire() }
+            catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: Exception) {
+                catalogStatus = "Downloading the progression catalog"
+                AuralCatalogDownloader.downloadAndInstall(context) { catalogStatus = it }.getOrThrow()
+                catalogStore.acquire()
+            }
+            catalog = lease.value
+            awaitCancellation()
+        } catch (cancelled: CancellationException) { throw cancelled }
+        catch (error: Exception) { catalogError = error.message ?: "The progression catalog is not available right now." }
+        finally {
+            lease?.release()
         }
     }
-    DisposableEffect(catalog) { val current=catalog; onDispose { current?.close() } }
     LaunchedEffect(answer) { session.rememberDraft(answer) }
 
     fun refresh() { view = session.view() }
@@ -151,7 +161,7 @@ internal fun AuralQuizScreen(
         val currentCatalog = catalog ?: return
         cancel(); busy=true
         activityJob = scope.launch {
-            try { session.practicePattern(pattern,currentCatalog,mode,practiceMicrophoneKind.takeUnless { it=="auto" },assessment); songsTab=false; route="lesson"; resetResponse(); refresh() }
+            try { session.practicePattern(pattern,currentCatalog,mode,practiceMicrophoneKind.takeUnless { it=="auto" },assessment,minimumPopularityPercent); songsTab=false; route="lesson"; resetResponse(); refresh() }
             catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) { session.technical("This passage could not be prepared. Choose another sequence."); refresh() }
             finally { busy=false }
@@ -225,7 +235,7 @@ internal fun AuralQuizScreen(
         activityJob=scope.launch {
             try {
                 val passage=withContext(Dispatchers.IO) {
-                    currentCatalog.passage(pattern,exampleSettings,AuralSelectionContext(),0,pattern.id,song.id)
+                    currentCatalog.passage(pattern,exampleSettings,AuralSelectionContext(),0,pattern.id,song.id,minimumPopularityPercent)
                 }
                 session.exploringPlayback(answer,passage,fromSongs=true); session.returnFromPlayback()
                 if(!productionPlayback(passage,true)) session.technical("This song is unavailable in Playback. Your quiz is still here.")
@@ -364,7 +374,7 @@ internal fun AuralQuizScreen(
         }
         if(inLesson && songsTab && exercise!!.provenance.target.pattern!=null) {
             catalogState.SaveableStateProvider("songs-${exercise.familyId}") {
-                AuralPatternSongs(catalog,exercise.provenance.target.pattern!!,busy,::openSong,Modifier.weight(1f))
+                AuralPatternSongs(catalog,exercise.provenance.target.pattern!!,busy,::openSong,Modifier.weight(1f),minimumPopularityPercent)
             }
             if(view.feedback.isNotBlank()) Text(view.feedback,Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.bodySmall)
         } else if(route == "families" && catalogEnabled) {
@@ -376,7 +386,11 @@ internal fun AuralQuizScreen(
                     AuralCatalogScreen(catalog!!,exampleSettings,session,{ patternPractice(it,"recognize") },::adaptive,
                         if(exercise != null) ({ route="lesson" }) else null,Modifier.weight(1f),
                         onReview={ rows -> reviewPool=rows; session.reviewPattern(rows)?.let { patternPractice(it.first,it.second,true) } },
-                        onSettingsChange={ session.setExampleSettings(it);exampleSettings=it;refresh() })
+                        onSettingsChange={ session.setExampleSettings(it);exampleSettings=it;refresh() },
+                        minimumPopularityPercent=minimumPopularityPercent,
+                        onMinimumPopularityChange={ minimumPopularityPercent=it; browseStorage.edit().putInt("minimumPopularityPercent",it).apply() },
+                        minimumCoreLength=minimumCoreLength,
+                        onMinimumCoreLengthChange={ minimumCoreLength=it; browseStorage.edit().putInt("minimumCoreLength",it).apply() })
                 }
             }
         } else {
@@ -535,7 +549,17 @@ internal fun AuralQuizScreen(
             if (!enabled && inLesson && !namedPractice && exercise?.responseType == "microphone") {
                 cancel(); session.enableMicrophone(false); resetResponse(); refresh()
             } else { session.setMicrophonePreference(enabled); refresh() }
-        })
+        },
+        onAnalysisGaps = if(catalog != null && route == "families") ({
+            showInfo = false
+            scope.launch { analysisGaps = withContext(Dispatchers.IO) { catalog?.analysisGaps() } }
+        }) else null)
+    analysisGaps?.let { entries -> AlertDialog(onDismissRequest={analysisGaps=null},title={Text("Analysis gaps")},
+        text={LazyColumn(Modifier.heightIn(max=420.dp)) {
+            item { Text("These passages cannot be graded reliably. Valid passages elsewhere in each section remain available.",Modifier.padding(bottom=12.dp)) }
+            items(entries) { Text(it,Modifier.padding(vertical=8.dp),style=MaterialTheme.typography.bodySmall) }
+            item { TextButton(onClick={scope.launch { analysisGaps=entries+withContext(Dispatchers.IO){catalog?.analysisGaps(entries.size).orEmpty()} }}) {Text("More")} }
+        }},confirmButton={TextButton(onClick={analysisGaps=null}){Text("Close")}}) }
 }
 
 /** Keep the practice tabs visible even when a source progression spans many lines. */

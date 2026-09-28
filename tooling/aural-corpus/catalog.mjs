@@ -3,7 +3,12 @@ import { reducedCatalogRanges, retainedChildren } from './loop-reduction.mjs';
 
 export const CATALOG_VERSION = 'aural-catalog-3';
 const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
-export const catalogOrder = (a, b) => b.score - a.score || b.songCount - a.songCount || b.length - a.length || compare(a.id, b.id);
+export const catalogOrder = (a, b, sortOrder = 'recommended') => {
+  if (sortOrder === 'mostSongs') return b.songCount - a.songCount || b.occurrenceCount - a.occurrenceCount || b.length - a.length || compare(a.id, b.id);
+  if (sortOrder === 'longest' || sortOrder === 'shortest') return (sortOrder === 'longest' ? b.length - a.length : a.length - b.length)
+    || b.songCount - a.songCount || b.occurrenceCount - a.occurrenceCount || compare(a.id, b.id);
+  return b.score - a.score || b.songCount - a.songCount || b.length - a.length || compare(a.id, b.id);
+};
 export const baseScore = (length, songs, effective) => Math.log2(length) * Math.log2(1 + songs) * Math.log2(1 + effective);
 
 /** Canonical, deliberately broad starting-chord bucket used by both apps.
@@ -60,7 +65,23 @@ export function catalogStats(index, pattern, preferences = {}, context = {}) {
 /** Max heap. Bounds must sort ahead of exact entries on ties. */
 export class CatalogHeap {
   items = [];
-  static before(a, b) { return a.bound > b.bound || a.bound === b.bound && (!a.result && !!b.result || !!a.result === !!b.result && a.result && catalogOrder(a.result, b.result) < 0); }
+  static key(entry) {
+    const songs = entry.result?.songCount ?? entry.range.songCount;
+    const occurrences = entry.result?.occurrenceCount ?? entry.range.end - entry.range.start + 1;
+    const length = entry.result?.length ?? (entry.sortOrder === 'shortest' ? entry.range.minLength : entry.range.maxLength);
+    return entry.sortOrder === 'longest' ? [length, songs, occurrences]
+      : entry.sortOrder === 'shortest' ? [-length, songs, occurrences] : [songs, occurrences, length];
+  }
+  static before(a, b) {
+    if (a.sortOrder === 'recommended') {
+      if (a.bound !== b.bound) return a.bound > b.bound;
+    } else {
+      const left = CatalogHeap.key(a), right = CatalogHeap.key(b);
+      for (let i = 0; i < left.length; i++) if (left[i] !== right[i]) return left[i] > right[i];
+    }
+    if (!a.result || !b.result) return !a.result && !!b.result;
+    return catalogOrder(a.result, b.result, a.sortOrder) < 0;
+  }
   push(value) {
     const a = this.items; let i = a.length; a.push(value);
     while (i) { const parent = (i - 1) >> 1; if (!CatalogHeap.before(value, a[parent])) break; a[i] = a[parent]; i = parent; }
@@ -78,9 +99,10 @@ export class CatalogHeap {
  * Session owns a frozen copy of preferences/history, making pagination reproducible.
  */
 export class CatalogSession {
-  constructor(index, { view = 'harmony', minLength = 2, maxLength = Infinity, search = '', preferences = {}, context = {} } = {}) {
+  constructor(index, { view = 'harmony', minLength = 2, maxLength = Infinity, search = '', preferences = {}, context = {}, sortOrder = 'mostSongs' } = {}) {
     if (!Number.isInteger(minLength) || minLength < 2 || !(maxLength >= minLength)) throw Error('Invalid chord-count range');
     this.index = index; this.preferences = structuredClone(preferences); this.context = structuredClone(context);
+    this.sortOrder = sortOrder;
     this.search = search.trim().toLowerCase(); this.heap = new CatalogHeap();
     this.factorBound = (preferences.popularity ? 1.5 : 1) * (preferences.favorites ? 1.5 : 1);
     for (const range of reducedCatalogRanges(index)) {
@@ -90,7 +112,8 @@ export class CatalogSession {
   }
   pushRange(range) {
     if (range.minLength > range.maxLength) return;
-    this.heap.push({ range, bound: baseScore(range.maxLength, range.songCount, Math.min(range.end - range.start + 1, 4 * range.songCount)) * this.factorBound });
+    this.heap.push({ range, sortOrder: this.sortOrder,
+      bound: baseScore(range.maxLength, range.songCount, Math.min(range.end - range.start + 1, 4 * range.songCount)) * this.factorBound });
   }
   page(limit = 50) {
     if (!Number.isInteger(limit) || limit < 1 || limit > 500) throw Error('Invalid page size');
@@ -108,7 +131,7 @@ export class CatalogSession {
         const labels = run.positions?.slice(start, start + pattern.length).map(p => run.view === 'harmony_bass' ? p.roman : p.degree) ?? pattern.tokens;
         if (this.search && !labels.join(' ').toLowerCase().includes(this.search)) continue;
         const row = { ...catalogStats(this.index, pattern, this.preferences, this.context), labels };
-        this.heap.push({ result: row, bound: row.score });
+        this.heap.push({ result: row, sortOrder: this.sortOrder, bound: row.score });
       }
     }
     return result;
@@ -116,11 +139,11 @@ export class CatalogSession {
   get hasMore() { return this.heap.items.length > 0; }
 }
 
-export function catalogChildren(index, pattern, preferences = {}, context = {}) {
+export function catalogChildren(index, pattern, preferences = {}, context = {}, sortOrder = 'mostSongs') {
   if (pattern.length <= 2) return [];
   const tokens = pattern.tokens ?? index.runs[index.runAt[pattern.sourcePosition]].tokens.slice(index.offsetAt[pattern.sourcePosition], index.offsetAt[pattern.sourcePosition] + pattern.length);
   return [...new Map(retainedChildren(tokens).map(tokens => {
     const p = getPattern(index, { view: pattern.view, tokens, minSongs: 1 });
     return [p.id, catalogStats(index, p, preferences, context)];
-  })).values()].sort(catalogOrder);
+  })).values()].sort((a,b) => catalogOrder(a,b,sortOrder));
 }

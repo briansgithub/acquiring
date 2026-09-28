@@ -16,22 +16,25 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.CancellationException
 
 @Composable
-internal fun AuralPatternSongs(catalog:AuralCatalog?,target:AuralPatternTarget,busy:Boolean,onSong:(AuralPatternSong)->Unit,modifier:Modifier=Modifier) {
-    var songs by remember(target.id) { mutableStateOf<List<AuralPatternSong>?>(null) }
-    var error by remember(target.id) { mutableStateOf(false) }
+internal fun AuralPatternSongs(catalog:AuralCatalog?,target:AuralPatternTarget,busy:Boolean,onSong:(AuralPatternSong)->Unit,modifier:Modifier=Modifier,
+    minimumPopularityPercent:Int?=null) {
+    var songs by remember(target.id,minimumPopularityPercent) { mutableStateOf<List<AuralPatternSong>?>(null) }
+    var error by remember(target.id,minimumPopularityPercent) { mutableStateOf(false) }
     var retry by remember { mutableStateOf(0) }
     val scroll=rememberLazyListState()
-    LaunchedEffect(catalog,target.id,retry) {
+    LaunchedEffect(catalog,target.id,minimumPopularityPercent,retry) {
         if(catalog==null) return@LaunchedEffect
         error=false
-        try { songs=withContext(Dispatchers.IO) { catalog.songs(target) } }
+        try { songs=withContext(Dispatchers.IO) { catalog.songs(target,minimumPopularityPercent) } }
         catch(cancelled:CancellationException) { throw cancelled }
         catch(_:Exception) { error=true }
     }
     Column(modifier.fillMaxSize().testTag("AuralSongs")) {
-        Text(songs?.let { "${it.size} songs · Popularity ↓" } ?: "Songs · Popularity ↓",Modifier.padding(16.dp),style=MaterialTheme.typography.labelLarge)
+        Text(songs?.let { "${it.size} songs · ${minimumPopularityPercent?.let { cutoff -> "${cutoff}%+ · " }.orEmpty()}Popularity ↓" }
+            ?: "Songs · Popularity ↓",Modifier.padding(16.dp),style=MaterialTheme.typography.labelLarge)
         if(busy || songs==null && !error) LinearProgressIndicator(Modifier.fillMaxWidth())
         if(error) TextButton(onClick={ retry++ }) { Text("Could not load songs · Retry") }
+        if(songs?.isEmpty()==true) Text("No supporting songs meet the popularity cutoff.",Modifier.padding(16.dp))
         if(songs!=null) LazyColumn(state=scroll,modifier=Modifier.weight(1f).testTag("AuralSongsList")) {
             itemsIndexed(songs.orEmpty(),key={_,song->song.id}) { index,song ->
                 ListItem(headlineContent={Text(song.title)},supportingContent={Text(song.artist)},

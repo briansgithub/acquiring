@@ -23,6 +23,8 @@ export function exportCatalog({ file, index, songs, normalizedFile, snapshotId }
       CREATE TABLE catalog_range(id INTEGER PRIMARY KEY,view TEXT,mode TEXT,start_group TEXT,start_group_label TEXT,start INTEGER,end INTEGER,min_length INTEGER,max_length INTEGER,songs INTEGER,upper_score REAL);
       CREATE INDEX range_view_mode ON catalog_range(view,mode,start_group,upper_score DESC);
       CREATE INDEX range_view_start ON catalog_range(view,start_group,upper_score DESC);
+      CREATE INDEX range_frequency ON catalog_range(view,songs DESC,(end-start+1) DESC,max_length DESC);
+      CREATE INDEX range_mode_frequency ON catalog_range(view,mode,start_group,songs DESC,(end-start+1) DESC,max_length DESC);
       CREATE INDEX run_section ON catalog_run(section_id);
       CREATE TABLE catalog_token(token TEXT PRIMARY KEY,label TEXT,inversion_label TEXT);
       CREATE TABLE popularity(song_id TEXT PRIMARY KEY,score REAL,confidence REAL,provider_url TEXT,measured_at TEXT);

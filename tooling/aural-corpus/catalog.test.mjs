@@ -19,13 +19,14 @@ test('compact ranges exhaust unique and recurring substrings exactly once, regar
   assert.equal(new Set(expanded).size, expanded.length);
   assert.deepEqual(expanded.sort(), brute(index).map(p => p.id).sort());
 });
-test('lazy pagination equals exhaustive integrated sorting under every toggle combination', () => {
+test('lazy pagination equals exhaustive sorting under every sort and example preference', () => {
   const index = discoverPatterns([run('a', 'I V I V I V vi IV'), run('b', 'I V vi IV'), run('c', 'ii V I'), run('d', 'z q r s t u')]);
   const context = { popularity: { a: { score: 1, confidence: 1 }, b: { score: 0, confidence: .8 } }, favoriteSongIds: ['c'], recentSongIds: ['a'] };
-  for (let mask = 0; mask < 8; mask++) {
+  for (let mask = 0; mask < 8; mask++) for (const sortOrder of ['mostSongs', 'recommended', 'longest', 'shortest']) {
     const preferences = { popularity: !!(mask & 1), favorites: !!(mask & 2), variety: !!(mask & 4) };
-    const expected = brute(index).filter(p => !reduceLoop(p.tokens).redundant).map(p => catalogStats(index, p, preferences, context)).sort(catalogOrder);
-    const session = new CatalogSession(index, { preferences, context });
+    const expected = brute(index).filter(p => !reduceLoop(p.tokens).redundant).map(p => catalogStats(index, p, preferences, context))
+      .sort((a,b) => catalogOrder(a,b,sortOrder));
+    const session = new CatalogSession(index, { preferences, context, sortOrder });
     const actual = []; while (session.hasMore) actual.push(...session.page(3));
     assert.deepEqual(actual.map(p => p.id), expected.map(p => p.id));
     assert.deepEqual(actual.map(p => p.score), expected.map(p => p.score));

@@ -155,7 +155,8 @@ internal fun AuralModeTabs(skillId: String, songsSelected:Boolean=false, onSongs
 }
 
 @Composable
-internal fun AuralInfoDialog(view: AuralLessonView, familyId: String?, onDismiss: () -> Unit, onMicrophone: (Boolean) -> Unit) {
+internal fun AuralInfoDialog(view: AuralLessonView, familyId: String?, onDismiss: () -> Unit, onMicrophone: (Boolean) -> Unit,
+    onAnalysisGaps: (() -> Unit)? = null) {
     AlertDialog(onDismissRequest = onDismiss, title = { Text("Your learning") },
         confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } },
         text = {
@@ -170,6 +171,7 @@ internal fun AuralInfoDialog(view: AuralLessonView, familyId: String?, onDismiss
                 }
                 Text("Sing in any comfortable octave. Unclear pitch is ungraded. Audio stays on this device.")
                 Text("○ New   ● Practicing   ✓ Mastered\nThree dots: Recognize, Recall, Sing. Each includes separate skills; progress is shared across a family’s progressions.")
+                if(onAnalysisGaps != null) TextButton(onClick = onAnalysisGaps) { Text("Analysis gaps") }
                 familyId?.let { id ->
                     Text(AuralCurriculum.families.firstOrNull { it.id == id }?.label ?: "Sequence progress", style = MaterialTheme.typography.titleSmall)
                     AuralCurriculum.skills.forEach { skill ->

@@ -277,6 +277,11 @@ internal fun MainScreen(
     
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
+    LaunchedEffect(Unit) {
+        // Let the home screen draw before reading the progression index on the I/O dispatcher.
+        withFrameNanos { }
+        AuralCatalogStore.get(context).warm()
+    }
     val downloadCatalog: () -> Unit = {
         scope.launch {
             catalogStatus = "Starting download..."

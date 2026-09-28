@@ -107,6 +107,8 @@ internal class AuralSession(
                 }
                 val decodedSettings = readField("exampleSettings", AuralExampleSettings()) { json.decodeFromJsonElement<AuralExampleSettings>(it) }
                     .let { if (savedVersion == 1 && it.analysis == "allModes") it.copy(analysis = "relativeMajor") else it }
+                    .let { if ((envelope["exampleSettings"] as? JsonObject)?.containsKey("sortOrder") != true)
+                        it.copy(groupingPriority = "none", sortOrder = "mostSongs") else it }
                 val decoded = AuralSavedSession(
                     progress = readField("progress", AuralProgress()) { json.decodeFromJsonElement<AuralProgress>(it) },
                     serial = readField("serial", 0L) { requireNotNull(it.jsonPrimitive.longOrNull).coerceAtLeast(0L) },
@@ -189,7 +191,8 @@ internal class AuralSession(
 
     val recentSongs: List<String> get() = saved.sourceExposures.asReversed().map { it.songId }.distinct().take(10)
     val favorites: Set<String> get() = favoriteSongIds.toSet()
-    suspend fun practicePattern(pattern: AuralPatternTarget, catalog: AuralCatalog, mode: String, microphoneKind: String? = null, assessment: Boolean = false) {
+    suspend fun practicePattern(pattern: AuralPatternTarget, catalog: AuralCatalog, mode: String, microphoneKind: String? = null, assessment: Boolean = false,
+        minimumPopularityPercent: Int? = null) {
         val serial = saved.serial + 1; val seed = seedFor(serial)
         val skills = when(mode) { "recognize" -> listOf("guided","compare","identify"); "recall" -> listOf("recall","complete","audiate"); else -> listOf("reproduce") }
         val skill = skills.firstOrNull { AuralCurriculum.cell(progressFor(),pattern.id,it).practiceCorrect < 4 } ?: skills[(serial % skills.size).toInt()]
@@ -200,7 +203,7 @@ internal class AuralSession(
             analysis=if(pattern.view.startsWith("relative_")) "relativeMajor" else if(saved.exampleSettings.analysis=="filterMode") "filterMode" else "allModes")
         val context = AuralSelectionContext(recentSongs,saved.sourceExposures.map { it.sourceId }.toSet(),favoriteSongIds,assessment=cell.support == 0,
             supportedOccurrenceId=saved.current?.takeIf { cell.support > 0 && it.familyId == pattern.id && it.skillId != skill }?.provenance?.corpus?.passage?.occurrenceId)
-        val passage = withContext(Dispatchers.IO) { catalog.passage(pattern,settings,context,seed,pattern.id) }
+        val passage = withContext(Dispatchers.IO) { catalog.passage(pattern,settings,context,seed,pattern.id,minimumPopularityPercent=minimumPopularityPercent) }
         val source = AuralCorpusProvenance(catalog.snapshotId,catalog.popularityVersion,"structural-patterns-1",passage,settings,seed=seed and 0xffffffffL,semitoneShift=12,
             recentSongIds=recentSongs,favoriteSongIds=favoriteSongIds.sorted(),heardSourceIds=context.heardSourceIds.toList(),
             familiar=AuralExposureIndex(context.heardSourceIds).contains(passage.sourceId),assessment=context.assessment,playbackTempo=base.tempo,sourceHistoryReliable=saved.sourceHistoryReliable)
