@@ -37,7 +37,8 @@ internal data class PlaybackTimelineEvent(
 internal data class PlaybackTimeline(
     val startBeat: Double = 1.0,
     val endBeat: Double,
-    val events: List<PlaybackTimelineEvent>
+    val events: List<PlaybackTimelineEvent>,
+    val completionKey: String? = null
 ) {
     init {
         require(endBeat > startBeat)
@@ -74,13 +75,15 @@ internal fun arpeggioSlotProgress(
     return exactSlot - floor(exactSlot)
 }
 
-internal enum class PlaybackPhase { STOPPED, BUFFERING, PLAYING, PAUSED, ERROR }
+internal enum class PlaybackPhase { STOPPED, BUFFERING, PLAYING, PAUSED, COMPLETED, ERROR }
 
 internal data class PlaybackState(
     val phase: PlaybackPhase = PlaybackPhase.STOPPED,
     val beat: Double = 1.0,
     val underrunCount: Int = 0,
-    val error: String? = null
+    val error: String? = null,
+    val completionKey: String? = null,
+    val transportRevision: Long = 0
 )
 
 internal data class RenderedPlaybackBlock(
@@ -116,6 +119,7 @@ internal class PlaybackPcmRenderer(
     private val crossfadeFrames = (sampleRate * 24 / 1_000.0).roundToInt().coerceAtLeast(1)
 
     val currentBeat: Double get() = beat
+    val finished: Boolean get() = timeline.completionKey != null && beat >= timeline.endBeat
     val currentBeatsPerFrame: Double get() = config.bpm / (60.0 * sampleRate)
 
     fun replaceTimeline(newTimeline: PlaybackTimeline, startBeat: Double = newTimeline.startBeat) {
@@ -277,6 +281,12 @@ internal class PlaybackPcmRenderer(
         if (beatsPerFrame <= 0.0) return
         beat += beatsPerFrame
         if (beat + BEAT_EPSILON >= timeline.endBeat) {
+            if (timeline.completionKey != null) {
+                beat = timeline.endBeat
+                activeEvents.clear()
+                nextEventIndex = timeline.events.size
+                return
+            }
             val loopLength = timeline.endBeat - timeline.startBeat
             val overshoot = (beat - timeline.endBeat).coerceAtLeast(0.0)
             beat = timeline.startBeat + (overshoot % loopLength)
@@ -432,6 +442,10 @@ internal class PlaybackEngine(
      */
     val isPlaybackRequested: Boolean get() = playbackRequested.get()
 
+    fun isCurrentCompletion(state: PlaybackState): Boolean =
+        state.phase == PlaybackPhase.COMPLETED && state.transportRevision == transportRevision.get() &&
+            state.completionKey == latestTimeline.get()?.completionKey
+
     fun load(timeline: PlaybackTimeline, continuePlaying: Boolean) {
         val revision = transportRevision.incrementAndGet()
         latestTimeline.set(timeline)
@@ -567,7 +581,8 @@ internal class PlaybackEngine(
             val loopLength = segment.loopEnd - segment.loopStart
             if (loopLength <= 0.0) return segment.loopStart
             val advanced = (head - segment.startFrame).coerceAtLeast(0L) * segment.beatsPerFrame
-            return segment.loopStart + ((segment.startBeat - segment.loopStart + advanced) % loopLength)
+            return if (activeTimeline.completionKey != null) (segment.startBeat + advanced).coerceAtMost(segment.loopEnd)
+            else segment.loopStart + ((segment.startBeat - segment.loopStart + advanced) % loopLength)
         }
 
         fun publish(phase: PlaybackPhase, error: String? = null, force: Boolean = false) {
@@ -581,7 +596,9 @@ internal class PlaybackEngine(
                 phase = phase,
                 beat = audibleBeat(),
                 underrunCount = sink?.underrunCount ?: lastUnderrunCount,
-                error = error
+                error = error,
+                completionKey = if (phase == PlaybackPhase.COMPLETED) timeline?.completionKey else null,
+                transportRevision = activeTransportRevision
             )
         }
 
@@ -702,6 +719,10 @@ internal class PlaybackEngine(
                 }
 
                 is Command.Play -> {
+                    if (renderer?.finished == true) {
+                        pauseAndReanchor()
+                        renderer?.seek(timeline!!.startBeat)
+                    }
                     playRequested = true
                     publish(
                         if (latestConfig.get().bpm > 0.0) PlaybackPhase.BUFFERING
@@ -774,6 +795,20 @@ internal class PlaybackEngine(
                 try {
                     ensureSink()
                     if (!sinkStarted && !prime(activeRenderer)) continue
+                    if (activeRenderer.finished) {
+                        // Drain the already-written final block before signalling completion.
+                        // Poll commands while draining so pause/seek/load can invalidate it.
+                        if (unwrappedPlaybackHead() >= totalFramesWritten &&
+                            activeTransportRevision == transportRevision.get()) {
+                            playRequested = false
+                            playbackRequested.set(false)
+                            sink?.pause()
+                            publish(PlaybackPhase.COMPLETED, force = true)
+                        } else {
+                            commands.poll(5, java.util.concurrent.TimeUnit.MILLISECONDS)?.let(::handle)
+                        }
+                        continue
+                    }
                     renderAndWrite(activeRenderer, BLOCK_FRAMES)
                     deadObjectRecoveries = 0
 

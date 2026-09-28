@@ -86,6 +86,7 @@ internal fun AuralQuizScreen(
     loadFavoriteSongs: (suspend () -> Set<String>)? = null,
     catalogEnabled: Boolean = true,
     openFullPlayback: (suspend (AuralSourcePassage, Boolean) -> Boolean)? = null,
+    onPlayMatchingSongs: (AuralPatternTarget, Int) -> Unit = { _, _ -> },
     playExample: (suspend (AuralExercise) -> Unit)? = null
 ) {
     val context = LocalContext.current
@@ -387,6 +388,7 @@ internal fun AuralQuizScreen(
                         if(exercise != null) ({ route="lesson" }) else null,Modifier.weight(1f),
                         onReview={ rows -> reviewPool=rows; session.reviewPattern(rows)?.let { patternPractice(it.first,it.second,true) } },
                         onSettingsChange={ session.setExampleSettings(it);exampleSettings=it;refresh() },
+                        onPlayMatchingSongs={ onPlayMatchingSongs(it, minimumPopularityPercent) },
                         minimumPopularityPercent=minimumPopularityPercent,
                         onMinimumPopularityChange={ minimumPopularityPercent=it; browseStorage.edit().putInt("minimumPopularityPercent",it).apply() },
                         minimumCoreLength=minimumCoreLength,

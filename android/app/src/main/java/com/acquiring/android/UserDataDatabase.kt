@@ -36,7 +36,15 @@ abstract class UserDataDatabase : RoomDatabase() {
     abstract fun songOctaveOffsetDao(): SongOctaveOffsetDao
 
     companion object {
-        const val SCHEMA_VERSION = 3
+        const val SCHEMA_VERSION = 4
+
+        val MIGRATION_3_4 = object : Migration(3, SCHEMA_VERSION) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE playlist_entries ADD COLUMN position INTEGER")
+                db.execSQL("ALTER TABLE playlist_entries ADD COLUMN sectionId TEXT")
+                db.execSQL("ALTER TABLE playlist_entries ADD COLUMN sectionName TEXT")
+            }
+        }
 
         /** Deliberately distinct from [AppDatabase.DB_NAME]. */
         const val DB_NAME = "acquiring-user-db"
@@ -75,7 +83,7 @@ abstract class UserDataDatabase : RoomDatabase() {
             }
         }
 
-        val MIGRATION_2_3 = object : Migration(2, SCHEMA_VERSION) {
+        val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
                     """

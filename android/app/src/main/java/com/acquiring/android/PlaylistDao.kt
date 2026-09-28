@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 
 @Dao
 interface PlaylistDao {
@@ -54,6 +55,15 @@ interface PlaylistDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addEntry(entry: PlaylistEntry)
 
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun addEntries(entries: List<PlaylistEntry>)
+
+    @Transaction
+    suspend fun saveGeneratedPlaylist(playlist: Playlist, entries: List<PlaylistEntry>) {
+        insertPlaylist(playlist)
+        addEntries(entries)
+    }
+
     @Query("DELETE FROM playlist_entries WHERE playlistId = :playlistId AND slug = :slug")
     suspend fun removeEntry(playlistId: String, slug: String)
 
@@ -62,10 +72,16 @@ interface PlaylistDao {
         """
         SELECT slug FROM playlist_entries
         WHERE playlistId = :playlistId
-        ORDER BY addedAt DESC, slug COLLATE NOCASE
+        ORDER BY CASE WHEN position IS NULL THEN 1 ELSE 0 END,
+                 position ASC, addedAt DESC, slug COLLATE NOCASE
         """
     )
     suspend fun getSlugsIn(playlistId: String): List<String>
+
+    @Query("""SELECT * FROM playlist_entries WHERE playlistId=:playlistId
+        ORDER BY CASE WHEN position IS NULL THEN 1 ELSE 0 END,
+                 position ASC, addedAt DESC, slug COLLATE NOCASE""")
+    suspend fun getEntriesIn(playlistId: String): List<PlaylistEntry>
 
     /** Built-in playlists are not deletable; their entries still are. */
     @Query("DELETE FROM playlists WHERE id = :playlistId AND isBuiltIn = 0")

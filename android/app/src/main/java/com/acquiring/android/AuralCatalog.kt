@@ -438,6 +438,25 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
                 popularity[c.getString(0)]?.score?.takeIf { it.isFinite() && it in 0.0..1.0 }) }
         return result.filter { auralMeetsMinimumPopularity(it.popularityScore,minimumPopularityPercent) }.sortedWith(auralPatternSongOrder)
     }
+    /** One candidate per distinct song/section, regardless of repeated occurrences. */
+    fun queueCandidates(target: AuralPatternTarget): List<QueueCandidate> {
+        require(target.snapshotId == snapshotId && lookup(target.tokens, target.view) == target)
+        val result = mutableListOf<QueueCandidate>()
+        db.rawQuery("""SELECT DISTINCT song.id,song.title,song.artist,section.id,section.name
+            FROM catalog_suffix s JOIN catalog_suffix e ON e.run_id=s.run_id AND e.offset=s.offset+?
+            JOIN catalog_run r ON r.id=s.run_id
+            JOIN catalog_song song ON song.id=r.song_id
+            JOIN catalog_section section ON section.id=r.section_id
+            WHERE s.rank BETWEEN ? AND ? ORDER BY song.id,section.id""",
+            arrayOf((target.tokens.size-1).toString(),target.start.toString(),target.end.toString())).use { cursor ->
+            while (cursor.moveToNext()) {
+                val slug = cursor.getString(0)
+                result += QueueCandidate(QueuedSong(slug,cursor.getString(1) ?: slug,cursor.getString(2) ?: "",
+                    cursor.getString(3),cursor.getString(4) ?: "Section"),popularity[slug]?.score?.takeIf { it.isFinite() && it in 0.0..1.0 })
+            }
+        }
+        return result
+    }
     fun passage(target: AuralPatternTarget, settings: AuralExampleSettings, context: AuralSelectionContext, seed: Long, familyId: String, songId:String?=null,
         minimumPopularityPercent: Int? = null): AuralSourcePassage {
         val resolved = requireNotNull(lookup(target.tokens,target.view))

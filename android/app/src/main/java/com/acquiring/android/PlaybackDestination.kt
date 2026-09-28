@@ -54,7 +54,10 @@ fun PlaybackDestination(
     stopPersistentSignal: Int = 0,
     onPersistentMonitoringChange: (Boolean) -> Unit = {},
     onRequestCollapseDock: () -> Unit = {},
-    initialPassage: Pair<Double,Double>? = null
+    initialPassage: Pair<Double,Double>? = null,
+    playOnceKey: String? = null,
+    autoStart: Boolean = false,
+    onSectionComplete: (String) -> Unit = {}
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
     val selectedSectionKey = selectedSectionId
@@ -121,6 +124,9 @@ fun PlaybackDestination(
         )
 
         PlaybackTab(
+            playOnceKey = playOnceKey,
+            autoStart = autoStart,
+            onSectionComplete = onSectionComplete,
             section = selectedSection,
             initialPassage = initialPassage,
             isSimpleMode = isSimpleMode,
