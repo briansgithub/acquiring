@@ -1,4 +1,5 @@
 import AcquiringAudio
+import AcquiringAural
 import AcquiringCatalog
 import AcquiringCore
 import CryptoKit
@@ -265,6 +266,7 @@ enum TimelineFrameRatePreference: String, CaseIterable, Identifiable {
 }
 
 extension TimelineFrameRatePreference {
+    @MainActor
     func displayFrameRateRange(
         displayMaximum: Int = UIScreen.main.maximumFramesPerSecond
     ) -> CAFrameRateRange {
@@ -384,6 +386,34 @@ final class QuizInstrumentSession {
 @Observable
 final class AppEnvironment {
     let catalog: CatalogCoordinator
+    let auralConfiguration: AuralBundleConfiguration
+    let auralInstaller: AuralBundleInstaller
+    let auralCatalog: AuralCatalogReader
+    let auralSession: AuralSession
+    let auralRestoration: AuralRestorationStore
+
+    func warmAuralCatalog() async {
+        guard await auralInstaller.hasInstalledFiles() else { return }
+        do {
+            try await auralCatalog.prepare()
+            let info = try await auralCatalog.info()
+            let saved = auralRestoration.snapshot
+            let browser = saved.browser ?? AuralBrowserSnapshot()
+            let analysis = info.supportsModeAnalysis ? browser.analysis : "allModes"
+            let view = (analysis == "relativeMajor" ? "relative_" : "")
+                + (saved.distinguishInversions ? "harmony_bass" : "harmony")
+            let query = AuralCatalogQuery(
+                view: view,
+                progression: browser.progression.flatMap { $0.isValid ? $0 : nil } ?? AuralProgressionQuery(),
+                minimumLength: browser.minimumCoreLength,
+                minimumPopularityPercent: min(100, max(0, browser.minimumPopularityPercent ?? 80)),
+                sourceMode: analysis == "filterMode" ? browser.modeFilter : nil
+            )
+            try await auralCatalog.warm(query)
+        } catch {
+            // The browser owns its visible install and recovery path.
+        }
+    }
     let maintenance: any CatalogMaintenanceService
     let catalogAssetMetadata: any CatalogAssetMetadataService
     let externalBetaUpdates: any ExternalBetaUpdateService
@@ -437,6 +467,26 @@ final class AppEnvironment {
         let coordinator = CatalogCoordinator(configuration: configuration)
         catalog = coordinator
         catalogConfiguration = configuration
+        let selectedAuralConfiguration: AuralBundleConfiguration
+        if let uiTestSession {
+            selectedAuralConfiguration = AuralBundleConfiguration(
+                directoryURL: uiTestSession.catalogDirectoryURL
+                    .deletingLastPathComponent()
+                    .appending(path: "\(uiTestSession.identifier)-aural", directoryHint: .isDirectory),
+                manifestURL: URL(string: "https://example.invalid/aural-catalog-manifest.json")!
+            )
+        } else {
+            selectedAuralConfiguration = try AuralBundleConfiguration.live()
+        }
+        auralConfiguration = selectedAuralConfiguration
+        auralInstaller = AuralBundleInstaller(configuration: selectedAuralConfiguration)
+        auralCatalog = AuralCatalogReader(configuration: selectedAuralConfiguration)
+        auralSession = AuralSession(
+            fileURL: selectedAuralConfiguration.directoryURL.appending(path: "session-v1.json")
+        )
+        auralRestoration = AuralRestorationStore(
+            fileURL: selectedAuralConfiguration.directoryURL.appending(path: "restore-v1.json")
+        )
 #if DEBUG
         let selectedAssetMetadata: any CatalogAssetMetadataService
         if isUITesting {
