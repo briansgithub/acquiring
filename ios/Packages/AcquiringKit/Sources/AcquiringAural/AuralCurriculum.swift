@@ -695,7 +695,7 @@ public enum AuralCurriculum {
                 tonic: tonic,
                 register: 1,
                 expectedMode: mode,
-                distinguishesBass: pattern.view == "harmony_bass"
+                distinguishesBass: pattern.view.hasSuffix("harmony_bass")
             )
         }
         let family = AuralFamilyDefinition(

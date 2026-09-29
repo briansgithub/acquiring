@@ -4,14 +4,17 @@ import SwiftUI
 
 struct AuralQuizView: View {
     @State private var model: AuralQuizStore
+    @State private var popularityDraft: Double
     @Bindable private var libraryStore: LibraryStore
     private let environment: AppEnvironment
 
     init(environment: AppEnvironment, libraryStore: LibraryStore) {
-        _model = State(initialValue: AuralQuizStore(
+        let store = AuralQuizStore(
             environment: environment,
             libraryStore: libraryStore
-        ))
+        )
+        _model = State(initialValue: store)
+        _popularityDraft = State(initialValue: Double(store.minimumPopularityPercent))
         self.libraryStore = libraryStore
         self.environment = environment
     }
@@ -45,141 +48,158 @@ struct AuralQuizView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { settingsToolbar }
         .task { await model.load() }
+        .onDisappear { model.suspend() }
     }
 
     private func catalog(_ info: AuralCatalogInfo) -> some View {
         List {
-            if let warning = environment.auralRestoration.warning {
-                Section {
-                    Label(warning, systemImage: "exclamationmark.triangle")
-                        .foregroundStyle(.orange)
-                }
-            }
             Section {
                 NavigationLink {
-                    AuralCurriculumView(
-                        environment: environment,
-                        libraryStore: libraryStore
-                    )
-                } label: {
-                    Label {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Guided curriculum")
-                                .font(.headline)
-                            Text("Hear → recognize → recall → internally hear → reproduce")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    } icon: {
-                        Image(systemName: "graduationcap")
-                    }
-                }
-                .accessibilityIdentifier("aural.curriculum")
+                    AuralCurriculumView(environment:environment,libraryStore:libraryStore)
+                } label: { Label("Guided curriculum",systemImage:"graduationcap") }
             }
-
-            Section("Catalog filters") {
-                Stepper("At least \(model.minimumLength) chords", value: $model.minimumLength, in: 2...64)
-                HStack {
-                    Text("Maximum")
-                    Spacer()
-                    TextField("Any", value: $model.maximumLength, format: .number)
-                        .keyboardType(.numberPad)
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: 80)
-                }
-                Toggle("Prefer popular songs", isOn: $model.preferPopular)
-                Toggle("Keep examples varied", isOn: $model.keepVaried)
-                Toggle("Favor my favorites", isOn: $model.favorFavorites)
-                Toggle("Distinguish inversions", isOn: $model.distinguishInversions)
-                Toggle("Flat list", isOn: $model.flatList)
-            }
-
             Section {
-                if model.roots.isEmpty, !model.isLoadingPage {
-                    ContentUnavailableView(
-                        "No matching sequences",
-                        systemImage: "music.note.list",
-                        description: Text("Change the Roman-numeral search or chord-count filter.")
-                    )
+                AuralProgressionBuilder(model:model)
+            }
+            Section("Mode handling") {
+                Picker("Mode handling",selection:$model.analysis) {
+                    Text("Relative major").tag("relativeMajor").disabled(!model.supportsModes)
+                    Text("Mixed Modes").tag("allModes")
+                    Text("Filter by mode").tag("filterMode").disabled(!model.supportsModes)
                 }
-                ForEach(model.visibleRows) { node in
-                    AuralCatalogRowView(
-                        node: node,
-                        isExpanded: model.expandedPaths.contains(node.path),
-                        flatList: model.flatList,
-                        toggle: { Task { await model.toggle(node) } }
-                    )
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier("aural.analysis")
+                if !model.supportsModes {
+                    Text("This catalog uses Mixed Modes. Update the catalog to enable Relative major and mode filtering.")
+                        .font(.caption).foregroundStyle(.secondary)
                 }
-                if model.hasMore {
-                    Button {
-                        Task { await model.loadNextPage() }
-                    } label: {
-                        if model.isLoadingPage {
-                            ProgressView()
-                                .frame(maxWidth: .infinity)
-                        } else {
-                            Label("More progressions", systemImage: "chevron.down")
-                                .frame(maxWidth: .infinity)
+                if model.effectiveAnalysis == "filterMode" {
+                    Picker("Source mode",selection:$model.modeFilter) {
+                        ForEach(AuralQuizStore.modes,id:\.self) { mode in Text(AuralQuizStore.modeLabel(mode)).tag(mode) }
+                    }
+                }
+                Picker("Sort", selection: $model.sortOrder) {
+                    Text("Most songs").tag("mostSongs")
+                    Text("Recommended").tag("recommended")
+                    Text("Longest first").tag("longest")
+                    Text("Shortest first").tag("shortest")
+                }
+                .accessibilityIdentifier("aural.sortOrder")
+                Picker("Group first",selection:$model.groupingPriority) {
+                    Text("None").tag("none")
+                    Text("Length").tag("length")
+                    Text("Starting chord").tag("start").disabled(!model.supportsStartingChords)
+                }
+                .accessibilityIdentifier("aural.groupingPriority")
+                if !model.supportsStartingChords {
+                    Text("Update the progression catalog to group by starting chord.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            Section("Song popularity") {
+                Text("Minimum: \(Int(popularityDraft))%")
+                Slider(value: $popularityDraft, in: 0...100, step: 1, onEditingChanged: { editing in
+                    if !editing {
+                        let threshold = Int(popularityDraft)
+                        if model.minimumPopularityPercent != threshold {
+                            model.minimumPopularityPercent = threshold
+                            model.scheduleRestart()
                         }
                     }
-                    .disabled(model.isLoadingPage)
-                    .accessibilityIdentifier("aural.catalog.more")
+                })
+                .accessibilityIdentifier("aural.minimumPopularity")
+                .accessibilityLabel("Minimum song popularity")
+                .accessibilityValue("\(Int(popularityDraft)) percent")
+                Text(info.scoredSongCount == 0
+                     ? "No scored songs are installed; this filter has no matches."
+                     : "Only songs with a measured score at or above this percentage are included.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Section("Catalog preferences") {
+                Toggle("Prefer popular songs",isOn:$model.preferPopular)
+                Toggle("Keep examples varied",isOn:$model.keepVaried)
+                Toggle("Favor my favorites",isOn:$model.favorFavorites)
+                Toggle("Distinguish inversions",isOn:$model.distinguishInversions)
+                Toggle("Show subsequences",isOn:Binding(get:{!model.flatList},set:{model.flatList = !$0}))
+            }
+            if model.isLoadingGroups { ProgressView("Loading progression groups…") }
+            if let error = model.pageError { Text(error).foregroundStyle(.orange) }
+            if model.isUngrouped { bucketContents(model.globalBucket) }
+            ForEach(model.isUngrouped ? [] : model.primaryGroups) { group in
+                Button { model.togglePrimary(group) } label: {
+                    Label(group.label,systemImage:model.expandedPrimary.contains(group.id) ? "chevron.down" : "chevron.right")
+                        .font(.headline).frame(maxWidth:.infinity,alignment:.leading)
                 }
-                if let error = model.pageError {
-                    Label(error, systemImage: "exclamationmark.triangle")
-                        .foregroundStyle(.orange)
-                        .accessibilityIdentifier("aural.catalog.error")
-                }
-            } header: {
-                HStack {
-                    Text("\(info.sequenceCount.formatted()) observed sequences")
-                    Spacer()
-                    Button {
-                        model.evidenceText = """
-                        The catalog contains every confidently normalized contiguous sequence of two or more harmonic states.
-
-                        Adjacent equivalent states are collapsed while retaining their original source spans. Physical-transition coverage is a union of transition identities; longer-window coverage is separate. The curriculum's 80% target never limits catalog discovery.
-                        """
-                    } label: {
-                        Image(systemName: "info.circle")
+                .buttonStyle(.plain)
+                .accessibilityValue(model.expandedPrimary.contains(group.id) ? "Expanded" : "Collapsed")
+                .id(group.id)
+                if model.expandedPrimary.contains(group.id) {
+                    ForEach(group.buckets) { bucket in
+                        Button { Task { await model.toggleBucket(bucket) } } label: {
+                            Label(model.startFirst ? "\(bucket.length) chords" : "Starts with \(bucket.label)",
+                                  systemImage:model.expandedBuckets.contains(bucket.id) ? "chevron.down" : "chevron.right")
+                                .padding(.leading,16).frame(maxWidth:.infinity,alignment:.leading)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityValue(model.expandedBuckets.contains(bucket.id) ? "Expanded" : "Collapsed")
+                        .id("bucket:\(bucket.id)")
+                        if model.expandedBuckets.contains(bucket.id) { bucketContents(bucket) }
                     }
-                    .accessibilityLabel("About catalog coverage")
                 }
             }
         }
-        .searchable(text: $model.search, prompt: "Roman numerals")
-        .scrollPosition(id: Binding(
-            get: { model.flatList ? model.flatScrollPath : model.treeScrollPath },
-            set: { model.rememberScroll($0) }
-        ))
-        .onChange(of: model.search) { _, _ in model.scheduleRestart() }
-        .onChange(of: model.minimumLength) { _, _ in model.scheduleRestart() }
-        .onChange(of: model.maximumLength) { _, _ in model.scheduleRestart() }
-        .onChange(of: model.preferPopular) { _, _ in model.scheduleRestart() }
-        .onChange(of: model.keepVaried) { _, _ in model.scheduleRestart() }
-        .onChange(of: model.favorFavorites) { _, _ in model.scheduleRestart() }
-        .onChange(of: model.distinguishInversions) { _, _ in model.scheduleRestart() }
-        .onChange(of: model.flatList) { _, _ in model.scheduleRestart() }
-        .sheet(isPresented: Binding(
-            get: { model.evidenceText != nil },
-            set: { if !$0 { model.evidenceText = nil } }
-        )) {
+        .scrollPosition(id:Binding(get:{model.scrollID},set:{model.rememberScroll($0)}))
+        .onChange(of:model.progression) { _,_ in model.scheduleRestart() }
+        .onChange(of:model.analysis) { _,_ in model.scheduleRestart() }
+        .onChange(of:model.modeFilter) { _,_ in model.scheduleRestart() }
+        .onChange(of:model.preferPopular) { _,_ in model.scheduleRestart() }
+        .onChange(of:model.keepVaried) { _,_ in model.scheduleRestart() }
+        .onChange(of:model.favorFavorites) { _,_ in model.scheduleRestart() }
+        .onChange(of:model.distinguishInversions) { _, enabled in
+            if !enabled && model.progression.chords.contains(where: { $0.inversion != nil }) {
+                var next=model.progression
+                next.chords = next.chords.map { var chord=$0; chord.inversion=nil; return chord }
+                model.progression=next
+            } else { model.scheduleRestart() }
+        }
+        .onChange(of:model.flatList) { _,_ in model.persist() }
+        .onChange(of:model.sortOrder) { _,_ in model.scheduleRestart() }
+        .onChange(of:model.groupingPriority) { _,_ in model.regroup() }
+        .sheet(isPresented:$model.showsReview) {
             NavigationStack {
-                ScrollView {
-                    Text(model.evidenceText ?? "")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
-                }
-                .navigationTitle("Catalog coverage")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Done") { model.evidenceText = nil }
-                    }
+                if let first = model.reviewRows.first {
+                    AuralPracticeView(pattern:first.pattern,mode:.recognize,environment:environment,
+                        favoriteSongIds:libraryStore.userContent.favoriteSlugs,libraryStore:libraryStore,
+                        reviewPool:model.reviewRows,minimumPopularityPercent:model.minimumPopularityPercent)
+                        .navigationTitle("Subgroup review")
+                        .toolbar { ToolbarItem(placement:.confirmationAction) { Button("Done") { model.showsReview=false } } }
                 }
             }
         }
         .accessibilityIdentifier("aural.catalog")
+    }
+
+    @ViewBuilder
+    private func bucketContents(_ bucket: AuralCatalogBucket) -> some View {
+        let page = model.pages[bucket.id]
+        if !model.isUngrouped {
+            Button("Review this subgroup") { model.review(bucket) }
+                .disabled(page?.rows.isEmpty != false || model.isLoadingGroups)
+        }
+        ForEach(model.visibleRows(bucket)) { node in
+            AuralCatalogRowView(node:node,isExpanded:model.expandedPaths.contains(node.path),
+                flatList:model.flatList,toggle:{Task { await model.toggle(node) }})
+                .id(node.id)
+        }
+        if page?.isLoading == true { ProgressView("Loading sequences…") }
+        if let error = page?.error {
+            Text(error).foregroundStyle(.orange)
+            Button("Retry") { Task { await model.loadNextPage(bucket) } }
+        } else if page?.hasMore == true {
+            Button("More") { Task { await model.loadNextPage(bucket) } }.disabled(page?.isLoading == true)
+        } else if page?.isLoading == false, page?.rows.isEmpty == true {
+            Text("No matching sequences").foregroundStyle(.secondary)
+        }
     }
 
     @ToolbarContentBuilder
@@ -191,6 +211,132 @@ struct AuralQuizView: View {
                 Label("Settings", systemImage: "gearshape")
             }
             .accessibilityIdentifier("aural.settings")
+        }
+    }
+}
+
+private struct AuralProgressionBuilder: View {
+    @Bindable var model: AuralQuizStore
+    @State private var editIndex: Int?
+    @State private var showsMore = false
+    @State private var variants: [AuralChordVariant]?
+    @State private var visibleVariants = 30
+    private let numerals = ["I", "II", "III", "IV", "V", "VI", "VII"]
+
+    var body: some View {
+        VStack(alignment:.leading,spacing:8) {
+            HStack {
+                Text("Find consecutive chords").font(.headline)
+                Spacer()
+                if !model.progression.chords.isEmpty {
+                    Button("Clear all") { model.progression = AuralProgressionQuery() }
+                        .accessibilityIdentifier("aural.search.clear")
+                }
+            }
+            if model.progression.chords.isEmpty {
+                Text("Add a chord to filter sequences").font(.caption).foregroundStyle(.secondary)
+            } else {
+                ScrollView(.horizontal) {
+                    HStack(spacing:6) {
+                        ForEach(Array(model.progression.chords.enumerated()),id:\.offset) { index,chord in
+                            Button(chord.label) { editIndex=index; showsMore=false }
+                                .buttonStyle(.bordered)
+                                .accessibilityLabel("Chord \(index+1), \(chord.label). Edit chord")
+                                .accessibilityIdentifier("aural.search.chord.\(index)")
+                        }
+                    }
+                }
+            }
+            ScrollView(.horizontal) {
+                HStack(spacing:6) {
+                    ForEach(1...7,id:\.self) { degree in
+                        Button(numerals[degree-1]) {
+                            var next=model.progression
+                            next.chords.append(AuralChordConstraint(degree:degree))
+                            model.progression=next
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(model.progression.chords.count >= 32)
+                        .accessibilityLabel("Add degree \(numerals[degree-1]), any quality")
+                        .accessibilityIdentifier("aural.search.degree.\(degree)")
+                    }
+                }
+            }
+            Text("Find these chords in order, anywhere in a sequence.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+        .sheet(isPresented:Binding(get:{editIndex != nil},set:{if !$0 {editIndex=nil}})) { editor }
+    }
+
+    private func replace(_ index:Int,_ chord:AuralChordConstraint) {
+        var next=model.progression
+        next.chords[index]=chord
+        model.progression=next
+    }
+
+    @ViewBuilder private var editor: some View {
+        if let index=editIndex, model.progression.chords.indices.contains(index) {
+            let chord=model.progression.chords[index]
+            NavigationStack {
+                ScrollView {
+                    VStack(alignment:.leading,spacing:14) {
+                        Text("Accidental").font(.headline)
+                        HStack {
+                            ForEach(["♭","","♯"],id:\.self) { value in
+                                Button(value.isEmpty ? "Natural" : value == "♭" ? "Flat" : "Sharp") { var changed=chord;changed.accidental=value;changed.exact=nil;changed.inversion=nil;replace(index,changed);showsMore=false }
+                                    .buttonStyle(.bordered)
+                                    .tint(chord.accidental == value ? Color.accentColor : Color.gray)
+                            }
+                        }
+                        Text("Chord family").font(.headline)
+                        ScrollView(.horizontal) {
+                            HStack {
+                                ForEach(["any","major","minor","7","maj7","m7"],id:\.self) { value in
+                                    Button(value == "any" ? "Any" : value.capitalized) { var changed=chord;changed.family=value;changed.exact=nil;changed.inversion=nil;replace(index,changed);showsMore=false }
+                                        .buttonStyle(.bordered)
+                                        .tint(chord.exact == nil && chord.family == value ? Color.accentColor : Color.gray)
+                                }
+                            }
+                        }
+                        Button(showsMore ? "Hide more options" : "More options") { showsMore.toggle();variants=nil;visibleVariants=30 }
+                            .accessibilityIdentifier("aural.search.more")
+                        if showsMore {
+                            Group {
+                                if let variants {
+                                    if variants.isEmpty { Text("No chord forms in this catalog").foregroundStyle(.secondary) }
+                                    ForEach(Array(variants.prefix(visibleVariants))) { variant in
+                                        Button(variant.label) {
+                                            var changed=chord
+                                            changed.exact=variant.root
+                                            changed.inversion=model.distinguishInversions && variant.label != variant.root ? variant.label : nil
+                                            changed.family="any"
+                                            replace(index,changed)
+                                            editIndex=nil
+                                        }
+                                            .buttonStyle(.bordered)
+                                    }
+                                    if visibleVariants < variants.count { Button("More chords") { visibleVariants += 30 } }
+                                } else { ProgressView("Loading chord forms…") }
+                            }
+                            .task(id:"\(chord.degree)|\(chord.accidental)|\(model.analysis)|\(model.modeFilter)|\(model.distinguishInversions)") {
+                                let loaded=await model.chordVariants(for:chord)
+                                if !Task.isCancelled { variants=loaded }
+                            }
+                        }
+                        HStack {
+                            if index > 0 { Button("Move left") { var next=model.progression;next.chords.swapAt(index,index-1);model.progression=next;editIndex=index-1 } }
+                            if index < model.progression.chords.count-1 { Button("Move right") { var next=model.progression;next.chords.swapAt(index,index+1);model.progression=next;editIndex=index+1 } }
+                            Spacer()
+                            Button("Remove chord",role:.destructive) { var next=model.progression;next.chords.remove(at:index);model.progression=next;editIndex=nil }
+                        }
+                    }
+                    .padding()
+                }
+                .navigationTitle("Edit chord \(index+1)")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar { ToolbarItem(placement:.confirmationAction) { Button("Done") { editIndex=nil } } }
+            }
+            .presentationDetents([.medium,.large])
         }
     }
 }
@@ -239,13 +385,13 @@ private struct AuralCatalogRowView: View {
             NavigationLink(value: AppRoute.auralPattern(node.row.pattern)) {
                 VStack(alignment: .leading, spacing: 5) {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text(node.path)
+                        Text(node.row.outline)
                             .font(.caption.monospacedDigit().weight(.bold))
                             .foregroundStyle(.secondary)
                         AuralRomanSequence(labels: node.row.labels, mode: node.row.mode)
                     }
                     Text(
-                        "\(node.row.length) chords · \(node.row.occurrenceCount.formatted()) occurrences · \(node.row.songCount.formatted()) songs · \(node.row.sectionCount.formatted()) sections"
+                        "\(node.row.length) chords · \(node.row.globalSongCount.formatted()) songs overall · \(node.row.songCount.formatted()) matching"
                     )
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -254,12 +400,12 @@ private struct AuralCatalogRowView: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(
-                "\(node.path), \(node.row.labels.joined(separator: ", ")), \(node.row.length) chords, \(node.row.occurrenceCount) occurrences, \(node.row.songCount) songs, \(node.row.sectionCount) sections"
+                "\(node.path), \(node.row.labels.joined(separator: ", ")), \(node.row.length) chords, \(node.row.globalSongCount) songs overall, \(node.row.songCount) matching songs"
             )
         }
         .listRowInsets(EdgeInsets(
             top: 4,
-            leading: CGFloat(max(0, node.path.split(separator: ".").count - 1)) * 18 + 12,
+            leading: CGFloat(min(4, max(0, node.row.outline.split(separator: ".").count - 1))) * 18 + 28,
             bottom: 4,
             trailing: 12
         ))
@@ -270,6 +416,14 @@ struct AuralRomanSequence: View {
     let labels: [String]
     let mode: String?
     var revealsAnswer = true
+    var outlined = false
+
+    static func chordColor(_ label: String) -> Color {
+        let numeral = String(label.drop(while: { "♭♯#b".contains($0) }).prefix(while: { "ivIV".contains($0) })).uppercased()
+        let colors: [String: UInt32] = ["I":0xFF0000,"II":0xFFB014,"III":0xEFE600,"IV":0x00D300,"V":0x4800FF,"VI":0xB800E5,"VII":0xFF00CB]
+        guard let rgb = colors[numeral] else { return .secondary }
+        return Color(red:Double((rgb >> 16) & 255)/255,green:Double((rgb >> 8) & 255)/255,blue:Double(rgb & 255)/255)
+    }
 
     var body: some View {
         HStack(spacing: 5) {
@@ -282,7 +436,11 @@ struct AuralRomanSequence: View {
                 }
                 Text(revealsAnswer ? label : "—")
                     .font(.body.weight(.semibold))
-                    .foregroundStyle(revealsAnswer ? QuizModeColor.readout(for: mode ?? "") : .secondary)
+                    .foregroundStyle(revealsAnswer ? Self.chordColor(label) : .secondary)
+                    .padding(outlined ? 8 : 0)
+                    .overlay {
+                        if outlined { RoundedRectangle(cornerRadius:8).stroke(revealsAnswer ? Self.chordColor(label) : .secondary,lineWidth:2) }
+                    }
             }
         }
         .accessibilityElement(children: .ignore)
@@ -292,16 +450,19 @@ struct AuralRomanSequence: View {
 
 struct AuralPatternView: View {
     let pattern: AuralPattern
+    let minimumPopularityPercent: Int
     let environment: AppEnvironment
     @Bindable var libraryStore: LibraryStore
     @State private var selectedTab: AuralDetailTab
     @State private var evidence: String?
+    @State private var showsFullProgression = false
 
     init(pattern: AuralPattern, environment: AppEnvironment, libraryStore: LibraryStore) {
         self.pattern = pattern
         self.environment = environment
         self.libraryStore = libraryStore
         let restored = environment.auralRestoration.snapshot
+        minimumPopularityPercent = min(100,max(0,restored.browser?.minimumPopularityPercent ?? 80))
         _selectedTab = State(initialValue:
             restored.selectedPattern?.id == pattern.id ? restored.selectedTab : .recognize
         )
@@ -309,9 +470,7 @@ struct AuralPatternView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            AuralRomanSequence(labels: pattern.labels, mode: pattern.mode)
-                .font(.title3)
-                .padding(.horizontal)
+            progressionHeader
             Picker("Learning activity", selection: $selectedTab) {
                 ForEach(AuralDetailTab.allCases) { tab in Text(tab.title).tag(tab) }
             }
@@ -326,7 +485,8 @@ struct AuralPatternView: View {
                         mode: .recognize,
                         environment: environment,
                         favoriteSongIds: libraryStore.userContent.favoriteSlugs,
-                        libraryStore: libraryStore
+                        libraryStore: libraryStore,
+                        minimumPopularityPercent: minimumPopularityPercent
                     )
                 case .recall:
                     AuralPracticeView(
@@ -334,7 +494,8 @@ struct AuralPatternView: View {
                         mode: .recall,
                         environment: environment,
                         favoriteSongIds: libraryStore.userContent.favoriteSlugs,
-                        libraryStore: libraryStore
+                        libraryStore: libraryStore,
+                        minimumPopularityPercent: minimumPopularityPercent
                     )
                 case .sing:
                     AuralPracticeView(
@@ -342,13 +503,15 @@ struct AuralPatternView: View {
                         mode: .sing,
                         environment: environment,
                         favoriteSongIds: libraryStore.userContent.favoriteSlugs,
-                        libraryStore: libraryStore
+                        libraryStore: libraryStore,
+                        minimumPopularityPercent: minimumPopularityPercent
                     )
                 case .songs:
                     AuralSongsView(
                         pattern: pattern,
                         environment: environment,
-                        libraryStore: libraryStore
+                        libraryStore: libraryStore,
+                        minimumPopularityPercent: minimumPopularityPercent
                     )
                 }
             }
@@ -393,6 +556,38 @@ struct AuralPatternView: View {
             environment.auralRestoration.select(pattern: pattern, tab: tab)
         }
     }
+
+    private var progressionHeader: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            if pattern.labels.count > 8 {
+                Text("\(pattern.labels.count) chords")
+                    .font(.headline)
+                if !showsFullProgression {
+                    ScrollView(.horizontal) {
+                        HStack(spacing: 4) {
+                            AuralRomanSequence(labels: Array(pattern.labels.prefix(4)), mode: pattern.mode)
+                            Text("…").foregroundStyle(.secondary)
+                        }
+                        .fixedSize(horizontal: true, vertical: false)
+                    }
+                }
+                Button(showsFullProgression ? "Hide full progression" : "Show full progression") {
+                    showsFullProgression.toggle()
+                }
+                .font(.subheadline)
+            }
+            if pattern.labels.count <= 8 || showsFullProgression {
+                ScrollView(.horizontal) {
+                    AuralRomanSequence(labels: pattern.labels, mode: pattern.mode)
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+                .accessibilityIdentifier("aural.pattern.progression")
+            }
+        }
+        .font(.title3)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal)
+    }
 }
 
 private struct AuralActivityPlaceholder: View {
@@ -410,12 +605,16 @@ private struct AuralActivityPlaceholder: View {
 
 private struct AuralSongsView: View {
     @State private var model: AuralSongsModel
+    let minimumPopularityPercent: Int
 
-    init(pattern: AuralPattern, environment: AppEnvironment, libraryStore: LibraryStore) {
+    init(pattern: AuralPattern, environment: AppEnvironment, libraryStore: LibraryStore,
+         minimumPopularityPercent: Int) {
+        self.minimumPopularityPercent = minimumPopularityPercent
         _model = State(initialValue: AuralSongsModel(
             pattern: pattern,
             environment: environment,
-            libraryStore: libraryStore
+            libraryStore: libraryStore,
+            minimumPopularityPercent: minimumPopularityPercent
         ))
     }
 
@@ -429,7 +628,7 @@ private struct AuralSongsView: View {
                 ContentUnavailableView(
                     "No supporting songs",
                     systemImage: "music.note.slash",
-                    description: Text("No exact source is available for this progression.")
+                    description: Text("No supporting songs meet the \(minimumPopularityPercent)% popularity cutoff.")
                 )
             case let .failure(message):
                 ContentUnavailableView {
@@ -504,7 +703,9 @@ private struct AuralPracticeView: View {
         mode: AuralMode,
         environment: AppEnvironment,
         favoriteSongIds: Set<String>,
-        libraryStore: LibraryStore
+        libraryStore: LibraryStore,
+        reviewPool: [AuralCatalogRow] = [],
+        minimumPopularityPercent: Int? = nil
     ) {
         self.mode = mode
         self.libraryStore = libraryStore
@@ -512,7 +713,9 @@ private struct AuralPracticeView: View {
             pattern: pattern,
             mode: mode,
             environment: environment,
-            favoriteSongIds: favoriteSongIds
+            favoriteSongIds: favoriteSongIds,
+            reviewPool: reviewPool,
+            minimumPopularityPercent: minimumPopularityPercent
         ))
     }
 
@@ -641,7 +844,7 @@ private struct AuralPracticeView: View {
                         Text("Explanation")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
-                        AuralRomanSequence(labels: exercise.fullDegrees, mode: model.modeName)
+                        AuralRomanSequence(labels: exercise.fullDegrees, mode: model.modeName, outlined:true)
                         Text(exercise.guidance)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
@@ -715,10 +918,14 @@ private struct AuralPracticeView: View {
                     Button {
                         Task { await model.choose(option) }
                     } label: {
-                        AuralRomanSequence(labels: option.degrees, mode: model.modeName)
-                            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        HStack {
+                            if model.draft == [option.id] { Image(systemName:"checkmark").accessibilityHidden(true) }
+                            AuralRomanSequence(labels: option.degrees, mode: model.modeName, outlined:model.draft == [option.id])
+                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        }
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(model.draft == [option.id] ? .isSelected : [])
                     .disabled(!lesson.heard || lesson.answered)
                 }
             }
@@ -732,7 +939,7 @@ private struct AuralPracticeView: View {
                             Text(token)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 7)
-                                .background(.quaternary, in: Capsule())
+                                .overlay(Capsule().stroke(AuralRomanSequence.chordColor(token),lineWidth:2))
                         }
                     }
                 }

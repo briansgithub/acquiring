@@ -9,261 +9,328 @@ struct AuralDisplayRow: Identifiable, Hashable {
     let path: String
     var row: AuralCatalogRow
 }
+struct AuralBucketPage {
+    var rows: [AuralDisplayRow] = []
+    var rankingID: AuralCatalogReader.RankingID?
+    var isLoading = false
+    var hasMore = false
+    var error: String?
+}
+struct AuralPrimaryGroup: Identifiable {
+    let id: String
+    let label: String
+    let buckets: [AuralCatalogBucket]
+}
 
 @MainActor
 @Observable
 final class AuralQuizStore {
     var state: FeatureState<AuralCatalogInfo> = .loading
     var progressMessage = "Opening the progression catalog…"
-    var roots: [AuralDisplayRow] = []
+    var buckets: [AuralCatalogBucket] = []
+    var pages: [String: AuralBucketPage] = [:]
     var childrenByPath: [String: [AuralDisplayRow]] = [:]
     var expandedPaths: Set<String> = []
-    var isLoadingPage = false
-    var hasMore = false
-    var pageError: String?
-    var search = ""
-    var minimumLength = 2
-    var maximumLength: Int?
+    var expandedPrimary: Set<String> = []
+    var expandedBuckets: Set<String> = []
+    var progression = AuralProgressionQuery()
+    var minimumPopularityPercent = 80
     var preferPopular = true
     var keepVaried = true
     var favorFavorites = false
     var distinguishInversions = false
     var flatList = false
-    var selectedPattern: AuralPattern?
-    var selectedMode: AuralMode = .recognize
-    var selectedDetailTab: AuralDetailTab = .recognize
+    var analysis = "relativeMajor"
+    var modeFilter = "major"
+    var groupingPriority = "none"
+    var sortOrder = "mostSongs"
+    var browser = AuralBrowserSnapshot()
+    let globalBucket = AuralCatalogBucket(length: 0, startingChord: "", label: "All progressions")
     var evidenceText: String?
-    var treeScrollPath: String?
-    var flatScrollPath: String?
-    private var recentSongIds: [String] = []
-
+    var pageError: String?
+    var isLoadingGroups = false
+    var scrollID: String?
+    var reviewRows: [AuralCatalogRow] = []
+    var showsReview = false
+    private var catalogInfo: AuralCatalogInfo?
+    private var frozenQuery = AuralCatalogQuery()
+    private var context = ""
+    private var isActive = true
     @ObservationIgnored private let environment: AppEnvironment
     @ObservationIgnored private let libraryStore: LibraryStore
-    @ObservationIgnored private var rankingID: AuralCatalogReader.RankingID?
     @ObservationIgnored private var loadTask: Task<Void, Never>?
     @ObservationIgnored private var queryGeneration = 0
-    @ObservationIgnored private var isRestoringExpansion = false
 
     init(environment: AppEnvironment, libraryStore: LibraryStore) {
         self.environment = environment
         self.libraryStore = libraryStore
         let restored = environment.auralRestoration.snapshot
-        search = restored.search
-        minimumLength = restored.minimumLength
-        maximumLength = restored.maximumLength
         preferPopular = restored.preferPopular
         keepVaried = restored.keepVaried
         favorFavorites = restored.favorFavorites
         distinguishInversions = restored.distinguishInversions
         flatList = restored.flatList
-        treeScrollPath = restored.treeScrollPath
-        flatScrollPath = restored.flatScrollPath
-    }
-
-    var query: AuralCatalogQuery {
-        AuralCatalogQuery(
-            view: distinguishInversions ? "harmony_bass" : "harmony",
-            search: search,
-            minimumLength: minimumLength,
-            maximumLength: maximumLength,
-            preferPopular: preferPopular,
-            keepVaried: keepVaried,
-            favorFavorites: favorFavorites,
-            flatList: flatList,
-            favoriteSongIds: libraryStore.userContent.favoriteSlugs,
-            recentSongIds: recentSongIds
-        )
-    }
-
-    var visibleRows: [AuralDisplayRow] {
-        guard !flatList else { return roots }
-        var result: [AuralDisplayRow] = []
-        func append(_ nodes: [AuralDisplayRow]) {
-            for node in nodes {
-                result.append(node)
-                if expandedPaths.contains(node.path), let children = childrenByPath[node.path] {
-                    append(children)
-                }
-            }
+        browser = restored.browser ?? AuralBrowserSnapshot()
+        minimumPopularityPercent = min(100,max(0,browser.minimumPopularityPercent ?? 80))
+        progression = browser.progression.flatMap { $0.isValid ? $0 : nil } ?? AuralProgressionQuery()
+        analysis = browser.analysis
+        modeFilter = browser.modeFilter
+        if browser.rankingVersion < 2 {
+            browser.groupingPriority = "none"
+            browser.sortOrder = "mostSongs"
+            browser.rankingVersion = 2
         }
-        append(roots)
-        return result
+        groupingPriority = browser.groupingPriority
+        sortOrder = browser.sortOrder
+    }
+
+    static let modes = ["major","minor","dorian","phrygian","lydian","mixolydian","locrian","harmonicMinor","phrygianDominant"]
+    static func modeLabel(_ mode: String) -> String {
+        switch mode { case "harmonicMinor": "Harmonic minor"; case "phrygianDominant": "Phrygian dominant"; default: mode.capitalized }
+    }
+    var supportsModes: Bool { catalogInfo?.supportsModeAnalysis == true }
+    var supportsStartingChords: Bool { catalogInfo?.supportsStartGrouping == true }
+    var effectiveAnalysis: String { supportsModes ? analysis : "allModes" }
+    var startFirst: Bool { supportsStartingChords && groupingPriority == "start" }
+    var isUngrouped: Bool { groupingPriority == "none" }
+    var primaryGroups: [AuralPrimaryGroup] {
+        if startFirst {
+            let grouped = Dictionary(grouping: buckets, by: \.startingChord)
+            return grouped.values.compactMap { group in
+                guard let first = group.first else { return nil }
+                return AuralPrimaryGroup(id: "start:\(first.startingChord)", label: "Starts with \(first.label)",
+                                         buckets: group.sorted { $0.length > $1.length })
+            }.sorted { AuralCatalogBucket.startingChordBefore($0.buckets[0], $1.buckets[0]) }
+        }
+        return Dictionary(grouping: buckets, by: \.length).keys.sorted(by: >).map { length in
+            AuralPrimaryGroup(id: "length:\(length)", label: "\(length) chords",
+                buckets: buckets.filter { $0.length == length }.sorted(by: AuralCatalogBucket.startingChordBefore))
+        }
     }
 
     func load() async {
-        loadTask?.cancel()
+        isActive = true
         state = .loading
-        progressMessage = "Opening the progression catalog…"
         do {
-            do {
-                try await environment.auralCatalog.prepare()
-            } catch {
+            do { try await environment.auralCatalog.prepare() }
+            catch {
                 _ = try await environment.auralInstaller.ensureInstalled { [weak self] progress in
                     Task { @MainActor in self?.progressMessage = progress.message }
                 }
                 try await environment.auralCatalog.reload()
             }
-            let info = try await environment.auralCatalog.info()
-            state = .content(info)
-            recentSongIds = await environment.auralSession.recentSongIds()
-            await restartRanking()
-        } catch is CancellationError {
-            return
-        } catch {
-            state = .failure(error.localizedDescription)
-        }
+            catalogInfo = try await environment.auralCatalog.info()
+            if let catalogInfo { state = .content(catalogInfo) }
+            await restartRanking(restoring: true)
+        } catch is CancellationError { return }
+        catch { state = .failure(error.localizedDescription) }
     }
 
     func forceUpdate() async {
-        state = .loading
-        progressMessage = "Checking Aural Quiz data…"
         do {
-            _ = try await environment.auralInstaller.ensureInstalled(force: true) { [weak self] progress in
-                Task { @MainActor in self?.progressMessage = progress.message }
-            }
+            _ = try await environment.auralInstaller.ensureInstalled(force: true)
             try await environment.auralCatalog.reload()
-            state = .content(try await environment.auralCatalog.info())
-            recentSongIds = await environment.auralSession.recentSongIds()
-            await restartRanking()
-        } catch {
-            state = .failure(error.localizedDescription)
-        }
-    }
-
-    func restartRanking() async {
-        queryGeneration &+= 1
-        let generation = queryGeneration
-        var settings = AuralSettings()
-        settings.popularity = preferPopular
-        settings.variety = keepVaried
-        settings.favorites = favorFavorites
-        settings.distinguishInversions = distinguishInversions
-        settings.flatList = flatList
-        await environment.auralSession.setSettings(settings)
-        if let rankingID { await environment.auralCatalog.closeRanking(rankingID) }
-        rankingID = nil
-        roots = []
-        childrenByPath = [:]
-        expandedPaths = []
-        pageError = nil
-        do {
-            let id = try await environment.auralCatalog.beginRanking(query)
-            guard generation == queryGeneration else {
-                await environment.auralCatalog.closeRanking(id)
-                return
-            }
-            rankingID = id
-            await loadNextPage(generation: generation)
-        } catch {
-            pageError = error.localizedDescription
-        }
+            await load()
+        } catch { pageError = error.localizedDescription }
     }
 
     func scheduleRestart() {
-        persistCatalogState()
+        queryGeneration &+= 1
         loadTask?.cancel()
+        isLoadingGroups = true
+        persist()
         loadTask = Task { [weak self] in
-            do { try await Task.sleep(for: .milliseconds(250)) }
+            do { try await Task.sleep(for: .milliseconds(250)); try Task.checkCancellation() }
             catch { return }
             await self?.restartRanking()
         }
     }
 
-    func loadNextPage(generation: Int? = nil) async {
-        guard !isLoadingPage, let rankingID else { return }
-        let expected = generation ?? queryGeneration
-        isLoadingPage = true
-        defer { isLoadingPage = false }
+    func restartRanking(restoring: Bool = false) async {
+        queryGeneration &+= 1
+        let generation = queryGeneration
+        isLoadingGroups = true
+        let oldIDs = pages.values.compactMap(\.rankingID)
+        buckets = []; pages = [:]; childrenByPath = [:]; expandedPaths = []
+        expandedPrimary = []; expandedBuckets = []; pageError = nil
+        for id in oldIDs { await environment.auralCatalog.closeRanking(id) }
+        var settings = AuralSettings()
+        settings.popularity = preferPopular; settings.variety = keepVaried
+        settings.favorites = favorFavorites; settings.distinguishInversions = distinguishInversions
+        settings.flatList = flatList; settings.analysis = effectiveAnalysis; settings.modeFilter = modeFilter
+        await environment.auralSession.setSettings(settings)
+        let recent = await environment.auralSession.recentSongIds()
+        let query = AuralCatalogQuery(view: settings.view, progression: progression,
+            minimumPopularityPercent: minimumPopularityPercent,
+            preferPopular: preferPopular, keepVaried: keepVaried, favorFavorites: favorFavorites,
+            favoriteSongIds: libraryStore.userContent.favoriteSlugs, recentSongIds: recent,
+            sourceMode: effectiveAnalysis == "filterMode" ? modeFilter : nil, sortOrder: sortOrder)
+        let progressionIdentity = (try? JSONEncoder().encode(progression))?.base64EncodedString() ?? ""
+        let newContext = "\(catalogInfo?.snapshotId ?? "")|\(query.view)|\(query.sourceMode ?? "")|\(progressionIdentity)|\(preferPopular)|\(keepVaried)|\(favorFavorites)|\(minimumPopularityPercent)|\(sortOrder)"
         do {
-            let page = try await environment.auralCatalog.page(rankingID, limit: 30)
-            guard expected == queryGeneration else { return }
-            let start = roots.count
-            roots += page.rows.enumerated().map { offset, source in
-                var row = source
-                row.outline = "\(start + offset + 1)"
-                return AuralDisplayRow(id: row.outline, path: row.outline, row: row)
+            let result = try await environment.auralCatalog.buckets(query)
+            guard generation == queryGeneration, isActive, !Task.isCancelled else { return }
+            frozenQuery = query; buckets = result; context = newContext
+            if isUngrouped {
+                let restoringGlobal = restoring && browser.context == context && browser.activeBucket == globalBucket.id
+                browser.activeBucket = globalBucket.id
+                await loadNextPage(globalBucket, restorePages: restoringGlobal ? max(1,browser.pageCount) : 1, internalRestore: true)
+                scrollID = restoringGlobal ? browser.scrollID : nil
+            } else if restoring, browser.context == context {
+                if let bucket = buckets.first(where: { $0.id == browser.activeBucket }) {
+                    expandedBuckets.insert(bucket.id)
+                    let primary = primaryID(bucket)
+                    expandedPrimary.insert(primary); browser.activePrimary = primary
+                    await loadNextPage(bucket, restorePages: max(1,browser.pageCount), internalRestore: true)
+                    scrollID = browser.scrollID
+                } else if primaryGroups.contains(where: { $0.id == browser.activePrimary }) {
+                    expandedPrimary.insert(browser.activePrimary)
+                }
+            } else {
+                browser.activeBucket = ""; browser.activePrimary = ""; browser.pageCount = 1; scrollID = nil
             }
-            hasMore = page.hasMore
-            pageError = nil
-            await restoreExpansionIfNeeded()
-        } catch is CancellationError {
-            return
-        } catch {
-            pageError = error.localizedDescription
-        }
+            isLoadingGroups = false
+            persist()
+        } catch is CancellationError { return }
+        catch { if generation == queryGeneration { isLoadingGroups = false; pageError = error.localizedDescription } }
     }
 
+    private func primaryID(_ bucket: AuralCatalogBucket) -> String {
+        startFirst ? "start:\(bucket.startingChord)" : "length:\(bucket.length)"
+    }
+    func regroup() {
+        if isUngrouped {
+            if !browser.activeBucket.isEmpty && browser.activeBucket != globalBucket.id {
+                browser.lastGroupedBucket = browser.activeBucket
+            }
+            expandedPrimary = []; expandedBuckets = []
+            browser.activePrimary = ""
+            browser.activeBucket = globalBucket.id
+            scrollID = nil
+            if pages[globalBucket.id] == nil { Task { await loadNextPage(globalBucket) } }
+            persist()
+            return
+        }
+        if browser.activeBucket == globalBucket.id { browser.activeBucket = browser.lastGroupedBucket }
+        if let bucket = buckets.first(where: { $0.id == browser.activeBucket }) {
+            let parent = primaryID(bucket)
+            expandedPrimary = [parent]; expandedBuckets.insert(bucket.id)
+            browser.activePrimary = parent
+            scrollID = "bucket:\(bucket.id)"
+        } else { expandedPrimary = []; browser.activePrimary = ""; scrollID = nil }
+        persist()
+    }
+    func togglePrimary(_ group: AuralPrimaryGroup) {
+        guard !isLoadingGroups else { return }
+        if expandedPrimary.remove(group.id) == nil {
+            expandedPrimary.insert(group.id); browser.activePrimary = group.id
+        } else if browser.activePrimary == group.id { browser.activePrimary = ""; browser.activeBucket = "" }
+        persist()
+    }
+    func toggleBucket(_ bucket: AuralCatalogBucket) async {
+        guard !isLoadingGroups else { return }
+        if expandedBuckets.remove(bucket.id) == nil {
+            expandedBuckets.insert(bucket.id); browser.activeBucket = bucket.id
+            browser.activePrimary = primaryID(bucket)
+            if pages[bucket.id] == nil { await loadNextPage(bucket) }
+        } else if browser.activeBucket == bucket.id { browser.activeBucket = "" }
+        persist()
+    }
+    func loadNextPage(_ bucket: AuralCatalogBucket, restorePages: Int = 1, internalRestore: Bool = false) async {
+        guard pages[bucket.id]?.isLoading != true, isActive, !isLoadingGroups || internalRestore else { return }
+        let generation = queryGeneration
+        var page = pages[bucket.id] ?? AuralBucketPage()
+        page.isLoading = true; page.error = nil; pages[bucket.id] = page
+        var id = page.rankingID
+        do {
+            if id == nil {
+                var query = frozenQuery
+                if bucket.length > 0 { query.minimumLength = bucket.length; query.maximumLength = bucket.length }
+                query.startingChord = bucket.startingChord.isEmpty ? nil : bucket.startingChord
+                id = try await environment.auralCatalog.beginRanking(query)
+            }
+            guard let ranking = id else { return }
+            guard generation == queryGeneration, isActive, !Task.isCancelled else {
+                await environment.auralCatalog.closeRanking(ranking); return
+            }
+            page.rankingID = ranking
+            for _ in 0..<restorePages {
+                let loaded = try await environment.auralCatalog.page(ranking,limit:30)
+                guard generation == queryGeneration, isActive, !Task.isCancelled else {
+                    await environment.auralCatalog.closeRanking(ranking); return
+                }
+                let start = page.rows.count
+                page.rows += loaded.rows.enumerated().map { offset, source in
+                    var row = source; row.outline = "\(start + offset + 1)"
+                    let path = "\(bucket.id)/\(row.id)"
+                    return AuralDisplayRow(id:path,path:path,row:row)
+                }
+                page.hasMore = loaded.hasMore
+                if !loaded.hasMore { break }
+            }
+            page.isLoading = false; pages[bucket.id] = page
+            persist()
+        } catch {
+            if generation != queryGeneration || !isActive {
+                if let id { await environment.auralCatalog.closeRanking(id) }
+                return
+            }
+            page.rankingID = id; page.isLoading = false; page.error = error.localizedDescription
+            pages[bucket.id] = page
+        }
+    }
+    func visibleRows(_ bucket: AuralCatalogBucket) -> [AuralDisplayRow] {
+        var result: [AuralDisplayRow] = []
+        func append(_ nodes: [AuralDisplayRow]) {
+            for node in nodes {
+                result.append(node)
+                if !flatList, expandedPaths.contains(node.path) { append(childrenByPath[node.path] ?? []) }
+            }
+        }
+        append(pages[bucket.id]?.rows ?? [])
+        return result
+    }
     func toggle(_ node: AuralDisplayRow) async {
-        guard node.row.length > 2, !flatList else { return }
-        if expandedPaths.remove(node.path) != nil {
-            persistCatalogState()
-            return
-        }
-        expandedPaths.insert(node.path)
-        guard childrenByPath[node.path] == nil else { return }
+        guard node.row.length > 2, !flatList, !isLoadingGroups else { return }
+        if expandedPaths.remove(node.path) != nil { return }
+        let generation = queryGeneration
         do {
-            let children = try await environment.auralCatalog.children(of: node.row.pattern, query: query)
-            childrenByPath[node.path] = children.enumerated().map { offset, source in
-                var row = source
-                row.outline = "\(node.path).\(offset + 1)"
-                return AuralDisplayRow(id: row.outline, path: row.outline, row: row)
+            let children = try await environment.auralCatalog.children(of: node.row.pattern,query:frozenQuery)
+            guard generation == queryGeneration, isActive else { return }
+            childrenByPath[node.path] = children.enumerated().map { index, source in
+                var row = source; row.outline = "\(node.row.outline).\(index+1)"
+                let path = "\(node.path)/\(row.id)"
+                return AuralDisplayRow(id:path,path:path,row:row)
             }
-            persistCatalogState()
-        } catch {
-            expandedPaths.remove(node.path)
-            pageError = error.localizedDescription
-        }
+            expandedPaths.insert(node.path)
+        } catch { if generation == queryGeneration { pageError = error.localizedDescription } }
     }
-
-    func select(_ node: AuralDisplayRow) {
-        selectedPattern = node.row.pattern
-        selectedDetailTab = .recognize
+    func review(_ bucket: AuralCatalogBucket) {
+        guard !isLoadingGroups else { return }
+        reviewRows = Array((pages[bucket.id]?.rows ?? []).prefix(30).map(\.row))
+        showsReview = !reviewRows.isEmpty
     }
-
-    func rememberScroll(_ path: String?) {
-        if flatList { flatScrollPath = path } else { treeScrollPath = path }
-        persistCatalogState()
+    func chordVariants(for chord: AuralChordConstraint) async -> [AuralChordVariant] {
+        (try? await environment.auralCatalog.chordVariants(query: frozenQuery, degree: chord.degree, accidental: chord.accidental)) ?? []
     }
-
-    func loadEvidence(for pattern: AuralPattern) async {
-        do { evidenceText = try await environment.auralCatalog.evidenceText(for: pattern) }
-        catch { evidenceText = error.localizedDescription }
+    func rememberScroll(_ id: String?) { scrollID = id; if !isLoadingGroups { persist() } }
+    func persist() {
+        browser.progression = progression
+        browser.minimumPopularityPercent = minimumPopularityPercent
+        browser.analysis = analysis; browser.modeFilter = modeFilter; browser.groupingPriority = groupingPriority
+        browser.sortOrder = sortOrder; browser.rankingVersion = 2
+        browser.context = context; browser.scrollID = scrollID
+        if let page = pages[browser.activeBucket] { browser.pageCount = max(1,(page.rows.count+29)/30) }
+        environment.auralRestoration.updateCatalog(search:"",minimumLength:2,maximumLength:nil,
+            preferPopular:preferPopular,keepVaried:keepVaried,favorFavorites:favorFavorites,
+            distinguishInversions:distinguishInversions,flatList:flatList,expanded:[:],treeScrollPath:nil,flatScrollPath:nil)
+        environment.auralRestoration.updateBrowser(browser)
     }
-
-    private func restoreExpansionIfNeeded() async {
-        guard !isRestoringExpansion else { return }
-        let saved = environment.auralRestoration.snapshot.expandedPatternPaths
-        guard !saved.isEmpty else { return }
-        isRestoringExpansion = true
-        defer { isRestoringExpansion = false }
-        for path in saved.keys.sorted(by: {
-            $0.split(separator: ".").count < $1.split(separator: ".").count
-        }) {
-            guard !expandedPaths.contains(path),
-                  let node = visibleRows.first(where: { $0.path == path && $0.row.id == saved[path]?.id })
-            else { continue }
-            await toggle(node)
-        }
-    }
-
-    private func persistCatalogState() {
-        var expanded: [String: AuralPattern] = [:]
-        for node in visibleRows where expandedPaths.contains(node.path) {
-            expanded[node.path] = node.row.pattern
-        }
-        environment.auralRestoration.updateCatalog(
-            search: search,
-            minimumLength: minimumLength,
-            maximumLength: maximumLength,
-            preferPopular: preferPopular,
-            keepVaried: keepVaried,
-            favorFavorites: favorFavorites,
-            distinguishInversions: distinguishInversions,
-            flatList: flatList,
-            expanded: expanded,
-            treeScrollPath: treeScrollPath,
-            flatScrollPath: flatScrollPath
-        )
+    func suspend() {
+        persist(); isActive = false; queryGeneration &+= 1; loadTask?.cancel()
+        let ids = pages.values.compactMap(\.rankingID)
+        pages = [:]
+        Task { for id in ids { await environment.auralCatalog.closeRanking(id) } }
     }
 }
 
@@ -291,10 +358,12 @@ final class AuralLessonModel {
     var errorMessage: String?
     var chunkIndex = 0
 
-    let pattern: AuralPattern?
+    private(set) var pattern: AuralPattern?
     let familyId: String?
     let variantId: String?
-    let mode: AuralMode
+    private(set) var mode: AuralMode
+    private var reviewPool: [AuralCatalogRow] = []
+    private let minimumPopularityPercent: Int?
 
     @ObservationIgnored private let environment: AppEnvironment
     @ObservationIgnored private let favoriteSongIds: Set<String>
@@ -309,7 +378,9 @@ final class AuralLessonModel {
         pattern: AuralPattern,
         mode: AuralMode,
         environment: AppEnvironment,
-        favoriteSongIds: Set<String>
+        favoriteSongIds: Set<String>,
+        reviewPool: [AuralCatalogRow] = [],
+        minimumPopularityPercent: Int? = nil
     ) {
         self.pattern = pattern
         familyId = nil
@@ -317,6 +388,8 @@ final class AuralLessonModel {
         self.mode = mode
         self.environment = environment
         self.favoriteSongIds = favoriteSongIds
+        self.reviewPool = Array(reviewPool.prefix(30))
+        self.minimumPopularityPercent = minimumPopularityPercent
     }
 
     init(
@@ -331,17 +404,25 @@ final class AuralLessonModel {
         self.mode = mode
         self.environment = environment
         favoriteSongIds = []
+        minimumPopularityPercent = nil
     }
 
     func start() async {
         isPreparing = true
         defer { isPreparing = false }
         do {
+            if !reviewPool.isEmpty {
+                guard let choice = await environment.auralSession.reviewPattern(reviewPool) else {
+                    errorMessage = "No progressions in this subgroup are due for review."
+                    return
+                }
+                pattern = choice.0; mode = choice.1
+            }
             let restored = await environment.auralSession.state()
             let expectedFamily = pattern?.id ?? familyId
             if let current = restored.exercise,
                current.familyId == expectedFamily,
-               current.skill.mode == mode {
+               current.skill.mode == mode, !restored.answered, reviewPool.isEmpty {
                 lesson = restored
                 draft = restored.draft
                 errorMessage = nil
@@ -353,6 +434,7 @@ final class AuralLessonModel {
                 exercise = try await environment.auralSession.practicePattern(
                     pattern,
                     mode: mode,
+                    assessment: !reviewPool.isEmpty,
                     defaultInstrument: environment.quizInstrument.selection.rawValue
                 )
             } else if let familyId, let variantId {
@@ -379,7 +461,8 @@ final class AuralLessonModel {
                     for: pattern,
                     settings: await environment.auralSession.settings(),
                     context: context,
-                    seed: exercise.seed
+                    seed: exercise.seed,
+                    minimumPopularityPercent: minimumPopularityPercent
                 )
                 let info = try await environment.auralCatalog.info()
                 try await environment.auralSession.applyPassage(
@@ -526,6 +609,7 @@ final class AuralLessonModel {
     }
 
     func choose(_ option: AuralOption) async {
+        draft = [option.id]
         await environment.auralSession.submit([option.id])
         lesson = await environment.auralSession.state()
     }
@@ -718,11 +802,14 @@ final class AuralSongsModel {
     var scrollSongId: String?
 
     let pattern: AuralPattern
+    let minimumPopularityPercent: Int
     @ObservationIgnored private let environment: AppEnvironment
     @ObservationIgnored private let libraryStore: LibraryStore
 
-    init(pattern: AuralPattern, environment: AppEnvironment, libraryStore: LibraryStore) {
+    init(pattern: AuralPattern, environment: AppEnvironment, libraryStore: LibraryStore,
+         minimumPopularityPercent: Int) {
         self.pattern = pattern
+        self.minimumPopularityPercent = minimumPopularityPercent
         self.environment = environment
         self.libraryStore = libraryStore
         scrollSongId = environment.auralRestoration.snapshot.songsScrollId
@@ -731,7 +818,8 @@ final class AuralSongsModel {
     func load() async {
         state = .loading
         do {
-            let songs = try await environment.auralCatalog.songs(for: pattern)
+            let songs = try await environment.auralCatalog.songs(for: pattern,
+                minimumPopularityPercent: minimumPopularityPercent)
             state = songs.isEmpty ? .empty : .content(songs)
         } catch {
             state = .failure(error.localizedDescription)
@@ -759,7 +847,8 @@ final class AuralSongsModel {
                 settings: settings,
                 context: context,
                 seed: exercise.seed,
-                songId: song.id
+                songId: song.id,
+                minimumPopularityPercent: minimumPopularityPercent
             )
             let info = try await environment.auralCatalog.info()
             try await environment.auralSession.applyPassage(

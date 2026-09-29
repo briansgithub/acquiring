@@ -32,7 +32,8 @@ public enum AuralCatalogError: Error, LocalizedError, Equatable, Sendable {
 }
 
 public struct AuralBundleConfiguration: Sendable {
-    public static let schemaVersion = "aural-catalog-1"
+    public static let schemaVersion = "aural-catalog-3"
+    public static let supportedSchemas: Set<String> = ["aural-catalog-1", "aural-catalog-2", "aural-catalog-3"]
     public static let requiredFilenames = [
         "aural-catalog.db",
         "aural-evidence.db",
@@ -79,7 +80,7 @@ public struct AuralBundleManifest: Codable, Equatable, Sendable {
     public let files: [File]
 
     public func validated() throws -> Self {
-        guard schemaVersion == AuralBundleConfiguration.schemaVersion else {
+        guard AuralBundleConfiguration.supportedSchemas.contains(schemaVersion) else {
             throw AuralCatalogError.invalidManifest("unsupported schema \(schemaVersion)")
         }
         guard snapshotId.count == 64, snapshotId.allSatisfy(\.isHexDigit) else {
@@ -126,6 +127,8 @@ public enum AuralInstallProgress: Equatable, Sendable {
 }
 
 public struct AuralCatalogInfo: Equatable, Sendable {
+    public var supportsModeAnalysis: Bool { schemaVersion != "aural-catalog-1" }
+    public var supportsStartGrouping: Bool { schemaVersion == "aural-catalog-3" }
     public let schemaVersion: String
     public let snapshotId: String
     public let normalizationVersion: String?
@@ -146,11 +149,38 @@ public struct AuralCatalogInfo: Equatable, Sendable {
     }
 }
 
+public struct AuralCatalogBucket: Identifiable, Hashable, Codable, Sendable {
+    public let length: Int
+    public let startingChord: String
+    public let label: String
+    public var id: String { "\(length)|\(startingChord)" }
+    public init(length: Int, startingChord: String, label: String) {
+        self.length = length; self.startingChord = startingChord; self.label = label
+    }
+    public static func startingChordBefore(_ lhs: Self, _ rhs: Self) -> Bool {
+        func components(_ bucket: Self) -> [Int] {
+            let parts = bucket.startingChord.split(separator: ":").map(String.init)
+            guard parts.count == 5 else { return [0, 0, 0, 0] }
+            let accidental = parts[0].filter { $0 == "♯" }.count - parts[0].filter { $0 == "♭" }.count
+            return [Int(parts[1]) ?? 0, accidental,
+                ["major","minor","diminished","halfDiminished","augmented"].firstIndex(of: parts[3]) ?? 5,
+                ["none","minor","major","diminished"].firstIndex(of: parts[4]) ?? 4]
+        }
+        let left = components(lhs), right = components(rhs)
+        return left == right ? lhs.startingChord < rhs.startingChord : left.lexicographicallyPrecedes(right)
+    }
+}
+
 public struct AuralCatalogQuery: Equatable, Sendable {
+    public var sourceMode: String?
+    public var startingChord: String?
+    public var sortOrder: String
     public var view: String
-    public var search: String
+    public var progression: AuralProgressionQuery
     public var minimumLength: Int
     public var maximumLength: Int?
+    /// Inclusive 0–100 score cutoff; nil keeps legacy unfiltered callers unchanged.
+    public var minimumPopularityPercent: Int?
     public var preferPopular: Bool
     public var keepVaried: Bool
     public var favorFavorites: Bool
@@ -160,26 +190,43 @@ public struct AuralCatalogQuery: Equatable, Sendable {
 
     public init(
         view: String = "harmony",
-        search: String = "",
+        progression: AuralProgressionQuery = AuralProgressionQuery(),
         minimumLength: Int = 2,
         maximumLength: Int? = nil,
+        minimumPopularityPercent: Int? = nil,
         preferPopular: Bool = true,
         keepVaried: Bool = true,
         favorFavorites: Bool = false,
         flatList: Bool = false,
         favoriteSongIds: Set<String> = [],
-        recentSongIds: [String] = []
+        recentSongIds: [String] = [],
+        sourceMode: String? = nil,
+        startingChord: String? = nil,
+        sortOrder: String = "mostSongs"
     ) {
         self.view = view
-        self.search = search
+        self.sourceMode = sourceMode
+        self.startingChord = startingChord
+        self.sortOrder = sortOrder
+        self.progression = progression
         self.minimumLength = max(2, minimumLength)
         self.maximumLength = maximumLength.map { max(2, $0) }
+        self.minimumPopularityPercent = minimumPopularityPercent
         self.preferPopular = preferPopular
         self.keepVaried = keepVaried
         self.favorFavorites = favorFavorites
         self.flatList = flatList
         self.favoriteSongIds = favoriteSongIds
         self.recentSongIds = recentSongIds
+    }
+}
+
+public enum AuralPopularityFilter {
+    public static func includes(_ score: Double?, minimumPercent: Int?) -> Bool {
+        guard let minimumPercent else { return true }
+        guard (0...100).contains(minimumPercent), let score, score.isFinite,
+              score >= 0, score <= 1 else { return false }
+        return score >= Double(minimumPercent) / 100
     }
 }
 
@@ -194,6 +241,8 @@ public struct AuralCatalogRow: Identifiable, Hashable, Sendable {
     public let length: Int
     public let occurrenceCount: Int
     public let songCount: Int
+    public let globalOccurrenceCount: Int
+    public let globalSongCount: Int
     public let sectionCount: Int
     public let effectiveOccurrenceCount: Int
     public let score: Double
@@ -214,7 +263,9 @@ public struct AuralCatalogRow: Identifiable, Hashable, Sendable {
         effectiveOccurrenceCount: Int,
         score: Double,
         outline: String = "",
-        mode: String? = nil
+        mode: String? = nil,
+        globalOccurrenceCount: Int? = nil,
+        globalSongCount: Int? = nil
     ) {
         self.id = id
         self.view = view
@@ -226,6 +277,8 @@ public struct AuralCatalogRow: Identifiable, Hashable, Sendable {
         length = tokens.count
         self.occurrenceCount = occurrenceCount
         self.songCount = songCount
+        self.globalOccurrenceCount = globalOccurrenceCount ?? occurrenceCount
+        self.globalSongCount = globalSongCount ?? songCount
         self.sectionCount = sectionCount
         self.effectiveOccurrenceCount = effectiveOccurrenceCount
         self.score = score

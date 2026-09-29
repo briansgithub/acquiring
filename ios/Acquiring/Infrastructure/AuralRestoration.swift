@@ -1,6 +1,47 @@
+import AcquiringAural
 import AcquiringCore
 import Foundation
 import Observation
+
+struct AuralBrowserSnapshot: Codable, Equatable {
+    private enum CodingKeys: String, CodingKey {
+        case progression, minimumPopularityPercent, analysis, modeFilter, groupingPriority
+        case sortOrder, rankingVersion, context, activePrimary, activeBucket, lastGroupedBucket
+        case pageCount, scrollID
+    }
+    var progression: AuralProgressionQuery? = nil
+    var minimumPopularityPercent: Int? = nil
+    var analysis = "relativeMajor"
+    var modeFilter = "major"
+    var groupingPriority = "none"
+    var sortOrder = "mostSongs"
+    var rankingVersion = 2
+    var context = ""
+    var activePrimary = ""
+    var activeBucket = ""
+    var lastGroupedBucket = ""
+    var pageCount = 1
+    var scrollID: String?
+
+    init() {}
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        progression = try values.decodeIfPresent(AuralProgressionQuery.self, forKey: .progression)
+        minimumPopularityPercent = try values.decodeIfPresent(Int.self, forKey: .minimumPopularityPercent)
+        analysis = try values.decodeIfPresent(String.self, forKey: .analysis) ?? "relativeMajor"
+        modeFilter = try values.decodeIfPresent(String.self, forKey: .modeFilter) ?? "major"
+        groupingPriority = try values.decodeIfPresent(String.self, forKey: .groupingPriority) ?? "length"
+        sortOrder = try values.decodeIfPresent(String.self, forKey: .sortOrder) ?? "mostSongs"
+        rankingVersion = try values.decodeIfPresent(Int.self, forKey: .rankingVersion) ?? 1
+        context = try values.decodeIfPresent(String.self, forKey: .context) ?? ""
+        activePrimary = try values.decodeIfPresent(String.self, forKey: .activePrimary) ?? ""
+        activeBucket = try values.decodeIfPresent(String.self, forKey: .activeBucket) ?? ""
+        lastGroupedBucket = try values.decodeIfPresent(String.self, forKey: .lastGroupedBucket) ?? ""
+        pageCount = try values.decodeIfPresent(Int.self, forKey: .pageCount) ?? 1
+        scrollID = try values.decodeIfPresent(String.self, forKey: .scrollID)
+    }
+}
 
 struct AuralNavigationSnapshot: Codable, Equatable {
     var version = 1
@@ -21,6 +62,7 @@ struct AuralNavigationSnapshot: Codable, Equatable {
     var treeScrollPath: String?
     var flatScrollPath: String?
     var songsScrollId: String?
+    var browser: AuralBrowserSnapshot?
 }
 
 @MainActor
@@ -137,6 +179,11 @@ final class AuralRestorationStore {
 
     func rememberSongsScroll(_ id: String?) {
         snapshot.songsScrollId = id
+        save()
+    }
+
+    func updateBrowser(_ browser: AuralBrowserSnapshot) {
+        snapshot.browser = browser
         save()
     }
 
