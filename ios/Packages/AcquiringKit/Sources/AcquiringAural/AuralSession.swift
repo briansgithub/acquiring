@@ -207,6 +207,7 @@ public actor AuralSession {
         assessment: Bool = false,
         defaultInstrument: String
     ) throws -> AuralExercise {
+        saved.settings.distinguishInversions = pattern.view.hasSuffix("harmony_bass")
         saved.serial = saved.serial == .max ? 1 : saved.serial + 1
         let skills: [AuralSkill] = switch mode {
         case .recognize: [.guided, .compare, .identify]
@@ -235,6 +236,23 @@ public actor AuralSession {
             save()
         }
         return exercise
+    }
+
+    public func reviewPattern(_ rows: [AuralCatalogRow]) -> (AuralPattern, AuralMode)? {
+        let modes: [AuralMode] = saved.microphoneEnabled ? [.recognize,.recall,.sing] : [.recognize,.recall]
+        let candidates: [(AuralPattern,AuralMode,AuralCell)] = rows.flatMap { row in
+            modes.compactMap { mode in
+                guard mode == .recognize || AuralCurriculum.cell(progress(),familyId:row.id,skill:.identify).independentCorrect >= 2 else { return nil }
+                let skill: AuralSkill = mode == .recognize ? .identify : mode == .recall ? .recall : .reproduce
+                return (row.pattern,mode,AuralCurriculum.cell(progress(),familyId:row.id,skill:skill))
+            }
+        }
+        let now = Int64(Date().timeIntervalSince1970 * 1000)
+        let due = candidates.filter { $0.2.independentAttempts > 0 && $0.2.dueAt <= now }.min { $0.2.dueAt < $1.2.dueAt }
+        let weak = candidates.first { $0.2.lastCorrect == false }
+        let learning = candidates.filter { !$0.2.mastered }
+        let selected = due ?? weak ?? (learning.isEmpty ? nil : learning[Int(saved.serial % UInt64(learning.count))])
+        return selected.map { ($0.0,$0.1) }
     }
 
     public func applyPassage(
@@ -550,7 +568,7 @@ public actor AuralSession {
                 else {
                     throw AuralCatalogError.invalidSchema("source harmony does not match its structural token")
                 }
-                if pattern.view == "harmony_bass" {
+                if pattern.view.hasSuffix("harmony_bass") {
                     guard let bass = token.bassInterval,
                           (source.bassMidi - source.rootMidi + 120) % 12 == bass
                     else { throw AuralCatalogError.invalidSchema("source inversion does not match") }

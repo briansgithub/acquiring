@@ -2418,3 +2418,74 @@ Robolectric UI test and both Debug APK builds passed after one fix. The focused
 Pixel 7a instrumentation test passed with the long header expanded and the
 Songs tab reachable. The Android app was installed and relaunched without
 replacing its full catalog. These results do not establish iOS correctness.
+
+### Aural Quiz minimum song-popularity filter — 2026-09-25, Mac validation pending
+
+`[implemented in iOS source; NOT compiled or simulator-tested]` The catalog
+now defaults to an inclusive **80%** minimum song score, adjustable from
+0–100% in the visible Song popularity section. This is a hard eligibility
+filter, separate from the existing Prefer popular songs ranking toggle.
+Missing, nonfinite, or invalid scores do not qualify. The cutoff is stored in
+the optional browser snapshot field so older saved navigation state decodes
+with the new default. Query identity changes when the cutoff changes, closing
+obsolete rankings and invalidating pages. Ranked roots, recursive children,
+Review pools, displayed support counts, the Songs tab, and new practice
+passages all use the same cutoff. Existing restored exercises and non-catalog
+curriculum remain untouched; coverage evidence still describes the corpus.
+
+Added inclusive-boundary/missing-score cases to `AuralGroupingTests.swift`.
+`git diff --check` passed on Windows. The Mac still does not resolve, so
+Swift tests, incremental Xcode build, simulator install/launch, and human
+UI/accessibility review are **unrun**. Next Mac session: inspect the dirty
+iOS worktree; run the focused grouping/core tests and incremental simulator
+build; validate 80% default, 0% and 100% boundaries, missing overlay, rapid
+cutoff changes, pagination, recursive rows, Review, Songs, selected practice
+source, persisted cutoff, and older snapshot decoding. Record exact results
+before committing or integrating the iOS source. Android passed a focused JVM
+test, both Debug builds, and two Pixel 7a catalog/Songs instrumentation tests;
+these do not validate iOS. No iOS release was requested.
+
+### Aural Quiz global frequency-first catalog — 2026-09-28, Mac validation pending
+
+`[implemented in iOS source; NOT compiled or simulator-tested]` The default
+browser is now an ungrouped list sorted by distinct supporting songs across
+the full catalog, then occurrences, length descending, and structural ID.
+The 80% popularity cutoff and search determine eligibility and matching
+examples, not the full-corpus frequency counts. Sort offers Most songs,
+Recommended, Longest, and Shortest; grouping offers None, Length first, and
+Starting chord first. Existing grouping, recursive expansion, subgroup Review,
+and pagination remain. The former Flat list control is Show subsequences with
+its on/off sense inverted. Older browser snapshots migrate once to the new
+default and preserve subsequent explicit choices. Catalog rows expose both
+matching and overall support counts. Source runs whose song ID is absent from
+`catalog_song` are excluded from ranking and passages, matching the Android
+correction for 122 such IDs in the current source cache.
+
+This source is still in the dirty `codex/ios-aural-quiz-port` worktree at
+`b33b2376`, alongside earlier unfinished iOS Aural Quiz changes. Windows
+`git diff --check` passed. Swift tests, Xcode build, simulator install/launch,
+and human UI/accessibility review are **unrun** because the Mac is unavailable.
+Next Mac session: inspect the current dirty tree; run focused
+`AcquiringAuralTests/AuralGroupingTests` and related reader/restoration tests,
+then an incremental Debug build, install, and launch on the warm iPhone 17
+simulator. Check default global order against exact full-catalog song support,
+tie-breaking, four sort choices, both grouping orders, independent pages,
+recursive children, subgroup Review, 80% eligibility, search changes, and
+saved-choice migration. Use the matching validated full catalog, evidence,
+and popularity overlay recorded in the Android/shared `docs/aural-catalog.md`;
+verify snapshot and checksums before simulator tests. Do not mark iOS parity
+validated or integrate/release it until those checks pass. Android installed
+the indexed bundle and app on Pixel 7a and passed focused device tests; that
+does not establish iOS correctness. No commit, push, merge, or release here.
+
+### GitHub checkpoint for Mac validation — 2026-09-28
+
+The in-progress iOS Aural Quiz source, focused Swift test files, and shared
+loop-reduction fixture are being preserved on `codex/ios-aural-quiz-port` so
+the Mac can pull this exact branch. This is a source checkpoint, **not** an
+iOS parity approval or release. On Windows, `git diff --check` passed and the
+JSON fixture parsed; Swift compilation, focused tests, simulator install and
+launch, and human review remain unrun. The Mac should run the focused
+AcquiringAural/Core tests and an incremental simulator build, then verify the
+catalog, search, grouping, loop reduction, frequency order, and popularity
+filter behaviors listed above before this branch is considered merge-ready.

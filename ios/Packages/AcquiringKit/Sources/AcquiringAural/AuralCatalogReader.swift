@@ -57,11 +57,13 @@ public actor AuralCatalogReader {
         let songs: Int
         let bound: Double
         let row: AuralCatalogRow?
+        let sortOrder: String
     }
 
     private struct RankingState: Sendable {
         let query: AuralCatalogQuery
         let multiplier: Double
+        let eligiblePrefix: [Int32]?
         var heap = MaxHeap()
         var rangeOffset = 0
         var rangeBatch: [RangeRecord] = []
@@ -105,12 +107,18 @@ public actor AuralCatalogReader {
 
         var first: HeapEntry? { entries.first }
 
-        private static func before(_ lhs: HeapEntry, _ rhs: HeapEntry) -> Bool {
-            if lhs.bound != rhs.bound { return lhs.bound > rhs.bound }
+        static func before(_ lhs: HeapEntry, _ rhs: HeapEntry) -> Bool {
+            if lhs.sortOrder == "recommended" {
+                if lhs.bound != rhs.bound { return lhs.bound > rhs.bound }
+            } else {
+                let left = AuralCatalogReader.rankKey(lhs)
+                let right = AuralCatalogReader.rankKey(rhs)
+                if left != right { return right.lexicographicallyPrecedes(left) }
+            }
             switch (lhs.row, rhs.row) {
             case (nil, .some): return true
             case (.some, nil): return false
-            case let (.some(left), .some(right)): return AuralCatalogReader.rowBefore(left, right)
+            case let (.some(left), .some(right)): return AuralCatalogReader.rowBefore(left, right, sortOrder: lhs.sortOrder)
             case (nil, nil): return lhs.low > rhs.low
             }
         }
@@ -125,10 +133,14 @@ public actor AuralCatalogReader {
     private var suffix: [Int32] = []
     private var songByRun: [String] = []
     private var sectionByRun: [String] = []
+    private var validSongIds: Set<String> = []
     private var popularity: [String: Popularity] = [:]
+    private var eligiblePrefixCache: (percent: Int, counts: [Int32])?
     private var runCache: [Int: Run] = [:]
     private var runCacheOrder: [Int] = []
     private var rankings: [RankingID: RankingState] = [:]
+    private var chordVariantCache: [String: [AuralChordVariant]] = [:]
+    private var rootLabelsByToken: [String: String]?
 
     public init(configuration: AuralBundleConfiguration) {
         self.configuration = configuration
@@ -142,7 +154,7 @@ public actor AuralCatalogReader {
         }
         let openedCatalog = try Self.openReadOnly(catalogURL)
         let catalogMetadata = try Self.metadata(openedCatalog)
-        guard catalogMetadata["schema_version"] == AuralBundleConfiguration.schemaVersion,
+        guard AuralBundleConfiguration.supportedSchemas.contains(catalogMetadata["schema_version"] ?? ""),
               let installedSnapshot = catalogMetadata["snapshot_id"], installedSnapshot.count == 64
         else { throw AuralCatalogError.invalidSchema("catalog metadata mismatch") }
 
@@ -177,6 +189,9 @@ public actor AuralCatalogReader {
         }
         songByRun = identities.map(\.1)
         sectionByRun = identities.map(\.2)
+        validSongIds = try openedCatalog.read { db in
+            Set(try String.fetchAll(db, sql: "SELECT id FROM catalog_song"))
+        }
         popularity = try openedPopularity.read { db in
             var result: [String: Popularity] = [:]
             for row in try Row.fetchAll(
@@ -211,10 +226,14 @@ public actor AuralCatalogReader {
         suffix = []
         songByRun = []
         sectionByRun = []
+        validSongIds = []
         popularity = [:]
+        eligiblePrefixCache = nil
         runCache = [:]
         runCacheOrder = []
         rankings = [:]
+        chordVariantCache = [:]
+        rootLabelsByToken = nil
         try prepare()
     }
 
@@ -248,11 +267,92 @@ public actor AuralCatalogReader {
         )
     }
 
+    public func buckets(_ query: AuralCatalogQuery) throws -> [AuralCatalogBucket] {
+        try requirePrepared()
+        guard let catalog else { throw AuralCatalogError.unavailable }
+        let grouped = metadata["schema_version"] == "aural-catalog-3"
+        let mode = metadata["schema_version"] == "aural-catalog-1" ? nil : query.sourceMode
+        let columns = grouped ? "start_group, start_group_label," : ""
+        let sql = "SELECT DISTINCT \(columns) min_length low, max_length high FROM catalog_range WHERE view=?"
+            + (mode == nil ? "" : " AND mode=?")
+        let args = [query.view] + (mode.map { [$0] } ?? [])
+        return try catalog.read { db in
+            var result: Set<AuralCatalogBucket> = []
+            for row in try Row.fetchAll(db, sql: sql, arguments: StatementArguments(args)) {
+                guard let low: Int = row["low"], let high: Int = row["high"], low <= high else { continue }
+                let start: String = grouped ? row["start_group"] : ""
+                let label: String = grouped ? row["start_group_label"] : "All starting chords"
+                for length in low...high { result.insert(.init(length: length, startingChord: start, label: label)) }
+            }
+            return result.sorted { lhs, rhs in lhs.length == rhs.length ? AuralCatalogBucket.startingChordBefore(lhs,rhs) : lhs.length < rhs.length }
+        }
+    }
+
+    public func chordVariants(query: AuralCatalogQuery, degree: Int, accidental: String) throws -> [AuralChordVariant] {
+        try requirePrepared()
+        guard let catalog else { throw AuralCatalogError.unavailable }
+        let relative = query.view.hasPrefix("relative_")
+        let column = query.view.hasSuffix("harmony_bass") ? "inversion_label" : "label"
+        let cacheKey = "\(snapshotId)|\(query.view)|\(query.sourceMode ?? "")|\(degree)|\(accidental)"
+        if let cached = chordVariantCache[cacheKey] { return cached }
+        let found = try catalog.read { db in
+            let cursor = try Row.fetchCursor(db, sql: "SELECT label,inversion_label,token FROM catalog_token")
+            var labels: Set<AuralChordVariant> = []
+            while let row = try cursor.next() {
+                let token: String = row["token"]
+                guard let payload = (try? JSONSerialization.jsonObject(with: Data(token.utf8))) as? [String: Any],
+                      (payload["version"] as? String == "aural-relative-1") == relative else { continue }
+                if let sourceMode = query.sourceMode, payload["mode"] as? String != sourceMode { continue }
+                let label: String = row[column]
+                guard let parsed = AuralChordConstraint.degreeAndAccidental(label),
+                      parsed.0 == degree, parsed.1 == accidental else { continue }
+                let root: String = row["label"]
+                labels.insert(.init(label: AuralChordConstraint.canonical(label), root: AuralChordConstraint.canonical(root)))
+            }
+            return labels.sorted { $0.label.count == $1.label.count ? $0.label < $1.label : $0.label.count < $1.label.count }
+        }
+        chordVariantCache[cacheKey] = found
+        return found
+    }
+
+    private func rootLabels(for tokens: [String]) throws -> [String] {
+        if rootLabelsByToken == nil {
+            guard let catalog else { throw AuralCatalogError.unavailable }
+            rootLabelsByToken = try catalog.read { db in
+                var labels: [String: String] = [:]
+                let cursor = try Row.fetchCursor(db, sql: "SELECT token,label FROM catalog_token")
+                while let row = try cursor.next() {
+                    let token: String = row["token"]
+                    labels[token] = row["label"]
+                }
+                return labels
+            }
+        }
+        return tokens.map { rootLabelsByToken?[$0] ?? "" }
+    }
+
+    private func eligibleRankPrefix(_ percent: Int) -> [Int32] {
+        if let cached = eligiblePrefixCache, cached.percent == percent { return cached.counts }
+        var counts = Array(repeating: Int32(0), count: suffix.count / 2 + 1)
+        for rank in 0..<(suffix.count / 2) {
+            let run = Int(suffix[rank * 2])
+            let eligible = songByRun.indices.contains(run)
+                && validSongIds.contains(songByRun[run])
+                && AuralPopularityFilter.includes(popularity[songByRun[run]]?.score, minimumPercent: percent)
+            counts[rank + 1] = counts[rank] + (eligible ? 1 : 0)
+        }
+        eligiblePrefixCache = (percent, counts)
+        return counts
+    }
+
     public func beginRanking(_ query: AuralCatalogQuery) throws -> RankingID {
         try requirePrepared()
-        guard query.view == "harmony" || query.view == "harmony_bass",
+        guard ["harmony", "harmony_bass", "relative_harmony", "relative_harmony_bass"].contains(query.view),
+              query.progression.isValid,
               query.minimumLength >= 2,
-              query.maximumLength.map({ $0 >= query.minimumLength }) ?? true
+              query.maximumLength.map({ $0 >= query.minimumLength }) ?? true,
+              query.minimumPopularityPercent.map({ (0...100).contains($0) }) ?? true,
+              ["mostSongs", "recommended", "longest", "shortest"].contains(query.sortOrder)
         else { throw AuralCatalogError.invalidSchema("invalid catalog query") }
         let maximumPopularity = query.preferPopular
             ? popularity.values.compactMap { value -> Double? in
@@ -261,10 +361,14 @@ public actor AuralCatalogReader {
             }.max() ?? 1
             : 1
         let id = RankingID()
+        let eligiblePrefix = query.minimumPopularityPercent.map { eligibleRankPrefix($0) }
+        let hasEligibleSongs = eligiblePrefix.map { ($0.last ?? 0) > 0 } ?? true
         rankings[id] = RankingState(
             query: query,
             multiplier: max(1, maximumPopularity)
-                * (query.favorFavorites && !query.favoriteSongIds.isEmpty ? 1.5 : 1)
+                * (query.favorFavorites && !query.favoriteSongIds.isEmpty ? 1.5 : 1),
+            eligiblePrefix: eligiblePrefix,
+            exhaustedRanges: !hasEligibleSongs
         )
         return id
     }
@@ -286,21 +390,19 @@ public actor AuralCatalogReader {
                 let middle = (entry.low + entry.high) / 2
                 add(
                     start: entry.start, end: entry.end, low: entry.low, high: middle,
-                    songs: entry.songs, multiplier: state.multiplier, to: &state.heap
+                    songs: entry.songs, multiplier: state.multiplier, sortOrder: state.query.sortOrder, to: &state.heap
                 )
                 add(
                     start: entry.start, end: entry.end, low: middle + 1, high: entry.high,
-                    songs: entry.songs, multiplier: state.multiplier, to: &state.heap
+                    songs: entry.songs, multiplier: state.multiplier, sortOrder: state.query.sortOrder, to: &state.heap
                 )
             } else {
                 let pattern = try target(start: entry.start, end: entry.end, length: entry.low)
-                let search = state.query.search.trimmingCharacters(in: .whitespacesAndNewlines)
-                    .lowercased()
-                if !search.isEmpty,
-                   !pattern.labels.joined(separator: " ").lowercased().contains(search) {
-                    continue
-                }
-                let row = try stats(pattern, query: state.query)
+                if AuralLoopReduction.analyze(pattern.tokens).redundant { continue }
+                let roots = state.query.progression.chords.contains(where: { $0.exact != nil }) && state.query.view.hasSuffix("harmony_bass")
+                    ? try rootLabels(for: pattern.tokens) : pattern.labels
+                if !state.query.progression.matches(pattern.labels, rootLabels: roots) { continue }
+                guard let row = try stats(pattern, query: state.query) else { continue }
                 state.heap.push(HeapEntry(
                     start: entry.start,
                     end: entry.end,
@@ -308,7 +410,8 @@ public actor AuralCatalogReader {
                     high: entry.high,
                     songs: entry.songs,
                     bound: row.score,
-                    row: row
+                    row: row,
+                    sortOrder: state.query.sortOrder
                 ))
             }
         }
@@ -329,15 +432,15 @@ public actor AuralCatalogReader {
         guard pattern.tokens.count > 2 else { return [] }
         var seen: Set<String> = []
         var rows: [AuralCatalogRow] = []
-        for tokens in [Array(pattern.tokens.dropLast()), Array(pattern.tokens.dropFirst())] {
+        for tokens in AuralLoopReduction.retainedChildren(pattern.tokens) {
             guard let target = try lookup(tokens: tokens, view: pattern.view),
                   seen.insert(target.id).inserted else { continue }
-            rows.append(try stats(target, query: query))
+            if let row = try stats(target, query: query) { rows.append(row) }
         }
-        return rows.sorted(by: Self.rowBefore)
+        return rows.sorted { Self.rowBefore($0, $1, sortOrder: query.sortOrder) }
     }
 
-    public func songs(for pattern: AuralPattern) throws -> [AuralPatternSong] {
+    public func songs(for pattern: AuralPattern, minimumPopularityPercent: Int? = nil) throws -> [AuralPatternSong] {
         try requireCompatible(pattern)
         guard let catalog else { throw AuralCatalogError.unavailable }
         let rows = try catalog.read { db in
@@ -363,7 +466,7 @@ public actor AuralCatalogReader {
                 providerURL: popularity?.providerURL,
                 measuredAt: popularity?.measuredAt
             )
-        }.sorted {
+        }.filter { AuralPopularityFilter.includes($0.popularity, minimumPercent: minimumPopularityPercent) }.sorted {
             switch ($0.popularity, $1.popularity) {
             case let (left?, right?) where left != right: return left > right
             case (.some, nil): return true
@@ -383,7 +486,8 @@ public actor AuralCatalogReader {
         settings: AuralSettings,
         context: AuralSelectionContext,
         seed: UInt64,
-        songId: String? = nil
+        songId: String? = nil,
+        minimumPopularityPercent: Int? = nil
     ) throws -> AuralPassage {
         try requireCompatible(pattern)
         guard let catalog else { throw AuralCatalogError.unavailable }
@@ -405,7 +509,9 @@ public actor AuralCatalogReader {
                 throw AuralCatalogError.invalidSchema("occurrence references an unknown run")
             }
             let supportingSong = songByRun[runId]
+            guard validSongIds.contains(supportingSong) else { continue }
             if let songId, supportingSong != songId { continue }
+            if !AuralPopularityFilter.includes(popularity[supportingSong]?.score, minimumPercent: minimumPopularityPercent) { continue }
             let sectionId = sectionByRun[runId]
             let startIndex: Int = row["start_index"]
             let endIndex: Int = row["end_index"]
@@ -574,7 +680,7 @@ public actor AuralCatalogReader {
         }
         let tokens = Array(run.tokens[offset..<(offset + length)])
         let positions = run.positions[offset..<(offset + length)]
-        let labels = positions.map { run.view == "harmony_bass" ? $0.roman : $0.degree }
+        let labels = positions.map { run.view.hasSuffix("harmony_bass") ? $0.roman : $0.degree }
         return AuralPattern(
             id: AuralIdentity.pattern(tokens: tokens, view: run.view),
             view: run.view,
@@ -626,17 +732,21 @@ public actor AuralCatalogReader {
             }
             guard state.rangeIndex < state.rangeBatch.count else { return }
             let range = state.rangeBatch[state.rangeIndex]
-            let competitive = state.heap.first.map {
-                range.upperScore * state.multiplier >= $0.bound
-            } ?? true
-            guard competitive else { return }
-            state.rangeIndex += 1
             let low = max(range.minimumLength, state.query.minimumLength)
             let high = min(range.maximumLength, state.query.maximumLength ?? .max)
+            let candidate = HeapEntry(start: range.start, end: range.end, low: low, high: high,
+                                      songs: range.songs, bound: range.upperScore * state.multiplier,
+                                      row: nil, sortOrder: state.query.sortOrder)
+            let competitive = state.heap.first.map { MaxHeap.before(candidate, $0) } ?? true
+            guard competitive else { return }
+            state.rangeIndex += 1
+            if let prefix = state.eligiblePrefix,
+               prefix[range.end + 1] == prefix[range.start] { continue }
             if low <= high {
                 add(
                     start: range.start, end: range.end, low: low, high: high,
-                    songs: range.songs, multiplier: state.multiplier, to: &state.heap
+                    songs: range.songs, multiplier: state.multiplier,
+                    sortOrder: state.query.sortOrder, to: &state.heap
                 )
             }
         }
@@ -644,19 +754,34 @@ public actor AuralCatalogReader {
 
     private func fetchRanges(_ query: AuralCatalogQuery, offset: Int) throws -> [RangeRecord] {
         guard let catalog else { throw AuralCatalogError.unavailable }
+        var filters = ""
+        var arguments: [DatabaseValue] = [query.view.databaseValue, query.minimumLength.databaseValue, (query.maximumLength ?? Int.max).databaseValue]
+        if let mode = query.sourceMode {
+            guard metadata["schema_version"] != "aural-catalog-1" else { throw AuralCatalogError.invalidSchema("mode analysis needs a catalog update") }
+            filters += " AND mode = ?"; arguments.append(mode.databaseValue)
+        }
+        if let start = query.startingChord {
+            guard metadata["schema_version"] == "aural-catalog-3" else { throw AuralCatalogError.invalidSchema("starting-chord grouping needs a catalog update") }
+            filters += " AND start_group = ?"; arguments.append(start.databaseValue)
+        }
+        arguments.append(offset.databaseValue)
+        let highOrder = query.maximumLength.map { "MIN(max_length, \($0))" } ?? "max_length"
+        let lowOrder = query.minimumLength <= 2 ? "min_length" : "MAX(min_length, \(query.minimumLength))"
+        let order: String
+        switch query.sortOrder {
+        case "recommended": order = "upper_score DESC, id"
+        case "longest": order = "\(highOrder) DESC, songs DESC, (end-start+1) DESC, id"
+        case "shortest": order = "\(lowOrder) ASC, songs DESC, (end-start+1) DESC, id"
+        default: order = "songs DESC, (end-start+1) DESC, \(highOrder) DESC, id"
+        }
         return try catalog.read { db in
             try Row.fetchAll(db, sql: """
                 SELECT id, start, end, min_length, max_length, songs, upper_score
                 FROM catalog_range
-                WHERE view = ? AND max_length >= ? AND min_length <= ?
-                ORDER BY upper_score DESC, id
+                WHERE view = ? AND max_length >= ? AND min_length <= ? \(filters)
+                ORDER BY \(order)
                 LIMIT 256 OFFSET ?
-                """, arguments: [
-                    query.view,
-                    query.minimumLength,
-                    query.maximumLength ?? Int.max,
-                    offset
-                ]).map { row in
+                """, arguments: StatementArguments(arguments)).map { row in
                     RangeRecord(
                         id: row["id"],
                         start: row["start"],
@@ -677,6 +802,7 @@ public actor AuralCatalogReader {
         high: Int,
         songs: Int,
         multiplier: Double,
+        sortOrder: String,
         to heap: inout MaxHeap
     ) {
         heap.push(HeapEntry(
@@ -690,22 +816,33 @@ public actor AuralCatalogReader {
                 songs: songs,
                 effective: min(end - start + 1, songs * 4)
             ) * multiplier,
-            row: nil
+            row: nil,
+            sortOrder: sortOrder
         ))
     }
 
-    private func stats(_ pattern: AuralPattern, query: AuralCatalogQuery) throws -> AuralCatalogRow {
+    private func stats(_ pattern: AuralPattern, query: AuralCatalogQuery) throws -> AuralCatalogRow? {
         var grouped: [String: [(run: Int, offset: Int)]] = [:]
+        var allSongs: Set<String> = []
+        var globalOccurrences = 0
         var sections: Set<String> = []
+        var occurrences = 0
         for rank in pattern.start...pattern.end {
             let run = Int(suffix[rank * 2])
             let offset = Int(suffix[rank * 2 + 1])
             guard songByRun.indices.contains(run), sectionByRun.indices.contains(run) else {
                 throw AuralCatalogError.invalidSchema("suffix references an unknown run")
             }
-            grouped[songByRun[run], default: []].append((run, offset))
+            let song = songByRun[run]
+            guard validSongIds.contains(song) else { continue }
+            globalOccurrences += 1
+            allSongs.insert(song)
+            guard AuralPopularityFilter.includes(popularity[song]?.score, minimumPercent: query.minimumPopularityPercent) else { continue }
+            grouped[song, default: []].append((run, offset))
             sections.insert(sectionByRun[run])
+            occurrences += 1
         }
+        guard !grouped.isEmpty else { return nil }
         var effective = 0
         var factorTotal = 0.0
         for (song, var matches) in grouped {
@@ -737,12 +874,14 @@ public actor AuralCatalogReader {
             start: pattern.start,
             end: pattern.end,
             snapshotId: pattern.snapshotId,
-            occurrenceCount: pattern.end - pattern.start + 1,
+            occurrenceCount: occurrences,
             songCount: songCount,
             sectionCount: sections.count,
             effectiveOccurrenceCount: effective,
             score: score,
-            mode: try run(Int(suffix[pattern.start * 2])).keyMode
+            mode: try run(Int(suffix[pattern.start * 2])).keyMode,
+            globalOccurrenceCount: globalOccurrences,
+            globalSongCount: allSongs.count
         )
     }
 
@@ -894,10 +1033,32 @@ public actor AuralCatalogReader {
         log2(Double(length)) * log2(1 + Double(songs)) * log2(1 + Double(effective))
     }
 
-    private static func rowBefore(_ lhs: AuralCatalogRow, _ rhs: AuralCatalogRow) -> Bool {
-        if lhs.score != rhs.score { return lhs.score > rhs.score }
-        if lhs.songCount != rhs.songCount { return lhs.songCount > rhs.songCount }
-        if lhs.length != rhs.length { return lhs.length > rhs.length }
+    private static func rankKey(_ entry: HeapEntry) -> [Int] {
+        let songs = entry.row?.globalSongCount ?? entry.songs
+        let occurrences = entry.row?.globalOccurrenceCount ?? entry.end - entry.start + 1
+        let length = entry.row?.length ?? (entry.sortOrder == "shortest" ? entry.low : entry.high)
+        switch entry.sortOrder {
+        case "longest": return [length, songs, occurrences]
+        case "shortest": return [-length, songs, occurrences]
+        default: return [songs, occurrences, length]
+        }
+    }
+
+    private static func rowBefore(_ lhs: AuralCatalogRow, _ rhs: AuralCatalogRow, sortOrder: String) -> Bool {
+        switch sortOrder {
+        case "mostSongs":
+            if lhs.globalSongCount != rhs.globalSongCount { return lhs.globalSongCount > rhs.globalSongCount }
+            if lhs.globalOccurrenceCount != rhs.globalOccurrenceCount { return lhs.globalOccurrenceCount > rhs.globalOccurrenceCount }
+            if lhs.length != rhs.length { return lhs.length > rhs.length }
+        case "longest", "shortest":
+            if lhs.length != rhs.length { return sortOrder == "longest" ? lhs.length > rhs.length : lhs.length < rhs.length }
+            if lhs.globalSongCount != rhs.globalSongCount { return lhs.globalSongCount > rhs.globalSongCount }
+            if lhs.globalOccurrenceCount != rhs.globalOccurrenceCount { return lhs.globalOccurrenceCount > rhs.globalOccurrenceCount }
+        default:
+            if lhs.score != rhs.score { return lhs.score > rhs.score }
+            if lhs.songCount != rhs.songCount { return lhs.songCount > rhs.songCount }
+            if lhs.length != rhs.length { return lhs.length > rhs.length }
+        }
         return lhs.id < rhs.id
     }
 

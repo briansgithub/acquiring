@@ -32,8 +32,18 @@ public struct AuralSettings: Codable, Equatable, Sendable {
     public var favorites = false
     public var distinguishInversions = false
     public var flatList = false
+    private var analysisSelection: String?
+    private var sourceModeSelection: String?
+    public var analysis: String {
+        get { analysisSelection ?? "relativeMajor" }
+        set { analysisSelection = newValue }
+    }
+    public var modeFilter: String {
+        get { sourceModeSelection ?? "major" }
+        set { sourceModeSelection = newValue }
+    }
     public init() {}
-    public var view: String { distinguishInversions ? "harmony_bass" : "harmony" }
+    public var view: String { (analysis == "relativeMajor" ? "relative_" : "") + (distinguishInversions ? "harmony_bass" : "harmony") }
 }
 public struct AuralPattern: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id: String
@@ -48,6 +58,7 @@ public struct AuralPattern: Codable, Equatable, Hashable, Sendable, Identifiable
         self.start=start; self.end=end; self.snapshotId=snapshotId
     }
     public var mode: String? {
+        if view.hasPrefix("relative_") { return "major" }
         guard let token = tokens.first else { return nil }
         return try? JSONDecoder().decode(AuralToken.self, from: Data(token.utf8)).mode
     }
@@ -57,6 +68,15 @@ public struct AuralToken: Decodable, Sendable {
     public let rootPc: Int
     public let intervals: [Int]
     public let bassInterval: Int?
+    private enum CodingKeys: String, CodingKey { case mode, rootPc, intervals, bassInterval, version }
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        let version = try values.decodeIfPresent(String.self, forKey: .version)
+        mode = version == "aural-relative-1" ? "major" : try values.decode(String.self, forKey: .mode)
+        rootPc = try values.decode(Int.self, forKey: .rootPc)
+        intervals = try values.decode([Int].self, forKey: .intervals)
+        bassInterval = try values.decodeIfPresent(Int.self, forKey: .bassInterval)
+    }
 }
 public struct AuralEvent: Codable, Equatable, Hashable, Sendable {
     public var notes: [Int]
@@ -227,4 +247,3 @@ public enum AuralSelector {
         return occurrences.first{$0.id==id}
     }
 }
-

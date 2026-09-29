@@ -28,6 +28,10 @@ public actor AuralBundleInstaller {
         onProgress(.checking)
         try prepareDirectory()
         let manifest = try await fetchManifest().validated()
+        if installedBundleIsNewer(than: manifest) {
+            onProgress(.ready(installed: false))
+            return false
+        }
         if !force, try installedBundleMatches(manifest) {
             onProgress(.ready(installed: false))
             return false
@@ -141,6 +145,26 @@ public actor AuralBundleInstaller {
         }
     }
 
+    private func installedBundleIsNewer(than offered: AuralBundleManifest) -> Bool {
+        guard hasInstalledFiles() else { return false }
+        do {
+            let catalog = try Self.validateDatabase(configuration.fileURL("aural-catalog.db"))
+            guard let localSchema = catalog["schema_version"],
+                  AuralBundleConfiguration.supportedSchemas.contains(localSchema),
+                  let localVersion = localSchema.split(separator: "-").last.flatMap({ Int($0) }),
+                  let offeredVersion = offered.schemaVersion.split(separator: "-").last.flatMap({ Int($0) }),
+                  localVersion > offeredVersion,
+                  let snapshot = catalog["snapshot_id"] else { return false }
+            let files = Dictionary(uniqueKeysWithValues: AuralBundleConfiguration.requiredFilenames.map {
+                ($0, configuration.fileURL($0))
+            })
+            try Self.validateBundle(files, manifest: AuralBundleManifest(
+                schemaVersion: localSchema, snapshotId: snapshot, files: offered.files
+            ))
+            return true
+        } catch { return false }
+    }
+
     private func install(_ staged: [String: URL]) throws {
         let names = AuralBundleConfiguration.requiredFilenames
         var backups: [String: URL] = [:]
@@ -183,7 +207,7 @@ public actor AuralBundleInstaller {
         let catalogMetadata = try validateDatabase(catalog)
         let evidenceMetadata = try validateDatabase(evidence)
         let popularityMetadata = try validateDatabase(popularity)
-        guard catalogMetadata["schema_version"] == AuralBundleConfiguration.schemaVersion else {
+        guard AuralBundleConfiguration.supportedSchemas.contains(catalogMetadata["schema_version"] ?? "") else {
             throw AuralCatalogError.invalidSchema("catalog schema mismatch")
         }
         guard catalogMetadata["snapshot_id"] == manifest.snapshotId else {
