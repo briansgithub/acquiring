@@ -124,6 +124,7 @@ struct QuizPitchGauge: View {
             }
         }
 
+        @MainActor
         func isPinned(centsError: Double) -> Bool {
             switch self {
             case .up: centsError >= QuizPitchGauge.fullScaleCents
