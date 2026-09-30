@@ -138,12 +138,16 @@ class PlaybackTransportDockVisibilityUiTest {
         }
 
         composeTestRule.onNodeWithTag(PLAYBACK_MONITOR_PITCH_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("PlaybackHomeNote").assertIsDisplayed().performClick()
+        composeTestRule.onNodeWithTag("PlaybackHomeChord").assertIsDisplayed().performClick()
         composeTestRule.onNodeWithContentDescription("Pitch monitoring").assertExists()
         composeTestRule.onNodeWithTag(PLAYBACK_MODE_SWITCH_TEST_TAG, useUnmergedTree = true).performClick()
         composeTestRule.onNodeWithText("Full Chords").assertExists()
         composeTestRule.onNodeWithText("Root Only").performClick()
         composeTestRule.onNodeWithText("Previous Root").assertDoesNotExist()
         composeTestRule.onNodeWithText("Current Root").assertExists()
+        composeTestRule.onNodeWithTag("PlaybackHomeNote").assertIsDisplayed().performClick()
+        composeTestRule.onNodeWithTag("PlaybackHomeChord").assertIsDisplayed().performClick()
     }
 
     @Test

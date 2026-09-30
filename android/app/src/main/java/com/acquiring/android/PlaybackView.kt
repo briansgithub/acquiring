@@ -519,6 +519,7 @@ fun PlaybackTab(
     val activeKey = remember(sectionKeys, currentBeat) {
         sectionKeys.keyAtBeat(currentBeat)
     }
+    val homeReference = remember(activeKey) { playbackHomeReference(activeKey) }
     val currentChord = remember(activeEventIndex, currentBeat) {
         activeEventIndex.chordAtBeat(currentBeat)
     }
@@ -1590,6 +1591,29 @@ fun PlaybackTab(
                                                 } }
                                         }
                             }
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(
+                            onClick = { playCardPreview(listOf(tessituraPreviewMidi(homeReference.note))) },
+                            modifier = Modifier
+                                .semantics { contentDescription = "Play scale degree 1" }
+                                .testTag("PlaybackHomeNote")
+                        ) {
+                            Text("1")
+                        }
+                        Button(
+                            onClick = { playCardPreview(homeReference.chord) },
+                            modifier = Modifier
+                                .semantics { contentDescription = "Play home chord" }
+                                .testTag("PlaybackHomeChord")
+                        ) {
+                            Text("I")
                         }
                     }
 
