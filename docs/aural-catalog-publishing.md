@@ -76,3 +76,11 @@ Next device action: replacement-install the built debug app on the reconnected
 Pixel, launch it, confirm the automatic v3 install, compare all three private
 checksums with the manifest, and check the Settings retry/control flow without
 resetting its user data.
+
+GitHub validation milestone: the exact source revision `c01d433b` passed
+[Android CI](https://github.com/briansgithub/acquiring/actions/runs/37053968495),
+[chord-parity CI](https://github.com/briansgithub/acquiring/actions/runs/37053968551)
+and web CI. Android's full configured unit checks and instrumentation compilation
+therefore passed in addition to the focused local checks. The existing unrelated
+`ios-external-beta.yml` workflow validation still fails before starting any job;
+that workflow was not changed or used to publish these catalog assets.
