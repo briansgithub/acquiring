@@ -20,10 +20,20 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Assert.assertTrue
 
 class PlaybackTransportDockVisibilityUiTest {
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    private fun assertHomeReferenceHeaderLayout() {
+        val note = composeTestRule.onNodeWithTag("PlaybackHomeNote").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+        val chord = composeTestRule.onNodeWithTag("PlaybackHomeChord").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+        val lock = composeTestRule.onNodeWithTag(PLAYBACK_LOCK_IN_MAJOR_TEST_TAG).assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+        val key = composeTestRule.onNodeWithTag("PlaybackKeySignature").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+        assertTrue("Home references precede the lock and key", note.right <= chord.left && chord.right <= lock.left && lock.right <= key.left)
+        assertTrue("Home references share the key signature row", listOf(chord, lock, key).all { kotlin.math.abs(it.center.y - note.center.y) < 1f })
+    }
 
     @Before
     fun setUp() {
@@ -138,6 +148,7 @@ class PlaybackTransportDockVisibilityUiTest {
         }
 
         composeTestRule.onNodeWithTag(PLAYBACK_MONITOR_PITCH_TEST_TAG).assertIsDisplayed()
+        assertHomeReferenceHeaderLayout()
         composeTestRule.onNodeWithTag("PlaybackHomeNote").assertIsDisplayed().performClick()
         composeTestRule.onNodeWithTag("PlaybackHomeChord").assertIsDisplayed().performClick()
         composeTestRule.onNodeWithContentDescription("Pitch monitoring").assertExists()
@@ -146,6 +157,7 @@ class PlaybackTransportDockVisibilityUiTest {
         composeTestRule.onNodeWithText("Root Only").performClick()
         composeTestRule.onNodeWithText("Previous Root").assertDoesNotExist()
         composeTestRule.onNodeWithText("Current Root").assertExists()
+        assertHomeReferenceHeaderLayout()
         composeTestRule.onNodeWithTag("PlaybackHomeNote").assertIsDisplayed().performClick()
         composeTestRule.onNodeWithTag("PlaybackHomeChord").assertIsDisplayed().performClick()
     }

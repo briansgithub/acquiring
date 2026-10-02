@@ -2,16 +2,17 @@ package com.acquiring.android
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +31,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -45,6 +47,8 @@ internal fun PlaybackScreenHeader(
     useRelativeIonianContext: Boolean,
     onLockInMajorChange: (Boolean) -> Unit,
     keyDisplay: PlaybackKeyDisplay?,
+    onPlayHomeNote: () -> Unit,
+    onPlayHomeChord: () -> Unit,
     isMonitoring: Boolean,
     onToggleMonitoring: () -> Unit,
     onJumpToPassage: (() -> Unit)? = null,
@@ -74,54 +78,80 @@ internal fun PlaybackScreenHeader(
                         .semantics { contentDescription = if (titleText != null) "Playback title" else "Playback" }
                 )
         }
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(44.dp)
-                .padding(horizontal = 8.dp)
+                .height(48.dp)
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .offset(x = (-22).dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
-                    onClick = { onLockInMajorChange(!useRelativeIonianContext) },
+                Button(
+                    onClick = onPlayHomeNote,
+                    enabled = keyDisplay != null,
+                    contentPadding = PaddingValues(4.dp),
+                    shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .size(44.dp)
-                        .testTag(PLAYBACK_LOCK_IN_MAJOR_TEST_TAG)
-                        .semantics {
-                            contentDescription = "Lock in Major"
-                            stateDescription = if (useRelativeIonianContext) "On" else "Off"
-                        }
+                        .testTag("PlaybackHomeNote")
+                        .semantics { contentDescription = "Play scale degree 1" }
                 ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(
-                            if (useRelativeIonianContext) {
-                                R.drawable.ic_lock
-                            } else {
-                                R.drawable.ic_lock_open
-                            }
-                        ),
-                        contentDescription = null,
-                        tint = if (useRelativeIonianContext) {
-                            Color.Red
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                        modifier = Modifier.size(22.dp)
-                    )
+                    ScaleDegreeText(label = "1\u0302", fontSize = 24.sp)
                 }
-                keyDisplay?.let { display ->
-                    Text(
-                        text = display.label,
-                        textAlign = TextAlign.Center,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = display.color,
-                        maxLines = 1,
-                        modifier = if (display.isLockedToMajor) {
+                Button(
+                    onClick = onPlayHomeChord,
+                    enabled = keyDisplay != null,
+                    contentPadding = PaddingValues(4.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .size(44.dp)
+                        .testTag("PlaybackHomeChord")
+                        .semantics { contentDescription = "Play home chord" }
+                ) {
+                    RomanNumeralText(display = RomanNumeralDisplay.fromChord("I", null), fontSize = 24.sp)
+                }
+            }
+            IconButton(
+                onClick = { onLockInMajorChange(!useRelativeIonianContext) },
+                modifier = Modifier
+                    .size(44.dp)
+                    .testTag(PLAYBACK_LOCK_IN_MAJOR_TEST_TAG)
+                    .semantics {
+                        contentDescription = "Lock in Major"
+                        stateDescription = if (useRelativeIonianContext) "On" else "Off"
+                    }
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(
+                        if (useRelativeIonianContext) {
+                            R.drawable.ic_lock
+                        } else {
+                            R.drawable.ic_lock_open
+                        }
+                    ),
+                    contentDescription = null,
+                    tint = if (useRelativeIonianContext) {
+                        Color.Red
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+            keyDisplay?.let { display ->
+                Text(
+                    text = display.label,
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = display.color,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f).testTag("PlaybackKeySignature").then(
+                        if (display.isLockedToMajor) {
                             Modifier
                                 .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
                                 .padding(horizontal = 8.dp, vertical = 2.dp)
@@ -129,10 +159,9 @@ internal fun PlaybackScreenHeader(
                             Modifier
                         }
                     )
-                }
+                )
             }
             Row(
-                modifier = Modifier.align(Alignment.CenterEnd),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 onJumpToPassage?.let { jump ->

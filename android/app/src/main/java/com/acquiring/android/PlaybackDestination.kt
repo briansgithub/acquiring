@@ -81,6 +81,8 @@ fun PlaybackDestination(
     var isPersistentMonitoring by remember { mutableStateOf(false) }
     val playAction = remember { arrayOf({}) }
     val resetAction = remember { arrayOf({}) }
+    val homeNoteAction = remember(selectedSectionKey) { arrayOf({}) }
+    val homeChordAction = remember(selectedSectionKey) { arrayOf({}) }
     val persistentToggle = remember { arrayOf({}) }
     val persistentStop = remember { arrayOf({}) }
     val playbackArtistLabel = song.artist?.takeIf { it.isNotBlank() }?.let { song.displayArtist }
@@ -115,6 +117,8 @@ fun PlaybackDestination(
             useRelativeIonianContext = useRelativeIonianContext,
             onLockInMajorChange = { useRelativeIonianContext = it },
             keyDisplay = playbackKeyDisplay,
+            onPlayHomeNote = { homeNoteAction[0]() },
+            onPlayHomeChord = { homeChordAction[0]() },
             isMonitoring = isPersistentMonitoring,
             onToggleMonitoring = { persistentToggle[0]() },
             onJumpToPassage = initialPassage?.let { passage ->
@@ -135,6 +139,10 @@ fun PlaybackDestination(
             currentWaveform = currentWaveform,
             onWaveformChange = onWaveformChange,
             onKeyDisplayChange = { playbackKeyDisplay = it },
+            onHomeReferenceActions = { note, chord ->
+                homeNoteAction[0] = note
+                homeChordAction[0] = chord
+            },
             globalTranspose = globalTranspose,
             tempoPercent = playbackTempoPercent,
             onTempoPercentChange = onPlaybackTempoPercentChange,

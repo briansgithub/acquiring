@@ -201,7 +201,8 @@ fun PlaybackTab(
     initialPassage: Pair<Double,Double>? = null,
     playOnceKey: String? = null,
     autoStart: Boolean = false,
-    onSectionComplete: (String) -> Unit = {}
+    onSectionComplete: (String) -> Unit = {},
+    onHomeReferenceActions: (() -> Unit, () -> Unit) -> Unit = { _, _ -> }
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("PlaybackTab requires an exclusive persistent pitch source")
@@ -927,6 +928,10 @@ fun PlaybackTab(
     }
     SideEffect {
         onTransportActions(isPlaying, !isScrubbing && bpm > 0.0, togglePlayback, resetPlayback)
+        onHomeReferenceActions(
+            { playCardPreview(listOf(tessituraPreviewMidi(homeReference.note))) },
+            { playCardPreview(homeReference.chord) }
+        )
         onPersistentPracticeActions(
             isPersistentMonitoring,
             headerPersistentToggle,
@@ -1591,29 +1596,6 @@ fun PlaybackTab(
                                                 } }
                                         }
                             }
-                        }
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            onClick = { playCardPreview(listOf(tessituraPreviewMidi(homeReference.note))) },
-                            modifier = Modifier
-                                .semantics { contentDescription = "Play scale degree 1" }
-                                .testTag("PlaybackHomeNote")
-                        ) {
-                            Text("1")
-                        }
-                        Button(
-                            onClick = { playCardPreview(homeReference.chord) },
-                            modifier = Modifier
-                                .semantics { contentDescription = "Play home chord" }
-                                .testTag("PlaybackHomeChord")
-                        ) {
-                            Text("I")
                         }
                     }
 
