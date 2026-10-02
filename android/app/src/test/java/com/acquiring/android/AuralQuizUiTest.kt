@@ -167,6 +167,26 @@ class AuralQuizUiTest {
         assertEquals(1, AuralCurriculum.cell(session.view().progress, "dominant-return", "compare").practiceCorrect)
     }
 
+    @Test fun settingsExampleSongDownloadShowsProgressAndEnablesRetry() {
+        var downloading by mutableStateOf(false)
+        var status by mutableStateOf("")
+        var requests = 0
+        compose.setContent { MaterialTheme {
+            AppSettingsScreen(AudioEngine.Waveform.CLARINET, {}, "", "", {}, PlayUpdateStatus.UNAVAILABLE, {},
+                TimelineFrameRatePreference.STANDARD, {}, {}, {}, {},
+                exampleSongsStatus = status, exampleSongsDownloading = downloading,
+                onDownloadExampleSongs = { requests++; downloading = true; status = "Downloading example songs 1/3" })
+        } }
+        compose.onNodeWithTag("DownloadExampleSongs").performScrollTo().assertIsEnabled().performClick()
+        assertEquals(1, requests)
+        compose.onNodeWithTag("DownloadExampleSongs").assertIsNotEnabled()
+        compose.onNodeWithText("Downloading example songs 1/3").assertExists()
+        compose.runOnIdle { downloading = false; status = "Error: Offline. Tap Download / update example songs to retry." }
+        compose.onNodeWithText(status).assertExists()
+        compose.onNodeWithTag("DownloadExampleSongs").assertIsEnabled().performClick()
+        assertEquals(2, requests)
+    }
+
     @Test fun sharedSettingsStopsAudioReturnsToSamePhaseAndUsesNewDefault() {
         val session = AuralSession(Store(), seedFor = { it })
         var instrument by mutableStateOf(AudioEngine.Waveform.CLARINET)

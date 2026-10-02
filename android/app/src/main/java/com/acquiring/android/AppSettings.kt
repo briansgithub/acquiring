@@ -78,7 +78,10 @@ internal fun AppSettingsScreen(
     onTimelineFrameRateChange: (TimelineFrameRatePreference) -> Unit,
     onShareAudioDiagnostics: () -> Unit,
     onResetAudioEngine: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    exampleSongsStatus: String = "",
+    exampleSongsDownloading: Boolean = false,
+    onDownloadExampleSongs: () -> Unit = {}
 ) {
     var openHelpTopicId by rememberSaveable { mutableStateOf<String?>(null) }
     val openHelpTopic = openHelpTopicId?.let(HelpCatalog::topic)
@@ -176,6 +179,29 @@ internal fun AppSettingsScreen(
             modifier = Modifier.semantics { contentDescription = "Update catalog" }
         ) {
             Text("Update catalog")
+        }
+
+        SettingsSectionHeading("Example songs")
+        Text(
+            "The full Aural Quiz catalog downloads automatically and is then available offline.",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
+        if (exampleSongsStatus.isNotEmpty()) {
+            Text(
+                exampleSongsStatus,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (exampleSongsStatus.startsWith("Error:")) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
+        TextButton(
+            onClick = onDownloadExampleSongs,
+            enabled = !exampleSongsDownloading,
+            modifier = Modifier.testTag("DownloadExampleSongs")
+        ) {
+            Text(if (exampleSongsDownloading) "Downloading example songs…" else "Download / update example songs")
         }
 
         Divider(modifier = Modifier.padding(vertical = 12.dp))
