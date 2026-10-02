@@ -643,3 +643,14 @@ gate is unchanged. The Android worktree registration and local feature branch
 were retired after confirming reachability. Windows left a non-Git residual
 folder at its former path because of a path-length deletion error; it was left
 untouched rather than force-deleting filesystem contents.
+# Full v3 download delivery — 2026-10-02
+
+The full example-song bundle is now public in the
+[versioned v3 release](https://github.com/briansgithub/acquiring/releases/tag/aural-catalog-v3-64cfa299cc74).
+Android checks the stable `v1.0.0-data/aural-catalog-manifest-v3.json` channel
+automatically after its song catalog is available, including existing installs.
+Settings has a dedicated **Example songs → Download / update example songs**
+action with progress and retry feedback. The old v1 manifest remains available
+for older clients. Publication, checksums, exact validation, reproduction and
+the pending Pixel reconnect are recorded in [aural-catalog-publishing.md](aural-catalog-publishing.md).
+

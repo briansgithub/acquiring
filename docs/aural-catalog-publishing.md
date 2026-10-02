@@ -20,3 +20,59 @@ Catalog snapshot: `64cfa299cc740dd9a1daf2cefc837bf1db80be9b2caa00626f674ea04b0c2
 The generated databases and delivery archives remain ignored under
 `acquiring_data/`; this document and the publishing tool are maintained source.
 No store release is included.
+
+## Published outcome
+
+Source revision: `c01d433b3b6b15681c4b5bafb1ffc954cdfbf976`.
+[Full v3 data release](https://github.com/briansgithub/acquiring/releases/tag/aural-catalog-v3-64cfa299cc74)
+is public and identifies that immutable source revision. Its four assets are the
+catalog, matching evidence, popularity overlay (gzip), and bundle manifest.
+Their total compressed database size is 782,700,084 bytes; installed database
+size is 1,980,387,328 bytes. The snapshot contains 17,272,900 sequences.
+
+Android's default URL is the stable
+[v3 channel manifest](https://github.com/briansgithub/acquiring/releases/download/v1.0.0-data/aural-catalog-manifest-v3.json).
+It points to the versioned assets above. The older v1 manifest and assets were
+preserved, so older clients retain their existing download. Future compatible
+v3 data updates can replace the channel manifest after validating and publishing
+their immutable assets, without changing Android's URL.
+
+The app checks when an existing song catalog is opened and after its initial
+download/refresh. Settings exposes **Example songs → Download / update example
+songs**, progress, error/retry feedback and a disabled button during a request.
+Unchanged verified bundles are reused. Installations are serialized and stage
+and validate all files before replacement. Quiz readers release during updates
+and reopen afterward; playlists, quiz progress and user preferences are retained.
+
+## Validation
+
+- `node --test tooling/aural-corpus/prepare-delivery.test.mjs` passed its
+  round-trip/corruption and existing-file preservation regression.
+- `prepareDelivery` ran `inspectBundle` on the full source databases, verifying
+  catalog SHA-256, SQLite integrity, catalog/evidence snapshot identity and
+  popularity metadata. `verifyDelivery` decompressed all three full assets and
+  verified their SHA-256 and byte sizes against the source.
+- From `android/`, `python scripts/compact_check.py --name v3-download-settings-final -- .\gradlew.bat :app:testDebugUnitTest --tests com.acquiring.android.AuralCatalogDownloaderTest --tests com.acquiring.android.AuralPreparedResourceTest --tests com.acquiring.android.AuralQuizUiTest :app:assembleDebug :app:assembleDebugAndroidTest`
+  passed: 26 tests, debug app and instrumentation builds. Coverage includes v1
+  to v3 upgrade eligibility, mixed/corrupt bundles, reader lifecycle, Settings
+  progress/retry and existing quiz/settings behavior. `git diff --check` passed.
+- GitHub's stored SHA-256 digest and size matched all four uploaded assets,
+  including the manifest, before publication. Public GET of the v3 channel
+  manifest matched the local verified manifest; public HEAD requests for all
+  three gzip assets returned HTTP 200 and the expected content length. Public
+  GET confirmed the older manifest still offers schema v1.
+- Pixel 7a `3C081JEHN14930` disconnected during preparation. Repeated
+  `adb devices -l` checks listed no devices. The updated APK and real in-app
+  download have therefore not been installed or device-validated in this task;
+  the owner's reconnect request is pending. No app data was cleared.
+
+To reproduce assets, run `node tooling/aural-corpus/prepare-delivery.mjs
+<catalog.db.json> <popularity.db> <evidence.db> <new-output-directory>
+<release-tag>`, then `verifyDelivery` before uploading. Publish as a draft,
+verify server digests, publish the immutable bundle, and only then advance the
+channel manifest. Existing output files are deliberately not overwritten.
+
+Next device action: replacement-install the built debug app on the reconnected
+Pixel, launch it, confirm the automatic v3 install, compare all three private
+checksums with the manifest, and check the Settings retry/control flow without
+resetting its user data.
