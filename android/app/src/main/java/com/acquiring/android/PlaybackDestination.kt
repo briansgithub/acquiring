@@ -57,7 +57,12 @@ fun PlaybackDestination(
     initialPassage: Pair<Double,Double>? = null,
     playOnceKey: String? = null,
     autoStart: Boolean = false,
-    onSectionComplete: (String) -> Unit = {}
+    onSectionComplete: (String) -> Unit = {},
+    playbackSessionKey: String? = null,
+    onPreviousSong: (() -> Unit)? = null,
+    onNextSong: (() -> Unit)? = null,
+    previousSongEnabled: Boolean = true,
+    nextSongEnabled: Boolean = true
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
     val selectedSectionKey = selectedSectionId
@@ -150,7 +155,7 @@ fun PlaybackDestination(
             onArpeggioOptionIndexChange = onPlaybackArpeggioOptionIndexChange,
             onSingingTargetsRequested = onSingingTargetsRequested,
             octaveOffset = octaveOffset,
-            sessionKey = "${song.slug}:${selectedSectionKey.orEmpty()}",
+            sessionKey = playbackSessionKey ?: "${song.slug}:${selectedSectionKey.orEmpty()}",
             persistentPitchSource = persistentPitchSource,
             modifier = Modifier.weight(1f),
             onTransportActions = { playing, enabled, play, reset ->
@@ -185,7 +190,11 @@ fun PlaybackDestination(
             sectionOptions = sectionsInSongOrder.map { it.key to it.value.safeSectionName },
             selectedSectionId = selectedSectionKey.orEmpty(),
             selectedSectionLabel = selectedSection.safeSectionName,
-            onSectionChange = onSectionChange
+            onSectionChange = onSectionChange,
+            onPreviousSong = onPreviousSong,
+            onNextSong = onNextSong,
+            previousSongEnabled = previousSongEnabled,
+            nextSongEnabled = nextSongEnabled
         )
     }
         if (showPlaybackHelp) {

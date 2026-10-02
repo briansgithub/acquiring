@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -160,6 +162,36 @@ class PlaybackTransportDockVisibilityUiTest {
         assertHomeReferenceHeaderLayout()
         composeTestRule.onNodeWithTag("PlaybackHomeNote").assertIsDisplayed().performClick()
         composeTestRule.onNodeWithTag("PlaybackHomeChord").assertIsDisplayed().performClick()
+    }
+
+    @Test
+    fun queueNavigationRemainsAvailableInExpandedDockAndRespectsBoundaries() {
+        var position by mutableStateOf(0)
+        var expanded by mutableStateOf(false)
+        composeTestRule.setContent {
+            MaterialTheme {
+                PlaybackTransportBar(
+                    showSecondaryRow = !expanded, isFavorite = false, onToggleFavorite = {},
+                    currentWaveform = AudioEngine.Waveform.SINE, onWaveformChange = {},
+                    transpose = 0, onTransposeChange = {}, onReset = {}, resetEnabled = true,
+                    isPlaying = false, playEnabled = true, onPlay = {}, onShowSongInfo = {},
+                    isSimpleMode = false, onSimpleModeChange = {},
+                    sectionOptions = listOf("verse" to "Verse", "chorus" to "Chorus"),
+                    selectedSectionId = "verse", selectedSectionLabel = "Verse", onSectionChange = {},
+                    onPreviousSong = { position-- }, onNextSong = { position++ },
+                    previousSongEnabled = position > 0, nextSongEnabled = position < 2
+                )
+            }
+        }
+        composeTestRule.onNodeWithTag("PlaybackPreviousSong").assertIsDisplayed().assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("PlaybackNextSong").assertIsDisplayed().performClick()
+        composeTestRule.runOnIdle { assertTrue(position == 1); expanded = true }
+        composeTestRule.onNodeWithTag(PLAYBACK_MODE_SWITCH_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag("PlaybackPreviousSong").assertIsDisplayed().assertIsEnabled()
+        composeTestRule.onNodeWithTag("PlaybackNextSong").assertIsDisplayed().performClick()
+        composeTestRule.onNodeWithTag("PlaybackNextSong").assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("PlaybackPreviousSong").performClick()
+        composeTestRule.runOnIdle { assertTrue(position == 1) }
     }
 
     @Test

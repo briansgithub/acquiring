@@ -79,6 +79,9 @@ internal class SongQueueViewModel : ViewModel() {
         private set
     var autoStart by mutableStateOf(false)
         private set
+    // Aural examples stay on the selected section until the listener chooses another song.
+    val playbackCompletionKey: String?
+        get() = if (originQuiz) null else loadToken
     var sectionOverride by mutableStateOf<String?>(null)
         private set
     private var consumedCompletion: String? = null
@@ -162,7 +165,7 @@ internal class SongQueueViewModel : ViewModel() {
     }
 
     fun completed(token: String): Boolean {
-        if (!active || token != loadToken || consumedCompletion == token || entries.isEmpty()) return false
+        if (!active || originQuiz || token != loadToken || consumedCompletion == token || entries.isEmpty()) return false
         consumedCompletion = token
         if (index == entries.lastIndex) {
             autoStart = false

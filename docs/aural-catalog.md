@@ -1,5 +1,25 @@
 # Aural Quiz catalog: Android human-testing release
 
+## Repeating examples and transport navigation — 2026-10-02
+
+Aural example queues now repeat the selected full section until the listener
+chooses another song, both in popularity order and with Shuffle enabled. Saved
+playlist queues retain their automatic section-end advance. A separate playback
+identity reloads a selected queue entry without enabling play-once completion for
+aural examples. Manual navigation retains the current play/pause intent.
+
+Small Previous song and Next song buttons are part of the player transport bar.
+They remain available when the singing dock is expanded, and are disabled at
+the respective queue boundaries. Ordinary single-song playback has no queue
+navigation buttons. The older large queue-header navigation buttons were removed.
+
+Focused `SongQueueTest`, `PlaybackEngineTest`, and `SongQueueMigrationTest` passed,
+and both Debug APKs built. Direct Pixel instrumentation passed the queue-toolbar
+boundary/expanded-dock case and the full/root-only home-reference header case
+(2 tests). Both replacement installs retained the existing app data; catalog,
+evidence, and popularity file sizes and modification times were unchanged.
+The earlier auto-advance description for generated examples is superseded.
+
 ## Progression song queues — implementation started 2026-09-28
 
 Starting from clean `main` at `1c95ef0b`, implementing the approved Android

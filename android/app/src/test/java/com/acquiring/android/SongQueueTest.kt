@@ -50,8 +50,8 @@ class SongQueueTest {
         state.toggleShuffle()
         assertEquals(songs,state.entries)
         assertEquals(current,state.entries[state.index])
-        assertTrue(state.completed(token))
         assertFalse(state.completed(token))
+        state.select(state.index + 1, resume = true)
         assertEquals(1,state.index)
         state.dismiss()
         assertFalse(state.completed(state.loadToken))
@@ -66,5 +66,45 @@ class SongQueueTest {
         assertFalse(state.shuffleEnabled)
         assertEquals(songs,state.entries)
         assertFalse(state.started)
+    }
+
+    @Test fun examplesLoopTheSelectedSectionInBothQueueOrders() {
+        val state = SongQueueViewModel()
+        state.finishPreparation(state.begin(true, "Examples"),
+            (0..2).map { QueuedSong("song-$it", "Song $it", "Artist", "section", "Section") })
+        state.start()
+        repeat(2) {
+            val selected = state.entries[state.index]
+            val timeline = PlaybackTimeline(endBeat = 1.25, completionKey = state.playbackCompletionKey,
+                events = listOf(PlaybackTimelineEvent(1L, 1.0, 1.1, PlaybackAudioLayer.CHORD, intArrayOf(60), 60)))
+            val renderer = PlaybackPcmRenderer(timeline,
+                PlaybackConfig(60.0, 0, AudioEngine.Waveform.SINE, PlaybackChordMode.FULL, 1f, 1f), sampleRate = 1_000)
+            val rendered = renderer.renderInto(ShortArray(600))
+            assertTrue("The section must sound more than once", rendered.startedEvents.size >= 2)
+            assertFalse(renderer.finished)
+            assertFalse(state.completed(state.loadToken))
+            assertEquals(selected, state.entries[state.index])
+            state.toggleShuffle(Random(8))
+        }
+    }
+
+    @Test fun savedPlaylistStillAdvancesAndManualNavigationPreservesPauseIntent() {
+        val state = SongQueueViewModel()
+        state.finishPreparation(state.begin(false, "Playlist"),
+            (0..2).map { QueuedSong("song-$it", "Song $it", "Artist", "section", "Section") })
+        state.start()
+        assertEquals(state.loadToken, state.playbackCompletionKey)
+        assertTrue(state.completed(state.loadToken))
+        assertEquals(1, state.index)
+        assertTrue(state.autoStart)
+        state.select(0, resume = false)
+        assertFalse(state.autoStart)
+        val token = state.loadToken
+        state.select(-1, resume = true)
+        assertEquals(token, state.loadToken)
+        state.select(2, resume = true)
+        assertTrue(state.autoStart)
+        assertFalse(state.completed(state.loadToken))
+        assertEquals(2, state.index)
     }
 }

@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.DropdownMenu
@@ -167,7 +169,11 @@ internal fun PlaybackTransportBar(
     selectedSectionId: String,
     selectedSectionLabel: String,
     onSectionChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onPreviousSong: (() -> Unit)? = null,
+    onNextSong: (() -> Unit)? = null,
+    previousSongEnabled: Boolean = true,
+    nextSongEnabled: Boolean = true
 ) {
     Column(
         modifier = modifier
@@ -244,36 +250,58 @@ internal fun PlaybackTransportBar(
                 }
             }
         }
-        if (showSecondaryRow) {
+        if (showSecondaryRow || onPreviousSong != null || onNextSong != null) {
             Row(
                 modifier = Modifier.width(PLAYBACK_TRANSPORT_WIDTH),
                 horizontalArrangement = Arrangement.spacedBy(PLAYBACK_TRANSPORT_GAP),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PlaybackTransportIconButton(
-                    onClick = onShowSongInfo,
-                    modifier = Modifier
-                        .testTag(PLAYBACK_INFO_BUTTON_TEST_TAG)
-                        .semantics { contentDescription = "Song information" }
-                ) {
-                    Icon(
-                        Icons.Outlined.Info,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
+                if (showSecondaryRow) {
+                    PlaybackTransportIconButton(
+                        onClick = onShowSongInfo,
+                        modifier = Modifier
+                            .testTag(PLAYBACK_INFO_BUTTON_TEST_TAG)
+                            .semantics { contentDescription = "Song information" }
+                    ) {
+                        Icon(
+                            Icons.Outlined.Info,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    PlaybackModeSelector(
+                        isSimpleMode = isSimpleMode,
+                        onSimpleModeChange = onSimpleModeChange
                     )
+                    if (sectionOptions.size > 1) {
+                        PlaybackSectionSelector(
+                            options = sectionOptions,
+                            selectedSectionId = selectedSectionId,
+                            selectedSectionLabel = selectedSectionLabel,
+                            onSectionChange = onSectionChange,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
-                PlaybackModeSelector(
-                    isSimpleMode = isSimpleMode,
-                    onSimpleModeChange = onSimpleModeChange
-                )
-                if (sectionOptions.size > 1) {
-                    PlaybackSectionSelector(
-                        options = sectionOptions,
-                        selectedSectionId = selectedSectionId,
-                        selectedSectionLabel = selectedSectionLabel,
-                        onSectionChange = onSectionChange,
-                        modifier = Modifier.weight(1f)
-                    )
+                onPreviousSong?.let { previous ->
+                    PlaybackTransportIconButton(
+                        onClick = previous,
+                        enabled = previousSongEnabled,
+                        modifier = Modifier.testTag("PlaybackPreviousSong")
+                            .semantics { contentDescription = "Previous song" }
+                    ) {
+                        Icon(Icons.Default.KeyboardArrowLeft, contentDescription = null, modifier = Modifier.size(18.dp))
+                    }
+                }
+                onNextSong?.let { next ->
+                    PlaybackTransportIconButton(
+                        onClick = next,
+                        enabled = nextSongEnabled,
+                        modifier = Modifier.testTag("PlaybackNextSong")
+                            .semantics { contentDescription = "Next song" }
+                    ) {
+                        Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, modifier = Modifier.size(18.dp))
+                    }
                 }
             }
         }

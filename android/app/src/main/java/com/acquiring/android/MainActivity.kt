@@ -873,8 +873,13 @@ internal fun MainScreen(
                             stopPersistentSignal=stopPersistentTick,
                             onPersistentMonitoringChange={isPersistentMonitoring=it},
                             onRequestCollapseDock={singingCollapseTick++},
-                            playOnceKey=songQueue.loadToken,autoStart=songQueue.autoStart,
-                            onSectionComplete={songQueue.completed(it)}
+                            playOnceKey=songQueue.playbackCompletionKey,autoStart=songQueue.autoStart,
+                            onSectionComplete={songQueue.completed(it)},
+                            playbackSessionKey=songQueue.loadToken,
+                            onPreviousSong={ songQueue.select(songQueue.index-1,PlaybackController.isPlaybackRequested) },
+                            onNextSong={ songQueue.select(songQueue.index+1,PlaybackController.isPlaybackRequested) },
+                            previousSongEnabled=songQueue.index>0,
+                            nextSongEnabled=songQueue.index<songQueue.entries.lastIndex
                         )
                     } else if(!songQueue.loading && songQueue.entries.isNotEmpty() && !songQueue.exhausted) {
                         CircularProgressIndicator(Modifier.padding(24.dp))
