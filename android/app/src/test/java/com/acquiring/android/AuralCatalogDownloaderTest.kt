@@ -80,6 +80,19 @@ class AuralCatalogDownloaderTest {
     }
 
     @Test
+    fun publishedSchemaThreeReplacesInstalledSchemaOne() {
+        val catalog = database("aural-catalog.db", mapOf("schema_version" to "aural-catalog-1", "snapshot_id" to "old"))
+        val evidence = database("aural-evidence.db", mapOf("catalog_snapshot" to "old"))
+        val popularity = database("aural-popularity.db", mapOf("snapshotId" to "popularity-test", "provider" to "test-provider"))
+        val upgrade = manifest("new", listOf(catalog, evidence, popularity), "aural-catalog-3")
+        assertFalse(AuralCatalogDownloader.installedBundleIsNewer(context, upgrade))
+        assertFalse(AuralCatalogDownloader.installedBundleMatches(context, upgrade))
+        database("aural-catalog.db", mapOf("schema_version" to "aural-catalog-3", "snapshot_id" to "new"))
+        database("aural-evidence.db", mapOf("catalog_snapshot" to "new"))
+        assertTrue(AuralCatalogDownloader.installedBundleMatches(context, manifest("new", listOf(catalog, evidence, popularity), "aural-catalog-3")))
+    }
+
+    @Test
     fun validatedSchemaThreeBundleIsNotDowngradedByOlderPublishedManifest() {
         val snapshot = "grouped-catalog"
         val catalog = database("aural-catalog.db", mapOf("schema_version" to "aural-catalog-3", "snapshot_id" to snapshot))

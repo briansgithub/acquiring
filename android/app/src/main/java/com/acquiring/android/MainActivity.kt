@@ -284,6 +284,19 @@ internal fun MainScreen(
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
     val queueStore = remember(context) { AuralCatalogStore.get(context) }
+    var exampleSongsStatus by remember { mutableStateOf("") }
+    var exampleSongsDownloading by remember { mutableStateOf(false) }
+    suspend fun updateExampleSongs() {
+        if (exampleSongsDownloading) return
+        exampleSongsDownloading = true
+        try {
+            val result = AuralCatalogDownloader.ensureInstalled(context) { exampleSongsStatus = it }
+            exampleSongsStatus = result.fold(
+                onSuccess = { if (it) "Example songs downloaded. Available offline." else "Example songs are up to date." },
+                onFailure = { "Error: ${it.message}. Tap Download / update example songs to retry." }
+            )
+        } finally { exampleSongsDownloading = false }
+    }
     LaunchedEffect(Unit) {
         // Let the home screen draw before reading the progression index on the I/O dispatcher.
         withFrameNanos { }
@@ -317,12 +330,8 @@ internal fun MainScreen(
                 } else {
                     "Database Refreshed!"
                 }
-                catalogStatus = "$songCatalogStatus Preparing Aural Quiz data…"
-                val auralResult = AuralCatalogDownloader.ensureInstalled(context) { catalogStatus = it }
-                catalogStatus = auralResult.fold(
-                    onSuccess = { songCatalogStatus },
-                    onFailure = { "$songCatalogStatus Aural Quiz data will retry when opened: ${it.message}" }
-                )
+                catalogStatus = songCatalogStatus
+                updateExampleSongs()
             } else {
                 // A validated install closes Room only immediately before the
                 // atomic swap. Reopen the preserved catalog if needed.
@@ -344,6 +353,8 @@ internal fun MainScreen(
         if (CatalogAutoInstall.shouldStart(songCount, catalogAutoInstallStarted)) {
             catalogAutoInstallStarted = true
             downloadCatalog()
+        } else if (songCount > 0) {
+            updateExampleSongs()
         }
     }
     LaunchedEffect(Unit) {
@@ -823,7 +834,10 @@ internal fun MainScreen(
             },
             onShareAudioDiagnostics = { AudioDiagnostics.share(context) },
             onResetAudioEngine = { AudioDiagnostics.resetEngine() },
-            onBack = closeSettings
+            onBack = closeSettings,
+            exampleSongsStatus = exampleSongsStatus,
+            exampleSongsDownloading = exampleSongsDownloading,
+            onDownloadExampleSongs = { scope.launch { updateExampleSongs() } }
         )
     }
 
@@ -888,6 +902,7 @@ internal fun MainScreen(
             } else if (isShowingAuralQuiz) {
                 auralScreenState.SaveableStateProvider("aural-quiz") { AuralQuizScreen(onBack = { isShowingAuralQuiz = false },
                     defaultInstrument = defaultInstrument, settingsContent = settingsContent,
+                    catalogUpdating = exampleSongsDownloading, catalogUpdateStatus = exampleSongsStatus,
                     loadFavoriteSongs = { playlistDao.getSlugsIn(PlaylistIds.FAVORITES).toSet() },
                     openFullPlayback = openAuralFullSongPlayback,
                     onPlayMatchingSongs=startProgressionQueue) }

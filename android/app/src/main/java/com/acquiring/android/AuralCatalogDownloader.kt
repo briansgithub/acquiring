@@ -4,6 +4,11 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -15,8 +20,9 @@ import java.util.zip.GZIPInputStream
 
 /** Downloads an immutable Aural Quiz snapshot before exposing it to the catalog reader. */
 object AuralCatalogDownloader {
-    private const val MANIFEST_URL =
-        "https://github.com/briansgithub/acquiring/releases/download/v1.0.0-data/aural-catalog-manifest.json"
+    internal const val MANIFEST_URL =
+        "https://github.com/briansgithub/acquiring/releases/download/v1.0.0-data/aural-catalog-manifest-v3.json"
+    private val installMutex = Mutex()
     private val supportedSchemas = setOf("aural-catalog-1", "aural-catalog-2", "aural-catalog-3")
     private val requiredFiles = listOf("aural-catalog.db", "aural-evidence.db", "aural-popularity.db")
     private val json = Json { ignoreUnknownKeys = true }
@@ -29,12 +35,13 @@ object AuralCatalogDownloader {
     @Serializable internal data class BundleFile(
         val name: String,
         val url: String,
-        val checksum: String
+        val checksum: String,
+        val byteSize: Long = 0
     )
 
     /**
      * Keeps the Aural bundle aligned with the published manifest without
-     * re-downloading roughly 435 MB when the exact snapshot is already present.
+     * re-downloading the bundle when the exact snapshot is already present.
      */
     suspend fun ensureInstalled(
         context: Context,
@@ -53,7 +60,7 @@ object AuralCatalogDownloader {
         context: Context,
         force: Boolean,
         onProgress: (String) -> Unit
-    ): Result<Boolean> = withContext(Dispatchers.IO) {
+    ): Result<Boolean> = withContext(Dispatchers.IO) { installMutex.withLock {
         runCatching {
             onProgress("Checking progression catalog…")
             val client = OkHttpClient()
@@ -83,20 +90,26 @@ object AuralCatalogDownloader {
                     client.newCall(Request.Builder().url(entry.url).build()).execute().use { response ->
                         check(response.isSuccessful) { "Catalog download failed: HTTP ${response.code}" }
                         val body = requireNotNull(response.body)
-                        val size = body.contentLength()
                         var read = 0L
+                        var lastProgress = 0L
                         body.byteStream().use { source ->
                             GZIPInputStream(source).use { gzip ->
                                 FileOutputStream(target).use { output ->
                                     val digest = MessageDigest.getInstance("SHA-256")
                                     val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
                                     while (true) {
+                                        currentCoroutineContext().ensureActive()
                                         val count = gzip.read(buffer)
                                         if (count < 0) break
                                         output.write(buffer, 0, count)
                                         digest.update(buffer, 0, count)
                                         read += count
-                                        if (size > 0) onProgress("Downloading progressions ${index + 1}/${requiredFiles.size}")
+                                        if (read - lastProgress >= 1024 * 1024) {
+                                            lastProgress = read
+                                            val progress = if (entry.byteSize > 0) "${(read * 100 / entry.byteSize).coerceIn(0, 100)}%"
+                                                else "${read / (1024 * 1024)} MB"
+                                            onProgress("Downloading example songs ${index + 1}/${requiredFiles.size}: $progress")
+                                        }
                                     }
                                     check(digest.digest().joinToString("") { "%02x".format(it) } == entry.checksum) {
                                         "Catalog download did not verify"
@@ -142,8 +155,8 @@ object AuralCatalogDownloader {
                 staged.forEach { (_, file) -> file.delete() }
                 throw error
             }
-        }
-    }
+        }.onFailure { if (it is CancellationException) throw it }
+    } }
 
     internal fun installedBundleMatches(context: Context, manifest: Bundle): Boolean = runCatching {
         if (manifest.schemaVersion !in supportedSchemas) return@runCatching false

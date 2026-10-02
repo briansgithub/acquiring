@@ -87,6 +87,8 @@ internal fun AuralQuizScreen(
     catalogEnabled: Boolean = true,
     openFullPlayback: (suspend (AuralSourcePassage, Boolean) -> Boolean)? = null,
     onPlayMatchingSongs: (AuralPatternTarget, Int) -> Unit = { _, _ -> },
+    catalogUpdating: Boolean = false,
+    catalogUpdateStatus: String = "",
     playExample: (suspend (AuralExercise) -> Unit)? = null
 ) {
     val context = LocalContext.current
@@ -125,7 +127,9 @@ internal fun AuralQuizScreen(
     var reviewPool by remember { mutableStateOf(emptyList<AuralCatalogRow>()) }
     val catalogState = rememberSaveableStateHolder()
     val catalogStore = remember(context) { AuralCatalogStore.get(context) }
-    LaunchedEffect(catalogLoadAttempt) {
+    LaunchedEffect(catalogLoadAttempt, catalogEnabled, catalogUpdating) {
+        catalog = null
+        if (catalogUpdating) return@LaunchedEffect
         if(!catalogEnabled) return@LaunchedEffect
         catalogError = null
         catalogStatus = "Opening your progression catalog"
@@ -380,7 +384,7 @@ internal fun AuralQuizScreen(
             if(view.feedback.isNotBlank()) Text(view.feedback,Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.bodySmall)
         } else if(route == "families" && catalogEnabled) {
             if (catalog == null) {
-                AuralCatalogInterstitial(catalogStatus, catalogError, onRetry = { catalogLoadAttempt++ }, onGuidedCourse = ::adaptive,
+                AuralCatalogInterstitial(if (catalogUpdating) catalogUpdateStatus else catalogStatus, if (catalogUpdating) null else catalogError, onRetry = { catalogLoadAttempt++ }, onGuidedCourse = ::adaptive,
                     modifier = Modifier.weight(1f))
             } else {
                 catalogState.SaveableStateProvider("catalog") {
