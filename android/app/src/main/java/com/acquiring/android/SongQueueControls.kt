@@ -34,10 +34,6 @@ internal fun SongQueueControls(
             if(queue.started) TextButton(onClick={showQueue=true}) { Text("Queue") }
         }
         Row(Modifier.fillMaxWidth().padding(horizontal=8.dp),horizontalArrangement=Arrangement.SpaceEvenly) {
-            if(queue.started) {
-                TextButton(onClick={ queue.select(queue.index-1,PlaybackController.isPlaybackRequested) },enabled=queue.index>0) { Text("Previous") }
-                TextButton(onClick={ queue.select(queue.index+1,PlaybackController.isPlaybackRequested) },enabled=queue.index<queue.entries.lastIndex) { Text("Next") }
-            }
             FilterChip(selected=queue.shuffleEnabled,onClick={queue.toggleShuffle()},enabled=queue.entries.size>1,
                 label={Text("Shuffle")},modifier=Modifier.heightIn(min=48.dp).testTag("ShuffleQueue"))
             Text(if(queue.shuffleEnabled) "Random order" else if(queue.originQuiz) "Popularity order" else "Saved order",
