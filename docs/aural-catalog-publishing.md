@@ -61,10 +61,8 @@ and reopen afterward; playlists, quiz progress and user preferences are retained
   manifest matched the local verified manifest; public HEAD requests for all
   three gzip assets returned HTTP 200 and the expected content length. Public
   GET confirmed the older manifest still offers schema v1.
-- Pixel 7a `3C081JEHN14930` disconnected during preparation. Repeated
-  `adb devices -l` checks listed no devices. The updated APK and real in-app
-  download have therefore not been installed or device-validated in this task;
-  the owner's reconnect request is pending. No app data was cleared.
+- Pixel 7a `3C081JEHN14930` disconnected during publication preparation.
+  Device verification was completed after reconnecting, as recorded below.
 
 To reproduce assets, run `node tooling/aural-corpus/prepare-delivery.mjs
 <catalog.db.json> <popularity.db> <evidence.db> <new-output-directory>
@@ -72,10 +70,44 @@ To reproduce assets, run `node tooling/aural-corpus/prepare-delivery.mjs
 verify server digests, publish the immutable bundle, and only then advance the
 channel manifest. Existing output files are deliberately not overwritten.
 
-Next device action: replacement-install the built debug app on the reconnected
-Pixel, launch it, confirm the automatic v3 install, compare all three private
-checksums with the manifest, and check the Settings retry/control flow without
-resetting its user data.
+## Pixel verification — 2026-10-02
+
+The owner explicitly requested verification on the reconnected Pixel 7a.
+Replacement-installed the validated debug APK with `adb -s 3C081JEHN14930
+install -r android/app/build/outputs/apk/debug/app-debug.apk`. First-install time
+remained September 30 at 16:59:59; no app data was cleared.
+
+Launching the app started the real GitHub v3 download automatically from an
+existing v1 installation. A connection abort interrupted that attempt. The
+app removed incomplete staging files, retained the old active bundle, and
+showed the Settings error/retry action. Tapping the actual **Download / update
+example songs** button completed the download, validation and replacement.
+Accessibility hierarchy checks confirmed that the button was disabled during
+the request, re-enabled after success, and that Settings reported
+**Example songs downloaded. Available offline.** No screenshots were taken.
+
+`adb shell run-as com.acquiring.android sha256sum` checks of all three private
+database files matched the published v3 manifest exactly. Active catalog size
+is 1,928,265,728 bytes, evidence 45,502,464 bytes, popularity 6,619,136 bytes.
+No `.installing` or `.backup` files remained after success. Five starting
+saved-data hashes (user database, WAL, quiz progress, browse state and search
+history) were unchanged immediately after installation. After live navigation,
+only the browse-state file changed; the other four remained byte-for-byte
+unchanged. Local verification copies/hashes are ignored under
+`acquiring_data/device-verification/v3-2026-10-02/`.
+
+Replacement-installed the instrumentation APK and ran:
+
+`adb -s 3C081JEHN14930 shell am instrument -w -e class 'com.acquiring.android.AuralCatalogDeviceTest#queueSectionReferencesResolveAgainstSongLibrary,com.acquiring.android.AuralCatalogDeviceTest#defaultCatalogShowsUngroupedFrequencyResults' com.acquiring.android.test/androidx.test.runner.AndroidJUnitRunner`
+
+Passed both tests in 46.488 seconds. Catalog browsing produced results and
+all 30 sampled example sections resolved against the installed song library.
+Reopened the real app: the automatic existing-bundle check reused v3 without
+re-downloading; file sizes/timestamps stayed unchanged. The live Analysis menu
+contained **Relative major**, **Mixed Modes**, and **Filter by mode**. Closed
+the menu and left the app open on the Aural Quiz catalog. Targeted Android
+runtime logs contained no crashes. Device validation is complete; further work
+requires a new requested change.
 
 GitHub validation milestone: the exact source revision `c01d433b` passed
 [Android CI](https://github.com/briansgithub/acquiring/actions/runs/37053968495),
