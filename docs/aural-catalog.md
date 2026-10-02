@@ -9,7 +9,7 @@ automatically after its song catalog is available, including existing installs.
 Settings has a dedicated **Example songs → Download / update example songs**
 action with progress and retry feedback. The old v1 manifest remains available
 for older clients. Publication, checksums, exact validation, reproduction and
-the pending Pixel reconnect are recorded in [aural-catalog-publishing.md](aural-catalog-publishing.md).
+completed Pixel verification are recorded in [aural-catalog-publishing.md](aural-catalog-publishing.md).
 
 ## Repeating examples and transport navigation — 2026-10-02
 
