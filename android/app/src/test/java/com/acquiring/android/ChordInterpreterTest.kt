@@ -37,7 +37,7 @@ class ChordInterpreterTest {
 
             println("Tested '$chordStr' -> Roman='$roman', Letter='$letter', Notes=$notes")
 
-            assertTrue("Roman symbol should be 'Rest' or empty for blank chord", roman == "Rest" || roman.isEmpty())
+            assertEquals("Blank chords have no Roman symbol", "", roman)
             assertTrue("Letter name should be empty for rest/blank chord", letter.isEmpty())
             assertTrue("Notes list should be empty for rest/blank chord", notes.isEmpty())
         }
@@ -67,7 +67,7 @@ class ChordInterpreterTest {
                 json = """{"root": 5, "type": 11}""",
                 key = KeyInfo("C", "major"),
                 expectedRoman = "V11",
-                expectedPcs = setOf(7, 11, 2, 5, 9, 0) // G, B, D, F, A, C (Diatonic G11)
+                expectedPcs = setOf(7, 5, 9, 0) // Source F/G voicing omits the third and fifth.
             ),
             // Fix 018: Suspensions (no 3rd)
             RegressionTestCase(
@@ -98,6 +98,16 @@ class ChordInterpreterTest {
             assertEquals("Roman mismatch for ${test.json}", test.expectedRoman, roman)
             assertEquals("PC set mismatch for ${test.json}", test.expectedPcs, pcs)
         }
+    }
+
+    @Test
+    fun preservesAllThirdInversionAlterationsAndRemoteRootSpelling() {
+        val halfDiminished = json.decodeFromString<JsonObject>(
+            """{"root":2,"type":7,"inversion":3,"alterations":["b5","#9"]}""")
+        assertEquals("iiø4(b5)(#9)2", ChordInterpreter.getRomanSymbol(halfDiminished, key))
+        val remoteLeadingTone = json.decodeFromString<JsonObject>(
+            """{"root":7,"applied":7,"type":7,"inversion":1}""")
+        assertEquals("D##°7/F##", ChordInterpreter.getLetterName(remoteLeadingTone, KeyInfo("F#", "major")))
     }
 
     data class RegressionTestCase(

@@ -1,12 +1,7 @@
 import { UNKNOWN } from './buildParts.js';
-import { getNoteLabel } from '../music.js';
+import { getChordLetterName } from '../jsonToSymbol.js';
 import { speakNoteName } from './speakLetter.js';
 import { speakDegree } from './words.js';
-
-const SUPPORTED_BORROWED = new Set([
-  'minor', 'dorian', 'phrygian', 'lydian', 'mixolydian', 'locrian',
-  'major', 'harmonicMinor', 'phrygianDominant',
-]);
 
 function joinWords(words) {
   return words.filter(Boolean).join(' ');
@@ -17,11 +12,17 @@ function appendPhrase(words, phrase, value) {
 }
 
 function borrowedRedundantWithCase(parts) {
-  return parts.borrowed && parts.caseQuality && parts.borrowed === parts.caseQuality;
+  return !parts.appliedOf && parts.borrowed && parts.caseQuality && parts.borrowed === parts.caseQuality;
 }
 
 function appendBorrowed(words, parts) {
   if (!parts.borrowed || borrowedRedundantWithCase(parts)) return;
+  // Borrowing describes the applied target's scale, not its chord quality:
+  // "of flat six minor" would incorrectly suggest a minor target triad.
+  if (parts.appliedOf) {
+    words.push('borrowed from', parts.borrowed);
+    return;
+  }
   words.push(parts.borrowed);
 }
 
@@ -100,28 +101,16 @@ export function formatAcademic(parts, ctx) {
   return joinWords(words);
 }
 
-function resolveEffKeyAndDegree(chord, key, ctx) {
-  if (ctx?.isApplied) {
-    const targetTonic = getNoteLabel(chord.root, key);
-    return {
-      degree: ctx.appliedDegree,
-      effKey: { tonic: targetTonic, scale: 'major' },
-    };
-  }
-  let scale = key.scale || 'major';
-  if (typeof chord.borrowed === 'string' && chord.borrowed && SUPPORTED_BORROWED.has(chord.borrowed)) {
-    scale = chord.borrowed;
-  }
-  return { degree: chord.root, effKey: { tonic: key.tonic, scale } };
+function speakRootNote(chord, key) {
+  // Ask the shared formatter for the harmonic root. Root-position triad
+  // context avoids its alternate sixth-chord and eleventh slash shorthands;
+  // the original quality, extension and inversion are spoken below.
+  const symbol = getChordLetterName({ ...chord, type: 5, inversion: 0 }, key);
+  return speakNoteName(symbol.match(/^[A-Ga-g][#bx]*/)?.[0] || '');
 }
 
-function speakRootNote(chord, key, ctx) {
-  const { degree, effKey } = resolveEffKeyAndDegree(chord, key, ctx);
-  return speakNoteName(getNoteLabel(degree, effKey));
-}
-
-function speakAppliedTargetLetter(ctx, key) {
-  const words = [speakNoteName(getNoteLabel(ctx.denominatorDegree, key))];
+function speakAppliedTargetLetter(ctx) {
+  const words = [speakNoteName(ctx.denominatorTonic)];
   const q = ctx.denominatorQuality;
   if (q === 'minor') words.push('minor');
   else if (q === 'diminished') words.push('diminished');
@@ -132,7 +121,7 @@ function speakAppliedTargetLetter(ctx, key) {
 /** Academic educational reading using note names instead of roman degrees. */
 export function formatAcademicLetter(parts, ctx, key, chord) {
   if (!parts) return UNKNOWN;
-  const words = [speakRootNote(chord, key, ctx)];
+  const words = [speakRootNote(chord, key)];
   if (parts.caseQuality) words.push(parts.caseQuality);
 
   const invLabel = inversionAcademicLabel(parts);
@@ -152,7 +141,7 @@ export function formatAcademicLetter(parts, ctx, key, chord) {
   if (parts.substitution) words.push(parts.substitution);
 
   if (ctx?.isApplied) {
-    appendPhrase(words, 'secondary dominant resolving to', speakAppliedTargetLetter(ctx, key));
+    appendPhrase(words, 'secondary dominant resolving to', speakAppliedTargetLetter(ctx));
   }
 
   appendBorrowedFunctional(words, parts);
@@ -164,4 +153,3 @@ export function formatAcademicLetter(parts, ctx, key, chord) {
 export const formatAnalytic = formatColloquial;
 export const formatFunctional = formatAcademic;
 export const formatFunctionalLetter = formatAcademicLetter;
-

@@ -61,7 +61,7 @@ class RelativeIonianContextTest {
         assertEquals("I", ChordInterpreter.getRelativeIonianRomanSymbol(chord(3), key))
         assertEquals("ii", ChordInterpreter.getRelativeIonianRomanSymbol(chord(4), key))
         assertEquals("iii", ChordInterpreter.getRelativeIonianRomanSymbol(chord(5), key))
-        assertEquals("V/iii", ChordInterpreter.getRelativeIonianRomanSymbol(chord(5, applied = 5), key))
+        assertEquals("V(maj)/iii", ChordInterpreter.getRelativeIonianRomanSymbol(chord(5, applied = 5), key))
     }
 
     @Test

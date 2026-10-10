@@ -123,7 +123,11 @@ object MusicTheory {
             options.asSequence()
                 .map { acc -> targetLetter + acc }
                 .firstOrNull { (NOTE_TO_PC[it] ?: -1) == targetPc }
-                ?: targetLetter
+                ?: run {
+                    var alteration = Math.floorMod(targetPc - (NOTE_TO_PC[targetLetter] ?: 0), 12)
+                    if (alteration > 6) alteration -= 12
+                    targetLetter + if (alteration < 0) "b".repeat(-alteration) else "#".repeat(alteration)
+                }
         }
     }
 
@@ -147,6 +151,12 @@ object MusicTheory {
         
         val idx = ((degree - 1) % 7 + 7) % 7
         return labels.getOrElse(idx) { "C" }
+    }
+
+    fun getNoteLabel(degree: String, tonic: String, scale: String, customIntervals: List<Int>? = null): String {
+        val base = getNoteLabel(getRawDegree(degree), tonic, scale, customIntervals)
+        val accidental = getModifierValue(base.drop(1)) + getModifierValue(degree)
+        return base.take(1) + if (accidental < 0) "b".repeat(-accidental) else "#".repeat(accidental)
     }
 
     fun getModifierValue(text: String): Int {

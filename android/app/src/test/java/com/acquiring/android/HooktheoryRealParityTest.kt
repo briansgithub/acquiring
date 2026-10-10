@@ -3,6 +3,7 @@ package com.acquiring.android
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 @Serializable
@@ -15,7 +16,7 @@ data class RealParityCase(
     val expectedLetter: String,
     val expectedPcs: List<Int>,
     val expectedMidi: List<Int>,
-    val expectedRootMidi: Int,
+    val expectedRootMidi: Int?,
     val expectedToneLabels: List<String>,
     val truthRoman: String,
     val truthLetter: String,
@@ -23,9 +24,9 @@ data class RealParityCase(
 )
 
 /**
- * Scores the Android chord engine against the chord shapes that actually occur
- * in the scraped Hooktheory corpus, weighted by how often each shape appears.
- * Reports rather than gates, so the number is visible while parity work lands.
+ * Requires exact parity for every rendered output on the real-song corpus.
+ * The web source review independently checks the captured Hooktheory evidence;
+ * these assertions prevent Android from drifting from the reviewed decoder.
  */
 class HooktheoryRealParityTest {
 
@@ -39,6 +40,7 @@ class HooktheoryRealParityTest {
             stream.bufferedReader().use { it.readText() }
         )
 
+        assertTrue("Real-song corpus must retain its reference cases", cases.size > 1000)
         val badShapes = linkedMapOf<String, Int>()
         val badPlays = linkedMapOf<String, Int>()
         val lines = mutableListOf<String>()
@@ -50,9 +52,9 @@ class HooktheoryRealParityTest {
             val roman = ChordInterpreter.getRomanSymbol(chord, tc.key)
             val letter = ChordInterpreter.getLetterName(chord, tc.key)
             val notes = ChordInterpreter.getChordNotes(chord, tc.key)
-            val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, tc.key).firstOrNull()
+            val rootMidi = ChordInterpreter.getResolvedRootMidi(chord, tc.key)
             val pcs = notes.map { ((it % 12) + 12) % 12 }.toSet().sorted()
-            val labels = rootMidi?.let { root -> notes.map { MusicTheory.getRelativeDegreeLabel(it, root) } }
+            val labels = ChordInterpreter.getChordToneLabels(chord, tc.key)
 
             fun check(name: String, ok: Boolean, detail: () -> String) {
                 if (ok) return
@@ -82,11 +84,6 @@ class HooktheoryRealParityTest {
         }
         System.getenv("ACQUIRING_REAL_DUMP")?.let { java.io.File(it).writeText(lines.joinToString("\n")) }
 
-        ParityBaseline.assertWithinBaseline(
-            corpus = "hooktheory_parity",
-            counts = badShapes,
-            total = cases.size,
-            samples = lines
-        )
+        assertTrue("Real-song parity differs: $badShapes\n" + lines.take(40).joinToString("\n"), badShapes.isEmpty())
     }
 }
