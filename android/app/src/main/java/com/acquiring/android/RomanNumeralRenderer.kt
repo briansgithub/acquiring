@@ -32,8 +32,6 @@ internal data class RomanNumeralDisplay(
     val borrowedLabel: String? = null
 ) {
     companion object {
-        private val borrowedTagPattern =
-            Regex("\\((min|mix|dor|phr|lyd|loc|maj|hmin|phdm|bor)\\)")
         private val borrowedTags = mapOf(
             "minor" to "min",
             "dorian" to "dor",
@@ -56,8 +54,11 @@ internal data class RomanNumeralDisplay(
                 }
                 else -> null
             }
+            // An applied numerator can carry its own (maj) tag. Separate only
+            // the borrowed label, retaining the numerator's harmonic context.
+            val borrowedIndex = borrowedLabel?.let(symbol::lastIndexOf) ?: -1
             return RomanNumeralDisplay(
-                symbol = if (borrowedLabel == null) symbol else symbol.replace(borrowedTagPattern, ""),
+                symbol = if (borrowedIndex < 0) symbol else symbol.removeRange(borrowedIndex, borrowedIndex + borrowedLabel!!.length),
                 borrowedLabel = borrowedLabel
             )
         }

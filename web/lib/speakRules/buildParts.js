@@ -118,7 +118,10 @@ function buildSuffixParts(chord, ctx) {
   }
 
   if (ctx.isApplied) {
-    parts.appliedOf = speakAppliedTarget(ctx.denominatorDegree, ctx.denominatorQuality);
+    parts.appliedOf = [
+      ...speakAccidentalPrefix(ctx.denominatorPrefix),
+      speakAppliedTarget(ctx.denominatorDegree, ctx.denominatorQuality),
+    ].join(' ');
   }
 
   if (Array.isArray(chord.substitutions) && chord.substitutions.includes('tri')) {

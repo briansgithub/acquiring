@@ -20,6 +20,14 @@ class RomanNumeralTokenizerTest {
             "V7/vi(maj)",
             base("V"), superPart("7"), base("/"), base("vi"), suffix("(maj)")
         )
+        assertParts(
+            "V7(maj)/ii",
+            base("V"), superPart("7"), suffix("(maj)"), base("/"), base("ii")
+        )
+        assertParts(
+            "♭II7(∆-sub)/vi",
+            base("♭II"), superPart("7"), suffix("(∆-sub)"), base("/"), base("vi")
+        )
     }
 
     @Test
@@ -79,6 +87,18 @@ class RomanNumeralTokenizerTest {
         assertEquals(
             RomanNumeralDisplay("♭VI", "(bor)"),
             RomanNumeralDisplay.fromChord("♭VI(bor)", JsonArray(emptyList()))
+        )
+        assertEquals(
+            RomanNumeralDisplay("V7(maj)/♭VI", "(min)"),
+            RomanNumeralDisplay.fromChord("V7(maj)/♭VI(min)", JsonPrimitive("minor"))
+        )
+        assertEquals(
+            RomanNumeralDisplay("V7(maj)/♯iii", "(maj)"),
+            RomanNumeralDisplay.fromChord("V7(maj)/♯iii(maj)", JsonPrimitive("major"))
+        )
+        assertEquals(
+            RomanNumeralDisplay("I(add9)", "(bor)"),
+            RomanNumeralDisplay.fromChord("I(bor)(add9)", JsonArray(emptyList()))
         )
     }
 

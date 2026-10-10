@@ -31,6 +31,8 @@ internal data class ResolvedChordRoot(
     val specificSemitonesFromTonic: Int
 )
 
+data class ChordInterpretation(val roman: String, val letter: String, val midi: List<Int>, val rootMidi: Int?, val toneLabels: List<String>)
+
 object ChordInterpreter {
     
     private val ROMAN_MAP = mapOf(1 to "I", 2 to "II", 3 to "III", 4 to "IV", 5 to "V", 6 to "VI", 7 to "VII")
@@ -133,42 +135,6 @@ object ChordInterpreter {
         return Math.floorMod(at(degree + 6) - at(degree), 12) == 11
     }
 
-    private fun midiOctave(midi: Int): Int = (midi / 12) - 1
-
-    /** Mirrors buildChordFromNoteName/finalizeVoicing in the web player. */
-    private fun voiceAppliedChord(
-        rootPositionPitches: List<Int>,
-        inversion: Int,
-        chordType: Int,
-        fullyDiminished: Boolean,
-    ): List<Int> {
-        if (rootPositionPitches.isEmpty()) return emptyList()
-
-        if (inversion > 0) {
-            val rotation = inversion % rootPositionPitches.size
-            val rotated = rootPositionPitches.drop(rotation) + rootPositionPitches.take(rotation)
-            val originalBass = rotated.first()
-            val bassOctave = maxOf(1, midiOctave(originalBass) - 1)
-            val bass = ((bassOctave + 1) * 12) + (originalBass % 12)
-            val highestUpperOctave = rotated.drop(1).maxOfOrNull(::midiOctave) ?: 0
-            val targetUpperOctave = maxOf(highestUpperOctave, bassOctave + 1)
-            val upperOctaveBase = (targetUpperOctave + 1) * 12
-
-            return listOf(bass) + rotated.drop(1).map { upperOctaveBase + (it % 12) }
-        }
-
-        if (chordType >= 7 && fullyDiminished && rootPositionPitches.size >= 4) {
-            val spread = rootPositionPitches.toMutableList()
-            val rootOctave = midiOctave(spread.first())
-            for (index in listOf(1, 2)) {
-                if (midiOctave(spread[index]) == rootOctave) spread[index] += 12
-            }
-            return spread.sorted()
-        }
-
-        return rootPositionPitches.sorted()
-    }
-
     private val BORROWED_TAG = mapOf(
         "minor" to "min", "dorian" to "dor", "phrygian" to "phr",
         "lydian" to "lyd", "mixolydian" to "mix", "locrian" to "loc", "major" to "maj",
@@ -183,14 +149,19 @@ object ChordInterpreter {
     }
 
 
+    private fun notePitchClass(note: String): Int? {
+        val natural = MusicTheory.NOTE_TO_PC[note.take(1)] ?: return null
+        return Math.floorMod(natural + MusicTheory.getModifierValue(note.drop(1)), 12)
+    }
+
     private fun isMajorSeventh(degree: Int, effKey: KeyInfo, customIntervals: List<Int>? = null): Boolean {
         return try {
             val rootNote = MusicTheory.getNoteLabel(degree, effKey.tonic, effKey.scale, customIntervals)
-            val rootPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(rootNote)] ?: return false
+            val rootPc = notePitchClass(rootNote) ?: return false
             
             val seventhSD = ((degree - 1 + 6) % 7 + 7) % 7 + 1
             val seventhNote = MusicTheory.getNoteLabel(seventhSD, effKey.tonic, effKey.scale, customIntervals)
-            val seventhPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(seventhNote)] ?: return false
+            val seventhPc = notePitchClass(seventhNote) ?: return false
             
             ((seventhPc - rootPc + 12) % 12) == 11
         } catch (_: Exception) {
@@ -227,7 +198,18 @@ object ChordInterpreter {
     ): ResolvedChordRoot? {
         val root = safeInt(chordJson["root"])
         val isRest = safeBoolean(chordJson["isRest"]) || safeBoolean(chordJson["rest"])
-        if (root !in 1..7 || isRest) return null
+        if (isRest) return null
+        if (root !in 1..7) {
+            if (root != 0) return null
+            val rootName = safeString(chordJson["_letterRootName"])
+            val pitch = SpelledPitch.parse(rootName, referenceOctave) ?: return null
+            val tonic = SpelledPitch.parse(key.tonic, referenceOctave) ?: return null
+            val genericSteps = Math.floorMod(pitch.letter.index - tonic.letter.index, 7)
+            val registered = pitch.copy(octave = Math.floorDiv(tonic.staffPosition + genericSteps, 7))
+            return ResolvedChordRoot(registered, pitch, root, 1, key, KeyInfo(rootName, "major"), null,
+                safeString(chordJson["_letterQuality"], "major"), ChordRootContext.STANDARD,
+                registered.staffPosition - tonic.staffPosition, registered.chromaticPosition - tonic.chromaticPosition)
+        }
 
         val applied = safeInt(chordJson["applied"])
         val borrowedName = safeString(chordJson["borrowed"])
@@ -272,13 +254,8 @@ object ChordInterpreter {
                 else -> ChordRootContext.APPLIED
             }
         } else if (applied in 1..7 && hasBorrowedScale) {
-            // Applied + borrowed (modal mixture on a secondary dominant/function). Ported from
-            // resolveAppliedBorrowedChord in web/lib/chordBuild.js: the chord SOUNDS
-            // tonicized against the borrowed-resolved target (this branch and getChordNotes
-            // below), while its Roman-numeral / letter-name LABEL intentionally does NOT
-            // reflect the borrow - see the comment above the applied branch of getRomanSymbol
-            // for why (this matches web/lib/jsonToSymbol.js's getChordSymbol, which
-            // never reads chord.borrowed in its applied branch either).
+            // Resolve the same borrowed tonicization target for root spelling,
+            // Roman/letter labels, and voiced notes.
             val chordType = safeInt(chordJson["type"], 5)
             val chordInversion = safeInt(chordJson["inversion"])
             val alterations0 = (chordJson["alterations"] as? JsonArray)
@@ -414,23 +391,23 @@ object ChordInterpreter {
         val majorSeventh = opts["majorSeventh"] as? Boolean ?: false
         val suspended = suspensions.isNotEmpty()
         
-        val implicitHalfDimB5 = quality == "diminished" && type >= 7 && !fullyDiminished
-        val displayAlts = if (implicitHalfDimB5) alterations.filter { it != "b5" } else alterations
+        val displayAlts = alterations
         val altInline = if (displayAlts.isNotEmpty()) displayAlts.joinToString("") { "($it)" } else ""
         
         val susStr = if (suspended) suspensions.joinToString("") { "sus$it" } else ""
         val omit3Only = omits.contains(3) && !omits.contains(5)
         val sharp5Only = displayAlts.size == 1 && (displayAlts[0] == "#5")
         
-        val suppressPlusForSharp5 = type < 7 && sharp5Only && (inversion == 1 || inversion == 2)
+        val suppressPlusForSharp5 = safeInt(chordJson["applied"]) !in 1..7 && type < 7 && sharp5Only && (inversion == 1 || inversion == 2)
         val suppressDimForSharp5Inv2 = sharp5Only && quality == "diminished" && inversion == 2 && type < 7
 
         var suffix = ""
         var alterationsEmbedded = false
         var susPlaced = false
         var omitsPlaced = false
+        var addsPlaced = false
 
-        val augmented = quality == "augmented" || (alterations.any { it == "#5" } && !suppressPlusForSharp5)
+        val augmented = quality == "augmented" || (quality == "major" && alterations.any { it == "#5" } && !suppressPlusForSharp5)
         if (augmented) suffix += "+"
 
         if (!suspended) {
@@ -449,24 +426,17 @@ object ChordInterpreter {
         // Figured-bass (Refined via Fix 057-062)
         when (inversion) {
             1 -> {
-                if (suspended && type < 7) {
-                    val sus4Only = suspensions.contains(4) && !suspensions.contains(2)
-                    if (sus4Only && (opts["borrowed"] == "lydian" || opts["borrowedTag"] == "(lyd)")) {
-                        suffix += "sus${suspensions.joinToString("")}6"
-                        susPlaced = true
-                    } else {
-                        suffix += "6$susStr"
-                        susPlaced = true
-                    }
-                } else if (type >= 7) {
+                if (type >= 7) {
                     suffix += if (altInline.isNotEmpty()) "6${altInline}5" else "65"
                     if (altInline.isNotEmpty()) alterationsEmbedded = true
                 } else if (altInline.isNotEmpty()) {
                     suffix += "6$altInline"
                     alterationsEmbedded = true
-                } else {
-                    suffix += "6"
-                }
+                } else if (suspended) {
+                    val sus4Only = suspensions.contains(4) && !suspensions.contains(2)
+                    suffix += if (sus4Only && (safeString(chordJson["borrowed"]) == "lydian" || opts["borrowedTag"] == "(lyd)")) "sus${suspensions.joinToString("")}6" else "6$susStr"
+                    susPlaced = true
+                } else suffix += "6"
             }
             2 -> {
                 if (type >= 7) {
@@ -481,21 +451,26 @@ object ChordInterpreter {
                             suffix += "6($addBody)4$susStr"
                         }
                         susPlaced = true
+                        addsPlaced = true
                     } else {
-                        suffix += "4${susStr}6"
+                        suffix += if (safeInt(chordJson["applied"]) in 1..7) "64$susStr" else "4${susStr}6"
                         susPlaced = true
                     }
                 } else if (sharp5Only) {
                     val rootVal = safeInt(chordJson["root"])
-                    val iMinorTonicSharp5 = quality == "minor" && rootVal == 1 && opts["borrowed"] == null
+                    val iMinorTonicSharp5 = quality == "minor" && rootVal == 1 && safeString(chordJson["borrowed"]).isEmpty() && chordJson["borrowed"] !is JsonArray
                     if (iMinorTonicSharp5) suffix += "46$altInline"
-                    else suffix += (if (quality == "minor" || quality == "diminished") "" else "+") + "6$altInline" + "4"
+                    else if (adds.isNotEmpty()) {
+                        suffix += (if (quality == "minor" || quality == "diminished" || suffix.contains('+')) "" else "+") + "6(" + adds.joinToString("") { "add$it" } + ")$altInline" + "4"
+                        addsPlaced = true
+                    }
+                    else suffix += (if (quality == "minor" || quality == "diminished" || suffix.contains('+')) "" else "+") + "6$altInline" + "4"
                     alterationsEmbedded = true
                 } else if (omit3Only) {
                     val tonic = opts["keyTonic"] as? String ?: ""
-                    val omit3Use46 = (quality == "minor" && safeInt(chordJson["root"]) == 4 && (tonic == "F" || tonic == "B"))
+                    val omit3Use46 = safeString(chordJson["borrowed"]).isEmpty() && chordJson["borrowed"] !is JsonArray && ((quality == "minor" && safeInt(chordJson["root"]) == 4 && (tonic == "F" || tonic == "B"))
                         || (quality == "minor" && safeInt(chordJson["root"]) == 1 && tonic == "C")
-                        || (safeInt(chordJson["root"]) == 7 && opts["keyScale"] == "phrygian")
+                        || (safeInt(chordJson["root"]) == 7 && opts["keyScale"] == "phrygian"))
                     
                     if (omit3Use46) suffix += "46(no3)"
                     else suffix += "6(no3)4"
@@ -508,12 +483,10 @@ object ChordInterpreter {
                 }
             }
             3 -> {
-                if (type >= 7) {
-                    suffix += if (implicitHalfDimB5 && alterations.contains("b5")) "4(b5)2" else "42"
-                    if (altInline.isNotEmpty()) alterationsEmbedded = true
-                } else {
-                    suffix += "42"
-                }
+                if (type >= 7 && altInline.isNotEmpty()) {
+                    suffix += "4${altInline}2"
+                    alterationsEmbedded = true
+                } else suffix += "42"
             }
         }
 
@@ -541,7 +514,7 @@ object ChordInterpreter {
         val borrowedTag = opts["borrowedTag"] as? String ?: ""
         if (borrowedTag.isNotEmpty()) suffix += borrowedTag
 
-        if (adds.isNotEmpty()) {
+        if (adds.isNotEmpty() && !addsPlaced) {
             val addBody = adds.joinToString("") { 
                 val n = if (it <= 6 && type >= 7) it + 7 else it
                 "add$n"
@@ -577,49 +550,48 @@ object ChordInterpreter {
 
     private fun triadQualityWithAlts(baseQuality: String, chord: JsonObject): String {
         val alterations = (chord["alterations"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull } ?: emptyList()
+        if (alterations.contains("#5") && baseQuality == "diminished") return "minor"
         if (alterations.contains("b5") && baseQuality == "minor") return "diminished"
         return baseQuality
     }
 
+    private fun appliedTarget(chord: JsonObject, key: KeyInfo): Pair<String, String> {
+        val root = safeInt(chord["root"])
+        val borrowed = safeString(chord["borrowed"])
+        val raw = rawCustomBorrowedIntervals(chord["borrowed"])
+        val custom = raw?.let { customBorrowedIntervals(chord["borrowed"]) }
+        val scale = if (custom != null) "custom" else if (BORROWED_TAG.containsKey(borrowed)) borrowed else key.scale
+        val target = MusicTheory.getNoteLabel(root, key.tonic, scale, custom)
+        val quality = if (custom != null) customChordQualities(custom)[root - 1] else (MusicTheory.CHORD_QUALITIES[scale] ?: MusicTheory.CHORD_QUALITIES["major"]!!)[root - 1]
+        val original = MusicTheory.getNoteLabel(root, key.tonic, key.scale)
+        var shift = (notePitchClass(target) ?: 0) - (notePitchClass(original) ?: 0)
+        while (shift > 6) shift -= 12
+        while (shift < -6) shift += 12
+        val prefix = if (shift < 0) "♭".repeat(-shift) else "♯".repeat(shift)
+        val roman = ROMAN_MAP[root].orEmpty().let { if (quality == "minor" || quality == "diminished") it.lowercase() else it }
+        return target to (prefix + roman + if (quality == "diminished") "°" else "")
+    }
+
     fun getRomanSymbol(chordJson: JsonObject, key: KeyInfo): String {
         val root = safeInt(chordJson["root"])
-        if (root <= 0) return "Rest"
+        if (root !in 1..7 || safeBoolean(chordJson["isRest"]) || safeBoolean(chordJson["rest"])) return ""
 
         val applied = safeInt(chordJson["applied"])
         val borrowed = safeString(chordJson["borrowed"])
         
-        // --- Applied chords (Fix 001/041) ---
-        // Applied+borrowed chords (both fields set) are intentionally rendered the SAME way as
-        // plain applied chords here: the label ignores `borrowed` entirely, even though the
-        // chord's actual pitches (getChordNotes/resolveChordRoot) ARE tonicized against the
-        // borrowed-resolved target. This mirrors web/lib/jsonToSymbol.js's
-        // getChordSymbol, whose applied branch never reads chord.borrowed either - see the
-        // longer note in resolveChordRoot's applied+borrowed branch.
         if (applied in 1..7) {
-            val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, key.scale)
-            val numeratorKey = KeyInfo(targetTonic, "major")
+            val target = appliedTarget(chordJson, key)
+            val numeratorKey = KeyInfo(target.first, "major")
             val triSub = isTriSubApplied(chordJson)
             val numDegree = if (triSub) 2 else applied
-            val numPrefix = if (triSub) "♭" else ""
-            
-            val parentQualities = MusicTheory.CHORD_QUALITIES[key.scale] ?: MusicTheory.CHORD_QUALITIES["major"]!!
-            val targetQual = parentQualities.getOrElse(((root - 1) % 7 + 7) % 7) { "major" }
-            
-            val type = (chordJson["type"] as? JsonPrimitive)?.intOrNull ?: 5
-            val appliedDenomMaj = (applied == 5 && type >= 7 && targetQual == "minor")
-            
-            val majorSeventh = type >= 7 && applied != 5
-                && isMajorSeventh(numDegree, numeratorKey)
-                && ((chordJson["suspensions"] as? JsonArray)?.isEmpty() ?: true)
-            
-            val numerator = buildNumeral(numDegree, MusicTheory.CHORD_QUALITIES["major"]!!, chordJson, numPrefix, 
-                mapOf("fullyDiminished" to (applied == 7 && !triSub), "majorSeventh" to majorSeventh))
-                
-            val denominator = MusicTheory.ROMAN_NUMERALS[key.scale]?.getOrNull(((root - 1) % 7 + 7) % 7) ?: ""
-            val denomTag = if (appliedDenomMaj) "(maj)" else ""
-            val subTag = if (triSub) "(∆-sub)" else ""
-            
-            return "$numerator/$denominator$denomTag$subTag"
+            val type = safeInt(chordJson["type"], 5)
+            val suspended = (chordJson["suspensions"] as? JsonArray)?.isNotEmpty() == true
+            val majorSeventh = type >= 7 && applied != 5 && MusicTheory.CHORD_QUALITIES["major"]!![applied - 1] == "major" && isMajorSeventh(applied, numeratorKey) && !suspended
+            val numerator = buildNumeral(numDegree, MusicTheory.CHORD_QUALITIES["major"]!!, chordJson,
+                if (triSub) "♭" else "", mapOf("fullyDiminished" to (applied == 7 && !triSub && !suspended), "majorSeventh" to majorSeventh) + if (triSub) mapOf("quality" to "major") else emptyMap())
+            val borrowTag = if (chordJson["borrowed"] is JsonArray) "(bor)" else BORROWED_TAG[borrowed]?.let { "($it)" }.orEmpty()
+            val numeratorTag = if (key.scale == "minor") "(maj)" else ""
+            return numerator + (if (triSub) "(∆-sub)" else "") + "$numeratorTag/${target.second}$borrowTag"
         }
 
         // A custom borrowed scale arrives as an array of absolute semitone offsets.
@@ -632,7 +604,7 @@ object ChordInterpreter {
             val opts = mutableMapOf<String, Any>(
                 "quality" to quality,
                 "majorSeventh" to (type >= 7 && customArraySeventhMajor(raw, root)),
-                "fullyDiminished" to (quality == "diminished" && type >= 7)
+                "fullyDiminished" to (quality == "diminished" && type >= 7 && Math.floorMod(raw[(root + 5) % 7] - raw[root - 1], 12) in listOf(9, 11))
             )
             if (hasAdds) opts["borrowedTag"] = "(bor)"
             val numeral = buildNumeral(
@@ -660,11 +632,11 @@ object ChordInterpreter {
         }
         
         val qualities = MusicTheory.CHORD_QUALITIES[scale] ?: MusicTheory.CHORD_QUALITIES["major"]!!
-        val quality = qualities.getOrElse(((root - 1) % 7 + 7) % 7) { "major" }
+        val quality = triadQualityWithAlts(qualities.getOrElse(((root - 1) % 7 + 7) % 7) { "major" }, chordJson)
         val majorSeventh = safeInt(chordJson["type"], 5) >= 7 && quality != "diminished" && isMajorSeventh(root, KeyInfo(key.tonic, scale))
         
         val hasAdds = (chordJson["adds"] as? JsonArray)?.isNotEmpty() ?: false
-        val opts = mutableMapOf<String, Any>("majorSeventh" to majorSeventh, "keyScale" to scale, "keyTonic" to key.tonic, "borrowed" to borrowed)
+        val opts = mutableMapOf<String, Any>("majorSeventh" to majorSeventh, "fullyDiminished" to (quality == "diminished" && (scale == "harmonicMinor" && root == 7 || scale == "phrygianDominant" && root == 3)), "keyScale" to scale, "keyTonic" to key.tonic, "borrowed" to borrowed)
         if (tag.isNotEmpty() && hasAdds) opts["borrowedTag"] = tag
         
         return buildNumeral(root, qualities, chordJson, prefix, opts) + (if (tag.isNotEmpty() && !hasAdds) tag else "")
@@ -685,104 +657,27 @@ object ChordInterpreter {
         key: KeyInfo,
         ionianContextKey: KeyInfo
     ): String {
-        val root = safeInt(chordJson["root"])
-        if (root <= 0) return "Rest"
-
+        val symbol = getRomanSymbol(chordJson, key)
+        if (symbol.isEmpty()) return symbol
         val sourceKey = KeyInfo(key.tonic, canonicalScaleName(key.scale))
         val displayKey = KeyInfo(ionianContextKey.tonic, "major")
         val applied = safeInt(chordJson["applied"])
-        val borrowed = safeString(chordJson["borrowed"])
-
-        // Applied+borrowed chords render their label the same way as plain applied chords -
-        // see the note in getRomanSymbol's applied branch.
-        if (applied in 1..7) {
-            val targetPitch = MusicTheory.resolveScaleDegreePitch(
-                sd = root.toString(),
-                relativeOctave = 0,
-                key = sourceKey
-            ) ?: return getRomanSymbol(chordJson, key)
-            val displayDegree = degreeInKey(targetPitch, displayKey)
-                ?: return getRomanSymbol(chordJson, key)
-            val numeratorKey = KeyInfo(targetPitch.noteName, "major")
-            val triSub = isTriSubApplied(chordJson)
-            val numDegree = if (triSub) 2 else applied
-            val numPrefix = if (triSub) "♭" else ""
-
-            val parentQualities = MusicTheory.CHORD_QUALITIES[sourceKey.scale]
-                ?: MusicTheory.CHORD_QUALITIES["major"]!!
-            val targetQuality = parentQualities.getOrElse(
-                Math.floorMod(root - 1, 7)
-            ) { "major" }
-            val type = safeInt(chordJson["type"], 5)
-            val appliedDenomMaj = applied == 5 && type >= 7 && targetQuality == "minor"
-            val majorSeventh = type >= 7 && applied != 5 &&
-                isMajorSeventh(numDegree, numeratorKey) &&
-                ((chordJson["suspensions"] as? JsonArray)?.isEmpty() ?: true)
-            val numerator = buildNumeral(
-                numDegree,
-                MusicTheory.CHORD_QUALITIES["major"]!!,
-                chordJson,
-                numPrefix,
-                mapOf(
-                    "fullyDiminished" to (applied == 7 && !triSub),
-                    "majorSeventh" to majorSeventh
-                )
-            )
-            var denominator = ROMAN_MAP[displayDegree.degree].orEmpty()
-            if (targetQuality == "minor" || targetQuality == "diminished") {
-                denominator = denominator.lowercase()
-            }
-            denominator = displayDegree.accidentalPrefix + denominator + when (targetQuality) {
-                "diminished" -> "\u00b0"
-                "augmented" -> "+"
-                else -> ""
-            }
-            val denomTag = if (appliedDenomMaj) "(maj)" else ""
-            val subTag = if (triSub) "(∆-sub)" else ""
-            return "$numerator/$denominator$denomTag$subTag"
-        }
-
-        val resolvedRoot = resolveChordRoot(chordJson, sourceKey)
-            ?: return getRomanSymbol(chordJson, key)
-        val displayDegree = degreeInKey(resolvedRoot.pitch, displayKey)
-            ?: return getRomanSymbol(chordJson, key)
-
-        var sourceScale = sourceKey.scale
-        var borrowedTag = ""
-        if (borrowed.isNotEmpty()) {
-            if (BORROWED_TAG.containsKey(borrowed)) {
-                sourceScale = canonicalScaleName(borrowed)
-                borrowedTag = "(${BORROWED_TAG[borrowed]})"
-            } else if (borrowed.startsWith("[")) {
-                borrowedTag = "(bor)"
-            }
-        }
-
-        val type = safeInt(chordJson["type"], 5)
-        val majorSeventh = type >= 7 && resolvedRoot.chordQuality != "diminished" &&
-            isMajorSeventh(root, KeyInfo(sourceKey.tonic, sourceScale))
-        val hasAdds = (chordJson["adds"] as? JsonArray)?.isNotEmpty() ?: false
-        val opts = mutableMapOf<String, Any>(
-            "quality" to resolvedRoot.chordQuality,
-            "majorSeventh" to majorSeventh,
-            "keyScale" to sourceScale,
-            "keyTonic" to sourceKey.tonic,
-            "borrowed" to borrowed
-        )
-        if (borrowedTag.isNotEmpty() && hasAdds) opts["borrowedTag"] = borrowedTag
-
-        return buildNumeral(
-            displayDegree.degree,
-            MusicTheory.CHORD_QUALITIES["major"]!!,
-            chordJson,
-            displayDegree.accidentalPrefix,
-            opts
-        ) + if (borrowedTag.isNotEmpty() && !hasAdds) borrowedTag else ""
+        val pitch = if (applied in 1..7) {
+            val target = appliedTarget(chordJson, sourceKey).first
+            MusicTheory.resolveScaleDegreePitch("1", 0, KeyInfo(target, "major"))
+        } else resolveChordRoot(chordJson, sourceKey)?.pitch
+        val degree = pitch?.let { degreeInKey(it, displayKey) } ?: return symbol
+        val slash = if (applied in 1..7) symbol.indexOf('/') else -1
+        val start = if (slash >= 0) slash + 1 else 0
+        val base = Regex("^[♭♯]*([IViv]+)").find(symbol.substring(start)) ?: return symbol
+        val roman = ROMAN_MAP[degree.degree].orEmpty().let { if (base.groupValues[1].first().isLowerCase()) it.lowercase() else it }
+        return symbol.substring(0, start) + degree.accidentalPrefix + roman + symbol.substring(start + base.value.length)
     }
 
     fun getLetterName(chordJson: JsonObject, key: KeyInfo): String {
         val root = safeInt(chordJson["root"])
-        if (root <= 0) return ""
+        if (safeBoolean(chordJson["isRest"]) || safeBoolean(chordJson["rest"])) return ""
+        if (root !in 1..7) return letterAnchoredName(chordJson, key)
 
         val applied = safeInt(chordJson["applied"])
         val borrowed = safeString(chordJson["borrowed"])
@@ -791,21 +686,15 @@ object ChordInterpreter {
         val type = (chordJson["type"] as? JsonPrimitive)?.intOrNull ?: 5
         val inversion = safeInt(chordJson["inversion"])
         val suspensions = (chordJson["suspensions"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.intOrNull } ?: emptyList()
-        val alterations = (chordJson["alterations"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull } ?: emptyList()
-        val omits = (chordJson["omits"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.intOrNull } ?: emptyList()
 
         var effKey = key
         var degree = root
         
-        // Fix 027: Handle borrowed applied targets. Applied+borrowed chords render their
-        // letter name the same way as plain applied chords - see the note in getRomanSymbol's
-        // applied branch.
+        // Resolve the target's prevailing scale before spelling an applied root.
         if (applied in 1..7) {
-            val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, key.scale)
+            val targetTonic = appliedTarget(chordJson, key).first
             if (isTriSubApplied(chordJson)) {
-                val rootPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(targetTonic)] ?: 0
-                val subRootPc = (rootPc + 1) % 12
-                effKey = KeyInfo(PC_SPELL[subRootPc], "major")
+                effKey = KeyInfo(MusicTheory.getNoteLabel("b2", targetTonic, "major"), "major")
                 degree = 1
             } else {
                 effKey = KeyInfo(targetTonic, "major")
@@ -826,20 +715,18 @@ object ChordInterpreter {
         } else {
             qualities.getOrElse(((degree - 1) % 7 + 7) % 7) { "major" }
         }
-        val quality = if (alterations.contains("b5") && baseQuality == "minor") "diminished" else baseQuality
+        val quality = triadQualityWithAlts(baseQuality, chordJson)
 
-        val rootNoteName = MusicTheory.getNoteLabel(degree, effKey.tonic, effKey.scale, customIntervals)
+        val rootNoteName = MusicTheory.getNoteLabel(degree, effKey.tonic, effKey.scale, customIntervals).replace("x", "##")
         val augmented = quality == "augmented"
         val triSub = isTriSubApplied(chordJson)
-        val sharp5 = alterations.contains("#5")
         val suspended = suspensions.isNotEmpty()
-        val sus4Only = suspensions.contains(4) && !suspensions.contains(2)
         
         var majorSeventh = false
         if (type >= 7 && quality != "diminished" && !augmented && !suspended) {
             if (applied in 1..7) {
                 if (!triSub) {
-                    val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, key.scale)
+                    val targetTonic = appliedTarget(chordJson, key).first
                     majorSeventh = quality == "major" && applied != 5 && !suspended
                         && isMajorSeventh(applied, KeyInfo(targetTonic, "major"))
                 }
@@ -852,323 +739,64 @@ object ChordInterpreter {
         
         val augMaj7Letter = augmented && type >= 7 && (
             if (applied in 1..7 && !triSub) {
-                val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, key.scale)
+                val targetTonic = appliedTarget(chordJson, key).first
                 isMajorSeventh(applied, KeyInfo(targetTonic, "major"))
+            } else if (rawCustom != null) {
+                customArraySeventhMajor(rawCustom, degree)
             } else {
                 isMajorSeventh(degree, effKey)
             }
         )
-        val augOmit35 = augmented && omits.contains(3) && omits.contains(5)
-
-        val sharp5ParenLetter = sharp5 && type < 7 && (
-          (inversion == 2 && !suspended) || (inversion == 1 && sus4Only)
-        )
-        
-        val omit3Only = omits.contains(3) && !omits.contains(5)
-        val typeOrNull = (chordJson["type"] as? JsonPrimitive)?.intOrNull
-        val omit3Power = omit3Only && typeOrNull != null && typeOrNull < 7
-        
-        var suffix = ""
-        if (omit3Power) suffix += "5"
-        else if (quality == "minor") suffix += "m"
-        else if (quality == "diminished" && !suspended) suffix += "°"
-        else if (augMaj7Letter || augOmit35) suffix += "++"
-        else if (augmented || (sharp5 && !sharp5ParenLetter)) suffix += "+"
-        
-        if (type >= 7 && !augMaj7Letter) suffix += (if (majorSeventh) "maj" else "") + type.toString()
-        if (sharp5ParenLetter) suffix += "(#5)"
-        
-        if (suspended) {
-            suffix += suspensions.joinToString("") { s ->
-                 if (s == 4 && sharp5ParenLetter) "sus#4" else "sus$s"
-            }
-        }
-        if (alterations.isNotEmpty()) {
-            val trailing = alterations.filter { it != "#5" || !sharp5ParenLetter }
-            if (trailing.isNotEmpty()) suffix += trailing.joinToString("") { "($it)" }
-        }
-
-        if (inversion in 1..3) {
-            val sus4Bass = type < 7 && suspensions.contains(4) && !suspensions.contains(2)
-            val bassOffset = when (inversion) {
-                1 -> if (sus4Bass) 3 else 2
-                2 -> 4
-                3 -> 6
-                else -> 0
-            }
-            val bassDegree = ((degree - 1 + bassOffset) % 7 + 7) % 7 + 1
-            val bassNoteName = MusicTheory.getNoteLabel(bassDegree, effKey.tonic, effKey.scale, customIntervals)
-            return "$rootNoteName$suffix/$bassNoteName"
-        }
-
-        return rootNoteName + suffix
+        val voiced = ChordVoicing.build(chordJson, key)
+        val bass = if (inversion > 0) voiced?.tones?.firstOrNull() else null
+        val bassName = if (bass != null && voiced != null) spellChordTone(rootNoteName, bass, voiced.rootMidi) else null
+        return ChordLetterFormat.format(chordJson, rootNoteName, quality, degree, majorSeventh,
+            augMaj7Letter, triSub, voiced, bassName, effKey, customIntervals)
     }
 
-    fun getChordNotes(chordJson: JsonObject, key: KeyInfo): List<Int> {
-        val root = safeInt(chordJson["root"])
-        if (root <= 0) return emptyList()
+    private fun spellChordTone(rootName: String, tone: ChordTone, rootMidi: Int): String {
+        val degree = Math.floorMod(tone.degree - 1, 7) + 1
+        val natural = MusicTheory.SCALE_INTERVALS["major"]!![degree - 1]
+        var delta = Math.floorMod(tone.midi - rootMidi - natural, 12)
+        if (delta > 6) delta -= 12
+        val name = MusicTheory.getNoteLabel(degree, rootName, "major")
+        val accidental = MusicTheory.getModifierValue(name.drop(1)) + delta
+        return name.first().toString() + if (accidental < 0) "b".repeat(-accidental) else "#".repeat(accidental)
+    }
 
-        val applied = safeInt(chordJson["applied"])
-        val type = (chordJson["type"] as? JsonPrimitive)?.intOrNull ?: 5
-        val inversion = safeInt(chordJson["inversion"])
-        val borrowed = safeString(chordJson["borrowed"])
-        val customIntervals = customBorrowedIntervals(chordJson["borrowed"])
-        val hasBorrowedScale = borrowed.isNotEmpty() || customIntervals != null
-        val suspensions = (chordJson["suspensions"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.intOrNull } ?: emptyList()
-        val alterations = (chordJson["alterations"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull } ?: emptyList()
-        val omits = (chordJson["omits"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.intOrNull } ?: emptyList()
-        val adds = (chordJson["adds"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.intOrNull } ?: emptyList()
-        
-        var effKey = key
-        var effRoot = root
-        // Forced triad quality / seventh-degree-offset (9=dim7, 10=b7, 11=maj7) for the
-        // applied+borrowed special cases below. Null means "use the normal table lookup".
-        var forcedTriadQuality: String? = null
-        var forcedSeventh: Int? = null
-        // True when this chord must use the wider "buildChordFromNoteName" applied-chord
-        // inversion register (voiceAppliedChord) instead of the compact rotation used for
-        // plain diatonic/borrowed chords. Mirrors which web builder function
-        // resolveAppliedBorrowedChord/chordInterpreter delegates to for each case.
-        var useAppliedVoicing = false
+    private fun letterAnchoredName(chord: JsonObject, key: KeyInfo): String {
+        val root = safeString(chord["_letterRootName"])
+        if (!Regex("^[A-G][#bx]*$").matches(root) || (chord["root"] != null && safeInt(chord["root"]) != 0)) return ""
+        val quality = safeString(chord["_letterQuality"], "major")
+        val type = safeInt(chord["type"], 5)
+        var suffix = when (quality) { "minor" -> "m"; "diminished" -> "°"; "augmented" -> "+"; else -> "" }
+        if (type >= 7) suffix += (if (safeBoolean(chord["useMaj7"])) "maj" else "") + type
+        suffix += (chord["suspensions"] as? JsonArray)?.joinToString("") { "sus${(it as? JsonPrimitive)?.contentOrNull.orEmpty()}" }.orEmpty()
+        suffix += (chord["alterations"] as? JsonArray)?.joinToString("") { "(${(it as? JsonPrimitive)?.contentOrNull.orEmpty()})" }.orEmpty()
+        suffix += (chord["adds"] as? JsonArray)?.joinToString("") { "(add${(it as? JsonPrimitive)?.contentOrNull.orEmpty()})" }.orEmpty()
+        val bass = safeString(chord["_letterBassName"])
+        return root + suffix + if (bass.isNotEmpty()) "/$bass" else ""
+    }
 
-        if (applied in 1..7 && !hasBorrowedScale) {
-            val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, key.scale)
-            if (isTriSubApplied(chordJson)) {
-                val rootPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(targetTonic)] ?: 0
-                val subRootPc = (rootPc + 1) % 12
-                effKey = KeyInfo(PC_SPELL[subRootPc], "major")
-                effRoot = 1
-            } else {
-                effKey = KeyInfo(targetTonic, "major")
-                effRoot = applied
-            }
-            useAppliedVoicing = true
-        } else if (applied in 1..7 && hasBorrowedScale) {
-            // Applied + borrowed (modal mixture on a secondary dominant/function). Ported from
-            // resolveAppliedBorrowedChord in web/lib/chordBuild.js. See resolveChordRoot
-            // for the parity note about labels intentionally NOT reflecting the borrow.
-            val borrowedScaleForTarget = if (customIntervals != null) "custom" else borrowed
-            val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, borrowedScaleForTarget, customIntervals)
-            val triSub = isTriSubApplied(chordJson)
+    fun getChordNotes(chordJson: JsonObject, key: KeyInfo): List<Int> =
+        ChordVoicing.build(chordJson, key)?.tones?.map { it.midi }.orEmpty()
 
-            when {
-                // Special case 1: borrowed-locrian tonic triad -> MINOR (triads only).
-                borrowed == "locrian" && root == 1 && applied == 1 && type < 7 -> {
-                    effKey = KeyInfo(targetTonic, "major")
-                    effRoot = 1
-                    forcedTriadQuality = "minor"
-                    useAppliedVoicing = true
-                }
-                // Special case 2: tritone-substitution dominant of the borrowed target.
-                applied == 5 && triSub -> {
-                    val rootPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(targetTonic)] ?: 0
-                    val subRootPc = (rootPc + 1) % 12
-                    effKey = KeyInfo(PC_SPELL[subRootPc], "major")
-                    effRoot = 1
-                    forcedTriadQuality = "major"
-                    forcedSeventh = 10
-                    useAppliedVoicing = true
-                }
-                // Special case 3: applied vii°(#5) -> MINOR triad (not diminished).
-                applied == 7 && alterations.contains("#5") -> {
-                    effKey = KeyInfo(targetTonic, "major")
-                    effRoot = 7
-                    forcedTriadQuality = "minor"
-                    forcedSeventh = 10
-                    useAppliedVoicing = true
-                }
-                // Special case 4: custom-array borrowed scale, inversion 1/2 -> ignores the
-                // tonicization entirely and voices a MAJOR triad on the borrowed target.
-                customIntervals != null && (inversion == 1 || inversion == 2) -> {
-                    effKey = KeyInfo(targetTonic, "major")
-                    effRoot = 1
-                    forcedTriadQuality = "major"
-                    forcedSeventh = 10
-                    useAppliedVoicing = true
-                }
-                // Default: numerator built from the MAJOR scale of the borrowed-resolved
-                // target - this reuses the normal diatonic (compact-rotation) voicing below,
-                // not buildChordFromNoteName's wider applied-chord register.
-                else -> {
-                    effKey = KeyInfo(targetTonic, "major")
-                    effRoot = applied
-                    useAppliedVoicing = false
-                }
-            }
-        }
+    fun getResolvedRootMidi(chordJson: JsonObject, key: KeyInfo): Int? =
+        ChordVoicing.build(chordJson, key)?.rootMidi
 
-        val isBorrowedAppliedDefault = applied in 1..7 && hasBorrowedScale && forcedTriadQuality == null
-        val scale = when {
-            applied in 1..7 && hasBorrowedScale -> effKey.scale
-            customIntervals != null -> "custom"
-            borrowed.isNotEmpty() -> borrowed
-            else -> effKey.scale
-        }
-        val intervals = when {
-            applied in 1..7 && hasBorrowedScale -> MusicTheory.SCALE_INTERVALS["major"]!!
-            customIntervals != null -> customIntervals
-            else -> MusicTheory.SCALE_INTERVALS[scale] ?: MusicTheory.SCALE_INTERVALS["major"]!!
-        }
-        val tonicPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(effKey.tonic)] ?: 0
+    fun getChordToneLabels(chordJson: JsonObject, key: KeyInfo): List<String> =
+        ChordVoicing.build(chordJson, key)?.labels.orEmpty()
 
-        val idxRoot = ((effRoot - 1) % 7 + 7) % 7
-        val rootPc = (tonicPc + intervals[idxRoot]) % 12
-
-        // Base major-frame offsets relative to root
-        val degrees = mutableMapOf<Int, Int>()
-        degrees[1] = 0
-        degrees[3] = 4
-        degrees[5] = 7
-
-        val qualities = when {
-            applied in 1..7 && hasBorrowedScale -> MusicTheory.CHORD_QUALITIES["major"]!!
-            customIntervals != null -> customChordQualities(customIntervals)
-            else -> MusicTheory.CHORD_QUALITIES[scale] ?: MusicTheory.CHORD_QUALITIES["major"]!!
-        }
-        val triadQuality = forcedTriadQuality ?: qualities.getOrElse(idxRoot) { "major" }
-        if (triadQuality == "minor" || triadQuality == "diminished") degrees[3] = 3
-        if (triadQuality == "diminished") degrees[5] = 6
-        if (triadQuality == "augmented") degrees[5] = 8
-
-        // Fix 018: Suspensions
-        if (suspensions.contains(2)) degrees[3] = 2
-        if (suspensions.contains(4)) degrees[3] = 5
-
-        // Extensions
-        if (type >= 7) {
-            if (forcedSeventh != null) {
-                degrees[7] = forcedSeventh
-            } else {
-            val triSub = isTriSubApplied(chordJson)
-            val isMaj7 = if (applied in 1..7) {
-                 !triSub && applied != 5 && triadQuality == "major" && isMajorSeventh(effRoot, KeyInfo(effKey.tonic, scale), customIntervals)
-            } else {
-                 isMajorSeventh(effRoot, KeyInfo(effKey.tonic, scale), customIntervals)
-            }
-
-            // Fix 025/026: Diminished 7th voicing. The applied+borrowed DEFAULT case (routed
-            // through the same diatonic frame as a plain, non-applied major-scale chord in the
-            // web player) never produces a fully-diminished 7th, so it is excluded here - an
-            // applied==7 leading-tone chord in that context resolves to a half-diminished 7th
-            // via the diatonic fallback below instead, matching resolveAppliedBorrowedChord's
-            // delegation to rootToDiatonicTriad(..., applied=0, ...) for that case.
-            val isDim7 = !isBorrowedAppliedDefault && (
-                (triadQuality == "diminished" && !suspensions.isNotEmpty()) || (applied == 7) ||
-                (borrowed == "dorian" && effRoot == 6) || (borrowed == "lydian" && effRoot == 4) ||
-                (borrowed == "minor" && effRoot == 2) || (borrowed == "phrygian" && effRoot == 5)
-            )
-
-            // Fix 043: Harmonic-minor III+△7 voicing
-            val isHmAugMaj7 = scale == "harmonicMinor" && effRoot == 3 && !suspensions.isNotEmpty()
-
-            degrees[7] = when {
-                isHmAugMaj7 -> 7 // Scale degree 7 (Bb) is PC 10 relative to Tonic C, PC 7 relative to Root Eb!
-                isDim7 -> 9
-                isMaj7 && !suspensions.isNotEmpty() -> 11
-                else -> 10
-            }
-
-            if (isHmAugMaj7) {
-                 degrees[11] = 11 // add maj7 (D)
-                 degrees.remove(5) // omit #5
-                 degrees[3] = 4 // ensure maj 3rd
-            }
-            }
-        }
-        if (type >= 9) degrees[9] = 14
-        // The chord's own eleventh sits a fourth above the root, not a compound
-        // fourth: web builds it as shiftNoteBySemitones(root, 5). An *added*
-        // eleventh (adds: [11], below) is the compound one at +17.
-        if (type >= 11) {
-             degrees[11] = if (degrees.containsKey(11)) degrees[11]!! else 5
-        }
-        if (type >= 13) degrees[13] = 21
-
-        // Port Fix 044/045: minorExtended13Stack (v13 in minor keys)
-        val isMinorV13 = (effKey.scale == "minor" || effKey.scale == "harmonicMinor") && effRoot == 5 && type >= 13
-        if (isMinorV13) {
-             degrees[9] = 13 // b9
-             degrees[13] = 21 // natural 13
-             degrees[14] = 20 // additive b13
-        }
-
-        // Fix 019-022: Modifier Pipeline (Omits -> Alterations -> Adds)
-        for (o in omits) degrees.remove(o)
-        
-        for (alt in alterations) {
-            when (alt) {
-                "b5", "♭5" -> degrees[5] = 6
-                "#5", "♯5" -> degrees[5] = 8
-                "b9", "♭9" -> degrees[9] = 13
-                "#9", "♯9" -> degrees[9] = 15
-                // Raise the chord's own eleventh where it exists; otherwise introduce
-                // a compound #4 (web: rule {src: 5, delta: 1} with addSd "#4").
-                "#11", "♯11" -> degrees[11] = if (degrees.containsKey(11)) 6 else 18
-                "b13", "♭13" -> degrees[13] = 20
-            }
-        }
-        
-        for (add in adds) {
-            val target = if (add <= 6 && type >= 7) add + 7 else add
-            if (!degrees.containsKey(target)) {
-                degrees[target] = when(target) {
-                    2 -> 2; 4 -> 5; 6 -> 9; 9 -> 14; 11 -> 17; 13 -> 21
-                    else -> 0
-                }
-            }
-        }
-
-        // Hooktheory-style density: extended suspended chords omit only an
-        // unaltered perfect fifth when no explicit omit was supplied. This
-        // keeps the root, suspension, seventh, and extension tones while
-        // preserving explicit omissions and altered fifths.
-        // Hooktheory voices an added sixth on a triad without its fifth, unless a
-        // ninth is also added (web/lib/chordAdds.js). Only an unaltered perfect
-        // fifth is dropped.
-        if (adds.contains(6) && type < 7 && !adds.contains(9) && degrees[5] == 7) degrees.remove(5)
-
-        val hasAlteredFifth = alterations.any { it == "b5" || it == "#5" || it == "♭5" || it == "♯5" }
-        if (type >= 9 && suspensions.isNotEmpty() && !omits.contains(5) && !hasAlteredFifth && degrees[5] == 7) {
-            degrees.remove(5)
-        }
-
-        // Build pitches. Applied chords (and the applied+borrowed special cases 1-4, which
-        // route through buildChordFromNoteName in the web player) use the web player's wider
-        // inversion register and diminished-seventh spread instead of compact rotation. The
-        // applied+borrowed DEFAULT case reuses the compact-rotation voicing below instead,
-        // since it is delegated to rootToDiatonicTriad (not buildChordFromNoteName) upstream.
-        val rootPositionPitches = degrees.values.map { rootPc + 48 + it }
-        if (useAppliedVoicing) {
-            val fullyDiminished = applied == 7
-                && triadQuality == "diminished"
-                && suspensions.isEmpty()
-            return voiceAppliedChord(rootPositionPitches, inversion, type, fullyDiminished)
-        }
-
-        val pitches = rootPositionPitches.toMutableList()
-
-        // Web sorts a voicing into pitch order only in root position; an inverted
-        // chord rotates the degree-order stack as built. The two agree for every
-        // chord whose offsets ascend, and differ exactly when an eleventh sits
-        // below the fifth.
-        if (inversion <= 0) pitches.sort()
-
-        // Apply inversion rotation
-        if (inversion > 0 && inversion < pitches.size) {
-            for (i in 0 until inversion) {
-                val moved = pitches.removeAt(0)
-                pitches.add(moved + 12)
-            }
-        }
-
-        return pitches
+    fun interpret(chordJson: JsonObject, key: KeyInfo): ChordInterpretation {
+        val voiced = ChordVoicing.build(chordJson, key)
+        return ChordInterpretation(getRomanSymbol(chordJson, key), getLetterName(chordJson, key),
+            voiced?.tones?.map { it.midi }.orEmpty(), voiced?.rootMidi, voiced?.labels.orEmpty())
     }
 
     /**
      * Returns the same chord voiced in root position, regardless of the
-     * inversion encoded in the source JSON.  The quiz uses this only to
-     * identify/display the chord root; normal chord playback must continue to
-     * use getChordNotes() so the written inversion is preserved.
+     * inversion encoded in the source JSON. Use getResolvedRootMidi() to
+     * identify the harmonic root: the first sounded note can be another role.
      */
     fun getRootPositionChordNotes(chordJson: JsonObject, key: KeyInfo): List<Int> {
         val rootPositionChord = buildJsonObject {
