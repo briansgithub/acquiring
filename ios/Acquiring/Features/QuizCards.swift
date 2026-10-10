@@ -351,10 +351,9 @@ struct QuizCardsView: View {
         QuizCardSection("Chord Tones", compact: compact) {
             if let active, !active.isRest {
             let key = section.key(at: active.onset)
-            let tones = ChordInterpreter.chordNotes(for: active.chord, key: key)
-            let root = ChordInterpreter.rootPositionChordNotes(for: active.chord, key: key).first
-            if let root, !tones.isEmpty {
-                ChordToneCardLayout(tones: tones, rootMIDI: root) { index, tone, label in
+            let interpreted = ChordInterpreter.interpret(active.chord, key: key)
+            if !interpreted.midi.isEmpty {
+                ChordToneCardLayout(tones: interpreted.midi, labels: interpreted.toneLabels) { index, tone, label in
                     toneCard(tone: tone, label: label, chord: active.chord, key: key, index: index)
                 }
             } else {
@@ -590,14 +589,12 @@ struct QuizCardsView: View {
             if let pitch = rootState?.currentIntervalPitch {
                 root = QuizPitchCardTarget(sourceMIDI: previewMIDI(for: pitch), label: degreeLabel(for: pitch, sourceKey: key))
             }
-            let notes = ChordInterpreter.chordNotes(for: activeChord.chord, key: key)
-            if let chordRoot = ChordInterpreter.rootPositionChordNotes(for: activeChord.chord, key: key).first {
-                tones = notes.map { note in
-                    QuizPitchCardTarget(
-                        sourceMIDI: chordTonePreviewMIDI(note, chord: activeChord.chord, key: key),
-                        label: MusicTheory.relativeMajorDegreeLabel(midi: note, rootMIDI: chordRoot)
-                    )
-                }
+            let interpreted = ChordInterpreter.interpret(activeChord.chord, key: key)
+            tones = zip(interpreted.midi, interpreted.toneLabels).map { note, label in
+                QuizPitchCardTarget(
+                    sourceMIDI: chordTonePreviewMIDI(note, chord: activeChord.chord, key: key),
+                    label: label
+                )
             }
         }
         let melody = activeMelody.flatMap { note -> QuizPitchCardTarget? in
@@ -832,12 +829,12 @@ private struct QuizCardButton<Content: View>: View {
     }
 }
 
-/// A chord's tones as scale-degree cards, labeled relative to the chord's root-position root.
+/// A chord's tones as cards carrying their interpreted musical-role labels.
 /// Shared so the quiz stack and the song chord inventory agree on spelling and wrapping;
 /// each call site supplies its own card chrome and gestures.
 struct ChordToneCardLayout<Card: View>: View {
     let tones: [Int]
-    let rootMIDI: Int
+    let labels: [String]
     /// Receives the tone's index, its source MIDI, and its degree label.
     @ViewBuilder let card: (Int, Int, String) -> Card
 
@@ -853,7 +850,7 @@ struct ChordToneCardLayout<Card: View>: View {
 
     private var cards: some View {
         ForEach(Array(tones.enumerated()), id: \.offset) { index, tone in
-            card(index, tone, MusicTheory.relativeMajorDegreeLabel(midi: tone, rootMIDI: rootMIDI))
+            card(index, tone, labels[index])
         }
     }
 }

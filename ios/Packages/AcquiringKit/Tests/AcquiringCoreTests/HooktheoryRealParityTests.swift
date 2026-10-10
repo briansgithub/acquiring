@@ -15,7 +15,7 @@ final class HooktheoryRealParityTests: XCTestCase {
         let expectedLetter: String
         let expectedPcs: [Int]
         let expectedMidi: [Int]
-        let expectedRootMidi: Int
+        let expectedRootMidi: Int?
         let expectedToneLabels: [String]
         let truthRoman: String
         let truthLetter: String
@@ -23,13 +23,10 @@ final class HooktheoryRealParityTests: XCTestCase {
     }
 
     func testRealSongParity() throws {
-        let repositoryRoot = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent().deletingLastPathComponent()
-            .deletingLastPathComponent().deletingLastPathComponent()
-            .deletingLastPathComponent().deletingLastPathComponent()
-        let url = repositoryRoot.appending(path: "contracts/fixtures/hooktheory_parity.json")
+        let url = ChordContractFixtures.url("hooktheory_parity.json")
         let fixtures = try JSONDecoder().decode([RealFixture].self, from: Data(contentsOf: url))
 
+        XCTAssertEqual(Set(fixtures.map(\.id)).count, fixtures.count, "Source fixture IDs must be unique")
         var channels: [String: (shapes: Int, plays: Int)] = [:]
         var totalPlays = 0
         var lines: [String] = []
@@ -39,9 +36,9 @@ final class HooktheoryRealParityTests: XCTestCase {
             let roman = ChordInterpreter.romanSymbol(for: chord, key: fixture.key)
             let letter = ChordInterpreter.letterName(for: chord, key: fixture.key)
             let notes = ChordInterpreter.chordNotes(for: chord, key: fixture.key)
-            let rootMIDI = ChordInterpreter.rootPositionChordNotes(for: chord, key: fixture.key).first
+            let rootMIDI = ChordInterpreter.resolvedRootMIDI(for: chord, key: fixture.key)
             let pcs = Set(notes.map { (($0 % 12) + 12) % 12 }).sorted()
-            let labels = rootMIDI.map { root in notes.map { MusicTheory.relativeMajorDegreeLabel(midi: $0, rootMIDI: root) } }
+            let labels = ChordInterpreter.chordToneLabels(for: chord, key: fixture.key)
 
             func check(_ name: String, _ ok: Bool, _ detail: @autoclosure () -> String) {
                 guard !ok else { return }
@@ -73,11 +70,8 @@ final class HooktheoryRealParityTests: XCTestCase {
             try? lines.joined(separator: "\n").write(toFile: dump, atomically: true, encoding: .utf8)
         }
 
-        try ParityBaseline.assertWithinBaseline(
-            corpus: "hooktheory_parity",
-            counts: channels.mapValues(\.shapes),
-            total: fixtures.count,
-            samples: lines
-        )
+        XCTAssertFalse(fixtures.isEmpty, "The Hooktheory contract must not be empty")
+        XCTAssertTrue(channels.values.allSatisfy { $0.shapes == 0 },
+            "Hooktheory contract mismatches: \(channels)\n" + lines.prefix(40).joined(separator: "\n"))
     }
 }

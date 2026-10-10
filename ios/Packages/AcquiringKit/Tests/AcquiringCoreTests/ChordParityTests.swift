@@ -11,6 +11,7 @@ final class ChordParityTests: XCTestCase {
         // so its size moves whenever the sweep widens. Assert that it is still a
         // real corpus rather than pinning an exact count.
         XCTAssertGreaterThan(fixtures.count, 1000)
+        XCTAssertEqual(Set(fixtures.map(\.id)).count, fixtures.count, "Shared fixture IDs must be unique")
 
         var failures: [String] = []
         var counts: [String: Int] = [:]
@@ -24,7 +25,7 @@ final class ChordParityTests: XCTestCase {
             let roman = ChordInterpreter.romanSymbol(for: value, key: fixture.key)
             let letter = ChordInterpreter.letterName(for: value, key: fixture.key)
             let notes = ChordInterpreter.chordNotes(for: value, key: fixture.key)
-            let rootMIDI = ChordInterpreter.rootPositionChordNotes(for: value, key: fixture.key).first
+            let rootMIDI = ChordInterpreter.resolvedRootMIDI(for: value, key: fixture.key)
 
             if roman != fixture.expectedRoman {
                 record("roman", "[\(fixture.id)]  expected \(fixture.expectedRoman), got \(roman)")
@@ -41,24 +42,19 @@ final class ChordParityTests: XCTestCase {
             if rootMIDI != fixture.expectedRootMidi {
                 record("rootMidi", "[\(fixture.id)]  expected \(fixture.expectedRootMidi), got \(String(describing: rootMIDI))")
             }
-            if let rootMIDI {
-                let labels = notes.map { MusicTheory.relativeMajorDegreeLabel(midi: $0, rootMIDI: rootMIDI) }
-                if labels != fixture.expectedToneLabels {
-                    record("toneLabels", "[\(fixture.id)]  expected \(fixture.expectedToneLabels), got \(labels)")
-                }
+            let labels = ChordInterpreter.chordToneLabels(for: value, key: fixture.key)
+            if labels != fixture.expectedToneLabels {
+                record("toneLabels", "[\(fixture.id)]  expected \(fixture.expectedToneLabels), got \(labels)")
             }
+            XCTAssertEqual(notes.count, labels.count, fixture.id)
         }
 
         if let dump = ProcessInfo.processInfo.environment["ACQUIRING_PARITY_DUMP"] {
             try? failures.joined(separator: "\n").write(toFile: dump, atomically: true, encoding: .utf8)
         }
 
-        try ParityBaseline.assertWithinBaseline(
-            corpus: "corpus_parity",
-            counts: counts,
-            total: fixtures.count,
-            samples: failures
-        )
+        XCTAssertTrue(counts.values.allSatisfy { $0 == 0 },
+            "Shared chord contract mismatches: \(counts)\n" + failures.prefix(40).joined(separator: "\n"))
     }
 
     func testBlankAndRestChordsDoNotProduceTheoryOrAudio() throws {
@@ -72,7 +68,7 @@ final class ChordParityTests: XCTestCase {
             #"{"root":"invalid"}"#
         ] {
             let value = try decode(source)
-            XCTAssertTrue(["Rest", ""].contains(ChordInterpreter.romanSymbol(for: value, key: cMajor)), source)
+            XCTAssertEqual(ChordInterpreter.romanSymbol(for: value, key: cMajor), "", source)
             XCTAssertEqual(ChordInterpreter.letterName(for: value, key: cMajor), "", source)
             XCTAssertEqual(ChordInterpreter.chordNotes(for: value, key: cMajor), [], source)
         }
@@ -82,7 +78,7 @@ final class ChordParityTests: XCTestCase {
         let cases: [(String, String, Set<Int>)] = [
             (#"{"root":5,"applied":7,"type":7}"#, "vii°7/V", [6, 9, 0, 3]),
             (#"{"root":1,"type":7,"inversion":3}"#, "I△42", [0, 4, 7, 11]),
-            (#"{"root":5,"type":11}"#, "V11", [7, 11, 2, 5, 9, 0]),
+            (#"{"root":5,"type":11}"#, "V11", [7, 5, 9, 0]),
             (#"{"root":1,"suspensions":[4]}"#, "Isus4", [0, 5, 7]),
             (##"{"root":1,"omits":[3],"alterations":["#5"],"adds":[9]}"##, "I+(add9)(no3)(#5)", [0, 8, 2])
         ]
@@ -159,15 +155,15 @@ final class ChordParityTests: XCTestCase {
         XCTAssertEqual(ChordInterpreter.resolvedRoot(for: flatSix, key: cMajor)?.pitch.noteName, "Eb")
         XCTAssertEqual(ChordInterpreter.resolvedRoot(for: flatSix, key: cMajor)?.context, .borrowedApplied)
         XCTAssertEqual(Set(ChordInterpreter.chordNotes(for: flatSix, key: cMajor).map(pitchClass)), [3, 7, 10, 1])
-        XCTAssertEqual(ChordInterpreter.romanSymbol(for: flatSix, key: cMajor), "V7/vi(maj)")
-        XCTAssertEqual(ChordInterpreter.letterName(for: flatSix, key: cMajor), "E7")
+        XCTAssertEqual(ChordInterpreter.romanSymbol(for: flatSix, key: cMajor), "V7/♭VI(min)")
+        XCTAssertEqual(ChordInterpreter.letterName(for: flatSix, key: cMajor), "Eb7")
 
         var flatSeven = chord(root: 7, type: 7, applied: 5)
         flatSeven["borrowed"] = .string("minor")
         XCTAssertEqual(ChordInterpreter.resolvedRoot(for: flatSeven, key: cMajor)?.pitch.noteName, "F")
         XCTAssertEqual(Set(ChordInterpreter.chordNotes(for: flatSeven, key: cMajor).map(pitchClass)), [5, 9, 0, 3])
-        XCTAssertEqual(ChordInterpreter.romanSymbol(for: flatSeven, key: cMajor), "V7/vii°")
-        XCTAssertEqual(ChordInterpreter.letterName(for: flatSeven, key: cMajor), "F#7")
+        XCTAssertEqual(ChordInterpreter.romanSymbol(for: flatSeven, key: cMajor), "V7/♭VII(min)")
+        XCTAssertEqual(ChordInterpreter.letterName(for: flatSeven, key: cMajor), "F7")
     }
 
     func testAppliedBorrowedLocrianTriSubAndRaisedFifthCases() {
@@ -252,7 +248,7 @@ final class ChordParityTests: XCTestCase {
         let expectedLetter: String
         let expectedPcs: [Int]
         let expectedMidi: [Int]
-        let expectedRootMidi: Int
+        let expectedRootMidi: Int?
         let expectedToneLabels: [String]
     }
 
@@ -260,14 +256,7 @@ final class ChordParityTests: XCTestCase {
     /// Android reads the same file via `test.resources.srcDir` in its gradle
     /// config; the app test bundle gets a copy through the Xcode target.
     static func sharedCorpus() throws -> [CorpusFixture] {
-        let repositoryRoot = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-        let fixtureURL = repositoryRoot.appending(path: "contracts/fixtures/corpus_parity.json")
+        let fixtureURL = ChordContractFixtures.url("corpus_parity.json")
         return try JSONDecoder().decode([CorpusFixture].self, from: Data(contentsOf: fixtureURL))
     }
 
