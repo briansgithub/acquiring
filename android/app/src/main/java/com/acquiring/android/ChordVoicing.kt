@@ -112,6 +112,12 @@ internal object ChordVoicing {
         val scale = if (custom != null) "custom" else borrowed.ifEmpty { key.scale }
         val halfDim = chord.flag("halfDim")
         val dimTriad = chord.flag("dimTriad")
+        val appliedContext = chord["appliedContext"]
+        val hasAppliedContext = appliedContext != null && appliedContext != JsonNull &&
+            (appliedContext !is JsonPrimitive || if (appliedContext.isString) appliedContext.content.isNotEmpty()
+            else appliedContext.content != "false" && appliedContext.content.toDoubleOrNull() != 0.0)
+        val rawNo5ScaleSeventh = omits.contains(5) && !halfDim && !dimTriad && !hasAppliedContext && chord.int("applied") != 7
+        val rawLydianFourth = chord.string("borrowed") == "lydian" && root == 4 && !halfDim
         val sharp5Minor = alts.contains("#5") && rawQuality == "diminished"
         val halfDimIi = !sus && root == 2 && scale == "major" && type >= 7 && halfDim
         val customHalf = custom != null && halfDim
@@ -173,13 +179,13 @@ internal object ChordVoicing {
             else {
                 val seventh = if (appliedFrame) when {
                     fullyDim -> 9; halfDim -> 10; dimTriad -> 9; rawQuality == "diminished" && alts.contains("#5") -> 10; chord.flag("useMaj7") -> 11; else -> 10
-                } else if (omit35) when { halfDim -> 9; sus -> 10; dimScale -> 9; else -> diatonic7 }
+                } else if (omit35) when { halfDim -> 9; sus -> 10; rawNo5ScaleSeventh -> diatonic7; dimScale -> 9; else -> diatonic7 }
                 else when {
                     augStack -> 11; m6Stack -> 9; phdmII && suspensions.contains(2) && !suspensions.contains(4) -> 11
                     sus || (chord.int("applied") == 5 && !chord.flag("useMaj7")) -> 10
                     borrowed == "minor" && key.scale == "harmonicMinor" && root == 1 -> 10
                     customHalf -> 9; sharp5Minor -> 10; dimTriad -> 9; custom != null && rawQuality == "diminished" -> diatonic7
-                    phdmII -> 11; dimScale -> 9; else -> diatonic7
+                    phdmII -> 11; rawNo5ScaleSeventh -> diatonic7; dimScale -> 9; else -> diatonic7
                 }
                 tone(seventh, if (m6Stack) 9 else 3, if (m6Stack) 6 else 7, !appliedFrame && omit35)
             }
@@ -195,9 +201,9 @@ internal object ChordVoicing {
         else if (type >= 11) { if (policyHalf && skipNine && borrowed != "lydian") append(1, 4, 9) else append(5, 5, 11) }
         if (type >= 13) append(21, 6, 13, true)
         else if (type >= 11 && appliedFrame && alts.contains("b5") && !has(9)) { removeFirst(5); tone(21, 6, 13, true) }
-        // Captured minor ii elevenths keep b7, b9 and 11 even when the
-        // source explicitly omits the third/fifth; apply alterations later.
-        if (!appliedFrame && type == 11 && scale == "minor" && root == 2 && !dimTriad && !sus) {
+        // Captured minor ii and raw borrowed Lydian #iv elevenths keep
+        // b7, b9 and 11; explicit symbol frames retain their own policy.
+        if (!appliedFrame && type == 11 && (scale == "minor" && root == 2 || rawLydianFourth) && !dimTriad && !sus) {
             val rootTone = tones.first { it.slot == 0 }
             for ((role, semitones) in listOf(3 to 10, 4 to 1, 5 to 5)) {
                 val index = tones.indexOfFirst { it.slot == role }
@@ -221,7 +227,7 @@ internal object ChordVoicing {
                 if (role != 4 && role != 5) continue
                 if (!customExtensions && role == 5 && scale != "lydian") continue
                 val minorSupertonicNinth = role == 4 && scale == "minor" && root == 2
-                if (!customExtensions && quality == "diminished" && !minorSupertonicNinth) continue
+                if (!customExtensions && quality == "diminished" && !minorSupertonicNinth && !rawLydianFourth) continue
                 val extension = if (role == 4) 9 else 11
                 val targetDegree = Math.floorMod(root + extension - 2, 7) + 1
                 val desired = pc(note(targetDegree, KeyInfo(key.tonic, scale), custom))
@@ -247,9 +253,24 @@ internal object ChordVoicing {
                 }
             }
         }
+        // Raw diminished no5/sus2 follows the scale's second; explicit symbol
+        // frames and applied chords retain their independent voicing policies.
+        if (!appliedFrame && rawQuality == "diminished" && omits.contains(5)
+            && suspensions.contains(2) && !halfDim && !dimTriad
+            && !hasAppliedContext && chord.int("applied") == 0) {
+            val index = tones.indexOfFirst { it.slot == 7 }
+            if (index >= 0) {
+                val desired = pc(note(root % 7 + 1, KeyInfo(key.tonic, scale), custom))
+                var shift = desired - Math.floorMod(tones[index].midi, 12)
+                while (shift > 6) shift -= 12
+                while (shift < -6) shift += 12
+                tones[index] = tones[index].shifted(shift)
+            }
+        }
         val modifierHalf = if (appliedFrame) halfDim else !dimTriad && (halfDim || policyHalf)
         var effectiveOmits = omits
-        if (modifierHalf && omits.contains(5)) effectiveOmits = omits.filter { it != 5 }
+        val retainOmittedFifth = if (appliedFrame) (chord["retainHalfDimOmittedFifth"] as? JsonPrimitive)?.booleanOrNull ?: (!dimTriad && halfDim) else !dimTriad && halfDim
+        if (retainOmittedFifth && omits.contains(5)) effectiveOmits = omits.filter { it != 5 }
         if (omits.contains(3) && (suspensions.contains(2) || suspensions.contains(4))) effectiveOmits = omits.filter { it != 3 }
         if (!appliedFrame && quality == "augmented" && omits.contains(5) && (!omits.contains(3) && type < 7 || omits.contains(3))) effectiveOmits = omits.filter { it != 5 }
         tones.removeAll { it.slot == 1 && effectiveOmits.contains(3) || it.slot == 2 && effectiveOmits.contains(5) }
@@ -288,6 +309,17 @@ internal object ChordVoicing {
                 "b13" -> Triple(9, -1, 13); "#13" -> Triple(9, 1, 13); else -> continue
             }
             val (offset, delta, degree) = spec
+            // Alter the existing ninth's role even when the scale already lowered
+            // it or its new pitch class is shared with a third omitted later.
+            val ninthIndex = if (degree == 9 && type in 9..11) tones.indexOfFirst { it.slot == 4 } else -1
+            if (ninthIndex >= 0) {
+                val desiredPc = Math.floorMod(rootPc + 2 + delta, 12)
+                var shift = desiredPc - Math.floorMod(tones[ninthIndex].midi, 12)
+                while (shift > 6) shift -= 12
+                while (shift < -6) shift += 12
+                if (shift != 0) tones[ninthIndex] = tones[ninthIndex].shifted(shift)
+                continue
+            }
             if (alt == "#9" && type >= 13) append(6, 5, 11)
             if (alt == "b13" && (minorV13 || minorI13 || hmV13)) { append(20, 6, 13, true); continue }
             if (alt == "#11" && suspensions.contains(4)) { append(18, 5, 11, true); continue }
@@ -318,8 +350,16 @@ internal object ChordVoicing {
                 val bassOctave = maxOf(1, rotated.first().writtenOctave - 1)
                 val upperOctave = maxOf(rotated.drop(1).maxOfOrNull { it.writtenOctave } ?: 0, bassOctave + 1)
                 tones.clear()
-                tones += rotated.mapIndexed { i, tone -> ChordTone((if (i == 0) bassOctave + 1 else upperOctave + 1) * 12 + Math.floorMod(tone.midi, 12), tone.slot, tone.degree) }
-            } else repeat(inversion) { val moved = tones.removeAt(0); tones += moved.raisedOctave() }
+                tones += rotated.mapIndexed { i, tone ->
+                    // A written Cb/B# retains its -1/12 pitch offset when its
+                    // octave changes; normalizing it would move it an octave.
+                    val writtenPitch = tone.midi - (tone.writtenOctave + 1) * 12
+                    ChordTone((if (i == 0) bassOctave + 1 else upperOctave + 1) * 12 + writtenPitch, tone.slot, tone.degree)
+                }
+            } else {
+                val seventhIndex = if (inversion == 3 && omits.contains(5) && !halfDim && !dimTriad) tones.indexOfFirst { it.slot == 3 } else -1
+                repeat(if (seventhIndex >= 0) seventhIndex else inversion) { val moved = tones.removeAt(0); tones += moved.raisedOctave() }
+            }
         }
         if (!appliedFrame && type < 7 && inversion == 2 && omits.contains(3) && !omits.contains(5) && tones.size == 2) {
             val rootTone = tones.find { it.slot == 0 }; val fifth = tones.find { it.slot == 2 }
@@ -330,7 +370,7 @@ internal object ChordVoicing {
             }
         }
         if (inversion == 0) {
-            val spread = if (appliedFrame) fullyDim || quality == "diminished" && type >= 7 else type >= 7 && !customHalf && !sharp5Minor && (rawQuality == "diminished" || halfDimIi || dimScale)
+            val spread = if (appliedFrame) type >= 7 && (fullyDim || quality == "diminished") else type >= 7 && !customHalf && !sharp5Minor && (rawQuality == "diminished" || halfDimIi || dimScale)
             if (spread && tones.size >= 4) {
                 val rootOctave = tones.first().writtenOctave
                 for (index in listOf(1, 2)) if (tones[index].writtenOctave == rootOctave) tones[index] = tones[index].shifted(12)
