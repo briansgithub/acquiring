@@ -90,7 +90,9 @@ public enum MusicTheory {
             let candidate = letter + accidental
             if pitchClass(note: candidate) == targetPitchClass { return candidate }
         }
-        return letter
+        var alteration = floorMod(targetPitchClass - pitchClass(note: letter), 12)
+        if alteration > 6 { alteration -= 12 }
+        return letter + String(repeating: alteration < 0 ? "b" : "#", count: abs(alteration))
     }
 
     public static func midiNote(scaleDegree: String, octave: Int, key: KeyInfo) -> Int {
