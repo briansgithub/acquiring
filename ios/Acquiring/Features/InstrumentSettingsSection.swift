@@ -27,7 +27,7 @@ struct InstrumentSettingsSection: View {
             .pickerStyle(.menu)
             .accessibilityIdentifier("settings.defaultInstrument")
             .accessibilityValue(environment.quizInstrument.savedDefault.displayName)
-            .accessibilityHint("Changes the sound used when a new quiz starts and updates the current quiz.")
+            .accessibilityHint("Changes the sound used when Playback or Aural Quiz starts and updates the current session.")
         }
     }
 

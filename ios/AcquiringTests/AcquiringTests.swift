@@ -2,12 +2,127 @@ import AcquiringCatalog
 import AcquiringAudio
 import AcquiringCore
 import Foundation
+import QuartzCore
 import SwiftData
 import XCTest
 import UIKit
 @testable import Acquiring
 
 final class AcquiringTests: XCTestCase {
+    @MainActor
+    func testAuralNavigationRestoresExpandedGroupsAndDropsPoppedPattern() throws {
+        let file = FileManager.default.temporaryDirectory
+            .appendingPathComponent("aural-navigation-\(UUID().uuidString).json")
+        defer { try? FileManager.default.removeItem(at: file) }
+        let pattern = AuralPattern(id: "pattern", view: "harmony", tokens: ["one", "five"],
+                                   labels: ["I", "V"], start: 0, end: 1, snapshotId: "snapshot")
+        let store = AuralRestorationStore(fileURL: file)
+        var browser = AuralBrowserSnapshot()
+        browser.expandedPrimary = ["length:4"]
+        browser.expandedBuckets = ["4|I"]
+        store.updateBrowser(browser)
+        store.record(path: [.auralQuiz, .auralPattern(pattern)])
+        store.select(pattern: pattern, tab: .songs)
+        store.rememberSongsScroll("song-a", patternId: pattern.id)
+
+        let reopened = AuralRestorationStore(fileURL: file)
+        XCTAssertEqual(reopened.snapshot.browser?.expandedPrimary, ["length:4"])
+        XCTAssertEqual(reopened.snapshot.browser?.expandedBuckets, ["4|I"])
+        XCTAssertEqual(reopened.snapshot.songsPatternId, pattern.id)
+        XCTAssertEqual(reopened.snapshot.songsScrollId, "song-a")
+        XCTAssertEqual(reopened.restoredRoutes(), [.auralQuiz, .auralPattern(pattern)])
+
+        reopened.record(path: [.auralQuiz])
+        let afterPop = AuralRestorationStore(fileURL: file)
+        XCTAssertNil(afterPop.snapshot.selectedPattern)
+        XCTAssertEqual(afterPop.restoredRoutes(), [.auralQuiz])
+    }
+
+    func testAuralBrowserCoreLengthRestoresLegacyAndClampsSavedValues() throws {
+        let decoder = JSONDecoder()
+        let legacy = try decoder.decode(AuralBrowserSnapshot.self, from: Data(#"{"context":"saved-query","pageCount":3}"#.utf8))
+        XCTAssertEqual(legacy.minimumCoreLength, 2)
+        XCTAssertEqual(legacy.context, "saved-query")
+        XCTAssertEqual(legacy.pageCount, 3)
+        var current = legacy
+        current.minimumCoreLength = 4
+        let restored = try decoder.decode(AuralBrowserSnapshot.self, from: JSONEncoder().encode(current))
+        XCTAssertEqual(restored.minimumCoreLength, 4)
+        let tooLarge = try decoder.decode(AuralBrowserSnapshot.self, from: Data(#"{"minimumCoreLength":10000}"#.utf8))
+        let tooSmall = try decoder.decode(AuralBrowserSnapshot.self, from: Data(#"{"minimumCoreLength":-1}"#.utf8))
+        XCTAssertEqual(tooLarge.minimumCoreLength, 9999)
+        XCTAssertEqual(tooSmall.minimumCoreLength, 2)
+    }
+
+    @MainActor
+    func testTimelineFrameRateSurvivesLockChangesAndPlaybackLifecycle() throws {
+        let section = ExtractedSection(
+            sectionName: "Frame rate",
+            notes: .array([
+                .object(["sd": .string("1"), "beat": .number(1), "duration": .number(4)])
+            ]),
+            metadata: ["keys": .array([
+                .object(["tonic": .string("A"), "scale": .string("minor"), "beat": .number(1)])
+            ])]
+        )
+        let model = QuizTimelineDisplayModel(
+            section: section, sectionID: "verse", usesRelativeIonianContext: false,
+            initialBeat: 1, frameRatePreference: .standard
+        )
+        defer { model.setLifecycle(isVisible: false, sceneIsActive: false, reduceMotion: false) }
+
+        func source(playing: Bool) {
+            model.updateSource(
+                beat: 2, timestamp: CACurrentMediaTime(), endBeat: 9,
+                beatsPerSecond: 2, isPlaying: playing, forceSnap: true
+            )
+        }
+        func assertRate(_ preference: TimelineFrameRatePreference) throws {
+            let link = try XCTUnwrap(model.displayLink)
+            let expected = preference.displayFrameRateRange()
+            XCTAssertEqual(link.preferredFrameRateRange.minimum, expected.minimum)
+            XCTAssertEqual(link.preferredFrameRateRange.maximum, expected.maximum)
+            XCTAssertEqual(link.preferredFrameRateRange.preferred, expected.preferred)
+        }
+
+        source(playing: true)
+        model.setLifecycle(isVisible: true, sceneIsActive: true, reduceMotion: false)
+        for preference in [TimelineFrameRatePreference.standard, .maximum, .standard] {
+            model.setFrameRatePreference(preference)
+            try assertRate(preference)
+            let originalLink = try XCTUnwrap(model.displayLink)
+            for locked in [true, false, true, false, true] {
+                model.updatePresentations(
+                    section: section, sectionID: "verse", usesRelativeIonianContext: locked
+                )
+                try assertRate(preference)
+                XCTAssertTrue(model.displayLink === originalLink, "Lock changes must retain the display clock")
+                XCTAssertEqual(model.displayedBeat, 2, "Lock changes must not move the playhead")
+            }
+            model.updatePresentations(section: section, sectionID: "chorus", usesRelativeIonianContext: true)
+            try assertRate(preference)
+
+            source(playing: false)
+            XCTAssertNil(model.displayLink)
+            source(playing: true)
+            try assertRate(preference)
+            XCTAssertFalse(model.displayLink === originalLink)
+
+            for lifecycle in [(false, true, false), (true, false, false), (true, true, true)] {
+                model.setLifecycle(isVisible: lifecycle.0, sceneIsActive: lifecycle.1, reduceMotion: lifecycle.2)
+                XCTAssertNil(model.displayLink)
+                model.setLifecycle(isVisible: true, sceneIsActive: true, reduceMotion: false)
+                try assertRate(preference)
+            }
+        }
+
+        // A setting changed while Quiz is absent must configure the recreated link.
+        model.setLifecycle(isVisible: false, sceneIsActive: true, reduceMotion: false)
+        model.setFrameRatePreference(.maximum)
+        model.setLifecycle(isVisible: true, sceneIsActive: true, reduceMotion: false)
+        try assertRate(.maximum)
+    }
+
     @MainActor
     func testVocalPracticeNoteNamesTrackPlaybackContextAndResetOutsideIt() {
         let model = VocalPracticeModel(audio: AppAudioSystem())

@@ -9,7 +9,7 @@ struct HelpView: View {
                 HelpTopicLink(
                     id: "help.topic.instructions",
                     title: "Instructions",
-                    detail: "How to use quiz cards and singing practice"
+                    detail: "How to use Playback cards and singing practice"
                 ) { IntroductionView() }
                 HelpTopicLink(
                     id: "help.topic.scaleDegrees",

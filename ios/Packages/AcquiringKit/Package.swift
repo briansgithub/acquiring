@@ -11,10 +11,11 @@ let package = Package(
     products: [
         .library(name: "AcquiringCore", targets: ["AcquiringCore"]),
         .library(name: "AcquiringCatalog", targets: ["AcquiringCatalog"]),
-        .library(name: "AcquiringAudio", targets: ["AcquiringAudio"])
+        .library(name: "AcquiringAudio", targets: ["AcquiringAudio"]),
+        .library(name: "AcquiringAural", targets: ["AcquiringAural"])
     ],
     dependencies: [
-        .package(url: "https://github.com/groue/GRDB.swift.git", exact: "7.11.1"),
+        .package(url: "https://github.com/groue/GRDB.swift.git", exact: "7.8.0"),
         .package(url: "https://github.com/scinfu/SwiftSoup.git", exact: "2.9.6")
     ],
     targets: [
@@ -32,6 +33,15 @@ let package = Package(
             name: "AcquiringAudio",
             dependencies: ["AcquiringCore"]
         ),
+        .target(
+            name: "AcquiringAural",
+            dependencies: [
+                "AcquiringCore",
+                "AcquiringAudio",
+                .product(name: "GRDB", package: "GRDB.swift")
+            ],
+            linkerSettings: [.linkedLibrary("z")]
+        ),
         .testTarget(
             name: "AcquiringCoreTests",
             dependencies: ["AcquiringCore"]
@@ -46,6 +56,13 @@ let package = Package(
         .testTarget(
             name: "AcquiringAudioTests",
             dependencies: ["AcquiringAudio"]
+        ),
+        .testTarget(
+            name: "AcquiringAuralTests",
+            dependencies: [
+                "AcquiringAural",
+                .product(name: "GRDB", package: "GRDB.swift")
+            ]
         )
     ]
 )
