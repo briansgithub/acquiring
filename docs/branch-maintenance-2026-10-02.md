@@ -105,3 +105,64 @@ the separate final full-testing approval gate. No release was performed.
 The primary checkout is main. Dirty recovery trees must be selectively examined
 before any future recovery or removal. No additional feature work is implied
 for the two retained backlog branches.
+
+## GitHub publication and iOS continuation — 2026-10-09
+
+The owner requested pushing branch/worktree work so another agent can continue
+the Android-to-iOS port. Runtime model identifier: unknown. Single-agent route;
+source publication and handoff only, with no feature integration or release.
+
+Starting primary checkout: clean `main` at `45ac705f320a519b7613c4290891a4f842cda97e`,
+matching GitHub. `codex/aural-catalog-v3-delivery` also matched GitHub. All ten
+archived worktree HEADs were already reachable through published branches/tags,
+but four worktrees still had unpublished working-source changes.
+
+Published those source/test/fixture/tool changes on separate recovery branches:
+
+| Recovery branch | Snapshot commit | Source files |
+| --- | --- | --- |
+| `codex/recovery-2026-10-09/chord-parity-android` | `a3f576a14e4d3d2a7dd5ef552594a1212b46ca40` | 19 |
+| `codex/recovery-2026-10-09/chord-parity-contract` | `1e278d5bf5802a28c8c9a919be660d750fec3a25` | 11 |
+| `codex/recovery-2026-10-09/chord-parity-ios` | `8fd679923cea610c9cc81c0859e450430a715ed6` | 16 |
+| `codex/recovery-2026-10-09/parity-historic-android` | `e61e701399198bbd05118ab038332fe1b8e43a43` | 10 |
+
+Each snapshot includes `docs/recovery-snapshot-2026-10-09.md` with provenance,
+limitations and exclusions. Private Git indexes preserved the original detached
+HEADs, index trees, dirty/untracked statuses and working-file bytes. Snapshot
+blobs match the originals with normal Git text normalization. All four
+`git diff --cached --check` checks passed. No app builds/runtime tests were run
+for this archival transfer; these snapshots are not approved implementations.
+Some files already match main; others are superseded intermediate copies.
+Never merge the recovery branches wholesale over current source.
+
+Excluded from GitHub: ignored dependencies/caches/build products and the historic
+worktree's nine logs plus two diagnostic exports. They remain intact locally.
+The sibling `Acquiring-restore-playback` and `Acquiring-aural-mode-analysis`
+directories have no Git metadata and were not treated as branches/worktrees.
+No worktree, branch, file or recovery reference was deleted.
+
+Publication: `git push --atomic origin main codex/aural-catalog-v3-delivery`
+with the four explicit recovery branch names above succeeded. Fresh
+`git ls-remote --heads --tags origin` comparisons verified every local branch
+and tag against its server object ID. `git rev-list --count <worktree-HEAD>
+--not <server-head-and-tag-object-IDs>` returned zero unpublished commits for
+all eleven registered worktrees. Local provenance/verification records live in
+`H:/Desktop/Acquiring/.branch-recovery/2026-10-09/`.
+
+### Next agent
+
+1. Fetch origin and resume `codex/ios-aural-mac-validation` at
+   `c6714ab6aed7068140d42a9d7cfb52409692a850`, the existing unmerged
+   [draft PR #51](https://github.com/briansgithub/acquiring/pull/51).
+   Preserve any existing Mac work. Read `ios/AGENTS.md` and that branch's
+   `docs/porting-plan.md` before implementation.
+2. Diagnose the recorded exact-tip UI failures on the Mac with focused checks;
+   the previous 16-case failure remains unresolved. Windows publication did
+   not validate Swift, simulator behavior or pending human reviews.
+3. Reconcile newer main/Android work before completing parity, including queue
+   repeat/navigation controls and the v3 catalog delivery recorded in
+   `docs/aural-catalog-publishing.md` on current main. The iOS branch predates
+   these changes. Compare against current main deliberately rather than
+   replacing newer files with an old recovery copy.
+4. Retain the existing feature-review and separate final full-testing gates.
+   No TestFlight/App Store release is authorized by this publication request.
