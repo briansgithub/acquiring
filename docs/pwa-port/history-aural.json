@@ -377,101 +377,121 @@
     "sha": "09ae71d74c1e559a17326ea2183e8c5d90b4771c",
     "date": "2026-09-17",
     "subject": "Open aural examples in full Playback",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Routes source exploration into ordinary full-song Playback with jump-to-quiz-passage action, loading normal song data and retaining return state.",
+    "finalDisposition": "Retain full player reuse; subsequent restoration removes embedded fallback completely.",
+    "evidence": [
+      "09ae71d74c1e559a17326ea2183e8c5d90b4771c:android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+    ]
   },
   {
     "sha": "5006f41ab0eee2c52135d2c97d343daa20452c20",
     "date": "2026-09-17",
     "subject": "Merge Aural Quiz catalog into main",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates aural curriculum, corpus tooling, catalog and Playback rename into main; large first-parent diff includes earlier reviewed feature commits.",
+    "finalDisposition": "Integration, not 125 new independent features; preserve constituent provenance.",
+    "evidence": [
+      "5006f41ab0eee2c52135d2c97d343daa20452c20:docs/aural-catalog.md"
+    ]
   },
   {
     "sha": "cfa9734539b6f6b92835b5b7a448662445af0507",
     "date": "2026-09-17",
     "subject": "Color Aural Quiz chords by scale degree",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix-ui",
+    "featureDelta": "Colors each Roman chord by numerator scale degree, preserving accidental/quality/inversion/applied suffixes; neutral arrows and non-Roman labels.",
+    "finalDisposition": "Retain per-chord color palette rather than superseded mode-wide tint.",
+    "evidence": [
+      "cfa9734539b6f6b92835b5b7a448662445af0507:android/app/src/test/java/com/acquiring/android/AuralRomanColorsTest.kt"
+    ]
   },
   {
     "sha": "10b2dee3f27917da4191f887cd047c890cc42564",
     "date": "2026-09-17",
     "subject": "Load Aural Quiz catalog instead of legacy families",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Downloads missing/damaged progression catalog with progress/retry and guided-course access; catalog interstitial replaces legacy six-family home.",
+    "finalDisposition": "Retain catalog-first experience with graceful offline/missing-data states; delivery later expands to verified v3 bundle.",
+    "evidence": [
+      "10b2dee3f27917da4191f887cd047c890cc42564:android/app/src/main/java/com/acquiring/android/AuralQuizScreen.kt"
+    ]
   },
   {
     "sha": "ca89c5cc93c86b0fd3d427c022bc0e3633575767",
     "date": "2026-09-18",
     "subject": "Restore full song Playback for aural examples",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Removes compact embedded source player, requires normal full-song Playback, restores full controls and moves passage-jump into header.",
+    "finalDisposition": "Retain one full Playback destination and source return context; missing source must leave quiz intact.",
+    "evidence": [
+      "ca89c5cc93c86b0fd3d427c022bc0e3633575767:android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+    ]
   },
   {
     "sha": "4da2b62b8df616fa7b5c5669a897f32f6e3f08cc",
     "date": "2026-09-18",
     "subject": "Merge restored full Playback into aural corpus index",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates restored Playback, catalog downloading and per-degree color changes into corpus branch.",
+    "finalDisposition": "Integration only; unrelated iOS/workflow changes are outside Android PWA feature count.",
+    "evidence": [
+      "4da2b62b8df616fa7b5c5669a897f32f6e3f08cc:docs/aural-catalog.md"
+    ]
   },
   {
     "sha": "a857c99520cbfeb711789ac5a017bac14cb88525",
     "date": "2026-09-18",
     "subject": "Install Aural catalog with song catalog",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Installs aural bundle alongside song catalog, verifies existing file hashes/snapshot before reuse, stages downloads, and offers recovery when missing/damaged.",
+    "finalDisposition": "Retain separate catalog/user-data stores and verified installation; v3 delivery later adds serialization/readers/Settings.",
+    "evidence": [
+      "a857c99520cbfeb711789ac5a017bac14cb88525:android/app/src/main/java/com/acquiring/android/AuralCatalogDownloader.kt"
+    ]
   },
   {
     "sha": "5e469e56be85f41a25957e84ebacdbf026bf0d46",
     "date": "2026-09-21",
     "subject": "Use song keys for singing note labels",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix-feature",
+    "featureDelta": "Spells chromatic singing note labels using the song modal key's relative-major signature, supports sharp/flat preference and updates interval popup context.",
+    "finalDisposition": "Retain in PWA pitch display/interval naming; neutral signatures default flats.",
+    "evidence": [
+      "5e469e56be85f41a25957e84ebacdbf026bf0d46:android/app/src/main/java/com/acquiring/android/RelativeIonianContext.kt"
+    ]
   },
   {
     "sha": "e8cc64866ab24bcf00ebd2d9253ba3b687ddf6b4",
     "date": "2026-09-21",
     "subject": "Merge key-aware singing interval labels",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates key-aware singing labels together with already-reviewed full Playback/catalog installation ancestry.",
+    "finalDisposition": "Integration only; no duplicate feature count.",
+    "evidence": [
+      "e8cc64866ab24bcf00ebd2d9253ba3b687ddf6b4:android/app/src/main/java/com/acquiring/android/SpelledInterval.kt"
+    ]
   },
   {
     "sha": "2d36e72f21b59c09c2979ce508cf7177cb04d295",
     "date": "2026-09-24",
     "subject": "Add mode-aware Aural catalog analysis",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Adds mode-aware catalog analysis and relative-major identity view, original-source key provenance, modal filtering and relative token realization; updates catalog schema readers/producers.",
+    "finalDisposition": "Retain separation of analysis view and original sounding key; later controls split grouping and mode axes.",
+    "evidence": [
+      "2d36e72f21b59c09c2979ce508cf7177cb04d295:android/app/src/main/java/com/acquiring/android/AuralPatternExercise.kt"
+    ]
   },
   {
     "sha": "4c7ddd56b8a86f4a08496e07963b4e6df10c08ca",
