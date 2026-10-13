@@ -16,3 +16,5 @@ Owner: `codex/pwa-audit-aural`; assigned files are this report and `history-aura
 - Current catalog documentation also supersedes immediate example autoplay, remainder-only shuffle and example auto-advance: Examples opens a preview, shuffle restores baseline order when off, and selected example sections repeat.
 
 2026-10-13 checkpoint: 20/51 reviewed. Exposure requires actual audio progress past the source start, not pressing Play. Unreliable recovered exposure history conservatively disables independent corpus credit. Next: native tests, catalog replacement and song round-trip (rows 21-30).
+
+2026-10-13 checkpoint: 30/51 reviewed. Catalog compact suffix/index representation and existing immutable databases are prerequisites for the browser query worker. Source round-trip is assisted and preserves draft, tab and browse state. Next: rows 31-40, then final browsing/queue/delivery changes.
