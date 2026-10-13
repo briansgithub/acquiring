@@ -137,101 +137,121 @@
     "sha": "c1abee95b0aedc8b0dc8457702a963531461e103",
     "date": "2026-09-17",
     "subject": "Merge branch 'codex/aural-corpus-android' into codex/aural-corpus-index",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates Android corpus provider/preferences from 06e48208 with normalized offline snapshot branch.",
+    "finalDisposition": "Integration only; no duplicate feature count.",
+    "evidence": [
+      "c1abee95b0aedc8b0dc8457702a963531461e103:android/docs/aural-corpus.md"
+    ]
   },
   {
     "sha": "793466a61a49bc3a4a788df14779f5fec5e86fa3",
     "date": "2026-09-17",
     "subject": "Merge branch 'codex/aural-miner' into codex/aural-corpus-index",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge-fix",
+    "featureDelta": "Integrates coverage refinements from 176ba2f7: exact longer-window/coverage accounting and regression tests.",
+    "finalDisposition": "Retain upstream artifact correctness; not an additional PWA user flow.",
+    "evidence": [
+      "793466a61a49bc3a4a788df14779f5fec5e86fa3:tooling/aural-corpus/coverage.mjs"
+    ]
   },
   {
     "sha": "ac3beb3a0364cf7b339df1fafec8a7bc014de622",
     "date": "2026-09-17",
     "subject": "Merge commit 'a8317c2a' into codex/aural-corpus-index",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge-feature-tooling",
+    "featureDelta": "Integrates a8317c2a persisted-analysis occurrence query and tests; paginated lookup avoids rerunning mining.",
+    "finalDisposition": "Reuse offline tooling; browser catalog reader remains a separate indexed SQLite consumer.",
+    "evidence": [
+      "ac3beb3a0364cf7b339df1fafec8a7bc014de622:tooling/aural-corpus/query.mjs"
+    ]
   },
   {
     "sha": "5f706322eba3b1db93c0cd47ec2b6dae5994c32f",
     "date": "2026-09-17",
     "subject": "Track overlapping source passage familiarity in selector v2",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix-contract",
+    "featureDelta": "Selector v2 marks positive overlap of physical transitions in song|section|start|end as familiar; shared endpoint alone remains fresh and opaque IDs match exactly. Frozen v1 contexts still replay.",
+    "finalDisposition": "Retain exact overlap semantics and portable fixtures.",
+    "evidence": [
+      "5f706322eba3b1db93c0cd47ec2b6dae5994c32f:tooling/aural-corpus/selector.mjs"
+    ]
   },
   {
     "sha": "2e77442a028cf9875a0ecb962cbb9a55aee4288c",
     "date": "2026-09-17",
     "subject": "Merge overlap-aware corpus selector",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates overlap-aware selector 5f706322.",
+    "finalDisposition": "Integration only; no duplicate feature count.",
+    "evidence": [
+      "2e77442a028cf9875a0ecb962cbb9a55aee4288c:contracts/aural-corpus/selection-fixtures.json"
+    ]
   },
   {
     "sha": "ef20fa9f81bc9141542288ec127ea04dfa3b825b",
     "date": "2026-09-17",
     "subject": "Track overlapping source exposure and adaptive corpus tempo",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix-feature",
+    "featureDelta": "Ports source-span interval familiarity to Android; records adaptive playback tempo separately from source tempo and preserves old saved timing.",
+    "finalDisposition": "Retain identity/familiarity across keys, instruments and inversion views; seed and actual playback tempo are explicit provenance.",
+    "evidence": [
+      "ef20fa9f81bc9141542288ec127ea04dfa3b825b:android/app/src/main/java/com/acquiring/android/AuralCorpus.kt"
+    ]
   },
   {
     "sha": "5c46138dc23bba176deb6ef0eaf07dd1be65268e",
     "date": "2026-09-17",
     "subject": "Merge corpus familiarity and tempo refinements",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates ef20fa9f familiarity and tempo refinements.",
+    "finalDisposition": "Integration only; no duplicate feature count.",
+    "evidence": [
+      "5c46138dc23bba176deb6ef0eaf07dd1be65268e:android/app/src/test/java/com/acquiring/android/AuralCorpusTest.kt"
+    ]
   },
   {
     "sha": "47a71ca749021939942e5e7afba0c557c605f7d1",
     "date": "2026-09-17",
     "subject": "Document offline corpus analysis and enrichment",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge-documentation",
+    "featureDelta": "Documents immutable corpus analysis, conservative union coverage, popularity prerequisites, runtime selector and validation boundaries.",
+    "finalDisposition": "Reference producer/consumer constraints; later published catalog supersedes unavailable-popularity/distribution limitations.",
+    "evidence": [
+      "47a71ca749021939942e5e7afba0c557c605f7d1:docs/aural-corpus-offline.md"
+    ]
   },
   {
     "sha": "40aa1a3717b79a6c3bf2f26ab6b4947ecab8b7d5",
     "date": "2026-09-17",
     "subject": "Confirm audible exposure and preserve recoverable learning history",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Records exposure only after output playback head passes the source start beat, cancels stale callbacks and recovers valid learning fields from partial corruption; damaged exposure history forces supported practice.",
+    "finalDisposition": "Retain audio acknowledgment before exposure; technical failure must not be a musical error or falsely establish familiarity/mastery.",
+    "evidence": [
+      "40aa1a3717b79a6c3bf2f26ab6b4947ecab8b7d5:android/app/src/main/java/com/acquiring/android/AuralAudio.kt"
+    ]
   },
   {
     "sha": "5b2e44f133159df69e49a62491daab00b249297d",
     "date": "2026-09-17",
     "subject": "Handle failed audio starts and damaged optional quiz state",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates 40aa1a37 confirmed-audible-exposure and optional-state recovery fixes despite feature-like commit subject.",
+    "finalDisposition": "Integration only; first-parent delta is the already-reviewed fix.",
+    "evidence": [
+      "5b2e44f133159df69e49a62491daab00b249297d:android/app/src/main/java/com/acquiring/android/AuralSession.kt"
+    ]
   },
   {
     "sha": "89faeccd5102ea7828c9ee3872ba6f3b830124fe",
