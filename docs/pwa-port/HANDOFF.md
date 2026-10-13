@@ -32,3 +32,15 @@ New pwa/ project in this monorepo; Android current shipping behavior is authorit
 ## Next action
 
 Complete the three per-commit ledgers from actual diffs/comments/tests, reconcile surviving features, then write the implementation DAG, task ownership rules and recovery/runbook. Set up one same-chat resume heartbeat using this file as its entry point; remain quiet on unchanged/non-actionable state. When the audit and plan are complete, pause the heartbeat until implementation is authorized.
+
+## Active audit assignments
+
+2026-10-13, checkpoint 824fb7d4: clean coordinator and two clean sibling audit worktrees created from the checkpoint. The app worktree tool could not resolve the parent workspace as a repository, so Git created the explicit sibling paths.
+
+- Foundation: H:/Desktop/Acquiring/Acquiring-pwa-audit-foundation; branch codex/pwa-audit-foundation; owns history-foundation.json and findings-foundation.md only.
+- Aural: H:/Desktop/Acquiring/Acquiring-pwa-audit-aural; branch codex/pwa-audit-aural; owns history-aural.json and findings-aural.md only.
+- Coordinator: H:/Desktop/Acquiring/Acquiring; branch codex/pwa-history-plan; owns revision ledger and final plan/runbook.
+
+Validation before delegation: JSON inventory count/unique IDs passed, git diff --cached --check passed. Risks: default command sandbox currently fails enumerating a BitLocker-locked V: volume; approved unsandboxed commands can access the H: workspace. No app tests required for audit documents. Next: each worker saves and commits batches; coordinator integrates finished report commits without overwriting pending work. Recovery worktrees remain untouched.
+
+Automatic resumption: same-chat hourly heartbeat `resume-acquiring-pwa-audit` created ACTIVE on 2026-10-13. It resumes only this audit/planning scope, respects live account limits, avoids duplicate workers, and pauses when the deliverables are complete. Requires the host/app to be available; scheduling does not bypass rate limits.

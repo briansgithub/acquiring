@@ -13,51 +13,75 @@
     "sha": "34c7bd145fb9bf40cf3a18100b8319d4ba7b2ae2",
     "date": "2026-08-31",
     "subject": "Finish Android monorepo integration",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Restore usable cross-platform Gradle wrapper after Android import.",
+    "finalDisposition": "Build infrastructure only; PWA gets independent build.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "34c7bd14:android/gradle/wrapper/gradle-wrapper.jar",
+      "34c7bd14:android/gradle/wrapper/gradle-wrapper.properties",
+      "34c7bd14:android/gradlew",
+      "34c7bd14:android/gradlew.bat"
+    ]
   },
   {
     "sha": "20ec5c7eafda091e6c7fdd59b3f383c9c446c3f3",
     "date": "2026-08-31",
     "subject": "Reorganize and rebrand the Acquiring monorepo",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Rebrand/reorganize monorepo paths and source references; retire earlier conversion artifact.",
+    "finalDisposition": "Retain repository boundaries; no additional screen.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "20ec5c7e:android/app/src/androidTest/java/com/acquiring/android/HardwareStoreTimelineTest.kt",
+      "20ec5c7e:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt",
+      "20ec5c7e:android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt",
+      "20ec5c7e:android/app/src/main/java/com/acquiring/android/RomanNumeralRenderer.kt"
+    ]
   },
   {
     "sha": "d7005e7cbc9062311588deeb19b1b1c689a120a4",
     "date": "2026-08-31",
     "subject": "Add shared parity and catalog contracts",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "contract",
+    "featureDelta": "Introduce canonical schema-v3 catalog contract and shared parity fixture source.",
+    "finalDisposition": "Reuse versioned contracts and validation before catalog activation.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "d7005e7c:android/app/build.gradle",
+      "d7005e7c:android/app/src/test/java/com/acquiring/android/AllSongsDaoTest.kt",
+      "d7005e7c:android/app/src/test/java/com/acquiring/android/ClosedLoopSongDatabaseTest.kt",
+      "d7005e7c:android/app/src/test/java/com/acquiring/android/DatabaseDownloaderTest.kt"
+    ]
   },
   {
     "sha": "3662d171283720b912608be285d4f3943a652890",
     "date": "2026-08-31",
     "subject": "Make Android Gradle wrapper executable",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Set Unix executable mode on Gradle wrapper.",
+    "finalDisposition": "Native build-only.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "3662d171:android/gradlew"
+    ]
   },
   {
     "sha": "357bd08c7c1a26953fcd95e34ac16ce37f653f64",
     "date": "2026-08-31",
     "subject": "Keep Android DAO fixture within cursor limits",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "test",
+    "featureDelta": "Bound DAO test payload below CursorWindow limit while retaining SQL projection assertions.",
+    "finalDisposition": "Carry scalar-list-query regression, not oversized fixture dependency.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "357bd08c:android/app/src/test/java/com/acquiring/android/AllSongsDaoTest.kt"
+    ]
   },
   {
     "sha": "1efc2ae9f58a4ed773f421e39c99932cc477adfa",
@@ -73,11 +97,14 @@
     "sha": "6636db1c5bb91cf48b333e664672f3f3b597d78e",
     "date": "2026-08-31",
     "subject": "chore: simplify monorepo root layout",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "documentation",
+    "featureDelta": "Update Android README after root tooling reorganization.",
+    "finalDisposition": "No runtime capability.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "6636db1c:android/README.md"
+    ]
   },
   {
     "sha": "65daa3bb6c18a4c5a2117338c37cd66530af8215",
@@ -93,11 +120,17 @@
     "sha": "9c0ef82526d3e6aff9aec44ffe7e485cd68315ae",
     "date": "2026-09-01",
     "subject": "build(android): target API 36",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Raise target/compile API to 36 and adapt Activity/toolchain configuration.",
+    "finalDisposition": "Native compatibility; browser uses safe-area/responsive equivalents.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "9c0ef825:android/app/build.gradle",
+      "9c0ef825:android/app/src/main/AndroidManifest.xml",
+      "9c0ef825:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "9c0ef825:android/gradle/gradle-daemon-jvm.properties"
+    ]
   },
   {
     "sha": "b40273eec6e07130119030edf707a45fa09a98fa",
@@ -113,11 +146,17 @@
     "sha": "5b2926765749c7173ee87f6b356db5cea86b0870",
     "date": "2026-09-01",
     "subject": "chore(android): target SDK 36 and migrate to edge-to-edge",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Finalize SDK36 and edge-to-edge configuration.",
+    "finalDisposition": "Native compatibility; do not reproduce SDK mechanics.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "5b292676:android/app/build.gradle",
+      "5b292676:android/app/src/main/AndroidManifest.xml",
+      "5b292676:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "5b292676:android/build.gradle"
+    ]
   },
   {
     "sha": "48b1b08961bee63d0096b545cc97cb1040f8f4fd",
@@ -143,61 +182,87 @@
     "sha": "fe5d92af8c5a04e657d5fa94c8cd4f5f4508f9f6",
     "date": "2026-09-02",
     "subject": "Restore accepted Android launcher icon lighting",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Restore accepted launcher-icon geometry and lighting.",
+    "finalDisposition": "Use final branding assets, not intermediate icon revisions.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "fe5d92af:android/app/src/main/res/drawable/ic_launcher_foreground.xml"
+    ]
   },
   {
     "sha": "e8a8c6cc309f7b3608bc5e4e611fa2c0545d7757",
     "date": "2026-09-02",
     "subject": "Prepare Android beta version 3 and release signing",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "release",
+    "featureDelta": "Configure beta version3 and signing inputs.",
+    "finalDisposition": "Native release only; independent PWA release provenance.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "e8a8c6cc:android/app/build.gradle"
+    ]
   },
   {
     "sha": "c3cd59e21260c5991c0abe68a6e8145391b28c71",
     "date": "2026-09-02",
     "subject": "Add Android privacy policy access for tester release 4",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Add privacy-policy access and published policy resource with link tests.",
+    "finalDisposition": "Preserve accessible policy entry; update PWA policy for cloud accounts before launch.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "c3cd59e2:android/app/build.gradle",
+      "c3cd59e2:android/app/src/androidTest/java/com/acquiring/android/PrivacyPolicyLinkTest.kt",
+      "c3cd59e2:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "c3cd59e2:android/app/src/main/java/com/acquiring/android/PrivacyPolicyLink.kt"
+    ]
   },
   {
     "sha": "87b76b2dae24351ade985dfd1af8cd0e9e5d4780",
     "date": "2026-09-02",
     "subject": "Add guarded manual Android beta release pipeline",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "release",
+    "featureDelta": "Add guarded beta build/sign/track validation and release tooling.",
+    "finalDisposition": "Native release excluded; retain principle of exact-revision validation.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "87b76b2d:android/.gitignore",
+      "87b76b2d:android/AGENTS.md",
+      "87b76b2d:android/app/build.gradle",
+      "87b76b2d:android/fastlane/Fastfile"
+    ]
   },
   {
     "sha": "daee55ddf8923002718fb7032ace37cefd1c63c9",
     "date": "2026-09-02",
     "subject": "Bootstrap safe track discovery through beta workflow identity",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "release",
+    "featureDelta": "Discover Play tracks through workflow identity with bounded non-secret reporting.",
+    "finalDisposition": "No PWA runtime feature.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "daee55dd:android/fastlane/RELEASING.md",
+      "daee55dd:android/fastlane/lib/beta_release.rb",
+      "daee55dd:android/fastlane/tests/beta_release_test.rb"
+    ]
   },
   {
     "sha": "58f1b6951e5fef9c1fe15474b6ae4623db471b88",
     "date": "2026-09-02",
     "subject": "Clarify secure signing prompts and accept selected keystore path",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "release",
+    "featureDelta": "Improve selected-keystore path handling and signing prompts.",
+    "finalDisposition": "Native signing excluded.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "58f1b695:android/scripts/set-beta-signing-secrets.ps1"
+    ]
   },
   {
     "sha": "41dde40b381b1b2aa48614eefaf8701aca6bb120",
@@ -213,11 +278,15 @@
     "sha": "f410e77d59d33ba8b5f7196c301f4aeb29eac13a",
     "date": "2026-09-02",
     "subject": "Pin API-verified Acquiring internal and Alpha tracks",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "release",
+    "featureDelta": "Pin verified internal and Alpha track identifiers.",
+    "finalDisposition": "Native distribution only.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "f410e77d:android/fastlane/release-settings.json",
+      "f410e77d:android/fastlane/tests/beta_release_test.rb"
+    ]
   },
   {
     "sha": "59387866deed497c84b03634a4a0935fd0c1b602",
@@ -233,11 +302,14 @@
     "sha": "eb15490cc407719927476ad3636e91b33413757f",
     "date": "2026-09-02",
     "subject": "Record successful Android beta signing and upload validation",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "documentation",
+    "featureDelta": "Record signing/upload validation and distinguish uncommitted upload trial from published release.",
+    "finalDisposition": "Evidence discipline; no new app feature.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "eb15490c:android/fastlane/RELEASING.md"
+    ]
   },
   {
     "sha": "4202d588dfc2b671226c1d11813f8bd5ef265255",
@@ -253,21 +325,32 @@
     "sha": "e5a75f54c4444179a8ca800669cde22b85b8a20c",
     "date": "2026-09-02",
     "subject": "Fix zero-size pitch hint crash in Android release 5",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Guard zero-size gradient rendering in pitch hints and test collapse/grow transitions.",
+    "finalDisposition": "Underlying hint implementation later removed at45e7012e; keep zero-size rendering acceptance principle.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "e5a75f54:android/app/build.gradle",
+      "e5a75f54:android/app/src/androidTest/java/com/acquiring/android/PitchHintDotUiTest.kt",
+      "e5a75f54:android/app/src/main/java/com/acquiring/android/DoubleTapHint.kt"
+    ]
   },
   {
     "sha": "c36fff74d585992c6e346665c619208029090858",
     "date": "2026-09-02",
     "subject": "Fix Android partial artist search and verify song quiz navigation",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Fix partial artist query and title/artist result-to-player navigation; add DAO/UI regressions.",
+    "finalDisposition": "Survives through later displayed-name search; later73c26b4b overlaps this fix.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "c36fff74:android/app/build.gradle",
+      "c36fff74:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt",
+      "c36fff74:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "c36fff74:android/app/src/main/java/com/acquiring/android/SongDao.kt"
+    ]
   },
   {
     "sha": "850f236a7cfd9f0bf170033575e4c567a6adafb2",
@@ -293,21 +376,28 @@
     "sha": "9039694214d4f0e17e508c1638098d0abf8c2ab6",
     "date": "2026-09-04",
     "subject": "feat(ios): advance quiz transport and live tempo parity",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fixture",
+    "featureDelta": "Add shared iOS UI catalog fixture; no Android runtime changes.",
+    "finalDisposition": "Optional contract fixture only; iOS behavior is not PWA authority.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "90396942:contracts/fixtures/ios_ui_test_catalog.json"
+    ]
   },
   {
     "sha": "0f6fb28301188034302f49005bae2f79f3861f92",
     "date": "2026-09-04",
     "subject": "feat: advance iOS quiz sound controls and settings",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Add Android default-instrument/settings maintenance and external Play listing handoff despite iOS-led subject.",
+    "finalDisposition": "Saved/session instrument contract survives; update handoff adapts to PWA updates.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "0f6fb283:android/README.md",
+      "0f6fb283:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "b543f2bee9ceb94e24aa92928646bdb23f7f4526",
@@ -323,11 +413,16 @@
     "sha": "2f79ed260c5e6844a910aff539030491617cde1d",
     "date": "2026-09-05",
     "subject": "Refresh Android instruments and default to Synth Clarinet",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Refresh instrument synthesis/display names and change default to Synth Clarinet.",
+    "finalDisposition": "Retain current13-instrument set with later Strings consolidation and Flute addition.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "2f79ed26:android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+      "2f79ed26:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "2f79ed26:android/app/src/main/java/com/acquiring/android/SynthVoice.kt"
+    ]
   },
   {
     "sha": "7d901a8d5a6f296ae9103aa7a5d9674994871917",
@@ -363,11 +458,16 @@
     "sha": "ffb81ed48775777d5c2c5d66ff6ae0100a2b543b",
     "date": "2026-09-05",
     "subject": "Preserve normalized and grouped instruments for Quiz revision",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Normalize relative instrument loudness once per voice and group instrument menus.",
+    "finalDisposition": "Retain gains/categories consistently across previews and transport.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "ffb81ed4:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "ffb81ed4:android/app/src/main/java/com/acquiring/android/SynthVoice.kt",
+      "ffb81ed4:android/app/src/test/java/com/acquiring/android/InstrumentVolumeTest.kt"
+    ]
   },
   {
     "sha": "c554b5c54bff012e64fe56f20695dd315a6d5801",
@@ -403,11 +503,17 @@
     "sha": "f89a775cd3b8e14a6998e20a974cbbdd50792544",
     "date": "2026-09-05",
     "subject": "Implement Android quiz transport controls and lifecycle",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "replacement",
+    "featureDelta": "Introduce saved-default/session instrument ownership and stable transport selectors; make playback foreground-owned and remove persistent media service.",
+    "finalDisposition": "Current foreground-only contract: pause on leaving/inactive; explicit Play to resume; no persistent media controls.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "f89a775c:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt",
+      "f89a775c:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt",
+      "f89a775c:android/app/src/main/AndroidManifest.xml",
+      "f89a775c:android/app/src/main/java/com/acquiring/android/InstrumentSession.kt"
+    ]
   },
   {
     "sha": "a3e68654f39ba62ab34277400071e9b9eb191551",
@@ -443,11 +549,15 @@
     "sha": "2c16f571b99cb0b86f732dc796cb36331a8bed62",
     "date": "2026-09-05",
     "subject": "Serialize quiz owner and audio focus transitions",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Serialize active playback-owner and audio-focus transitions to reject stale ownership.",
+    "finalDisposition": "Carry generation/owner checks; browser lifecycle replaces Android focus APIs.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "2c16f571:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "2c16f571:android/app/src/main/java/com/acquiring/android/QuizPlaybackController.kt"
+    ]
   },
   {
     "sha": "d9389981e88e2545c2d8f8d870fde5adfebe50c3",
@@ -513,11 +623,15 @@
     "sha": "a138937322c71b06bf88d3e33af255c9fffcc35d",
     "date": "2026-09-05",
     "subject": "Show catalog complexity scores in Android and iOS song details",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Expose optional complexity rating in song details through scalar DAO query.",
+    "finalDisposition": "Retain displayed out-of100 score and missing-value state.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "a1389373:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "a1389373:android/app/src/main/java/com/acquiring/android/SongDao.kt"
+    ]
   },
   {
     "sha": "818ef2451b36f2532e7f7735b5559c545f899c4d",
@@ -533,31 +647,47 @@
     "sha": "91a68b20c7ae6862d27d9ce03901a34d890847cf",
     "date": "2026-09-05",
     "subject": "Integrate completed Quiz navigation and compact recent searches",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Preserve origin-aware player Back, All Songs group/filter, Info detour and compact recent searches.",
+    "finalDisposition": "Retain routing/restoration rules; later extraction provides current implementation.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "91a68b20:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt",
+      "91a68b20:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt",
+      "91a68b20:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "676f536fbdf162a355907d4aa4df538c3682df07",
     "date": "2026-09-02",
     "subject": "Fix zero-size pitch hint crash in Android release 5",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "reapplication",
+    "featureDelta": "Reapply zero-size pitch-hint rendering repair with release-branch context.",
+    "finalDisposition": "Same behavioral repair as e5a75f54, not a second feature; exact whole patch differs.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "676f536f:android/app/build.gradle",
+      "676f536f:android/app/src/androidTest/java/com/acquiring/android/PitchHintDotUiTest.kt",
+      "676f536f:android/app/src/main/java/com/acquiring/android/DoubleTapHint.kt"
+    ]
   },
   {
     "sha": "73c26b4bb20f381f9385cc6b98eb16536cb87638",
     "date": "2026-09-02",
     "subject": "Fix Android partial artist search and verify song quiz navigation",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "reapplication",
+    "featureDelta": "Reapply partial artist search/navigation repair with branch-specific release/test context.",
+    "finalDisposition": "Same capability as c36fff74; do not double-count.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "73c26b4b:android/app/build.gradle",
+      "73c26b4b:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt",
+      "73c26b4b:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "73c26b4b:android/app/src/main/java/com/acquiring/android/SongDao.kt"
+    ]
   },
   {
     "sha": "36768156b08d80d80b799e95872b85047a2f75e8",
@@ -583,21 +713,30 @@
     "sha": "ef887fbb8e4899ff1036c22587aadcf20c1fb1aa",
     "date": "2026-09-07",
     "subject": "Merge the two plucked instruments into Strings and sort the menus",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "replacement",
+    "featureDelta": "Consolidate plucked instruments into Strings and sort grouped menu by display name.",
+    "finalDisposition": "Use final stable instrument IDs/menu ordering; do not restore retired presets.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "ef887fbb:android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+      "ef887fbb:android/app/src/main/java/com/acquiring/android/InstrumentSession.kt",
+      "ef887fbb:android/app/src/main/java/com/acquiring/android/SynthVoice.kt",
+      "ef887fbb:android/app/src/test/java/com/acquiring/android/InstrumentVolumeTest.kt"
+    ]
   },
   {
     "sha": "167e93dee640b34f886e90d33ced8d3e4fd8af09",
     "date": "2026-09-07",
     "subject": "Release to TestFlight without a human at the keyboard for each step",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "policy",
+    "featureDelta": "Update Android agent release authorization guidance in a cross-platform release-policy commit.",
+    "finalDisposition": "No application feature; retain current release authorization boundary.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "167e93de:android/AGENTS.md"
+    ]
   },
   {
     "sha": "57eed0068b536f85381337fb01b2844ea3c86547",
@@ -613,11 +752,17 @@
     "sha": "c4e7aee334f8698d9011b95596e510304bd6a9f6",
     "date": "2026-09-07",
     "subject": "Read a borrowed chord's seventh from the borrowed scale, not the song key",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Derive borrowed/custom-scale chord sevenths and quality from borrowed intervals; add real-source parity fixtures.",
+    "finalDisposition": "Retain in final interpreter; expanded by later source/historical evidence corrections.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "c4e7aee3:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt",
+      "c4e7aee3:android/app/src/test/java/com/acquiring/android/CorpusParityTest.kt",
+      "c4e7aee3:android/app/src/test/java/com/acquiring/android/HooktheoryRealParityTest.kt",
+      "c4e7aee3:android/app/src/test/java/com/acquiring/android/ParityBaseline.kt"
+    ]
   },
   {
     "sha": "8711640ab8ef90e6234eae300e133fe8a2b06af3",
@@ -643,31 +788,47 @@
     "sha": "3d1e68c0ac0c6c3d244a303b127068e9b92b5dec",
     "date": "2026-09-08",
     "subject": "Align chord interpretation with verified source evidence across platforms",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Introduce structured chord interpretation root/tone-label roles and separate letter/voicing logic, backed by source-evidence fixtures.",
+    "finalDisposition": "Build canonical theory result before card/notation/audio consumers.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "3d1e68c0:android/app/build.gradle",
+      "3d1e68c0:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt",
+      "3d1e68c0:android/app/src/main/java/com/acquiring/android/ChordLetterFormat.kt",
+      "3d1e68c0:android/app/src/main/java/com/acquiring/android/ChordVoicing.kt"
+    ]
   },
   {
     "sha": "328c1106b2de664249a1bb72db88ead0c4d821aa",
     "date": "2026-09-08",
     "subject": "Use resolved chord targets in speech and retire legacy parity budgets",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "test",
+    "featureDelta": "Retire permissive legacy parity baselines and update resolved-target speech contract.",
+    "finalDisposition": "Require explicit fixture equality; speech implementation is not an Android feature addition.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "328c1106:android/app/src/test/java/com/acquiring/android/ParityBaseline.kt",
+      "328c1106:contracts/CHORD_INTERPRETATION.md"
+    ]
   },
   {
     "sha": "30fe84224aef3a62bb088bfcf78cd3f9ce57bde6",
     "date": "2026-09-08",
     "subject": "Preserve historical chord accuracy across all three interpreters",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Correct historical chord notation, extensions and voicing with adjudicated fixtures.",
+    "finalDisposition": "Carry historical and source-evidence regression sets together.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "30fe8422:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt",
+      "30fe8422:android/app/src/main/java/com/acquiring/android/ChordLetterFormat.kt",
+      "30fe8422:android/app/src/main/java/com/acquiring/android/ChordVoicing.kt",
+      "30fe8422:android/app/src/test/java/com/acquiring/android/HistoricalCatalogParityTest.kt"
+    ]
   },
   {
     "sha": "9616afe01cdd106c4bd3bbae7d8279baf69f40b5",
@@ -703,11 +864,17 @@
     "sha": "734ab3f5d25519363139f58fd771527f60076359",
     "date": "2026-09-08",
     "subject": "Keep manually harvested songs across catalog updates",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Persist manually harvested songs in separate user ledger and restore/adopt them across full-catalog replacement.",
+    "finalDisposition": "User-added song overlay must survive every catalog update and sync separately.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "734ab3f5:android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt",
+      "734ab3f5:android/app/src/main/java/com/acquiring/android/HarvestLedger.kt",
+      "734ab3f5:android/app/src/main/java/com/acquiring/android/HarvestService.kt",
+      "734ab3f5:android/app/src/main/java/com/acquiring/android/HarvestedSong.kt"
+    ]
   },
   {
     "sha": "102bd4fd9d2a69e0f6b20546c6bcc98e0cb99360",
@@ -733,51 +900,80 @@
     "sha": "035f0288c080e8f065c45c8c8407b00f9d416654",
     "date": "2026-09-11",
     "subject": "Extract Android UI modules so later iOS-parity diffs stay reviewable.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refactor",
+    "featureDelta": "Extract Library, artist, detail, playback and Settings UI modules from MainActivity.",
+    "finalDisposition": "Use subsystem seams; no new observable feature by extraction alone.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "035f0288:android/app/src/main/java/com/acquiring/android/AppSettings.kt",
+      "035f0288:android/app/src/main/java/com/acquiring/android/ArtistSongsView.kt",
+      "035f0288:android/app/src/main/java/com/acquiring/android/LibraryView.kt",
+      "035f0288:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "03c4881c9054d760fd0a24edd0a512dd64ca250c",
     "date": "2026-09-11",
     "subject": "Open Settings as its own screen so later catalog and help rows have a home.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Make Settings a dedicated destination with section structure.",
+    "finalDisposition": "Use final Settings screen including later help/catalog/audio maintenance.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "03c4881c:android/app/src/main/java/com/acquiring/android/AppSettings.kt",
+      "03c4881c:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "03c4881c:android/app/src/test/java/com/acquiring/android/SettingsSectionsTest.kt"
+    ]
   },
   {
     "sha": "173d7334a273fc449dd2ae7448f940dbb71eee95",
     "date": "2026-09-11",
     "subject": "Open Quiz as its own destination so Back returns to the list that launched it.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Give Playback its own destination with launch-origin Back and Info detour.",
+    "finalDisposition": "Define route/continuity contract before connecting screens.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "173d7334:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt",
+      "173d7334:android/app/src/main/java/com/acquiring/android/ArtistSongsView.kt",
+      "173d7334:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "173d7334:android/app/src/main/java/com/acquiring/android/PracticeNavigation.kt"
+    ]
   },
   {
     "sha": "3b6fee652239a55d2f6191e4231d3e250628e301",
     "date": "2026-09-11",
     "subject": "Show readable catalog names so slugs like blink-182 stay intact while the-proclaimers become titles.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Canonicalize displayed song/artist names while preserving meaningful hyphens.",
+    "finalDisposition": "Share one normalization contract across search/browse/cards and recents.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "3b6fee65:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt",
+      "3b6fee65:android/app/src/main/java/com/acquiring/android/AllSongsView.kt",
+      "3b6fee65:android/app/src/main/java/com/acquiring/android/ArtistSongsView.kt",
+      "3b6fee65:android/app/src/main/java/com/acquiring/android/CatalogDisplayName.kt"
+    ]
   },
   {
     "sha": "562a66d27181845f744dbec6716dc32e707227ef",
     "date": "2026-09-11",
     "subject": "Focus Search Library so playlists and All Songs get out of the way while typing.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Hide Library playlists/All Songs during focused search and separate search scope.",
+    "finalDisposition": "Retain final focus behavior and keyboard dismissal; later inline suggestions supersede dropdown.",
+    "evidence": [
+      "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+      "562a66d2:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt",
+      "562a66d2:android/app/src/main/java/com/acquiring/android/LibrarySearch.kt",
+      "562a66d2:android/app/src/main/java/com/acquiring/android/LibraryView.kt",
+      "562a66d2:android/app/src/test/java/com/acquiring/android/LibrarySearchTest.kt"
+    ]
   },
   {
     "sha": "c1568dc53d0ba6ac1473e14fb08c2d8886c8aac9",
