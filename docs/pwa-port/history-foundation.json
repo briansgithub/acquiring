@@ -3,101 +3,264 @@
     "sha": "22217c64635b9b5a93507af3b19862350fdcf3db",
     "date": "2026-08-09",
     "subject": "Add interval singing flip-flop mode",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "superseded-import",
+    "featureDelta": "Adds a two-slot microphone tool with alternating three-second captures, permission handling, playback and relative interval display as a stray outer-repository path.",
+    "finalDisposition": "Removed immediately by 8e496fee; not an independent surviving feature. Real Android tool begins at aed98be9.",
+    "evidence": [
+      "22217c64635b9b5a93507af3b19862350fdcf3db:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "8e496feee385b26e49518ae6383e02bbd94d0eb5",
     "date": "2026-08-10",
     "subject": "Untrack stray file from nested android/ repo",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Deletes the exact stray HummingIntervalPopup file from the outer repository.",
+    "finalDisposition": "Repository-boundary correction; functional tool history is the nested Android lineage imported later.",
+    "evidence": [
+      "8e496feee385b26e49518ae6383e02bbd94d0eb5:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "099cadf943b30f3d6dd57604e6035354754de3a7",
     "date": "2026-07-28",
     "subject": "Initial commit for Android repository",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Creates only android/.gitignore and README; no executable application.",
+    "finalDisposition": "Historical repository scaffold only.",
+    "evidence": [
+      "099cadf943b30f3d6dd57604e6035354754de3a7:android/README.md",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ],
+    "changedPaths": [
+      "android/.gitignore",
+      "android/README.md"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "0b7abac8b8e60d325920c88ecbdcc1fd22f7de31",
     "date": "2026-07-28",
     "subject": "Fix Room coroutines support and upgrade to Kotlin 2.2.10 / AGP 9.3.1",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Introduces actual Compose app, Room song storage, Hooktheory URL harvest and extraction, slug verification/list view, and Gradle/coroutines setup.",
+    "finalDisposition": "Harvest/catalog domain survives; early inspection UI and native build stack are superseded by current Library.",
+    "evidence": [
+      "0b7abac8b8e60d325920c88ecbdcc1fd22f7de31:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HarvestService.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/implementation_plan.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/task.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/walkthrough.artifact.md",
+      "android/app/build.gradle",
+      "android/app/proguard-rules.pro",
+      "android/app/src/main/AndroidManifest.xml",
+      "android/app/src/main/java/com/sacredring/android/AppDatabase.kt",
+      "android/app/src/main/java/com/sacredring/android/DataExtractor.kt",
+      "android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/Scraper.kt",
+      "android/app/src/main/java/com/sacredring/android/Song.kt",
+      "android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "android/app/src/main/res/values/strings.xml",
+      "android/app/src/main/res/values/themes.xml",
+      "android/build.gradle",
+      "android/gradle.properties",
+      "android/gradle/gradle-daemon-jvm.properties",
+      "android/gradle/wrapper/gradle-wrapper.properties",
+      "android/settings.gradle"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "8ca545f4a4d32d57a2ae69e26b672933c936d9c2",
     "date": "2026-07-28",
     "subject": "Implement song search by title and real-time search suggestions",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Adds title search/live suggestions, manual slug lookup, compressed catalog installation/database reopening, and initial catalog tests.",
+    "finalDisposition": "Capabilities survive with current search index and staged validated catalog replacement; early installer is obsolete.",
+    "evidence": [
+      "8ca545f4a4d32d57a2ae69e26b672933c936d9c2:android/app/src/main/java/com/sacredring/android/DatabaseDownloader.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/implementation_plan.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/task.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/walkthrough.artifact.md",
+      "android/app/build.gradle",
+      "android/app/src/main/java/com/sacredring/android/DataExtractor.kt",
+      "android/app/src/main/java/com/sacredring/android/DatabaseDownloader.kt",
+      "android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "android/app/src/test/java/com/sacredring/android/ClosedLoopSongDatabaseTest.kt",
+      "android/app/src/test/java/com/sacredring/android/DatabaseDownloaderTest.kt",
+      "android/catalog.db.gz",
+      "android/gradle/wrapper/gradle-wrapper.jar",
+      "android/gradlew.bat"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "4795b73ecf721bdd2af2f20f4fa5019bf52a5435",
     "date": "2026-07-28",
     "subject": "Port advanced chord and roman numeral logic from web player",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Adds scale/chord interpretation, Roman/letter names, borrowed/applied/inversion voicing, synthesis, and song/section playback UI.",
+    "finalDisposition": "Foundational theory/playback survive; use baseline algorithms and shared fixtures.",
+    "evidence": [
+      "4795b73ecf721bdd2af2f20f4fa5019bf52a5435:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/implementation_plan.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/task.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/walkthrough.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/check_schema.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/export_cache_to_db.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/export_harvested_data.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/get_file_size.js",
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/MusicTheory.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "aa21090c1997fe787af474b6a7315ce6a4b0b24f",
     "date": "2026-07-28",
     "subject": "Implement Recent Songs and Dark Mode theme",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Adds dark theme and recent-song timestamps initially stored in catalog database.",
+    "finalDisposition": "Dark presentation survives; catalog-resident history replaced by 3fef49c6 external HistoryManager.",
+    "evidence": [
+      "aa21090c1997fe787af474b6a7315ce6a4b0b24f:android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HistoryManager.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/implementation_plan.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/task.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/walkthrough.artifact.md",
+      "android/app/src/main/java/com/sacredring/android/AppDatabase.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/Song.kt",
+      "android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "android/app/src/main/res/values/themes.xml"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "34a702ec077a23ba95ee5b050bc4cd9806275025",
     "date": "2026-07-28",
     "subject": "Clean up scratch scripts",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Removes four scratch database/export scripts from .artifacts; no runtime change.",
+    "finalDisposition": "Historical cleanup only.",
+    "evidence": [
+      "34a702ec077a23ba95ee5b050bc4cd9806275025:android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/check_schema.js",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/check_schema.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/export_cache_to_db.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/export_harvested_data.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/get_file_size.js"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "3fef49c68fdec8e9cfb96ee0db9ce54aecce3b56",
     "date": "2026-07-29",
     "subject": "Add 7-circle diatonic app icon assets and update search history integration",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-refinement",
+    "featureDelta": "Adds launcher art, external recent-slug preferences, gzip decoding, tolerant section metadata and cached opening/harvest fallback; removes catalog timestamp history.",
+    "finalDisposition": "External history/blob decoding survive; later artwork supersedes early icon.",
+    "evidence": [
+      "3fef49c68fdec8e9cfb96ee0db9ce54aecce3b56:android/app/src/main/java/com/sacredring/android/HistoryManager.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HistoryManager.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/implementation_plan.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/task.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/walkthrough.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/implementation_plan.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/task.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/walkthrough.artifact.md",
+      "android/.gitignore",
+      "android/app/src/main/AndroidManifest.xml",
+      "android/app/src/main/java/com/sacredring/android/AppDatabase.kt",
+      "android/app/src/main/java/com/sacredring/android/DataExtractor.kt",
+      "android/app/src/main/java/com/sacredring/android/DataUtils.kt",
+      "android/app/src/main/java/com/sacredring/android/DatabaseDownloader.kt",
+      "android/app/src/main/java/com/sacredring/android/HistoryManager.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/Song.kt",
+      "android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+      "android/app/src/test/java/com/sacredring/android/ClosedLoopSongDatabaseTest.kt",
+      "android/catalog.db.gz"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "3e7a1433fe34593585fa049312276509b02965ed",
     "date": "2026-07-29",
     "subject": "Update app icon with solid black background and spread 3D diatonic nodes",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Replaces ten launcher PNGs; binary artwork replacement with no runtime logic.",
+    "finalDisposition": "Later artwork supersedes this version; use baseline resources.",
+    "evidence": [
+      "3e7a1433fe34593585fa049312276509b02965ed:android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "5aa4fc87dd46265b85c108c23d3ced93893df6d6",
