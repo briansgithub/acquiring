@@ -266,101 +266,224 @@
     "sha": "5aa4fc87dd46265b85c108c23d3ced93893df6d6",
     "date": "2026-07-29",
     "subject": "Implement search history and associated tests",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-fix",
+    "featureDelta": "Adds block/arpeggiated chord previews, inversion rotation, suspension/alteration handling, unique chord inventory, permanent section chips and theory/audio regression tests; title underspecifies delta.",
+    "finalDisposition": "Current theory, inventory and previews survive with refined synthesis; section chips later become menus.",
+    "evidence": [
+      "5aa4fc87dd46265b85c108c23d3ced93893df6d6:android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/AudioEngine.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/MusicTheory.kt",
+      "android/app/src/main/res/drawable/ic_launcher_background.xml",
+      "android/app/src/main/res/drawable/ic_launcher_foreground.xml",
+      "android/app/src/main/res/drawable/ic_launcher_monochrome.xml",
+      "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+      "android/app/src/main/res/values/colors.xml",
+      "android/app/src/test/java/com/sacredring/android/AudioEngineTest.kt",
+      "android/app/src/test/java/com/sacredring/android/ChordInterpreterTest.kt",
+      "android/app/src/test/java/com/sacredring/android/ClosedLoopWebVsAndroidChordTest.kt",
+      "android/app/src/test/java/com/sacredring/android/EnharmonicLetterNameTest.kt",
+      "android/app/src/test/java/com/sacredring/android/InversionChordPlaybackTest.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "2f891ebe8e2c22f9318a6f0341421d03540b2e84",
     "date": "2026-07-29",
     "subject": "Fix song section labeling by using Hooktheory API for section names",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Fetches API section field and prefers readable section name over guessed scraper labels, capitalizing the display.",
+    "finalDisposition": "Refined by 0886615a which prioritizes real page tabs when IDs repeat; current SectionOrder/harvest rules prevail.",
+    "evidence": [
+      "2f891ebe8e2c22f9318a6f0341421d03540b2e84:android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HarvestService.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/Scraper.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "3989f388e0c80274415f64ae519028808dfc42b9",
     "date": "2026-07-30",
     "subject": "Enhance Quiz Tab: Dynamic key modulation, polyphonic audio engine, UI refinements, and ChordInterpreter parity fixes.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-fix",
+    "featureDelta": "Introduces Quiz playback screen, timeline, melody/chord lanes, waveform menu, dynamic per-beat keys, safe chord JSON parsing, and extensive melody/chord corpus regressions.",
+    "finalDisposition": "Survives as Playback screen and extracted engine. Current notation/theory rules include later fixes.",
+    "evidence": [
+      "3989f388e0c80274415f64ae519028808dfc42b9:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackView.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/main/java/com/sacredring/android/DataExtractor.kt",
+      "android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/MusicTheory.kt",
+      "android/app/src/test/java/com/sacredring/android/ChordInterpreterTest.kt",
+      "android/app/src/test/java/com/sacredring/android/CorpusParityTest.kt",
+      "android/app/src/test/java/com/sacredring/android/EnharmonicLetterNameTest.kt",
+      "android/app/src/test/java/com/sacredring/android/KeyChangePlaybackTest.kt",
+      "android/app/src/test/java/com/sacredring/android/MelodyAccuracyTest.kt",
+      "android/app/src/test/resources/corpus_parity.json"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "eb9e7fdf51d9f3ed7db74875ca540d615d94dc4b",
     "date": "2026-07-31",
     "subject": "Cancel playback of current notes when skipping back or resetting",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-fix",
+    "featureDelta": "Adds cancellation of sounding notes on seek/reset, global transposition, simple/root mode, direct Quiz opening, and a modulation/melody timeline device regression.",
+    "finalDisposition": "Cancellation and simple/full modes survive; present controls are later designs.",
+    "evidence": [
+      "eb9e7fdf51d9f3ed7db74875ca540d615d94dc4b:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackEngine.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/androidTest/java/com/sacredring/android/HardwareStoreTimelineTest.kt",
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "6125c7f249242b854b678014e16a3f750b6e87df",
     "date": "2026-07-31",
     "subject": "Add compact Android agent rules",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Adds agent instructions, bounded context and compact-check scripts, and ignored local tool artifacts.",
+    "finalDisposition": "Developer workflow only.",
+    "evidence": [
+      "6125c7f249242b854b678014e16a3f750b6e87df:android/AGENTS.md",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ],
+    "changedPaths": [
+      "android/.cursor/rules/agent-defaults.mdc",
+      "android/.gitignore",
+      "android/AGENTS.md",
+      "android/GEMINI.md",
+      "android/scripts/compact_check.py",
+      "android/scripts/context_probe.py"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "db11d8841a8aa547d7c0573d46e5888516c215f6",
     "date": "2026-07-31",
     "subject": "Remove tonic letter from Quiz key display",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Removes tonic-letter text from the early Quiz key display.",
+    "finalDisposition": "Historical header choice replaced by later relative-major and current header design; do not omit baseline tonic information.",
+    "evidence": [
+      "db11d8841a8aa547d7c0573d46e5888516c215f6:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackHeaderChrome.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "baa0c5820e5aa8918827bc5f415b3074b3a4dc38",
     "date": "2026-07-31",
     "subject": "Fix Android root-relative chord degree labels",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Identifies sounding chord root independently of inversion/applied denominator and prefers chord-relative b7 spelling for equal-distance chromatic tones.",
+    "finalDisposition": "Current theory invariant; preserve source sounding-root versus inversion-bass distinction.",
+    "evidence": [
+      "baa0c5820e5aa8918827bc5f415b3074b3a4dc38:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/MusicTheory.kt",
+      "android/app/src/test/java/com/sacredring/android/InversionChordPlaybackTest.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "c5416ebf4188f12c150254bd6ff50c03097e1856",
     "date": "2026-07-31",
     "subject": "Polish Android chord and scale-degree rendering",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-fix",
+    "featureDelta": "Introduces structured Roman numeral and scale-degree rendering, fitting/accidental handling tests, and legacy Hooktheory section/chord compatibility migration.",
+    "finalDisposition": "Current notation/compatibility behavior survives; port semantic display model and fixtures, adapting drawing to browser.",
+    "evidence": [
+      "c5416ebf4188f12c150254bd6ff50c03097e1856:android/app/src/main/java/com/sacredring/android/HooktheoryDataCompat.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HooktheoryDataCompat.kt"
+    ],
+    "changedPaths": [
+      "android/AGENTS.md",
+      "android/app/src/androidTest/java/com/sacredring/android/RomanNumeralRenderSmokeTest.kt",
+      "android/app/src/androidTest/java/com/sacredring/android/ScaleDegreeRenderSmokeTest.kt",
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryDataCompat.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/RomanNumeralLayout.kt",
+      "android/app/src/main/java/com/sacredring/android/RomanNumeralRenderer.kt",
+      "android/app/src/main/java/com/sacredring/android/ScaleDegreeRenderer.kt",
+      "android/app/src/test/java/com/sacredring/android/HooktheoryDataCompatTest.kt",
+      "android/app/src/test/java/com/sacredring/android/RomanNumeralPainterTest.kt",
+      "android/app/src/test/java/com/sacredring/android/RomanNumeralTokenizerTest.kt",
+      "android/app/src/test/java/com/sacredring/android/ScaleDegreeRendererTest.kt",
+      "android/app/src/test/resources/corpus_parity.json"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "69ceb431c7d8ab5001c8524d6966d36d1a492386",
     "date": "2026-07-31",
     "subject": "Make quiz tempo a percentage with reset",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Changes tempo from absolute BPM slider to percentage of section BPM with 100% reset and guards nonpositive playback tempo.",
+    "finalDisposition": "Percentage semantics survive; later tempo dial minimum and scheduling corrections apply.",
+    "evidence": [
+      "69ceb431c7d8ab5001c8524d6966d36d1a492386:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackDial.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "f45b6e55daada40721f3718d5104d4010ecc6e89",
     "date": "2026-07-31",
     "subject": "Match Hooktheory suspended extension voicings",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Omits only unaltered perfect fifth in extended suspended chords without explicit omission, preserving suspension/seventh/extensions and altered fifths.",
+    "finalDisposition": "Current voicing invariant backed by corpus data.",
+    "evidence": [
+      "f45b6e55daada40721f3718d5104d4010ecc6e89:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/test/resources/corpus_parity.json"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "0886615a0c3651dfe38781850632d6455dea76d9",
