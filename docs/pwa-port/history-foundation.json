@@ -1,0 +1,1082 @@
+[
+  {
+    "sha": "22217c64635b9b5a93507af3b19862350fdcf3db",
+    "date": "2026-08-09",
+    "subject": "Add interval singing flip-flop mode",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "8e496feee385b26e49518ae6383e02bbd94d0eb5",
+    "date": "2026-08-10",
+    "subject": "Untrack stray file from nested android/ repo",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "099cadf943b30f3d6dd57604e6035354754de3a7",
+    "date": "2026-07-28",
+    "subject": "Initial commit for Android repository",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "0b7abac8b8e60d325920c88ecbdcc1fd22f7de31",
+    "date": "2026-07-28",
+    "subject": "Fix Room coroutines support and upgrade to Kotlin 2.2.10 / AGP 9.3.1",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "8ca545f4a4d32d57a2ae69e26b672933c936d9c2",
+    "date": "2026-07-28",
+    "subject": "Implement song search by title and real-time search suggestions",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "4795b73ecf721bdd2af2f20f4fa5019bf52a5435",
+    "date": "2026-07-28",
+    "subject": "Port advanced chord and roman numeral logic from web player",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "aa21090c1997fe787af474b6a7315ce6a4b0b24f",
+    "date": "2026-07-28",
+    "subject": "Implement Recent Songs and Dark Mode theme",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "34a702ec077a23ba95ee5b050bc4cd9806275025",
+    "date": "2026-07-28",
+    "subject": "Clean up scratch scripts",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "3fef49c68fdec8e9cfb96ee0db9ce54aecce3b56",
+    "date": "2026-07-29",
+    "subject": "Add 7-circle diatonic app icon assets and update search history integration",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "3e7a1433fe34593585fa049312276509b02965ed",
+    "date": "2026-07-29",
+    "subject": "Update app icon with solid black background and spread 3D diatonic nodes",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "5aa4fc87dd46265b85c108c23d3ced93893df6d6",
+    "date": "2026-07-29",
+    "subject": "Implement search history and associated tests",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "2f891ebe8e2c22f9318a6f0341421d03540b2e84",
+    "date": "2026-07-29",
+    "subject": "Fix song section labeling by using Hooktheory API for section names",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "3989f388e0c80274415f64ae519028808dfc42b9",
+    "date": "2026-07-30",
+    "subject": "Enhance Quiz Tab: Dynamic key modulation, polyphonic audio engine, UI refinements, and ChordInterpreter parity fixes.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "eb9e7fdf51d9f3ed7db74875ca540d615d94dc4b",
+    "date": "2026-07-31",
+    "subject": "Cancel playback of current notes when skipping back or resetting",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "6125c7f249242b854b678014e16a3f750b6e87df",
+    "date": "2026-07-31",
+    "subject": "Add compact Android agent rules",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "db11d8841a8aa547d7c0573d46e5888516c215f6",
+    "date": "2026-07-31",
+    "subject": "Remove tonic letter from Quiz key display",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "baa0c5820e5aa8918827bc5f415b3074b3a4dc38",
+    "date": "2026-07-31",
+    "subject": "Fix Android root-relative chord degree labels",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "c5416ebf4188f12c150254bd6ff50c03097e1856",
+    "date": "2026-07-31",
+    "subject": "Polish Android chord and scale-degree rendering",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "69ceb431c7d8ab5001c8524d6966d36d1a492386",
+    "date": "2026-07-31",
+    "subject": "Make quiz tempo a percentage with reset",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "f45b6e55daada40721f3718d5104d4010ecc6e89",
+    "date": "2026-07-31",
+    "subject": "Match Hooktheory suspended extension voicings",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "0886615a0c3651dfe38781850632d6455dea76d9",
+    "date": "2026-07-31",
+    "subject": "Fix quiz playback controls and looping",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9d93d9d04f7e2c3d51a6c9f2bb1f8748d9f1dae7",
+    "date": "2026-07-31",
+    "subject": "Fix hierarchical back navigation",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "0df35199505a466786b5d01fe2b41aa0088487b3",
+    "date": "2026-08-01",
+    "subject": "feat: Add Hooktheory URL button to Quiz page",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "ad09e35e8a1a46838e5031f41b56c127da5c4461",
+    "date": "2026-08-01",
+    "subject": "feat: Add audiation aural-practice and pitch calibration",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "a32a3218e067a2339c351f3c44ee7db7c8cab386",
+    "date": "2026-08-01",
+    "subject": "feat: Implement custom borrowed scales and web-parity applied chord voicing",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "a0511d290ccc73ac169f6f9f65bdf21a203170cd",
+    "date": "2026-08-01",
+    "subject": "feat: add artist search, refine UI layout, and set sawtooth as default sound",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "e2e3f28feb71b24a2694f7fdec1fb066816c7669",
+    "date": "2026-08-01",
+    "subject": "refactor: optimize QuizTab layout and refine puck positioning to prevent UI overlaps",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "74e67801add7b2a7ae153716f3fb1aa60b5f1044",
+    "date": "2026-08-01",
+    "subject": "refactor: reorganize search UI and remove suggestion limits",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "e1e0c8acbd47d975e1e32507c219570f78912664",
+    "date": "2026-08-01",
+    "subject": "feat: transform audiation puck into a magnifying glass and reorganize song search layout",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "c551d100c5eac460ebaf44e894e6527856e26f69",
+    "date": "2026-08-01",
+    "subject": "fix: improve playback looping by robustly estimating endBeat and fixing boundary timing",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9c95f8453dd72f6fb8bbaeda1faf3b527c791b21",
+    "date": "2026-08-01",
+    "subject": "feat: adjust default volume balance to 55% and update label",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "a87967aa0f76e76ec3b6f376f62e820598cb03d4",
+    "date": "2026-08-01",
+    "subject": "Add unique page for each artist when searching by artist",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "63e36f996f2e7c9b9cc8fa291f8cf8be236c042f",
+    "date": "2026-08-01",
+    "subject": "Improve artist normalization and quiz navigation",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "16ebc2f374a54fd579ad5b576fb9421a01c39f3c",
+    "date": "2026-08-01",
+    "subject": "Refresh recent selections after navigation",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "17729cb1abc76b50f7a7fbc67ac6d86ba1cf4548",
+    "date": "2026-08-01",
+    "subject": "Fix quiz audiation and chord previews",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "d7e09c34caa9af9cb50938fe9fcdd174a384545b",
+    "date": "2026-08-01",
+    "subject": "Improve quiz UI and artist history",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "1e22a1322db5c395f3d5336197a7bc956dd0b669",
+    "date": "2026-08-01",
+    "subject": "Make quiz playback controls update in real time",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "82c1c3abffcfaba87126e10e8d5dd8b501a01356",
+    "date": "2026-08-01",
+    "subject": "Fix seamless song loop playback",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "e314c873c9414791dcc96fc069f65dd0da9e1918",
+    "date": "2026-08-01",
+    "subject": "feat: add spelling-aware interval analysis",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "eb402d750ff0cec9f703f2114618feb552397eaa",
+    "date": "2026-08-01",
+    "subject": "feat: integrate interval playback into quiz UI",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "11f691b985543259187be1919848af283da3b790",
+    "date": "2026-08-01",
+    "subject": "feat(quiz): add relative Ionian label context",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "6e9805a830bde9d8506eb550813d134b2a6e32aa",
+    "date": "2026-08-01",
+    "subject": "fix(quiz): keep Ionian context fixed across modulations",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "205b8eda165b3179907657a34c30dbd45000b73e",
+    "date": "2026-08-02",
+    "subject": "Audiation: color-coded pitch deviation and root interval consistency",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "aed98be9d7d275b19cea8d1d3400a3ed6de00660",
+    "date": "2026-08-03",
+    "subject": "Implement persistent Humming Interval Tool with rolling pitch indicator and relative interval spelling",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "54279cd49ebc09369df2adaaa3089e43183ced0c",
+    "date": "2026-08-03",
+    "subject": "Restore complex UI chord objects, unify scrub bar position, and remove skip button",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "d4d085a2e1f0a1f1f89090f8c80b5837c5f12c42",
+    "date": "2026-08-03",
+    "subject": "Refine quiz playback controls",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "35c432778689a2c6b56ae1103dd61da65b9ebfbd",
+    "date": "2026-08-03",
+    "subject": "Polish Android quiz controls",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "d326e53853252768573dca923dc1b315dacf72e7",
+    "date": "2026-08-03",
+    "subject": "Fix interval direction and coordinate mismatch",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "22e867c5cc2c599a26a2e8e658b00eb9d088170b",
+    "date": "2026-08-03",
+    "subject": "Set default Chord / Melody volume balance to 0.5",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "c2f3fcefc2fa60462bf10e211730fc0a6c027168",
+    "date": "2026-08-03",
+    "subject": "Add inertia to melody playback timeline scrubbing",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "e747968a1210e155f4d0e829fe0c0ae213626d77",
+    "date": "2026-08-03",
+    "subject": "Refactor Quiz UI: rearrange controls, align sliders, and adjust scrub bar positioning. Note: Added Spacer(68.dp) hack to vertically align scrub bars across modes.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9bb52ca0099e3d35c338f5eb436fd44942369fce",
+    "date": "2026-08-03",
+    "subject": "Refactor Database Search UI, implement search suggestion paging, and fix audiation pitch target tracking on transposition change",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "199b406112e2eef32269fe6530e1edb9bf286f71",
+    "date": "2026-08-03",
+    "subject": "Add single tap to play back nearest hummed pitch. Double tap to re-record.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9aa9fe6e7d9f6e3481b6145e78bdd9014efb9e40",
+    "date": "2026-08-03",
+    "subject": "Fix the double tap behavior of the Humming Interval Tool",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "4aff98b9245fd164566d5e157cb2010aeaaaca2b",
+    "date": "2026-08-09",
+    "subject": "Add performance-safe All Songs browser",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "f06a12353b66f7b2991f263210b8524faa6d0c95",
+    "date": "2026-08-10",
+    "subject": "Fix Lock in Major chord-tone spelling and applied+borrowed secondary dominants",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "e2a0086ef3141bf2242a0d383dac0ba289311204",
+    "date": "2026-08-10",
+    "subject": "Play exact recorded frequency on pitch-slot tap in Interval Singing Tool",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "3f35259d2da0549b40894c07af425716d2f49ed7",
+    "date": "2026-08-10",
+    "subject": "Quicken quiz timeline inertia and fix drag/tap edge cases",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "248d5bc44ae03b963cac340258bccf559af8abe9",
+    "date": "2026-08-10",
+    "subject": "Redesign Info tab with grouped sections and chord progression view",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "c9207437bc2a4e1355fb3aed65f6c49ca01f4157",
+    "date": "2026-08-10",
+    "subject": "Prevent search field from auto-focusing and showing keyboard on launch",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "a18fad1aec4b6ec63cbd02eedffa568fd74e9518",
+    "date": "2026-08-11",
+    "subject": "Add double-tap interval singing; fix search/download filtering and catalog validation",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "eb232242d845c57d693eac7f9f53cd972468bbd0",
+    "date": "2026-08-11",
+    "subject": "Show relative-major tonic in quiz header when Lock in Major is checked",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "7bb6e4ed434656e888895b5413557990b62716f1",
+    "date": "2026-08-11",
+    "subject": "Add tessitura octave-shift display, negative transpose range, melody interval note buttons",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "893193de261d7ac405ab103266309b4a839fe4c7",
+    "date": "2026-08-11",
+    "subject": "Fix systematic flat bias in YIN pitch detection",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "838b161bc22673a9d3327379fb84a4b9da47d58c",
+    "date": "2026-08-11",
+    "subject": "refactor(android): model tessitura singing targets",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "73f1259aca06a97c56148475021d1a5c6487aae1",
+    "date": "2026-08-11",
+    "subject": "fix(android): isolate singing targets from source playback",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "4bb64d1fe606a80deeda467fe3fac61b32e5fbba",
+    "date": "2026-08-11",
+    "subject": "fix(android): centralize tessitura calibration lifecycle",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "1ef5c8de017319401ceb345dd49c1ba9221ffa75",
+    "date": "2026-08-11",
+    "subject": "fix(android): polish tessitura target feedback",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "cc7da0c2dabc575dda416e4eaaf4268f5bead251",
+    "date": "2026-08-11",
+    "subject": "fix(android): harden tessitura integration",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "502c852be7a3ca540cd683e72abd4cf5ee6e40ff",
+    "date": "2026-08-11",
+    "subject": "feat(quiz): refine melody pitch cards and playback",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "f12a29dae4c1c23da0a25384a215c60b6b8bd7de",
+    "date": "2026-08-11",
+    "subject": "Merge branch 'fix/pitch-detection-accuracy'",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "acbbab771801ba2df906b7439e5fa8024c26fd64",
+    "date": "2026-08-11",
+    "subject": "Rename tessitura button, add octave stepper, restyle clear control",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "fe908433488d8381cb4cfa4b1fd1474853369b6f",
+    "date": "2026-08-11",
+    "subject": "Repair the tessitura button",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "ee96eccf5e6e3f954e66c0b2a539ab498e77714e",
+    "date": "2026-08-11",
+    "subject": "feat(quiz): add melody pitch singing targets",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "ca27084b96a0ee4037ef50fda3a4a786f20a7d33",
+    "date": "2026-08-13",
+    "subject": "Keep chord degree labels relative to chord root",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "febfadae715e5f371073e8a3c911a91d3bcb86fc",
+    "date": "2026-08-13",
+    "subject": "Fix Quiz playback and add draggable transport",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9973e748fbecaf09db02575ff2f2339d4c7d7fc0",
+    "date": "2026-08-14",
+    "subject": "Add persistent quiz pitch practice",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "2c7b8ae019b6eab8dab59b2074bcf0231f554721",
+    "date": "2026-08-14",
+    "subject": "Add live per-note scoring to melody pitch practice; fix playback and octave-lock bugs from the audit",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "bc142c082e1782def9f7bf7da608ddf6f61b2829",
+    "date": "2026-08-15",
+    "subject": "Extract tessitura calibration UI and add melody run pitch scoring",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "8cce75cb357f043a4c94326d2953950618581cda",
+    "date": "2026-08-15",
+    "subject": "Rename the Android app from Sacred Ring to Inquiring",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9765f12976e274f03cca36d68966a6a82ca7cb73",
+    "date": "2026-08-15",
+    "subject": "Merge branch 'rename-to-inquiring'",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "d1187a54c9e5fb7af4fb0c765d4ef9f388ae61e7",
+    "date": "2026-08-15",
+    "subject": "Simplify quiz navigation and move header controls to the song title/key rows",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "0ba05d74fd73229a24545eebce14361819be8ad8",
+    "date": "2026-08-16",
+    "subject": "Adjust app icon: intermediate circle size and tighter grouping",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "f96290d1e8e5bb3345da2d2cdb0c9fa0393227ff",
+    "date": "2026-08-16",
+    "subject": "\\Refine app icon: remove facet triangles, enlarge glint crescents, and mirror shadows horizontally\"",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "a78e096d03a779f5d195901154f6c3cc99e36f6e",
+    "date": "2026-08-17",
+    "subject": "UX Polish and Quiz Alignment: Add 'Search Hooktheory' option, improve Transpose/Volume controls, and stabilize transport state.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "1ed55f1c8a2c2e62b910dfdb09783fb501a94c8d",
+    "date": "2026-08-17",
+    "subject": "Archive pitch recording audit from 2026-08-13.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "0ba05f49340d64e58f1e63d00cf5a94f8abfa1f1",
+    "date": "2026-08-17",
+    "subject": "Update EXPECTED_BROWSE_SONGS to 40,609 to match new catalog database release.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "86fd395917446b7b7df3200162ea2302fdfbfa29",
+    "date": "2026-08-19",
+    "subject": "Redesign quiz controls and pitch practice",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "fad3afed736eddeba5b044036a86fe5325682341",
+    "date": "2026-08-20",
+    "subject": "Revise arpeggio knob rate options",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "6690689a983506d63190e81df01cc0a07de66698",
+    "date": "2026-08-20",
+    "subject": "Report the pitch actually being sung, not one inferred from the last note",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "8e96d75cc59ee95aa33089396302152537c0a073",
+    "date": "2026-08-20",
+    "subject": "Make tessitura and tempo behave as the settings they claim to be",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "b542d4ce2285dbec357f6eb887aff6dce1d51971",
+    "date": "2026-08-20",
+    "subject": "Reset arpeggio dial to default on tap; fix stale IDE project naming after 'Acquiring' rename",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "007a8eb4310403a65cb2f5347d380650c0da2db1",
+    "date": "2026-08-20",
+    "subject": "Rename the Android app from Inquiring to Acquiring",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "2f7325b84ea0389d966d03a55fe48ae44bf81b90",
+    "date": "2026-08-20",
+    "subject": "Complete Codex replay integration",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "6eee40551b4e653337de15a64a9cd3a0293051bb",
+    "date": "2026-08-20",
+    "subject": "Align arpeggio test with four-cycle maximum",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "655c0681a88fe9d29e35bdb853f713ec0678530f",
+    "date": "2026-08-20",
+    "subject": "Update Tessitura and Transpose buttons UI to match gemini branch (commit 18ce039)",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "66e7f37c3fb3ef512bb427974f0f228f21b657b9",
+    "date": "2026-08-20",
+    "subject": "Anchor tessitura to the hummed pitch instead of a fixed octave",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "60e853e300f581d67cd738dbbe5de12738c93f92",
+    "date": "2026-08-21",
+    "subject": "Stop Quiz card previews from clicking",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9d149952308cd33426d5b9d984eb91aa6f0fce00",
+    "date": "2026-08-21",
+    "subject": "Play song sections as media, with a transport notification",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "ad54dd6e4c7b51516f28023d44811755f189006a",
+    "date": "2026-08-21",
+    "subject": "Name the section in the notification, not its id",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "3c29496efaeb52aa0dbd2ede73f2343983f18bd5",
+    "date": "2026-08-21",
+    "subject": "End the balance fader level with the cards it belongs to",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "7b32d773ebcabfe8fcdffa333ed68daf4fc84ce6",
+    "date": "2026-08-21",
+    "subject": "Sound card previews off the main thread",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "d9eeaa304e3852ad8897705e466a2866a3a066b5",
+    "date": "2026-08-21",
+    "subject": "Play every track on one audio session",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "1d99bc92040805e409ec6df0a2a476653ac723e3",
+    "date": "2026-08-21",
+    "subject": "Synthesise at the device's own output rate",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "6961da5e5afa36fb248f72040994374c2d78f0c0",
+    "date": "2026-08-21",
+    "subject": "Publish the media session on events, not on a timer",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "6782647188c78dfcadb52c6981ab74af8f4a64bc",
+    "date": "2026-08-22",
+    "subject": "Collapse the singing tool when the app is backgrounded",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9ab27ceeeadde93347d97096a9060656b75cdf98",
+    "date": "2026-08-22",
+    "subject": "Keep favourite songs in playlists the catalog swap cannot reach",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "eada9b7d1fef83ed6763af0d9026b7a75ea7a54a",
+    "date": "2026-08-22",
+    "subject": "Draw the unfavourited star hollow, not merely grey",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  }
+]

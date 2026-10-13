@@ -1,0 +1,1032 @@
+[
+  {
+    "sha": "97bb4af544a82fb453ab6ca7de5b46a4413579ea",
+    "date": "2026-08-31",
+    "subject": "Import Acquiring Android history under android/",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "34c7bd145fb9bf40cf3a18100b8319d4ba7b2ae2",
+    "date": "2026-08-31",
+    "subject": "Finish Android monorepo integration",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "20ec5c7eafda091e6c7fdd59b3f383c9c446c3f3",
+    "date": "2026-08-31",
+    "subject": "Reorganize and rebrand the Acquiring monorepo",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "d7005e7cbc9062311588deeb19b1b1c689a120a4",
+    "date": "2026-08-31",
+    "subject": "Add shared parity and catalog contracts",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "3662d171283720b912608be285d4f3943a652890",
+    "date": "2026-08-31",
+    "subject": "Make Android Gradle wrapper executable",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "357bd08c7c1a26953fcd95e34ac16ce37f653f64",
+    "date": "2026-08-31",
+    "subject": "Keep Android DAO fixture within cursor limits",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "1efc2ae9f58a4ed773f421e39c99932cc477adfa",
+    "date": "2026-08-31",
+    "subject": "Merge pull request #33 from briansgithub/codex/acquiring-monorepo",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "6636db1c5bb91cf48b333e664672f3f3b597d78e",
+    "date": "2026-08-31",
+    "subject": "chore: simplify monorepo root layout",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "65daa3bb6c18a4c5a2117338c37cd66530af8215",
+    "date": "2026-08-31",
+    "subject": "Merge pull request #34 from briansgithub/codex/root-cleanup",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9c0ef82526d3e6aff9aec44ffe7e485cd68315ae",
+    "date": "2026-09-01",
+    "subject": "build(android): target API 36",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "b40273eec6e07130119030edf707a45fa09a98fa",
+    "date": "2026-09-01",
+    "subject": "Merge pull request #35 from briansgithub/codex/android-api36",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "5b2926765749c7173ee87f6b356db5cea86b0870",
+    "date": "2026-09-01",
+    "subject": "chore(android): target SDK 36 and migrate to edge-to-edge",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "48b1b08961bee63d0096b545cc97cb1040f8f4fd",
+    "date": "2026-09-01",
+    "subject": "Merge pull request #38 from briansgithub/chore/android-target-sdk-36",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "ac699387530fe016accbed6f1f8ad227a1d111d1",
+    "date": "2026-09-01",
+    "subject": "Merge pull request #40 from briansgithub/codex/ios-catalog-ui",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "fe5d92af8c5a04e657d5fa94c8cd4f5f4508f9f6",
+    "date": "2026-09-02",
+    "subject": "Restore accepted Android launcher icon lighting",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "e8a8c6cc309f7b3608bc5e4e611fa2c0545d7757",
+    "date": "2026-09-02",
+    "subject": "Prepare Android beta version 3 and release signing",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "c3cd59e21260c5991c0abe68a6e8145391b28c71",
+    "date": "2026-09-02",
+    "subject": "Add Android privacy policy access for tester release 4",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "87b76b2dae24351ade985dfd1af8cd0e9e5d4780",
+    "date": "2026-09-02",
+    "subject": "Add guarded manual Android beta release pipeline",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "daee55ddf8923002718fb7032ace37cefd1c63c9",
+    "date": "2026-09-02",
+    "subject": "Bootstrap safe track discovery through beta workflow identity",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "58f1b6951e5fef9c1fe15474b6ae4623db471b88",
+    "date": "2026-09-02",
+    "subject": "Clarify secure signing prompts and accept selected keystore path",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "41dde40b381b1b2aa48614eefaf8701aca6bb120",
+    "date": "2026-09-02",
+    "subject": "Merge pull request #41 from briansgithub/codex/android-beta-pipeline",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "f410e77d59d33ba8b5f7196c301f4aeb29eac13a",
+    "date": "2026-09-02",
+    "subject": "Pin API-verified Acquiring internal and Alpha tracks",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "59387866deed497c84b03634a4a0935fd0c1b602",
+    "date": "2026-09-02",
+    "subject": "Merge pull request #42 from briansgithub/codex/android-beta-pipeline",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "eb15490cc407719927476ad3636e91b33413757f",
+    "date": "2026-09-02",
+    "subject": "Record successful Android beta signing and upload validation",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "4202d588dfc2b671226c1d11813f8bd5ef265255",
+    "date": "2026-09-02",
+    "subject": "Merge pull request #43 from briansgithub/codex/android-beta-pipeline",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "e5a75f54c4444179a8ca800669cde22b85b8a20c",
+    "date": "2026-09-02",
+    "subject": "Fix zero-size pitch hint crash in Android release 5",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "c36fff74d585992c6e346665c619208029090858",
+    "date": "2026-09-02",
+    "subject": "Fix Android partial artist search and verify song quiz navigation",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "850f236a7cfd9f0bf170033575e4c567a6adafb2",
+    "date": "2026-09-02",
+    "subject": "Merge pull request #44 from briansgithub/codex/release-pitch-hint-crash-v5",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "38d4dbfeff38d912c421789143a8031675b952d0",
+    "date": "2026-09-02",
+    "subject": "Merge remote-tracking branch 'origin/main' into codex/testflight-icon-build-3",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9039694214d4f0e17e508c1638098d0abf8c2ab6",
+    "date": "2026-09-04",
+    "subject": "feat(ios): advance quiz transport and live tempo parity",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "0f6fb28301188034302f49005bae2f79f3861f92",
+    "date": "2026-09-04",
+    "subject": "feat: advance iOS quiz sound controls and settings",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "b543f2bee9ceb94e24aa92928646bdb23f7f4526",
+    "date": "2026-09-05",
+    "subject": "Merge branch 'claude/ui-reset'",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "2f79ed260c5e6844a910aff539030491617cde1d",
+    "date": "2026-09-05",
+    "subject": "Refresh Android instruments and default to Synth Clarinet",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "7d901a8d5a6f296ae9103aa7a5d9674994871917",
+    "date": "2026-09-05",
+    "subject": "Merge branch 'codex/instrument-refresh-ios' into codex/instrument-refresh",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "2ed8e342a763a3b1733f5a545b8826efc99a49d7",
+    "date": "2026-09-05",
+    "subject": "Merge completed Android instrument refresh",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "2b2fad44aa08814c15215e0c7e445600f6ac5fc5",
+    "date": "2026-09-05",
+    "subject": "Merge validated keyboard dismissal and persistent Recents",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "ffb81ed48775777d5c2c5d66ff6ae0100a2b543b",
+    "date": "2026-09-05",
+    "subject": "Preserve normalized and grouped instruments for Quiz revision",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "c554b5c54bff012e64fe56f20695dd315a6d5801",
+    "date": "2026-09-05",
+    "subject": "Integrate current onboarding and instrument catalog changes",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "91cce16c478e46f6c1e6ee32cfa0b81432e4688e",
+    "date": "2026-09-05",
+    "subject": "Merge iOS keyboard dismissal and persistent Recents",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "91b75704d27acb8a0079774a4e5cc49ebaa96816",
+    "date": "2026-09-05",
+    "subject": "Merge commit '91cce16c' into codex/quiz-controls",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "f89a775cd3b8e14a6998e20a974cbbdd50792544",
+    "date": "2026-09-05",
+    "subject": "Implement Android quiz transport controls and lifecycle",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "a3e68654f39ba62ab34277400071e9b9eb191551",
+    "date": "2026-09-05",
+    "subject": "Merge commit 'c554b5c5' into codex/quiz-controls-android",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "41561414202eebb7fcbc5884226b8d39ff5e2891",
+    "date": "2026-09-05",
+    "subject": "Merge commit 'a3e68654' into codex/quiz-controls",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "543e290ffae163d741af44d88345325506918c33",
+    "date": "2026-09-05",
+    "subject": "Merge branch 'codex/quiz-controls-ios' into codex/quiz-controls",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "2c16f571b99cb0b86f732dc796cb36331a8bed62",
+    "date": "2026-09-05",
+    "subject": "Serialize quiz owner and audio focus transitions",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "d9389981e88e2545c2d8f8d870fde5adfebe50c3",
+    "date": "2026-09-05",
+    "subject": "Merge branch 'codex/quiz-controls-android' into codex/quiz-controls",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "79c14a71b753ba4042de369626eaa6608db1e678",
+    "date": "2026-09-05",
+    "subject": "Merge branch 'codex/quiz-controls-ios' into codex/quiz-controls",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "a767092631c15c7b82e895710bcd6f8412ae496b",
+    "date": "2026-09-05",
+    "subject": "Merge branch 'codex/quiz-controls-ios' into codex/quiz-controls",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "e5db6d9bad78edabf6268f6f16e11a9388c7b49c",
+    "date": "2026-09-05",
+    "subject": "Merge branch 'codex/quiz-controls-ios' into codex/quiz-controls",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "af6774c71b9c8a7d263e236914687c69cd7534fb",
+    "date": "2026-09-05",
+    "subject": "Merge verified Quiz controls and illustrated onboarding with global singing dock",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "4b17548e2c636863036ba91294ae1e2a22440acb",
+    "date": "2026-09-05",
+    "subject": "Record original welcome ancestry already incorporated by Quiz onboarding",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "a138937322c71b06bf88d3e33af255c9fffcc35d",
+    "date": "2026-09-05",
+    "subject": "Show catalog complexity scores in Android and iOS song details",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "818ef2451b36f2532e7f7735b5559c545f899c4d",
+    "date": "2026-09-05",
+    "subject": "Merge intro card updates",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "91a68b20c7ae6862d27d9ce03901a34d890847cf",
+    "date": "2026-09-05",
+    "subject": "Integrate completed Quiz navigation and compact recent searches",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "676f536fbdf162a355907d4aa4df538c3682df07",
+    "date": "2026-09-02",
+    "subject": "Fix zero-size pitch hint crash in Android release 5",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "73c26b4bb20f381f9385cc6b98eb16536cb87638",
+    "date": "2026-09-02",
+    "subject": "Fix Android partial artist search and verify song quiz navigation",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "36768156b08d80d80b799e95872b85047a2f75e8",
+    "date": "2026-09-06",
+    "subject": "Merge branch 'codex/fix-android-song-search' into main",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "a4220d0658a6d848514dcb23a1dee47e25af1916",
+    "date": "2026-09-06",
+    "subject": "Merge branch 'worktree-audio-engine-playback-fix'",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "ef887fbb8e4899ff1036c22587aadcf20c1fb1aa",
+    "date": "2026-09-07",
+    "subject": "Merge the two plucked instruments into Strings and sort the menus",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "167e93dee640b34f886e90d33ced8d3e4fd8af09",
+    "date": "2026-09-07",
+    "subject": "Release to TestFlight without a human at the keyboard for each step",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "57eed0068b536f85381337fb01b2844ea3c86547",
+    "date": "2026-09-07",
+    "subject": "Merge branch 'claude/audio-retry-diagnostics-fix'",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "c4e7aee334f8698d9011b95596e510304bd6a9f6",
+    "date": "2026-09-07",
+    "subject": "Read a borrowed chord's seventh from the borrowed scale, not the song key",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "8711640ab8ef90e6234eae300e133fe8a2b06af3",
+    "date": "2026-09-07",
+    "subject": "Merge branch 'claude/chord-decode-parity'",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "532cdabafd21b31e75c8a740365bf3dbe1b4cce2",
+    "date": "2026-09-07",
+    "subject": "Merge branch 'worktree-interval-tool-audio-error'",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "3d1e68c0ac0c6c3d244a303b127068e9b92b5dec",
+    "date": "2026-09-08",
+    "subject": "Align chord interpretation with verified source evidence across platforms",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "328c1106b2de664249a1bb72db88ead0c4d821aa",
+    "date": "2026-09-08",
+    "subject": "Use resolved chord targets in speech and retire legacy parity budgets",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "30fe84224aef3a62bb088bfcf78cd3f9ce57bde6",
+    "date": "2026-09-08",
+    "subject": "Preserve historical chord accuracy across all three interpreters",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "9616afe01cdd106c4bd3bbae7d8279baf69f40b5",
+    "date": "2026-09-08",
+    "subject": "Merge remote-tracking branch 'origin/main' into codex/chord-interpretation-parity",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "48bce084100dafde7fe6afe4af9164b75dc481b0",
+    "date": "2026-09-08",
+    "subject": "Merge pull request #45 from briansgithub/codex/chord-interpretation-parity",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "b5a9fe46b4f7df164fc373e9c338c344cb7cf76e",
+    "date": "2026-09-08",
+    "subject": "Merge compact quiz help bubbles into main",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "734ab3f5d25519363139f58fd771527f60076359",
+    "date": "2026-09-08",
+    "subject": "Keep manually harvested songs across catalog updates",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "102bd4fd9d2a69e0f6b20546c6bcc98e0cb99360",
+    "date": "2026-09-08",
+    "subject": "Merge harvest ledger: keep manual harvests across catalog updates",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "271b8303256c08461cc7a15aeb118184513358cd",
+    "date": "2026-09-08",
+    "subject": "Merge latest quiz help leader refinements",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "035f0288c080e8f065c45c8c8407b00f9d416654",
+    "date": "2026-09-11",
+    "subject": "Extract Android UI modules so later iOS-parity diffs stay reviewable.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "03c4881c9054d760fd0a24edd0a512dd64ca250c",
+    "date": "2026-09-11",
+    "subject": "Open Settings as its own screen so later catalog and help rows have a home.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "173d7334a273fc449dd2ae7448f940dbb71eee95",
+    "date": "2026-09-11",
+    "subject": "Open Quiz as its own destination so Back returns to the list that launched it.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "3b6fee652239a55d2f6191e4231d3e250628e301",
+    "date": "2026-09-11",
+    "subject": "Show readable catalog names so slugs like blink-182 stay intact while the-proclaimers become titles.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "562a66d27181845f744dbec6716dc32e707227ef",
+    "date": "2026-09-11",
+    "subject": "Focus Search Library so playlists and All Songs get out of the way while typing.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "c1568dc53d0ba6ac1473e14fb08c2d8886c8aac9",
+    "date": "2026-09-11",
+    "subject": "Install an empty catalog automatically and surface replace/update in Settings.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "1c5dd01d1e4cab7ce58199b6ff75d4915c43c240",
+    "date": "2026-09-11",
+    "subject": "Report Play update availability in Settings without crashing on sideloaded builds.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "4b2da5306e2f63ecbd68512211ef7aeba66cd1a0",
+    "date": "2026-09-11",
+    "subject": "Split large All Songs groups with a prefix scrubber and show complexity scores on those rows.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "d3ca9e2f0dc15676a52bbf8852a611c6a6d8eb3f",
+    "date": "2026-09-11",
+    "subject": "Confirm a successful favorite with a brief non-interactive Favorited notice.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "a0bf1ba6923c06ebdd0b399c6fcdb13e86693571",
+    "date": "2026-09-11",
+    "subject": "Show a one-shot Introduction so first launch explains gestures before the library.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "cb2c77d375824b1ebb6a092033a688edc2302605",
+    "date": "2026-09-11",
+    "subject": "Add offline Settings Help so notation and octave guidance stay available without a network.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "13e0b65c5c67ba5afcaeabfd361ec92d7823f95e",
+    "date": "2026-09-11",
+    "subject": "Lock phones to portrait so one-handed practice stays upright while tablets can rotate.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "34f034056fda54f7703477d538335f40ef7e9ed7",
+    "date": "2026-09-11",
+    "subject": "Add Synth Flute so the Android instrument menu matches iOS partials and gain.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "4299184ab9bb65bbc8cfe68346f0791c8a176a0b",
+    "date": "2026-09-11",
+    "subject": "Cap Quiz timeline redraws at 60 fps or the display maximum without touching the audio clock.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "91623c45bd9698c9af62a49c33653b93427ceace",
+    "date": "2026-09-11",
+    "subject": "Export allow-listed audio diagnostics and reset the engine from Settings without sharing song IDs.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "4e1c91b8d0c4c9dcb30086a8b9750cd13795c4c4",
+    "date": "2026-09-11",
+    "subject": "Replace hum-calibration with a singing-dock octave shifter so targets move without changing playback.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "1c6745262f69aaf7996d7e246c8c0834d77c8002",
+    "date": "2026-09-11",
+    "subject": "Put Play, beat-step, Reset, and section on one row so transport no longer floats over the singing dock.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "cb5c3e044bc40d885c2ae5fd821511b60812345c",
+    "date": "2026-09-11",
+    "subject": "Show Root Only as a narrow previous card beside equal featured current and interval cards.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "fa98b517df02d9c064494755e5f4919a7e53224b",
+    "date": "2026-09-11",
+    "subject": "Center the quiz key with Lock as a prefix and wash timeline lanes in the source-mode color.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "0b32f61e9ca4ffffda8ecf26e62edc7088dbcdc9",
+    "date": "2026-09-11",
+    "subject": "Open transpose from -12 to +12 centered on 0 so tapping zero restores the written key.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "ead367e3ee55e997bba70a95d7f204346fe1f6bb",
+    "date": "2026-09-11",
+    "subject": "Show interval direction shorthand and a live cents gauge on the practiced card.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "877bb982e61d93e244297a43a631cc768ab18c5b",
+    "date": "2026-09-11",
+    "subject": "Let the quiz title expand into a selectable sheet and add a dismissible help overlay.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "69096194f907ca7d758de8fde811a25bfb909d61",
+    "date": "2026-09-11",
+    "subject": "Preview Chords inventory as block chords with tone cards and ranked transitions instead of an arpeggio slider.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "45e7012ed33d18cded02093780152494461009bd",
+    "date": "2026-09-11",
+    "subject": "Replace tessitura with a singer-set octave offset and match catalog search to displayed titles.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "bc4ad4fc12590299dfd822a259ba9630967e1e3f",
+    "date": "2026-09-12",
+    "subject": "Match root-only and melody card geometry to iOS and keep the timeline cents overlay visible while monitoring.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "16f2d395ab213bd631087ce11b573bc6f0bc37e1",
+    "date": "2026-09-12",
+    "subject": "Stop the quiz knobs from flashing a rectangular ripple when tapped to reset.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "8ba5d17fa1c0cfe0b0e0d1c467d721f86e670e5b",
+    "date": "2026-09-12",
+    "subject": "Split Hooktheory into its own search field and keep catalog suggestions on-screen without a dropdown overlay.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "24084f70daa3c87dee783dc0fea244615b0f1268",
+    "date": "2026-09-12",
+    "subject": "Put Hooktheory search and URL download in one accordion and open Playlists by default.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "3bd3d36bd184692a1067df0a9c0165e73c070ca7",
+    "date": "2026-09-12",
+    "subject": "Keep Android and iOS quiz browse, root-only controls, and timeline rate in sync.",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  },
+  {
+    "sha": "2655a930c6c9628e4d753547f0f7959b334b848c",
+    "date": "2026-09-12",
+    "subject": "Merge remote-tracking branch 'origin/main'",
+    "reviewStatus": "pending",
+    "kind": null,
+    "featureDelta": null,
+    "finalDisposition": null,
+    "evidence": []
+  }
+]
