@@ -25,7 +25,7 @@
     "featureDelta": "Deletes the exact stray HummingIntervalPopup file from the outer repository.",
     "finalDisposition": "Repository-boundary correction; functional tool history is the nested Android lineage imported later.",
     "evidence": [
-      "8e496feee385b26e49518ae6383e02bbd94d0eb5:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "22217c64635b9b5a93507af3b19862350fdcf3db:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
       "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
     ],
     "changedPaths": [
@@ -180,7 +180,7 @@
     "featureDelta": "Removes four scratch database/export scripts from .artifacts; no runtime change.",
     "finalDisposition": "Historical cleanup only.",
     "evidence": [
-      "34a702ec077a23ba95ee5b050bc4cd9806275025:android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/check_schema.js",
+      "aa21090c1997fe787af474b6a7315ce6a4b0b24f:android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/check_schema.js",
       "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
     ],
     "changedPaths": [
@@ -246,7 +246,7 @@
     "finalDisposition": "Later artwork supersedes this version; use baseline resources.",
     "evidence": [
       "3e7a1433fe34593585fa049312276509b02965ed:android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
-      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/res/mipmap-hdpi/ic_launcher.png"
     ],
     "changedPaths": [
       "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
