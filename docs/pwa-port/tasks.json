@@ -1,0 +1,679 @@
+{
+  "schemaVersion": 1,
+  "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "updated": "2026-10-14",
+  "implementationAuthorized": false,
+  "currentStage": "audit_delivered_plan_ready",
+  "tasks": [
+    {
+      "id": "T00",
+      "title": "Execution/recovery controls, task claims and checkpoint drill",
+      "dependsOn": [],
+      "allowedPaths": [
+        "docs/pwa-port/",
+        "pwa/scripts/run-control/"
+      ],
+      "acceptance": "Interrupt/resume a harmless docs task; no lost or duplicated claim",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T01",
+      "title": "PWA scaffold, route/types/fixture contracts, test/build scripts, minimal CI, manifest and cached/deep-linkable shell",
+      "dependsOn": [
+        "T00"
+      ],
+      "allowedPaths": [
+        "pwa/package.json",
+        "pwa/package-lock.json",
+        "pwa/src/contracts/",
+        "pwa/src/app/",
+        ".github/workflows/pwa.yml"
+      ],
+      "acceptance": "Clean install, typecheck, test and build; shell opens",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T02",
+      "title": "Payload compatibility, canonical section order, metadata/display names",
+      "dependsOn": [
+        "T01"
+      ],
+      "allowedPaths": [
+        "pwa/src/domain/data/"
+      ],
+      "acceptance": "Android-equivalent raw/gzip/duplicate-tab/name fixtures",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T03",
+      "title": "Pitch/key/scale/chord/spelling/voicing/relative-major theory",
+      "dependsOn": [
+        "T01",
+        "T02"
+      ],
+      "allowedPaths": [
+        "pwa/src/domain/music/"
+      ],
+      "acceptance": "Shared corpus plus source/historic/role fixtures and current Kotlin cases",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T04",
+      "title": "Roman/scale-degree rendering and accessible musical components",
+      "dependsOn": [
+        "T01",
+        "T03"
+      ],
+      "allowedPaths": [
+        "pwa/src/ui/notation/"
+      ],
+      "acceptance": "Geometry/semantic cases for extensions, alterations, rests, narrow/large text",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T05",
+      "title": "SQLite worker, full catalog download/install/update/recovery",
+      "dependsOn": [
+        "T01",
+        "T02"
+      ],
+      "allowedPaths": [
+        "pwa/src/storage/catalog/"
+      ],
+      "acceptance": "Full-size mobile install/query/offline cold launch; quota/corruption/second-tab recovery",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T06",
+      "title": "Local user stores, migrations, outbox, guest/account namespaces",
+      "dependsOn": [
+        "T01"
+      ],
+      "allowedPaths": [
+        "pwa/src/storage/user/"
+      ],
+      "acceptance": "Restart/migration/failure tests; catalog replacement preserves every user store",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T07",
+      "title": "13-instrument synth and bounded PCM rendering",
+      "dependsOn": [
+        "T01",
+        "T03"
+      ],
+      "allowedPaths": [
+        "pwa/src/audio/synth/"
+      ],
+      "acceptance": "Android audio regressions: finite/clipping/gain/envelope/loop/sample-rate cases",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T08",
+      "title": "Transport, preview ownership, audio acknowledgments and foreground lifecycle",
+      "dependsOn": [
+        "T02",
+        "T07"
+      ],
+      "allowedPaths": [
+        "pwa/src/audio/transport/"
+      ],
+      "acceptance": "Seek/config/loop/cancellation races, silent scrub and explicit-resume cases",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T09",
+      "title": "Microphone/YIN/smoothing/freshness and exclusive capture lifecycle",
+      "dependsOn": [
+        "T03",
+        "T07"
+      ],
+      "allowedPaths": [
+        "pwa/src/audio/capture/"
+      ],
+      "acceptance": "Synthetic pitch/noise/harmonic/dropout cases; actual microphone smoke test",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T10",
+      "title": "Library/search/artist/All Songs/recents/favorites/playlist views",
+      "dependsOn": [
+        "T02",
+        "T05",
+        "T06"
+      ],
+      "allowedPaths": [
+        "pwa/src/features/library/"
+      ],
+      "acceptance": "Debounce, paging, normalization, grouping, retry, Back/focus restoration and rollback",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T11",
+      "title": "Song Info/Chords, transitions/source links and previews",
+      "dependsOn": [
+        "T02",
+        "T03",
+        "T04",
+        "T06",
+        "T08"
+      ],
+      "allowedPaths": [
+        "pwa/src/features/details/"
+      ],
+      "acceptance": "Canonical metadata, block previews, transition ranking and route preservation",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T12",
+      "title": "Full/root-only Playback, cards, timeline, scrub/knobs/section/home controls",
+      "dependsOn": [
+        "T03",
+        "T04",
+        "T06",
+        "T08"
+      ],
+      "allowedPaths": [
+        "pwa/src/features/playback/"
+      ],
+      "acceptance": "Current layout/gesture/transport contracts; source/display keys and zero-tempo semantics",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T13",
+      "title": "Singing dock, two-slot/Flip-Flop, persistent practice, run scoring/octave",
+      "dependsOn": [
+        "T09",
+        "T12"
+      ],
+      "allowedPaths": [
+        "pwa/src/features/singing/"
+      ],
+      "acceptance": "Fresh-only median scoring, rest/dropout/seek/permission cleanup and transpose-once",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T14",
+      "title": "Pure Aural generator/assessment/evidence/scheduler and saved-session repair",
+      "dependsOn": [
+        "T03",
+        "T06"
+      ],
+      "allowedPaths": [
+        "pwa/src/domain/learning/"
+      ],
+      "acceptance": "Deterministic Android cases; supported/independent/transfer rules; corrupt-state recovery",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T15",
+      "title": "Aural catalog query/ranking/modes/groups/search/loop reduction",
+      "dependsOn": [
+        "T02",
+        "T05"
+      ],
+      "allowedPaths": [
+        "pwa/src/domain/catalog/"
+      ],
+      "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T16",
+      "title": "Corpus example selection, provenance/familiarity/tempo and actual exposure",
+      "dependsOn": [
+        "T08",
+        "T14",
+        "T15"
+      ],
+      "allowedPaths": [
+        "pwa/src/domain/corpus/"
+      ],
+      "acceptance": "Shared selection fixtures, overlaps, audible-start failure and unreliable-history cases",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T17",
+      "title": "Current catalog-first Aural browser",
+      "dependsOn": [
+        "T04",
+        "T06",
+        "T15"
+      ],
+      "allowedPaths": [
+        "pwa/src/features/aural/browser/"
+      ],
+      "acceptance": "Most songs/default 80%/minimum length2..9999, global-vs-matching counts, grouping and restore",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T18",
+      "title": "Recognize/Recall/Sing/adaptive practice UI",
+      "dependsOn": [
+        "T04",
+        "T09",
+        "T14",
+        "T16"
+      ],
+      "allowedPaths": [
+        "pwa/src/features/aural/practice/"
+      ],
+      "acceptance": "Prompt/assistance/retry/tab/resume behavior; UI cannot manufacture mastery",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T19",
+      "title": "Full example queues, reversible shuffle, saved ordered playlist snapshots",
+      "dependsOn": [
+        "T06",
+        "T12",
+        "T15"
+      ],
+      "allowedPaths": [
+        "pwa/src/features/queues/"
+      ],
+      "acceptance": "More-than-one-page membership, section hash/unique-name fallback, missing/ambiguous skip",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T20",
+      "title": "Aural -> full-song Playback -> original exercise/browser round trip",
+      "dependsOn": [
+        "T12",
+        "T17",
+        "T18",
+        "T19"
+      ],
+      "allowedPaths": [
+        "pwa/src/integration/learning-playback/"
+      ],
+      "acceptance": "Draft/tab/scroll preserved; source exploration stays assisted; repeat/navigation final rules",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T21",
+      "title": "Introduction, offline help, Settings/default/session sound, diagnostics/reset",
+      "dependsOn": [
+        "T06",
+        "T08",
+        "T12"
+      ],
+      "allowedPaths": [
+        "pwa/src/features/settings/",
+        "pwa/src/features/onboarding/",
+        "pwa/src/features/help/"
+      ],
+      "acceptance": "One-shot intro, invalid-default fallback, session/default separation, allow-listed export",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T22",
+      "title": "Fixed-origin Hooktheory Worker plus durable harvested overlay",
+      "dependsOn": [
+        "T02",
+        "T05",
+        "T06",
+        "T10"
+      ],
+      "allowedPaths": [
+        "pwa/worker/",
+        "pwa/src/domain/harvest/"
+      ],
+      "acceptance": "Multi-tab section extraction, bounded fetch, offline overlay and catalog-swap preservation",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T23",
+      "title": "Supabase email/password/Google auth, verification/reset and isolation",
+      "dependsOn": [
+        "T01",
+        "T06"
+      ],
+      "allowedPaths": [
+        "pwa/src/auth/",
+        "pwa/src/features/account/"
+      ],
+      "acceptance": "Guest unaffected; email/reset and installed-PWA OAuth return/account switching",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T24",
+      "title": "Cloud event/outbox replay, conflicts, guest merge and server RLS",
+      "dependsOn": [
+        "T06",
+        "T14",
+        "T23"
+      ],
+      "allowedPaths": [
+        "pwa/src/sync/",
+        "pwa/supabase/migrations/"
+      ],
+      "acceptance": "Duplicate/reordered/offline-two-device/skew/partial-merge/auth-expiry tests",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T25",
+      "title": "Sync wiring for all durable features",
+      "dependsOn": [
+        "T10",
+        "T13",
+        "T18",
+        "T19",
+        "T22",
+        "T24"
+      ],
+      "allowedPaths": [
+        "pwa/src/integration/sync/"
+      ],
+      "acceptance": "Saved records converge; no microphone audio, catalog files or unfinished answers uploaded",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T26",
+      "title": "Final install/update/cache compatibility and browser recovery flows",
+      "dependsOn": [
+        "T05",
+        "T08",
+        "T21",
+        "T23",
+        "T25"
+      ],
+      "allowedPaths": [
+        "pwa/src/pwa/"
+      ],
+      "acceptance": "Offline launch, deferred update, recovery from process/storage loss and schema mismatch",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T27",
+      "title": "Full parity matrix, accessibility and physical-device verification",
+      "dependsOn": [
+        "T11",
+        "T13",
+        "T20",
+        "T22",
+        "T25",
+        "T26"
+      ],
+      "allowedPaths": [
+        "pwa/tests/e2e/",
+        "pwa/docs/validation/"
+      ],
+      "acceptance": "All current shipping capability rows pass with exact source/build/catalog evidence",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    },
+    {
+      "id": "T28",
+      "title": "Preview/release proposal and operational handoff",
+      "dependsOn": [
+        "T27"
+      ],
+      "allowedPaths": [
+        "pwa/docs/releases/"
+      ],
+      "acceptance": "Immutable artifacts/checks, account config, rollback and production approval recorded",
+      "status": "planned",
+      "owner": null,
+      "branch": null,
+      "worktree": null,
+      "baseCommit": null,
+      "slice": null,
+      "nextAction": "Await implementation authorization; then claim one bounded slice using RUNBOOK.md.",
+      "validation": [],
+      "progress": [],
+      "blocker": null
+    }
+  ]
+}

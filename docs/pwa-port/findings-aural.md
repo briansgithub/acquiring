@@ -1,32 +1,16 @@
-# Aural history audit
+# Aural audit findings
 
-Baseline: Android `801cf7984171d772afc4406ddb5c79c0cb7fd20a`. Runtime model: unknown.
-Owner: `codex/pwa-audit-aural`; assigned files are this report and `history-aural.json` only. Documentation audit only; no application implementation or build.
+Completed 2026-10-14.51 history entries classified against 801cf798; coordinator completed the final11 rows after the worker's40-row checkpoint. Runtime model unknown.
 
-## Checkpoint
+- Target, example provider, realized prompt and evidence reducer are separate domains. Ranking is not the learning scheduler. Named progression practice reveals identity and remains supported; presentation tabs do not collapse evidence skills.
+- The current catalog-first browser supersedes the six-family landing. Most songs uses global distinct support, with occurrence/length/ID tie-breaks. The default 80% popularity cutoff, mode/inversion analysis and chord constraints filter eligibility without rewriting global counts. Grouping and Show subsequences are independent. Minimum core length defaults2 and spans2..9999.
+- Preserve offline-produced compact indexes and original source provenance; do not mine 17M sequences in the browser. Reader reuse, bounded scalar pages, cancellation and warm/cold behavior are part of feasibility verification.
+- Exposure requires actual audio progress beyond the source start. Unknown/corrupt exposure history conservatively prevents independent credit. Failed audio starts/capture and corrupted optional session settings cannot erase valid learning history or count as musical mistakes.
+- Current Examples opens the complete queue preview. Shuffle on changes the whole order; off restores popularity/saved order while retaining the active song. Queue membership must include beyond one page. Stable section hash wins; only an unambiguous name fallback is accepted. Missing/ambiguous entries skip with notice.
+- Generated example sections repeat until explicit navigation. Previous/next remains available in expanded singing dock and honors boundaries/play intent. Full-song Playback is the single source player; round trip restores draft/tab/browse and remains assisted.
+- Tonic-note/home-chord preview follows sounding key, not inversion or relative-major display, and lives in the key header.
+- Full-v3 delivery installs matching catalog/evidence/popularity as a checksummed snapshot automatically and from Settings. The published Aural component is 782,700,084 bytes compressed and 1,980,387,328 bytes installed. User data survives reader release/replacement.
 
-2026-10-13: first 10 of 51 ledger rows reviewed. Evidence depth: actual metadata/stats, focused patches and current documentation/test assertions. Merge parents and first-parent deltas inspected separately. Next: rows 11–20, then later catalog replacement and current source reconciliation. Historical test claims are not fresh passes.
+Implementation consequence: full-size SQLite proof early; query worker and pure learning engine after fixed contracts; audible acknowledgment before evidence integration; full Playback before queue/lesson round trip; final browser controls directly instead of historical intermediate UIs.
 
-## Findings already established
-
-- Keep learning target → example provider → realized prompt separate. Catalog ranking must not enter the learning scheduler.
-- Named progression practice reveals its identity and remains supported even after guidance fades; Recognize/Recall/Sing presentation groups retain separate underlying evidence skills.
-- The original six-family landing is historical. Current catalog documentation explicitly supersedes it.
-- Reuse published corpus/index artifacts and shared deterministic selector fixtures; do not rebuild mining/indexes in the browser.
-- Current catalog documentation also supersedes immediate example autoplay, remainder-only shuffle and example auto-advance: Examples opens a preview, shuffle restores baseline order when off, and selected example sections repeat.
-
-2026-10-13 checkpoint: 20/51 reviewed. Exposure requires actual audio progress past the source start, not pressing Play. Unreliable recovered exposure history conservatively disables independent corpus credit. Next: native tests, catalog replacement and song round-trip (rows 21-30).
-
-2026-10-13 checkpoint: 30/51 reviewed. Catalog compact suffix/index representation and existing immutable databases are prerequisites for the browser query worker. Source round-trip is assisted and preserves draft, tab and browse state. Next: rows 31-40, then final browsing/queue/delivery changes.
-
-2026-10-13 checkpoint: 40/51 reviewed. Ordinary full-song Playback is the sole source player; compact fallback removed. Relative-major analysis identity must retain original sounding key provenance. Next: rows 41-51 and final current-source/tests dependency reconciliation.
-
-## Rate-limit boundary — 2026-10-13
-
-Paused new review when coordinator reported shared five-hour usage at 86%. Reviewed 40/51 entries; rows 41–51 remain pending. Metadata/stat inspection of those final eleven commits is complete, but their source/test patches still require review. First pending commit: `4c7ddd56b8a86f4a08496e07963b4e6df10c08ca` (flexible grouping and mode controls). Do not mark metadata-only rows reviewed.
-
-Next bounded batch: review rows 41–50, save/commit, then row 51 (`c01d433b`) plus current-source reconciliation. Current documentation already inspected: `docs/aural-curriculum.md`, the beginning/history of `docs/aural-catalog.md`, `docs/aural-corpus-offline.md`, `docs/aural-catalog-publishing.md`, and original `android/docs/aural-corpus.md` patch. One combined current-doc read was output-truncated; do not claim exhaustive reading. Focus remaining document reads on current browsing controls/grouping/mode/search/popularity and final current source, rather than rereading obsolete narrative. Current-source citations and final dependency/parallel-seam report are incomplete.
-
-Validation so far: JSON parse during each batch; `git diff --check -- docs/pwa-port` passed at each batch; review and stage limited to the two assigned files. No Android, browser, Node or device tests were executed. Historical validation in docs is evidence of earlier checkpoints only.
-
-Provisional implementation seams: pure music/learning engine can run in parallel with read-only catalog query worker after source/token/provenance contracts freeze. Audio acknowledgment and uncertain-capture contracts must precede independent-evidence integration. Full Playback and song resolution must precede source round-trip and queue integration. Final browsing UI should follow current catalog query semantics, not the original historical feature order. Queue persistence belongs to user data, separate from replaceable catalog databases.
+Evidence: changed paths/stats, bounded source/test diffs and current curriculum/catalog/publishing handoffs; historical docs were searched/chunked and not exhaustively read. No fresh Node/Android/browser/device tests. Earlier worker checkpoints are preserved in Git. Final dependency and recovery rules are in IMPLEMENTATION_PLAN.md and RUNBOOK.md.

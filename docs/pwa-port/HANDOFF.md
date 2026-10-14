@@ -1,50 +1,40 @@
 # PWA port continuation
 
-Updated: 2026-10-13 (America/New_York)
-Runtime model: unknown.
+Updated:2026-10-14 (America/New_York). Runtime model:unknown.
 
-## Authorized work
+## Current outcome
 
-Audit the Android critical-path history, handoffs, comments and tests; identify each commit's feature changes; produce a dependency-first PWA implementation plan with safe parallelism and unattended resumption. Automatic resumption was explicitly selected by the owner. Do not begin product implementation before this audit/plan is delivered.
+The authorized two-pass audit and implementation/recovery plan are complete. Product implementation has not started. Read README.md, IMPLEMENTATION_PLAN.md, RUNBOOK.md and tasks.json; use HISTORY.md only for targeted historical questions. Android authority remains801cf7984171d772afc4406ddb5c79c0cb7fd20a.
 
-## Reference and starting state
+All262 full-history Android/contracts entries are classified:108 foundation,103 revision,51 Aural. Git's earlier path-simplified213 entries omitted integration history. The source JSON ledgers record actual deltas, replacements and evidence. Review was bounded metadata/source/test/comment/handoff inspection, not exhaustive patch reading or fresh runtime verification.
 
-Android baseline: 801cf7984171d772afc4406ddb5c79c0cb7fd20a. Primary checkout H:/Desktop/Acquiring/Acquiring began clean on main. Existing recovery worktrees are preserved and are not implementation targets. No application validation has been run during this audit.
+Second-pass result:29 acyclic packages with explicit prerequisites, owned areas and acceptance criteria. Default one active implementation agent; optional authorized disjoint parallel work at most coordinator plus one worker. The main integration chain joins theory, audio/transport, Playback, microphone practice and learning evidence; full-size mobile storage proof starts early.
 
-The earlier path-simplified log listed 213 entries. Full-history traversal of android/ and contracts/ identifies 262 entries: 108 foundation, 103 revision, 51 aural. Some are merges/imports rather than independent feature additions. Do not equate commit count to feature count.
+## Product decisions
 
-## Current work
+New pwa/ project in this monorepo; current Android shipping behavior is authoritative. Shared contracts/data may be reused; old web/iOS runtimes are not references. Android-like responsive interface across major devices. Full offline catalogs after verified download and adequate browser quota. Guests plus Supabase sync; email/password and Google; fresh profiles without Android migration. Cloudflare Pages/R2/Worker; React/TypeScript/Vite; SQLite WASM catalog worker and IndexedDB user data. Current13 instruments, foreground pause/explicit resume and per-song octave -2..+3 replace stale historical features.
 
-Coordinator branch: codex/pwa-history-plan. Seeded three history JSON ledgers; pending means unreviewed. Each worker must save entries in batches of at most ten, record evidence depth honestly, and commit only its assigned ledger/report. The coordinator owns revision history, final feature inventory, implementation order, and this handoff.
+## Validation and limits
 
-Planned concurrent worktrees: separate sibling audit worktrees/normal branches for foundation and aural. Record their returned paths and branches here before delegation. No deletion or cleanup is authorized by this audit.
+`python docs/pwa-port/validate_audit.py --render-history` passed:262 unique exact-baseline commits,575 resolvable evidence paths,29 acyclic packages, and exact plan/task titles/dependencies/acceptance agreement. `git diff --check` is the final whitespace check. No Android/browser/device suite, screenshot or audio capture was run; documentation-only work does not establish runtime parity. Full offline quota/mobile feasibility, microphone quality, OAuth and cross-device behavior remain future explicit gates.
 
-## Interruption rules
+## Repository and recovery
 
-Never depend on a final save at the rate limit. Before a unit starts, record its owner, dependency, target files, expected validation and next action. Save findings continuously; commit coherent validated batches. If interrupted, inspect Git and active worker/process state before reclaiming a task. Preserve dirty/untracked work; never reset, clean, stash, or replay old recovery snapshots automatically.
+Primary audit branch:codex/pwa-history-plan in H:/Desktop/Acquiring/Acquiring. This branch contains only docs/pwa-port changes. Current status and tip come from Git, not this prose. No app source, runtime catalog, signed artifact or secret was changed or published. No branch/worktree/stash cleanup was performed.
 
-At each batch boundary check shared usage. At 70% used, stop new delegation and finish only bounded current work. At 80% used, checkpoint and yield; retain the remaining capacity for recovery and unrelated account work. These are conservative policy thresholds, not a promise that another run cannot consume capacity first. Never buy credits or redeem resets automatically.
+Worker checkpoints were inspected and merged normally, then the coordinator completed the pending rows sequentially. Preserve these clean sibling audit worktrees/branches:
 
-## Established product decisions
+- H:/Desktop/Acquiring/Acquiring-pwa-audit-foundation; codex/pwa-audit-foundation; original30-row checkpointdd315ae5.
+- H:/Desktop/Acquiring/Acquiring-pwa-audit-aural; codex/pwa-audit-aural; original40-row checkpointd44369da.
 
-New pwa/ project in this monorepo; Android current shipping behavior is authoritative. Ignore old web/iOS applications except shared libraries/data/contracts. Responsive Android-like layout; current/previous major Android, iPhone/iPad and desktop browsers. Full offline catalogs after verified download; local guest use plus Supabase cloud sync; email/password and Google sign-in; fresh profiles without Android migration. Cloudflare Pages/R2/Worker delivery; React/TypeScript/Vite; SQLite WASM catalog worker and IndexedDB user data; foreground synthesis/microphone parity. Full offline storage is conditional on available quota. Current source has 13 instruments, foreground pause, and singer-set octave offsets; older parity inventory includes superseded behavior.
+Their historical partial findings are superseded by the completed primary reports. Existing .branch-recovery worktrees remain untouched. No worker/process needs resuming. The first run's approval reviewer exhausted its usage allowance and rejected one root checkpoint before executing it; after reset the source-reviewed findings were saved and validated. The command sandbox also encountered a locked unrelated V: volume; approved targeted H: commands succeeded. Never bypass an approval rejection.
+
+## Automatic resumption
+
+Automation:resume-acquiring-pwa-audit, same-chat hourly. It is paused when this audit/plan is delivered; it does not authorize implementation. Once the owner asks to implement, update that same automation with the new authorized scope and this entry point instead of creating a duplicate.
+
+At each future run/slice boundary inspect live five-hour and weekly usage. Below70%used choose bounded ready work; at70%start no new slice/worker; at80%checkpoint/yield. Account limits are shared and can cut off abruptly. Persist intent before editing and receipts after small slices; preserve partial dirty work and inspect real processes/side effects before retrying. See RUNBOOK.md for task claims, exact recovery cases and budget/model routing.
 
 ## Next action
 
-Complete the three per-commit ledgers from actual diffs/comments/tests, reconcile surviving features, then write the implementation DAG, task ownership rules and recovery/runbook. Set up one same-chat resume heartbeat using this file as its entry point; remain quiet on unchanged/non-actionable state. When the audit and plan are complete, pause the heartbeat until implementation is authorized.
-
-## Active audit assignments
-
-2026-10-13, checkpoint 824fb7d4: clean coordinator and two clean sibling audit worktrees created from the checkpoint. The app worktree tool could not resolve the parent workspace as a repository, so Git created the explicit sibling paths.
-
-- Foundation: H:/Desktop/Acquiring/Acquiring-pwa-audit-foundation; branch codex/pwa-audit-foundation; owns history-foundation.json and findings-foundation.md only.
-- Aural: H:/Desktop/Acquiring/Acquiring-pwa-audit-aural; branch codex/pwa-audit-aural; owns history-aural.json and findings-aural.md only.
-- Coordinator: H:/Desktop/Acquiring/Acquiring; branch codex/pwa-history-plan; owns revision ledger and final plan/runbook.
-
-Validation before delegation: JSON inventory count/unique IDs passed, git diff --cached --check passed. Risks: default command sandbox currently fails enumerating a BitLocker-locked V: volume; approved unsandboxed commands can access the H: workspace. No app tests required for audit documents. Next: each worker saves and commits batches; coordinator integrates finished report commits without overwriting pending work. Recovery worktrees remain untouched.
-
-Automatic resumption: same-chat hourly heartbeat `resume-acquiring-pwa-audit` created ACTIVE on 2026-10-13. It resumes only this audit/planning scope, respects live account limits, avoids duplicate workers, and pauses when the deliverables are complete. Requires the host/app to be available; scheduling does not bypass rate limits.
-
-## Resume checkpoint 2026-10-14
-
-Live five-hour usage1%, weekly33% at start. Both prior agents are errored/stopped, not active. Their clean documentation branches were inspected and integrated without touching application files: foundation30/108, revision40/103, aural40/51 reviewed. The prior root command to save remaining revision findings was rejected before execution when automatic approval review exhausted its own allowance; none of those attempted writes occurred. Resume sequentially from durable rows. No new workers or worktrees are needed.
+Deliver the audit links and plan. Await implementation authorization, then record it in tasks.json, implement T00 recovery controls first, proceed T01 and the early storage/audio feasibility gate. Do not silently advance the Android baseline, revive superseded features or mark unavailable device/configuration checks passed. No publishing or deletion is authorized by this audit.
