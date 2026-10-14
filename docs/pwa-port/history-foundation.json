@@ -1617,101 +1617,145 @@
     "sha": "66e7f37c3fb3ef512bb427974f0f228f21b657b9",
     "date": "2026-08-20",
     "subject": "Anchor tessitura to the hummed pitch instead of a fixed octave",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Anchor old tessitura calibration to actual captured pitch.",
+    "finalDisposition": "Removed with calibration; no PWA anchor requirement.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "66e7f37c:android/app/src/androidTest/java/com/acquiring/android/TessituraUiTest.kt",
+      "66e7f37c:android/app/src/main/java/com/acquiring/android/DoubleTapHint.kt",
+      "66e7f37c:android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+    ]
   },
   {
     "sha": "60e853e300f581d67cd738dbbe5de12738c93f92",
     "date": "2026-08-21",
     "subject": "Stop Quiz card previews from clicking",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Fade preview replacement to avoid clicks and remove transport arpeggio leakage into previews.",
+    "finalDisposition": "Exclusive preview channel; block-card previews stay block chords.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "60e853e3:android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+      "60e853e3:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "60e853e3:android/app/src/test/java/com/acquiring/android/AudioEngineTest.kt"
+    ]
   },
   {
     "sha": "9d149952308cd33426d5b9d984eb91aa6f0fce00",
     "date": "2026-08-21",
     "subject": "Play song sections as media, with a transport notification",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Introduce process-wide streaming transport, Android media service/notification and audio focus.",
+    "finalDisposition": "Engine retained; persistent/background media explicitly removedf89a775c.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "9d149952:android/app/src/main/AndroidManifest.xml",
+      "9d149952:android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+      "9d149952:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "ad54dd6e4c7b51516f28023d44811755f189006a",
     "date": "2026-08-21",
     "subject": "Name the section in the notification, not its id",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Use readable section label in media notification.",
+    "finalDisposition": "Notification removedf89a775c; preserve section display identity only.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "ad54dd6e:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "3c29496efaeb52aa0dbd2ede73f2343983f18bd5",
     "date": "2026-08-21",
     "subject": "End the balance fader level with the cards it belongs to",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Align vertical balance fader to card stack.",
+    "finalDisposition": "Fader replaced by mix knob; no port of old geometry.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "3c29496e:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "7b32d773ebcabfe8fcdffa333ed68daf4fc84ce6",
     "date": "2026-08-21",
     "subject": "Sound card previews off the main thread",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Move preview synthesis/start off UI thread; card previews independent of arpeggio knob.",
+    "finalDisposition": "Implement off-main audio worklet ownership and prompt gestures.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "7b32d773:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "7b32d773:android/app/src/test/java/com/acquiring/android/QuizAudioGlitchTest.kt"
+    ]
   },
   {
     "sha": "d9eeaa304e3852ad8897705e466a2866a3a066b5",
     "date": "2026-08-21",
     "subject": "Play every track on one audio session",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Share audio session across preview/stream tracks.",
+    "finalDisposition": "Browser equivalent is one application AudioContext/owner.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "d9eeaa30:android/app/src/main/java/com/acquiring/android/AppAudioSession.kt",
+      "d9eeaa30:android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+      "d9eeaa30:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "1d99bc92040805e409ec6df0a2a476653ac723e3",
     "date": "2026-08-21",
     "subject": "Synthesise at the device's own output rate",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Resolve device output sample rate and render consistently.",
+    "finalDisposition": "Use actual AudioContext sampleRate, never assume44.1/48kHz.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "1d99bc92:android/app/src/main/java/com/acquiring/android/AppAudioOutput.kt",
+      "1d99bc92:android/app/src/main/java/com/acquiring/android/AppAudioSession.kt",
+      "1d99bc92:android/app/src/main/java/com/acquiring/android/AudioEngine.kt"
+    ]
   },
   {
     "sha": "6961da5e5afa36fb248f72040994374c2d78f0c0",
     "date": "2026-08-21",
     "subject": "Publish the media session on events, not on a timer",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "optimization",
+    "featureDelta": "Publish media state on events, gate capture diagnostics in debug.",
+    "finalDisposition": "Media publishing removed; retain event-driven state and bounded diagnostics.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "6961da5e:android/app/build.gradle",
+      "6961da5e:android/app/src/main/java/com/acquiring/android/MicrophonePitchTracker.kt",
+      "6961da5e:android/app/src/main/java/com/acquiring/android/QuizPlaybackService.kt"
+    ]
   },
   {
     "sha": "6782647188c78dfcadb52c6981ab74af8f4a64bc",
     "date": "2026-08-22",
     "subject": "Collapse the singing tool when the app is backgrounded",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Collapse singing tool and release microphone when backgrounded.",
+    "finalDisposition": "Current foreground lifecycle invariant.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "67826471:android/app/src/androidTest/java/com/acquiring/android/HummingIntervalLifecycleUiTest.kt",
+      "67826471:android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+    ]
   },
   {
     "sha": "9ab27ceeeadde93347d97096a9060656b75cdf98",
