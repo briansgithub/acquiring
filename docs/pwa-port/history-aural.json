@@ -3,401 +3,495 @@
     "sha": "b6b19077041b4ca40705b79b74e710492775d395",
     "date": "2026-09-16",
     "subject": "Add Android aural quiz curriculum and rename song UI to Playback",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Adds pure deterministic aural curriculum, seven distinct evidence skills, adaptive scheduling, supported/independent/transfer gates, four microphone tasks, durable provenance and one-shot audio; renames song Quiz UI to Playback.",
+    "finalDisposition": "Retain learning/audio/evidence behavior; six-family landing is superseded by catalog. Do not port the old song Quiz naming.",
+    "evidence": [
+      "b6b19077041b4ca40705b79b74e710492775d395:docs/aural-curriculum.md",
+      "b6b19077041b4ca40705b79b74e710492775d395:android/app/src/main/java/com/acquiring/android/AuralCurriculum.kt",
+      "b6b19077041b4ca40705b79b74e710492775d395:android/app/src/test/java/com/acquiring/android/AuralCurriculumTest.kt"
+    ]
   },
   {
     "sha": "a11f560bdebe4d4a36a3e0f3d4c20c4f2749e9ae",
     "date": "2026-09-16",
     "subject": "Simplify Aural Quiz with family navigation and phase tabs",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Adds family/progression hierarchy and Recognize/Recall/Sing tabs, named variant targets and persistence; selecting an answer-bearing progression always makes evidence supported practice.",
+    "finalDisposition": "Retain mode/evidence/navigation semantics; replace historical family landing with current catalog.",
+    "evidence": [
+      "a11f560bdebe4d4a36a3e0f3d4c20c4f2749e9ae:android/app/src/main/java/com/acquiring/android/AuralSession.kt",
+      "a11f560bdebe4d4a36a3e0f3d4c20c4f2749e9ae:android/app/src/test/java/com/acquiring/android/AuralQuizUiTest.kt"
+    ]
   },
   {
     "sha": "22b5d2f7599eeb0b3b6830fc3a8988930de18b3f",
     "date": "2026-09-17",
     "subject": "Preserve playback frame rate across presentation changes",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Reapply display frame-rate preference on destination entry, presentation/lock changes and resume; compute supported maximum from display modes rather than previously capped active rate.",
+    "finalDisposition": "Retain timeline preference/continuity intent; Android window refresh APIs require browser adaptation.",
+    "evidence": [
+      "22b5d2f7599eeb0b3b6830fc3a8988930de18b3f:android/app/src/main/java/com/acquiring/android/TimelineFrameRate.kt",
+      "22b5d2f7599eeb0b3b6830fc3a8988930de18b3f:android/app/src/test/java/com/acquiring/android/TimelineFrameRateWindowTest.kt"
+    ]
   },
   {
     "sha": "8de0b3fa2cfc9abbfe02819862ac50117a5e86e9",
     "date": "2026-09-17",
     "subject": "Consolidate aural practice modes and reuse shared sound settings",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Consolidates activities under three practice modes, repeats weak tasks, chooses least-practiced singing kind, and uses shared default instrument/Settings.",
+    "finalDisposition": "Retain; presentation grouping must not merge seven evidence cells or award independent mastery to named practice.",
+    "evidence": [
+      "8de0b3fa2cfc9abbfe02819862ac50117a5e86e9:android/app/src/main/java/com/acquiring/android/AuralPracticeModes.kt",
+      "8de0b3fa2cfc9abbfe02819862ac50117a5e86e9:android/app/src/test/java/com/acquiring/android/AuralPracticeModesTest.kt"
+    ]
   },
   {
     "sha": "08689303d887c1dcb3dac74a41a50c1b9a019b5e",
     "date": "2026-09-17",
     "subject": "Preserve local playback icon and accessibility inspection helper",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "asset-tooling",
+    "featureDelta": "Adds press-and-hold pointer drawable and accessibility dump text helper.",
+    "finalDisposition": "Port relevant icon/accessibility semantics; Android dump script is development tooling, not PWA product feature.",
+    "evidence": [
+      "08689303d887c1dcb3dac74a41a50c1b9a019b5e:android/app/src/main/res/drawable/ic_hand_hold.xml",
+      "08689303d887c1dcb3dac74a41a50c1b9a019b5e:android/scripts/dump_ui_texts.py"
+    ]
   },
   {
     "sha": "2f4f1011021181263842c22cb34b63cd5932b125",
     "date": "2026-09-17",
     "subject": "Add offline popularity enrichment and portable corpus selector",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature-contract",
+    "featureDelta": "Adds offline popularity normalization and deterministic song-to-section-to-occurrence weighted selector, immutable replay context and shared fixtures; missing confidence is neutral and repetition cannot inflate song weight.",
+    "finalDisposition": "Reuse portable contract/tooling with browser-safe hashing; selector v1 superseded by overlap-aware v2 for new selection, keep frozen replay compatibility when relevant.",
+    "evidence": [
+      "2f4f1011021181263842c22cb34b63cd5932b125:tooling/aural-corpus/selector.mjs",
+      "2f4f1011021181263842c22cb34b63cd5932b125:tooling/aural-corpus/popularity.test.mjs",
+      "2f4f1011021181263842c22cb34b63cd5932b125:contracts/aural-corpus/selection-fixtures.json"
+    ]
   },
   {
     "sha": "8ddff6ecc106d7d40367ee81d34dbec6b392a557",
     "date": "2026-09-17",
     "subject": "Merge branch 'codex/aural-popularity' into codex/aural-corpus-index",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates 2f4f1011 popularity/selector branch; first-parent delta adds same five files.",
+    "finalDisposition": "Integration only; do not count duplicate features.",
+    "evidence": [
+      "8ddff6ecc106d7d40367ee81d34dbec6b392a557:tooling/aural-corpus/selector.mjs"
+    ]
   },
   {
     "sha": "235e5978b974b7b7f4eee364c15b8f3405d3093b",
     "date": "2026-09-17",
     "subject": "Merge branch 'codex/aural-miner' into codex/aural-corpus-index",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates c8fe5e83 miner branch: suffix mining, transition/window union coverage and recurring longer-pattern selection.",
+    "finalDisposition": "Backend preparation dependency, not new on-device screen; ingest published artifacts instead of mining in browser.",
+    "evidence": [
+      "235e5978b974b7b7f4eee364c15b8f3405d3093b:tooling/aural-corpus/miner.mjs",
+      "235e5978b974b7b7f4eee364c15b8f3405d3093b:tooling/aural-corpus/coverage.mjs",
+      "235e5978b974b7b7f4eee364c15b8f3405d3093b:tooling/aural-corpus/mining.test.mjs"
+    ]
   },
   {
     "sha": "7bf9fbbaae0cfb9e1126e616f3b02dfd4461800c",
     "date": "2026-09-17",
     "subject": "Build independent normalized corpus snapshots and Android occurrence exports",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature-tooling",
+    "featureDelta": "Adds normalized immutable source snapshots, runtime occurrence exporter, reviewed family mappings and indexed SQLite contract independent of Android user data.",
+    "finalDisposition": "Retain producer/provenance contract; full catalog v3 later augments runtime curriculum sidecar.",
+    "evidence": [
+      "7bf9fbbaae0cfb9e1126e616f3b02dfd4461800c:contracts/aural-corpus/schema.sql",
+      "7bf9fbbaae0cfb9e1126e616f3b02dfd4461800c:tooling/aural-corpus/export.test.mjs",
+      "7bf9fbbaae0cfb9e1126e616f3b02dfd4461800c:tooling/aural-corpus/normalize.test.mjs"
+    ]
   },
   {
     "sha": "06e48208072b03523dbacf112e6524f4c0b3b39e",
     "date": "2026-09-17",
     "subject": "Integrate indexed corpus examples and Aural Quiz preferences",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Integrates read-only corpus provider, bounded target cache and selected-payload loading; popularity/variety/favorites/inversion settings, source provenance, synthetic fallback and separate inversion evidence.",
+    "finalDisposition": "Retain provider boundary and settings; confirmed audible exposure and overlap refinements supersede initial listen-start bookkeeping.",
+    "evidence": [
+      "06e48208072b03523dbacf112e6524f4c0b3b39e:android/docs/aural-corpus.md",
+      "06e48208072b03523dbacf112e6524f4c0b3b39e:android/app/src/main/java/com/acquiring/android/AuralCorpus.kt",
+      "06e48208072b03523dbacf112e6524f4c0b3b39e:android/app/src/test/java/com/acquiring/android/AuralCorpusSessionTest.kt"
+    ]
   },
   {
     "sha": "c1abee95b0aedc8b0dc8457702a963531461e103",
     "date": "2026-09-17",
     "subject": "Merge branch 'codex/aural-corpus-android' into codex/aural-corpus-index",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates Android corpus provider/preferences from 06e48208 with normalized offline snapshot branch.",
+    "finalDisposition": "Integration only; no duplicate feature count.",
+    "evidence": [
+      "c1abee95b0aedc8b0dc8457702a963531461e103:android/docs/aural-corpus.md"
+    ]
   },
   {
     "sha": "793466a61a49bc3a4a788df14779f5fec5e86fa3",
     "date": "2026-09-17",
     "subject": "Merge branch 'codex/aural-miner' into codex/aural-corpus-index",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge-fix",
+    "featureDelta": "Integrates coverage refinements from 176ba2f7: exact longer-window/coverage accounting and regression tests.",
+    "finalDisposition": "Retain upstream artifact correctness; not an additional PWA user flow.",
+    "evidence": [
+      "793466a61a49bc3a4a788df14779f5fec5e86fa3:tooling/aural-corpus/coverage.mjs"
+    ]
   },
   {
     "sha": "ac3beb3a0364cf7b339df1fafec8a7bc014de622",
     "date": "2026-09-17",
     "subject": "Merge commit 'a8317c2a' into codex/aural-corpus-index",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge-feature-tooling",
+    "featureDelta": "Integrates a8317c2a persisted-analysis occurrence query and tests; paginated lookup avoids rerunning mining.",
+    "finalDisposition": "Reuse offline tooling; browser catalog reader remains a separate indexed SQLite consumer.",
+    "evidence": [
+      "ac3beb3a0364cf7b339df1fafec8a7bc014de622:tooling/aural-corpus/query.mjs"
+    ]
   },
   {
     "sha": "5f706322eba3b1db93c0cd47ec2b6dae5994c32f",
     "date": "2026-09-17",
     "subject": "Track overlapping source passage familiarity in selector v2",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix-contract",
+    "featureDelta": "Selector v2 marks positive overlap of physical transitions in song|section|start|end as familiar; shared endpoint alone remains fresh and opaque IDs match exactly. Frozen v1 contexts still replay.",
+    "finalDisposition": "Retain exact overlap semantics and portable fixtures.",
+    "evidence": [
+      "5f706322eba3b1db93c0cd47ec2b6dae5994c32f:tooling/aural-corpus/selector.mjs"
+    ]
   },
   {
     "sha": "2e77442a028cf9875a0ecb962cbb9a55aee4288c",
     "date": "2026-09-17",
     "subject": "Merge overlap-aware corpus selector",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates overlap-aware selector 5f706322.",
+    "finalDisposition": "Integration only; no duplicate feature count.",
+    "evidence": [
+      "2e77442a028cf9875a0ecb962cbb9a55aee4288c:contracts/aural-corpus/selection-fixtures.json"
+    ]
   },
   {
     "sha": "ef20fa9f81bc9141542288ec127ea04dfa3b825b",
     "date": "2026-09-17",
     "subject": "Track overlapping source exposure and adaptive corpus tempo",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix-feature",
+    "featureDelta": "Ports source-span interval familiarity to Android; records adaptive playback tempo separately from source tempo and preserves old saved timing.",
+    "finalDisposition": "Retain identity/familiarity across keys, instruments and inversion views; seed and actual playback tempo are explicit provenance.",
+    "evidence": [
+      "ef20fa9f81bc9141542288ec127ea04dfa3b825b:android/app/src/main/java/com/acquiring/android/AuralCorpus.kt"
+    ]
   },
   {
     "sha": "5c46138dc23bba176deb6ef0eaf07dd1be65268e",
     "date": "2026-09-17",
     "subject": "Merge corpus familiarity and tempo refinements",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates ef20fa9f familiarity and tempo refinements.",
+    "finalDisposition": "Integration only; no duplicate feature count.",
+    "evidence": [
+      "5c46138dc23bba176deb6ef0eaf07dd1be65268e:android/app/src/test/java/com/acquiring/android/AuralCorpusTest.kt"
+    ]
   },
   {
     "sha": "47a71ca749021939942e5e7afba0c557c605f7d1",
     "date": "2026-09-17",
     "subject": "Document offline corpus analysis and enrichment",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge-documentation",
+    "featureDelta": "Documents immutable corpus analysis, conservative union coverage, popularity prerequisites, runtime selector and validation boundaries.",
+    "finalDisposition": "Reference producer/consumer constraints; later published catalog supersedes unavailable-popularity/distribution limitations.",
+    "evidence": [
+      "47a71ca749021939942e5e7afba0c557c605f7d1:docs/aural-corpus-offline.md"
+    ]
   },
   {
     "sha": "40aa1a3717b79a6c3bf2f26ab6b4947ecab8b7d5",
     "date": "2026-09-17",
     "subject": "Confirm audible exposure and preserve recoverable learning history",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Records exposure only after output playback head passes the source start beat, cancels stale callbacks and recovers valid learning fields from partial corruption; damaged exposure history forces supported practice.",
+    "finalDisposition": "Retain audio acknowledgment before exposure; technical failure must not be a musical error or falsely establish familiarity/mastery.",
+    "evidence": [
+      "40aa1a3717b79a6c3bf2f26ab6b4947ecab8b7d5:android/app/src/main/java/com/acquiring/android/AuralAudio.kt"
+    ]
   },
   {
     "sha": "5b2e44f133159df69e49a62491daab00b249297d",
     "date": "2026-09-17",
     "subject": "Handle failed audio starts and damaged optional quiz state",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates 40aa1a37 confirmed-audible-exposure and optional-state recovery fixes despite feature-like commit subject.",
+    "finalDisposition": "Integration only; first-parent delta is the already-reviewed fix.",
+    "evidence": [
+      "5b2e44f133159df69e49a62491daab00b249297d:android/app/src/main/java/com/acquiring/android/AuralSession.kt"
+    ]
   },
   {
     "sha": "89faeccd5102ea7828c9ee3872ba6f3b830124fe",
     "date": "2026-09-17",
     "subject": "Exercise native corpus playback on an isolated test activity",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "test",
+    "featureDelta": "Adds isolated foreground native corpus audio test requiring actual source-start acknowledgment and completion while leaving user quiz state untouched.",
+    "finalDisposition": "Validation precedent; equivalent PWA device audio gate required, not a product feature.",
+    "evidence": [
+      "89faeccd5102ea7828c9ee3872ba6f3b830124fe:android/app/src/androidTest/java/com/acquiring/android/AuralCorpusDeviceTest.kt"
+    ]
   },
   {
     "sha": "04a214b38725e91bf075784d7cac97e9fd31008b",
     "date": "2026-09-17",
     "subject": "Exercise indexed corpus passages through native audio",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge-test",
+    "featureDelta": "Integrates 89faeccd native corpus playback test.",
+    "finalDisposition": "Integration only; no duplicate feature count.",
+    "evidence": [
+      "04a214b38725e91bf075784d7cac97e9fd31008b:android/app/src/androidTest/java/com/acquiring/android/AuralCorpusDeviceTest.kt"
+    ]
   },
   {
     "sha": "e10cc56ab1ced564e1a7d78a24bc905f7965595c",
     "date": "2026-09-17",
     "subject": "Verify frozen snapshot inputs for export rebuilds",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge-feature-tooling",
+    "featureDelta": "Integrates verified frozen-normalized-input reuse: validates source revisions, normalizer fingerprint, scope, catalog/report hashes before rebuilding export.",
+    "finalDisposition": "Reuse existing producer tooling; frozen reuse deliberately excludes raw-source changes.",
+    "evidence": [
+      "e10cc56ab1ced564e1a7d78a24bc905f7965595c:tooling/aural-corpus/reuse.mjs"
+    ]
   },
   {
     "sha": "9aeeb3e6abf8e60b43417de90c25309ac9ffefdb",
     "date": "2026-09-17",
     "subject": "Speed corpus target lookup and reuse verified analysis inputs",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "performance-tooling",
+    "featureDelta": "Expands covering target index with occurrence/source IDs and wires verified frozen-input reuse into corpus build CLI/fingerprint.",
+    "finalDisposition": "Retain indexed descriptor lookup and selected-payload fetch; avoid repeated full scans in browser worker.",
+    "evidence": [
+      "9aeeb3e6abf8e60b43417de90c25309ac9ffefdb:contracts/aural-corpus/schema.sql"
+    ]
   },
   {
     "sha": "c7ad144302453abbcdf482128d055c09929f596a",
     "date": "2026-09-17",
     "subject": "Add Android aural catalog and offline song Playback round-trip",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Adds exhaustive compact offline progression catalog, exact paged ranking/tree/search, arbitrary pattern exercises, evidence/diagnostics, streaming bounded PCM and durable assisted Playback round-trip preserving answer draft.",
+    "finalDisposition": "Retain catalog/learning boundary; initial embedded source player and old ranking defaults superseded later.",
+    "evidence": [
+      "c7ad144302453abbcdf482128d055c09929f596a:docs/aural-catalog.md"
+    ]
   },
   {
     "sha": "988dfc780b68b0ec5a78bce84e3549d71d9d553a",
     "date": "2026-09-17",
     "subject": "Add sequence song browser and clearer numbered catalog hierarchy",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Adds sequence Songs tab, lazy distinct supporting-song browser, numbered recursive hierarchy and saved return tab/scroll/draft.",
+    "finalDisposition": "Retain supporting-song navigation; later full Playback and Examples queue augment this path.",
+    "evidence": [
+      "988dfc780b68b0ec5a78bce84e3549d71d9d553a:android/app/src/main/java/com/acquiring/android/AuralPatternSongs.kt"
+    ]
   },
   {
     "sha": "9d2da74f62d6b1f356e33b291011d472767535a2",
     "date": "2026-09-17",
     "subject": "Move Aural Quiz home button below search",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "ui",
+    "featureDelta": "Moves prominent Aural Quiz entry below Library search and clears search focus on entry.",
+    "finalDisposition": "Retain current Library navigation placement/adapt responsive layout.",
+    "evidence": [
+      "9d2da74f62d6b1f356e33b291011d472767535a2:android/app/src/main/java/com/acquiring/android/LibraryView.kt"
+    ]
   },
   {
     "sha": "bd48fca7dc1a20e2faaf25b691b953c71846f324",
     "date": "2026-09-17",
     "subject": "Rank sequence songs by popularity and display their scores",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Sorts supporting songs by actual descending popularity before rounding, unknown last, deterministic title/artist/ID ties; shows score 0–100 or No data.",
+    "finalDisposition": "Retain; display sorting is distinct from sampling preference weights.",
+    "evidence": [
+      "bd48fca7dc1a20e2faaf25b691b953c71846f324:android/app/src/test/java/com/acquiring/android/AuralPatternSongTest.kt"
+    ]
   },
   {
     "sha": "a07d906aeec0b0efd5989185b8005bab14425e04",
     "date": "2026-09-17",
     "subject": "Show loading state instead of flashing legacy aural families",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Displays catalog loading state and optional Continue without flashing legacy families; propagates cancellation.",
+    "finalDisposition": "Retain loading/error/continue semantics; later removes legacy landing entirely.",
+    "evidence": [
+      "a07d906aeec0b0efd5989185b8005bab14425e04:android/app/src/main/java/com/acquiring/android/AuralQuizScreen.kt"
+    ]
   },
   {
     "sha": "b821f0d9328201db5c42a143cdd647e3d05ef054",
     "date": "2026-09-17",
     "subject": "Use Playback mode colors for aural Roman numerals",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "ui",
+    "featureDelta": "Applies a single harmonic-mode Playback tint to aural numerals.",
+    "finalDisposition": "Superseded by cfa97345 per-chord scale-degree colors; do not reproduce the temporary whole-sequence tint.",
+    "evidence": [
+      "b821f0d9328201db5c42a143cdd647e3d05ef054:android/app/src/main/java/com/acquiring/android/AuralRomanColors.kt"
+    ]
   },
   {
     "sha": "09ae71d74c1e559a17326ea2183e8c5d90b4771c",
     "date": "2026-09-17",
     "subject": "Open aural examples in full Playback",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Routes source exploration into ordinary full-song Playback with jump-to-quiz-passage action, loading normal song data and retaining return state.",
+    "finalDisposition": "Retain full player reuse; subsequent restoration removes embedded fallback completely.",
+    "evidence": [
+      "09ae71d74c1e559a17326ea2183e8c5d90b4771c:android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+    ]
   },
   {
     "sha": "5006f41ab0eee2c52135d2c97d343daa20452c20",
     "date": "2026-09-17",
     "subject": "Merge Aural Quiz catalog into main",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates aural curriculum, corpus tooling, catalog and Playback rename into main; large first-parent diff includes earlier reviewed feature commits.",
+    "finalDisposition": "Integration, not 125 new independent features; preserve constituent provenance.",
+    "evidence": [
+      "5006f41ab0eee2c52135d2c97d343daa20452c20:docs/aural-catalog.md"
+    ]
   },
   {
     "sha": "cfa9734539b6f6b92835b5b7a448662445af0507",
     "date": "2026-09-17",
     "subject": "Color Aural Quiz chords by scale degree",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix-ui",
+    "featureDelta": "Colors each Roman chord by numerator scale degree, preserving accidental/quality/inversion/applied suffixes; neutral arrows and non-Roman labels.",
+    "finalDisposition": "Retain per-chord color palette rather than superseded mode-wide tint.",
+    "evidence": [
+      "cfa9734539b6f6b92835b5b7a448662445af0507:android/app/src/test/java/com/acquiring/android/AuralRomanColorsTest.kt"
+    ]
   },
   {
     "sha": "10b2dee3f27917da4191f887cd047c890cc42564",
     "date": "2026-09-17",
     "subject": "Load Aural Quiz catalog instead of legacy families",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Downloads missing/damaged progression catalog with progress/retry and guided-course access; catalog interstitial replaces legacy six-family home.",
+    "finalDisposition": "Retain catalog-first experience with graceful offline/missing-data states; delivery later expands to verified v3 bundle.",
+    "evidence": [
+      "10b2dee3f27917da4191f887cd047c890cc42564:android/app/src/main/java/com/acquiring/android/AuralQuizScreen.kt"
+    ]
   },
   {
     "sha": "ca89c5cc93c86b0fd3d427c022bc0e3633575767",
     "date": "2026-09-18",
     "subject": "Restore full song Playback for aural examples",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Removes compact embedded source player, requires normal full-song Playback, restores full controls and moves passage-jump into header.",
+    "finalDisposition": "Retain one full Playback destination and source return context; missing source must leave quiz intact.",
+    "evidence": [
+      "ca89c5cc93c86b0fd3d427c022bc0e3633575767:android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+    ]
   },
   {
     "sha": "4da2b62b8df616fa7b5c5669a897f32f6e3f08cc",
     "date": "2026-09-18",
     "subject": "Merge restored full Playback into aural corpus index",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates restored Playback, catalog downloading and per-degree color changes into corpus branch.",
+    "finalDisposition": "Integration only; unrelated iOS/workflow changes are outside Android PWA feature count.",
+    "evidence": [
+      "4da2b62b8df616fa7b5c5669a897f32f6e3f08cc:docs/aural-catalog.md"
+    ]
   },
   {
     "sha": "a857c99520cbfeb711789ac5a017bac14cb88525",
     "date": "2026-09-18",
     "subject": "Install Aural catalog with song catalog",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Installs aural bundle alongside song catalog, verifies existing file hashes/snapshot before reuse, stages downloads, and offers recovery when missing/damaged.",
+    "finalDisposition": "Retain separate catalog/user-data stores and verified installation; v3 delivery later adds serialization/readers/Settings.",
+    "evidence": [
+      "a857c99520cbfeb711789ac5a017bac14cb88525:android/app/src/main/java/com/acquiring/android/AuralCatalogDownloader.kt"
+    ]
   },
   {
     "sha": "5e469e56be85f41a25957e84ebacdbf026bf0d46",
     "date": "2026-09-21",
     "subject": "Use song keys for singing note labels",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix-feature",
+    "featureDelta": "Spells chromatic singing note labels using the song modal key's relative-major signature, supports sharp/flat preference and updates interval popup context.",
+    "finalDisposition": "Retain in PWA pitch display/interval naming; neutral signatures default flats.",
+    "evidence": [
+      "5e469e56be85f41a25957e84ebacdbf026bf0d46:android/app/src/main/java/com/acquiring/android/RelativeIonianContext.kt"
+    ]
   },
   {
     "sha": "e8cc64866ab24bcf00ebd2d9253ba3b687ddf6b4",
     "date": "2026-09-21",
     "subject": "Merge key-aware singing interval labels",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates key-aware singing labels together with already-reviewed full Playback/catalog installation ancestry.",
+    "finalDisposition": "Integration only; no duplicate feature count.",
+    "evidence": [
+      "e8cc64866ab24bcf00ebd2d9253ba3b687ddf6b4:android/app/src/main/java/com/acquiring/android/SpelledInterval.kt"
+    ]
   },
   {
     "sha": "2d36e72f21b59c09c2979ce508cf7177cb04d295",
     "date": "2026-09-24",
     "subject": "Add mode-aware Aural catalog analysis",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Adds mode-aware catalog analysis and relative-major identity view, original-source key provenance, modal filtering and relative token realization; updates catalog schema readers/producers.",
+    "finalDisposition": "Retain separation of analysis view and original sounding key; later controls split grouping and mode axes.",
+    "evidence": [
+      "2d36e72f21b59c09c2979ce508cf7177cb04d295:android/app/src/main/java/com/acquiring/android/AuralPatternExercise.kt"
+    ]
   },
   {
     "sha": "4c7ddd56b8a86f4a08496e07963b4e6df10c08ca",
