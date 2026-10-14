@@ -125,8 +125,8 @@
       "branch": "codex/pwa-chord-interpretation",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
-      "slice": "Native chord display interpretation and six-channel fixture parity",
-      "nextAction": "Same Sol/high worker ports Roman/letter/relative-Ionian display into music domain and compares all six frozen channels. Save tested commit and report before interval-analysis expansion.",
+      "slice": "Named and measured interval analysis from the frozen Android baseline",
+      "nextAction": "Same Sol/high worker ports interval analysis only within music domain, with current Kotlin-derived assertions and exact source provenance. Save/test/commit and report before unrelated learning/audio expansion. Independent captured-source accuracy gate remains explicit.",
       "validation": [
         {
           "command": "npm --prefix pwa run check",
@@ -142,12 +142,18 @@
           "command": "node node_modules/vitest/vitest.mjs run src/domain/music (from pwa)",
           "revision": "22838ca1aca17ade3edda53da4ddcb2c4a5edaa3 plus disjoint pending catalog journal",
           "result": "58 music tests passed in1.18s; five files."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/music (from pwa)",
+          "revision": "normal integration of46c3fad119f76ef6236abb40a5b889d77c97f43c with76019ab4",
+          "result": "87music tests passed in2.33s;6files."
         }
       ],
       "progress": [
         "Bounded coreda1913c integrated: pitch/key/scale, written pitches and relative-Ionian helpers;18 native-derived tests. Combined47 unit cases+1 input contract/types/build passed with catalog contract tree.",
         "Worker9c082646 chord-root resolution integrated;36 music tests with39,040 frozen root-channel comparisons passed, including written enharmonic/context cases. Full voicing/symbol gates remain.",
-        "Voicing032da71 integrated normally at22838ca1; combined58 music tests passed, including39018 ordered MIDI/pitch-class and39040 root/role comparisons. Display/interval gates remain."
+        "Voicing032da71 integrated normally at22838ca1; combined58 music tests passed, including39018 ordered MIDI/pitch-class and39040 root/role comparisons. Display/interval gates remain.",
+        "Display46c3fad integrated normally;87music tests passed on combined root.39018frozen cases match all6channels,22extra role cases and4relative-Ionian cases pass. Independent accuracy and interval analysis remain open."
       ],
       "blocker": null
     },
@@ -199,8 +205,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
-      "slice": "Verified cache and durable install journal, cut/resume and recoverable active pointer",
-      "nextAction": "Validate quota/network failures and actual full-size Aural import against preserved237chunks; production worker/offline shell and product installer UI remain explicit next gates.",
+      "slice": "Actual browser quota and interrupted network failure with old active catalog retained",
+      "nextAction": "Apply Chrome origin quota override and failed chunk request in isolated browser fixtures; verify no activation, old snapshot and all10user stores/outbox unchanged, then clear quota and resume same intent.",
       "validation": [
         {
           "command": "python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v",
@@ -251,6 +257,11 @@
           "command": "node node_modules/@playwright/test/cli.js test tests/browser/catalog-worker.spec.ts (from pwa); npm --prefix pwa run check",
           "revision": "22838ca1 plus catalog journal checkpoint committed next",
           "result": "6Chrome cases passed in12.6s;89unit+1input-contract/types/build passed. Strict types fixed fixture initializer once; browser first run passed."
+        },
+        {
+          "command": "node node_modules/@playwright/test/cli.js test tests/browser/catalog-worker.spec.ts -g \"network interruption preserves\" (from pwa)",
+          "revision": "76019ab4 plus the bounded network fixture",
+          "result": "1passed in6.4s; failed download preserves previous active catalog,10user stores and outbox, then same-intent resume completes without activation. Native quota exhaustion remains fixme."
         }
       ],
       "progress": [
@@ -262,7 +273,8 @@
         "SQLite worker33b9aec integrated normally. Main and worker Vite plugins configured with prebundling exclusion. Final independent npm ci installed50 packages;47 unit +1 corpus input contract/types/build,6 patch regressions,1 actual Chrome OPFS preservation drill and7 shell/storage browser cases all passed. CI wired for these checks; remote CI itself has not run.",
         "Dedicated SQLite worker + client implemented. Explicit preservation capability check precedes SAHPool init; Web Locks excludes other tabs before VFS init. New immutable attempt IDs stream one verified chunk at a time through@noble/hashes2.4.0 incremental full-file SHA256 into real SQLite. Native quick_check/metadata/length validation; closed handles; no arbitrary SQL RPC.",
         "3 focused Chrome cases passed in10.7s through actual Vite worker: tab contention/cooperative handoff, real3-file SQLite import/abrupt worker termination/reopen/offline inspect, wrong full hash/snapshot preserving prior staging. Initial strict typecheck corrected published SAHPool constructor typing by using public readonly oo1.DB(path,r,vfs); rerun passed. No active-pointer, partial-download resume or full-size proof claimed yet.",
-        "Journal/cache/activation slice:6actual Chrome cases passed including killed second-file fetch with no-repeat first-file resume, cold-worker confirmation, new-target fallback, all10user stores/outbox unchanged across update, corrupt-cache one-chunk repair and immutable retry rejection. Full-size/mobile/quota/production cold shell remain unrun."
+        "Journal/cache/activation slice:6actual Chrome cases passed including killed second-file fetch with no-repeat first-file resume, cold-worker confirmation, new-target fallback, all10user stores/outbox unchanged across update, corrupt-cache one-chunk repair and immutable retry rejection. Full-size/mobile/quota/production cold shell remain unrun.",
+        "Quota harness experiment:1MiB then0byte CDP overrides did not force this small preallocated fixture to fail. Gate remains explicitly fixme/unproven; no quota acceptance claimed. Independent network failure/same-intent resume case proceeds."
       ],
       "blocker": null
     },

@@ -152,3 +152,27 @@ test('corrupt cached chunk refetches only its immutable bytes and mismatched ret
   expect((await call<ActiveCatalog>(page, 'active', ['resumed', 'aural'])).inspection).toEqual(active.inspection);
   await call(page, 'close', ['resumed']);
 });
+
+
+test('network interruption preserves active catalog and user data then resumes the same intent', async ({ page, context }) => {
+  await call(page, 'seedUsers'); const users = await call(page, 'users');
+  await call(page, 'open', ['owner']);
+  const first = 'a2345678-1234-1234-1234-123456789012', next = 'b2345678-1234-1234-1234-123456789012';
+  await call(page, 'prepare', ['owner', first, fixture.manifest, base]);
+  const previous = await call<ActiveCatalog>(page, 'activate', ['owner', first]);
+  await context.route('**/catalog-fixtures/v2/**', route => route.abort('internetdisconnected'));
+  await expect(call(page, 'prepare', ['owner', next, update.manifest, base + 'v2/'])).rejects.toThrow();
+  const interrupted = await call<InstallStatus>(page, 'status', ['owner', next]);
+  expect(interrupted?.phase).toBe('importing'); expect(interrupted?.lastError).toBeTruthy();
+  expect((await call<ActiveCatalog>(page, 'active', ['owner', 'aural'])).inspection).toEqual(previous.inspection);
+  expect(await call(page, 'users')).toEqual(users);
+  await context.unroute('**/catalog-fixtures/v2/**');
+  await call(page, 'prepare', ['owner', next, update.manifest, base + 'v2/']);
+  expect((await call<InstallStatus>(page, 'status', ['owner', next]))?.phase).toBe('validated');
+  expect((await call<ActiveCatalog>(page, 'active', ['owner', 'aural'])).pointer.activeId).toBe(first);
+  await call(page, 'close', ['owner']);
+});
+
+// Two bounded Chrome quota-override experiments did not enforce exhaustion on
+// these small preallocated fixtures. Keep this gate visibly unproven.
+test.fixme('actual native quota exhaustion during catalog write preserves prior data', async () => {});
