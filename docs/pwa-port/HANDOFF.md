@@ -38,3 +38,7 @@ At each future run/slice boundary inspect live five-hour and weekly usage. Below
 ## Next action
 
 Deliver the audit links and plan. Await implementation authorization, then record it in tasks.json, implement T00 recovery controls first, proceed T01 and the early storage/audio feasibility gate. Do not silently advance the Android baseline, revive superseded features or mark unavailable device/configuration checks passed. No publishing or deletion is authorized by this audit.
+
+## Implementation authorized2026-10-14
+
+Owner requested beginning implementation and explicit sub-agent model/thinking assignments. This supersedes the earlier audit-only next action. Active coordinator branch is codex/pwa-foundation at the audit completion base675a151f; start state clean, no product tests yet. Android authority unchanged. See MODEL_ROUTING.md and tasks.json. Planned separate sibling worker: H:/Desktop/Acquiring/Acquiring-pwa-run-control on codex/pwa-run-control, T00 only. It owns pwa/scripts/run-control and its local work log; root owns task/contract/package/CI integration. Save and validate T00 before starting dependent T01. Main risks: shared rate allowance and unavailable mobile hardware; no release/deletion is implied.

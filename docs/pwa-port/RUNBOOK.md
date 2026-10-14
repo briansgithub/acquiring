@@ -1,6 +1,6 @@
 # Unattended execution and interruption recovery
 
-Updated 2026-10-14. Entry point: HANDOFF.md; authority: IMPLEMENTATION_PLAN.md and tasks.json. Scope currently ends at delivering the audit/plan. Product tasks remain planned until the owner authorizes implementation. Runtime model unknown.
+Updated 2026-10-14. Entry point: HANDOFF.md; authority: IMPLEMENTATION_PLAN.md and tasks.json. Product implementation was authorized2026-10-14; tasks.json records the owner instruction and active slices. Runtime model unknown.
 
 ## Budget and scheduling
 
@@ -10,7 +10,7 @@ The five-hour limit is an account usage window, not five hours of guaranteed con
 - At 70% in either window: start no new slice/worker/expensive check. Save currently gathered findings/edits and bounded in-flight results.
 - At 80%, exhaustion, or an applicable unreached recorded reset: checkpoint recoverable state and yield. If the process is cut off before this, the prewritten intent and incremental files are the recovery basis.
 - Same-chat hourly heartbeat resumes authorized work only after capacity returns. It must inspect task/agent/process state and avoid duplicate work. Host/app availability is required. No tight polling, looped failed model calls, unsupervised model switching, or assumption that the scheduler bypasses limits.
-- The current heartbeat resume-acquiring-pwa-audit pauses once the audit and plan are delivered. Reactivate/update that same heartbeat when implementation is authorized; preserve the user's quiet-on-unchanged notification policy. Notify only on completion, a meaningful failure/blocker, or required human action.
+- The current heartbeat resume-acquiring-pwa-audit is reused for authorized implementation; preserve the user's quiet-on-unchanged notification policy. Notify only on completion, a meaningful failure/blocker, or required human action.
 
 ## Package and slice state
 
