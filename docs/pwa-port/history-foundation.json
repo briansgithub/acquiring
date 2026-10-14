@@ -1761,20 +1761,29 @@
     "sha": "9ab27ceeeadde93347d97096a9060656b75cdf98",
     "date": "2026-08-22",
     "subject": "Keep favourite songs in playlists the catalog swap cannot reach",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Store favorites/playlists in separate durable database with DAO/tests and rollback.",
+    "finalDisposition": "Never replace user data with catalog; no custom-playlist UI invented.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "9ab27cee:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "9ab27cee:android/app/src/main/java/com/acquiring/android/Playlist.kt",
+      "9ab27cee:android/app/src/main/java/com/acquiring/android/PlaylistDao.kt"
+    ]
   },
   {
     "sha": "eada9b7d1fef83ed6763af0d9026b7a75ea7a54a",
     "date": "2026-08-22",
     "subject": "Draw the unfavourited star hollow, not merely grey",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Draw unselected favorite star hollow.",
+    "finalDisposition": "Current selected/unselected semantics and accessibility.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "eada9b7d:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "eada9b7d:android/app/src/main/res/drawable/ic_star_outline.xml"
+    ]
   }
 ]
