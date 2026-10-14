@@ -120,13 +120,13 @@
         "pwa/src/domain/music/"
       ],
       "acceptance": "Shared corpus plus source/historic/role fixtures and current Kotlin cases",
-      "status": "in_progress",
-      "owner": "chord_port worker (GPT-6.1 Sol/high)",
+      "status": "complete",
+      "owner": "coordinator (integrated Sol/high worker checkpoints)",
       "branch": "codex/pwa-chord-interpretation",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
-      "slice": "Independent captured-source and historical accuracy gates using PWA interpretation",
-      "nextAction": "Same Sol/high worker owns music-local accuracy adapters only, importing frozen pure decoder-free shared evaluators and fixtures, never old web runtime. Preserve truth/provenance/fingerprints/ambiguities and report exact assertion counts. Commit/test/report before separate display dedup utility.",
+      "slice": "Native theory and complete frozen shared/source/historic/role gates accepted",
+      "nextAction": "No repeated theory port or fixture regeneration. Consumers T04/T07/T14 can use the exported pure music API; unresolved captured-source ambiguities stay explicit.",
       "validation": [
         {
           "command": "npm --prefix pwa run check",
@@ -147,6 +147,11 @@
           "command": "node node_modules/vitest/vitest.mjs run src/domain/music (from pwa)",
           "revision": "normal integration of46c3fad119f76ef6236abb40a5b889d77c97f43c with76019ab4",
           "result": "87music tests passed in2.33s;6files."
+        },
+        {
+          "command": "npm --prefix pwa run check (before final helper); node node_modules/vitest/vitest.mjs run src/domain/music; npm run typecheck (from pwa, after helper)",
+          "revision": "4b087ba4cfda23fccb124f5834cd50a1085b5f15",
+          "result": "153unit+1input-contract/types/build passed at6ef64a3c before helper; final combined125music tests and strict types passed after helper, including all39018six-channel frozen cases/22role contexts, independent source/historical accuracy and native intervals/dedup."
         }
       ],
       "progress": [
@@ -154,7 +159,8 @@
         "Worker9c082646 chord-root resolution integrated;36 music tests with39,040 frozen root-channel comparisons passed, including written enharmonic/context cases. Full voicing/symbol gates remain.",
         "Voicing032da71 integrated normally at22838ca1; combined58 music tests passed, including39018 ordered MIDI/pitch-class and39040 root/role comparisons. Display/interval gates remain.",
         "Display46c3fad integrated normally;87music tests passed on combined root.39018frozen cases match all6channels,22extra role cases and4relative-Ionian cases pass. Independent accuracy and interval analysis remain open.",
-        "Interval2b198a4 integrated normally:116worker music tests/strict types passed first run;29new native-derived interval assertions. Root combined check follows. Read-only review identifies frozen decoder-free shared accuracy evaluators; legacy web executable wrappers are excluded."
+        "Interval2b198a4 integrated normally:116worker music tests/strict types passed first run;29new native-derived interval assertions. Root combined check follows. Read-only review identifies frozen decoder-free shared accuracy evaluators; legacy web executable wrappers are excluded.",
+        "Accuracy1ca7f58 integrated:5471independent captured fields+2derived assertions and51774historical assertions pass with0unexplained failures; known Gaga pcs, one grouped NCT capture gap and explicit-fifth-eleventh rule remain explicit exclusions. Final native display dedup helper 1e729b015969c0a06998f2234e363bcb1de12d4d integrated; policy preserves native signature/order/filtering. T03 complete after combined music/types evidence; this is pure theory parity, not audio/UI/device acceptance."
       ],
       "blocker": null
     },
@@ -860,17 +866,11 @@
     "date": "2026-10-14",
     "usageObserved": {
       "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 46
+      "weeklyUsedPercent": 59
     },
-    "reason": "No-new-work threshold reached; finish recoverable validated checkpoint and yield. Re-read live limits on resume.",
+    "reason": "No-new-work threshold reached. In-flight helper and required integrated checks completed; durable checkpoint and yield. Read live limits next run.",
+    "applicableFiveHourResetAt": "2026-10-15T03:02:30Z",
     "activeWorker": null,
-    "sourceCommit": "3dceb355940777161d4046e21c5a743768555668",
-    "resumeObservation": {
-      "date": "2026-10-14",
-      "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 48,
-      "unresolvedRuns": [],
-      "reason": "Fresh window verified; normal bounded implementation resumes."
-    }
+    "sourceCommit": "4b087ba4cfda23fccb124f5834cd50a1085b5f15"
   }
 }

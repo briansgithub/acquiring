@@ -4,7 +4,7 @@ Completed 2026-10-14. Runtime model: unknown. Android reference: `801cf7984171d7
 
 The first pass classified every entry in the frozen full-history traversal of `android/` and `contracts/`: **262 commits** (108 foundation,103 revision,51 Aural). The earlier213 count was Git's path-simplified view, which hides integration history. This is not262 independent features. Each JSON row records the actual change, kind, final disposition and evidence. Review included changed-path metadata, bounded substantive diffs, tests/comments and current source/handoffs. Large patches were searched; binary artwork was inspected as metadata. No claim of exhaustive line-by-line history or fresh app/device validation is made.
 
-The second pass groups surviving behavior into **29 dependency-ordered work packages**, avoids rebuilding replaced versions, and defines ownership, acceptance and crash recovery. Product implementation was authorized2026-10-14 and has begun. T00/T01/T02/T06 foundations are accepted; T03 theory and T05 catalog work are partial. See HANDOFF.md for current source/checks and remaining work.
+The second pass groups surviving behavior into **29 dependency-ordered work packages**, avoids rebuilding replaced versions, and defines ownership, acceptance and crash recovery. Product implementation was authorized2026-10-14 and has begun. T00/T01/T02/T03/T06 foundations are accepted; T05 has passed a full-size desktop Chrome cold-offline production-worker proof, while installer/device/remaining storage gates are partial. See HANDOFF.md for current source/checks and remaining work.
 
 ## Read next
 
