@@ -207,3 +207,21 @@ export function interpret(chord: JsonObject, key: KeyInfo): ChordInterpretation 
   return { roman: getRomanSymbol(chord, key), letter: getLetterName(chord, key), midi: voiced?.tones.map(tone => tone.midi) ?? [],
     rootMidi: voiced?.rootMidi ?? null, toneLabels: voiced?.labels ?? [] };
 }
+
+/** Native global display deduplication; preserve first objects and the original signature policy. */
+export function getUniqueDisplayChords(chords: readonly JsonObject[], key: KeyInfo): JsonObject[] {
+  const result: JsonObject[] = [], seenSignatures = new Set<string>();
+  for (const chord of chords) {
+    const root = safeInt(chord.root);
+    if (safeBoolean(chord.isRest) || safeBoolean(chord.rest) || root <= 0) continue;
+    const roman = getRomanSymbol(chord, key);
+    if (roman === '' || roman === 'Rest') continue;
+    const type = safeInt(chord.type, 5), inversion = safeInt(chord.inversion), applied = safeInt(chord.applied);
+    const borrowed = safeString(chord.borrowed);
+    const alts = Array.isArray(chord.alterations) ? JSON.stringify(chord.alterations) : '';
+    const sus = Array.isArray(chord.suspensions) ? JSON.stringify(chord.suspensions) : '';
+    const signature = `${root}_${type}_${inversion}_${applied}_${borrowed}_${alts}_${sus}`;
+    if (!seenSignatures.has(signature)) { seenSignatures.add(signature); result.push(chord); }
+  }
+  return result;
+}
