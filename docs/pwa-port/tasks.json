@@ -15,21 +15,27 @@
       ],
       "acceptance": "Interrupt/resume a harmless docs task; no lost or duplicated claim",
       "status": "complete",
-      "owner": "run_control worker (GPT-6.1 Sol/high)",
-      "branch": "codex/pwa-run-control",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-run-control",
+      "owner": "coordinator",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "675a151f713e6121b78c96041311c752572d9738",
-      "slice": "Portable command lock, durable run receipts, and crash/reacquisition tests",
-      "nextAction": "No further T00 work; use the controller for implementation commands.",
+      "slice": "Explicit child working directory while retaining repository-scoped ownership",
+      "nextAction": "Use run --cwd pwa for direct package commands, or explicit --prefix pwa. Preserve repository-scoped ownership. No further T00 work pending.",
       "validation": [
         {
           "command": "python -m unittest discover -s pwa/scripts/run-control -p test_run_control.py -v",
           "revision": "2a54ac2713af0a9c8fa304539a33f47e44c47e17",
           "result": "8 passed in 11.112s on Windows/Python3.13.15; no skips."
+        },
+        {
+          "command": "python -m unittest discover -s pwa/scripts/run-control -p test_run_control.py -v",
+          "revision": "T00 contained-cwd correction tree (committed next)",
+          "result": "9 passed in12.101s; explicit cwd runs under repo lock; outside-root cwd rejected before intent/child launch."
         }
       ],
       "progress": [
-        "Worker c48f40c integrated normally at 2a54ac2; partial-write, controller death, real contention, duplicate-run and receipt reconciliation tests passed. Windows suspended-child gap and POSIX descendant limits documented."
+        "Worker c48f40c integrated normally at 2a54ac2; partial-write, controller death, real contention, duplicate-run and receipt reconciliation tests passed. Windows suspended-child gap and POSIX descendant limits documented.",
+        "Contained --cwd added after observed root-default command targeting hazard; all existing crash/lock receipts/drills still pass."
       ],
       "blocker": null
     },

@@ -14,7 +14,7 @@ python pwa/scripts/run-control/run_control.py status
 ```
 
 `--repo PATH` precedes the subcommand and must name an existing Git working-tree
-root. It controls command working directory and artifact/lock location. Always
+root. It controls artifact/lock location; the child defaults to this root regardless of the invoking shell directory. `run --cwd pwa` explicitly selects a contained child directory and records it, while keeping the same repository lock. Escaping the working tree is rejected. Always
 use the **same coordinator root** for scheduled invocations. Linked worktrees
 have different root directories and therefore different locks; a command can
 explicitly target another worktree (for example `git -C ...`) while retaining

@@ -74,6 +74,26 @@ class ControlTests(unittest.TestCase):
                                     "--confirmed-stopped", "--evidence", "Inspected local harmless docs output and stopped processes.",
                                     "--next-action", "Continue the inspected docs task."))
 
+    def test_child_cwd_is_explicit_contained_and_preserves_repo_lock_scope(self):
+        child_directory = self.root / "pwa"
+        child_directory.mkdir()
+        command = self.command("subdirectory", "from pathlib import Path; Path('marker').write_text('owned child')")
+        position = command.index("run") + 1
+        command[position:position] = ["--cwd", "pwa"]
+        result = self.invoke(command)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((child_directory / "marker").read_text(), "owned child")
+        self.assertFalse((self.root / "marker").exists())
+        self.assertEqual(Path(self.receipt("subdirectory", "intent")["cwd"]), child_directory)
+        self.assertEqual(Path(self.receipt("subdirectory", "intent")["repo"]), self.root)
+        self.assertTrue((self.root / ".artifacts/pwa-port/coordinator.lock").exists())
+        escaped = self.command("escape", "raise RuntimeError('must never run')")
+        escaped[position:position] = ["--cwd", str(self.root.parent)]
+        result = self.invoke(escaped)
+        self.assertEqual(result.returncode, control.CONTROL_ERROR)
+        self.assertIn("inside the Git working tree", result.stderr)
+        self.assertFalse(self.receipt_path("escape", "intent").exists())
+
     def test_success_failure_and_lost_response_are_inspectable_without_reexecution(self):
         source = "from pathlib import Path; p=Path('count'); p.write_text(p.read_text()+'x' if p.exists() else 'x')"
         self.assertEqual(self.invoke(self.command("once", source)).returncode, 0)

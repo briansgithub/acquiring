@@ -30,3 +30,5 @@ Final validation: the same unittest command passed all 8 tests in 11.022s on
 the final implementation tree. No tests skipped on Windows. Diff/whitespace
 review is limited to the four owned source/test/doc files; generated Python
 cache stays ignored. Coordinator must rerun this check on the integrated commit.
+
+Coordinator follow-up2026-10-14: added contained child `run --cwd` option without changing repo-scoped lock/job ownership. Default remains repo root. Real subprocess drill verifies target marker, receipt cwd, root lock and outside-root rejection. Full suite9 passed in12.101s on Windows.

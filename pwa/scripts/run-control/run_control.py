@@ -304,6 +304,9 @@ def run_command(args, root, lock):
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
     if not command:
         raise ValueError("run requires a command after --")
+    cwd = (root / (args.cwd or Path("."))).resolve()
+    if not cwd.is_relative_to(root) or not cwd.is_dir():
+        raise ValueError("--cwd must be an existing directory inside the Git working tree")
     runs = read_runs(root)
     if any(run["runId"] == args.run_id for run in runs):
         print("Run ID already exists; use status to inspect it. Command was not repeated.", file=sys.stderr)
@@ -317,7 +320,7 @@ def run_command(args, root, lock):
         folder.mkdir(parents=True, exist_ok=False)
         base = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=True).stdout.strip()
         metadata = {"schemaVersion": 1, "owner": args.owner, "task": args.task,
-                    "runId": args.run_id, "command": command, "cwd": str(root),
+                    "runId": args.run_id, "command": command, "cwd": str(cwd), "repo": str(root),
                     "controllerPid": os.getpid(), "childPid": None,
                     "baseGitCommit": base, "nextAction": args.next_action}
         def receipt(phase, **fields):
@@ -327,9 +330,9 @@ def run_command(args, root, lock):
         child = None
         try:
             if job:
-                metadata["childPid"] = job.start(command, root)
+                metadata["childPid"] = job.start(command, cwd)
             else:
-                child = subprocess.Popen(command, cwd=root, start_new_session=True, pass_fds=(lock.fd,))
+                child = subprocess.Popen(command, cwd=cwd, start_new_session=True, pass_fds=(lock.fd,))
                 metadata["childPid"] = child.pid
             receipt("start", status="started")
             code = job.wait() if job else child.wait()
@@ -389,6 +392,7 @@ def main(argv=None):
     parser.add_argument("--repo", type=Path, help="Git working-tree root (default: this script's repository)")
     actions = parser.add_subparsers(dest="action", required=True)
     run = actions.add_parser("run", help="hold coordinator ownership around one child command")
+    run.add_argument("--cwd", type=Path, help="Child directory relative to --repo (must remain inside this working tree)")
     run.add_argument("--run-id", type=valid_run, required=True)
     run.add_argument("--owner", required=True)
     run.add_argument("--task", required=True)
