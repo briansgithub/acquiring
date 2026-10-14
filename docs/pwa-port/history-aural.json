@@ -647,10 +647,15 @@
     "sha": "c01d433b3b6b15681c4b5bafb1ffc954cdfbf976",
     "date": "2026-10-02",
     "subject": "Deliver full v3 example catalog automatically and from Settings",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Automatically deliver full-v3 example bundle and Settings update with byte progress, serialized install, validation and reader release.",
+    "finalDisposition": "Retain full offline data/atomic activation; PWA distribution may chunk immutable bytes without changing semantics.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "c01d433b:android/app/src/main/java/com/acquiring/android/AppSettings.kt",
+      "c01d433b:android/app/src/main/java/com/acquiring/android/AuralCatalogDownloader.kt",
+      "c01d433b:android/app/src/main/java/com/acquiring/android/AuralQuizScreen.kt"
+    ]
   }
 ]
