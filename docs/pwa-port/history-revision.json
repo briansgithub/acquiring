@@ -1312,101 +1312,148 @@
     "sha": "cb5c3e044bc40d885c2ae5fd821511b60812345c",
     "date": "2026-09-11",
     "subject": "Show Root Only as a narrow previous card beside equal featured current and interval cards.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Narrow previous-root card; equal featured current/interval cards.",
+    "finalDisposition": "Final geometrybc4ad4fc/3bd3d36b.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "cb5c3e04:android/app/src/main/java/com/acquiring/android/QuizView.kt",
+      "cb5c3e04:android/app/src/test/java/com/acquiring/android/RootOnlyCardLayoutTest.kt"
+    ]
   },
   {
     "sha": "fa98b517df02d9c064494755e5f4919a7e53224b",
     "date": "2026-09-11",
     "subject": "Center the quiz key with Lock as a prefix and wash timeline lanes in the source-mode color.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Centered key/Lock prefix; source-mode-colored timeline lanes.",
+    "finalDisposition": "Preserve source and relative-major contexts separately.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "fa98b517:android/app/src/main/java/com/acquiring/android/QuizDestination.kt",
+      "fa98b517:android/app/src/main/java/com/acquiring/android/QuizView.kt",
+      "fa98b517:android/app/src/test/java/com/acquiring/android/QuizLaneColorTest.kt"
+    ]
   },
   {
     "sha": "0b32f61e9ca4ffffda8ecf26e62edc7088dbcdc9",
     "date": "2026-09-11",
     "subject": "Open transpose from -12 to +12 centered on 0 so tapping zero restores the written key.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Transpose -12..+12 centered on written-key zero.",
+    "finalDisposition": "25 values, tap zero resets.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "0b32f61e:android/app/src/main/java/com/acquiring/android/QuizMenus.kt",
+      "0b32f61e:android/app/src/test/java/com/acquiring/android/QuizTransposeRangeTest.kt"
+    ]
   },
   {
     "sha": "ead367e3ee55e997bba70a95d7f204346fe1f6bb",
     "date": "2026-09-11",
     "subject": "Show interval direction shorthand and a live cents gauge on the practiced card.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Interval direction shorthand and practiced-card pitch deviation.",
+    "finalDisposition": "Final feedback placementbc4ad4fc.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "ead367e3:android/app/src/main/java/com/acquiring/android/QuizView.kt",
+      "ead367e3:android/app/src/test/java/com/acquiring/android/IntervalShorthandTest.kt"
+    ]
   },
   {
     "sha": "877bb982e61d93e244297a43a631cc768ab18c5b",
     "date": "2026-09-11",
     "subject": "Let the quiz title expand into a selectable sheet and add a dismissible help overlay.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Selectable expanded title sheet and dismissible contextual help.",
+    "finalDisposition": "Retain final title/help behavior.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "877bb982:android/app/src/main/java/com/acquiring/android/QuizDestination.kt"
+    ]
   },
   {
     "sha": "69096194f907ca7d758de8fde811a25bfb909d61",
     "date": "2026-09-11",
     "subject": "Preview Chords inventory as block chords with tone cards and ranked transitions instead of an arpeggio slider.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "replacement",
+    "featureDelta": "Block-chord inventory, tone cards and ranked transitions replace old arpeggio-speed UI.",
+    "finalDisposition": "Transport arpeggiation remains a separate capability.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "69096194:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt",
+      "69096194:android/app/src/main/java/com/acquiring/android/ChordTransitions.kt",
+      "69096194:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "69096194:android/app/src/main/java/com/acquiring/android/SongDetailView.kt"
+    ]
   },
   {
     "sha": "45e7012ed33d18cded02093780152494461009bd",
     "date": "2026-09-11",
     "subject": "Replace tessitura with a singer-set octave offset and match catalog search to displayed titles.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "replacement",
+    "featureDelta": "Remove tessitura/calibration/hints; add saved song octave owner, displayed-name search, revised cards/help.",
+    "finalDisposition": "Current source authoritative; never rebuild removed calibration.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "45e7012e:android/app/src/androidTest/java/com/acquiring/android/PitchHintDotUiTest.kt",
+      "45e7012e:android/app/src/androidTest/java/com/acquiring/android/QuizTransportDockVisibilityUiTest.kt",
+      "45e7012e:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt",
+      "45e7012e:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt"
+    ]
   },
   {
     "sha": "bc4ad4fc12590299dfd822a259ba9630967e1e3f",
     "date": "2026-09-12",
     "subject": "Match root-only and melody card geometry to iOS and keep the timeline cents overlay visible while monitoring.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Root/melody card geometry and persistent monitoring timeline cents marker.",
+    "finalDisposition": "Carry rest/repeated-note geometry.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "bc4ad4fc:android/app/src/androidTest/java/com/acquiring/android/QuizTransportDockVisibilityUiTest.kt",
+      "bc4ad4fc:android/app/src/main/java/com/acquiring/android/PersistentQuizPitchPractice.kt",
+      "bc4ad4fc:android/app/src/main/java/com/acquiring/android/QuizExampleCard.kt",
+      "bc4ad4fc:android/app/src/main/java/com/acquiring/android/QuizIntervalState.kt"
+    ]
   },
   {
     "sha": "16f2d395ab213bd631087ce11b573bc6f0bc37e1",
     "date": "2026-09-12",
     "subject": "Stop the quiz knobs from flashing a rectangular ripple when tapped to reset.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Remove rectangular ripple flash on rotary tap reset.",
+    "finalDisposition": "Keep normal tap-reset behavior.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "16f2d395:android/app/src/main/java/com/acquiring/android/QuizDial.kt"
+    ]
   },
   {
     "sha": "8ba5d17fa1c0cfe0b0e0d1c467d721f86e670e5b",
     "date": "2026-09-12",
     "subject": "Split Hooktheory into its own search field and keep catalog suggestions on-screen without a dropdown overlay.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Independent Hooktheory input and inline library suggestions.",
+    "finalDisposition": "Supersedes overlay dropdown.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "8ba5d17f:android/app/src/main/java/com/acquiring/android/LibraryHooktheorySearch.kt",
+      "8ba5d17f:android/app/src/main/java/com/acquiring/android/LibrarySearch.kt",
+      "8ba5d17f:android/app/src/main/java/com/acquiring/android/LibrarySearchSuggestions.kt",
+      "8ba5d17f:android/app/src/main/java/com/acquiring/android/LibraryView.kt"
+    ]
   },
   {
     "sha": "24084f70daa3c87dee783dc0fea244615b0f1268",
