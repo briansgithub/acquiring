@@ -2,6 +2,7 @@ import { CatalogWorkerClient } from '../../src/storage/catalog/client';
 import { openUserDatabase, USER_STORES } from '../../src/storage/user';
 import type { CatalogManifest } from '../../src/storage/catalog/manifest';
 const clients = new Map<string, CatalogWorkerClient>();
+let progress: import('../../src/storage/catalog/protocol').CatalogProgress | null = null;
 let preparation: { done: boolean; error?: string } = { done: false };
 export const catalogHarness = {
   beginPrepare(name: string, attempt: string, manifest: CatalogManifest, base: string) {
@@ -9,6 +10,7 @@ export const catalogHarness = {
     void clients.get(name)!.prepare(attempt, manifest, base).then(() => { preparation = { done: true }; }, error => { preparation = { done: true, error: String(error) }; });
   },
   preparation() { return preparation; },
+  progress() { return progress; },
   async seedUsers() {
     const db = await openUserDatabase();
     try { for (const store of USER_STORES) await db.mutate({ namespace: 'guest', store, id: 'kept', operationId: 'seed-' + store, value: { name: 'Preserved ' + store }, createdAt: 1 }); }
@@ -41,7 +43,7 @@ export const catalogHarness = {
       });
     } finally { db.close(); }
   },
-  async open(name: string) { clients.set(name, await CatalogWorkerClient.open()); return clients.get(name)!.info(); },
+  async open(name: string) { clients.set(name, await CatalogWorkerClient.open(value => { progress = value; })); return clients.get(name)!.info(); },
   prepare(name: string, attempt: string, manifest: CatalogManifest, base: string) { return clients.get(name)!.prepare(attempt, manifest, base); },
   activate(name: string, attempt: string) { return clients.get(name)!.activate(attempt); },
   active(name: string, kind: CatalogManifest['kind']) { return clients.get(name)!.active(kind); },
@@ -54,3 +56,6 @@ export const catalogHarness = {
 };
 declare global { interface Window { catalogHarness: typeof catalogHarness } }
 window.catalogHarness = catalogHarness;
+
+// This entry is a test-only production build, never a public application route.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) void navigator.serviceWorker.register('/sw.js');
