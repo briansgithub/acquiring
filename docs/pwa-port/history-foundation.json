@@ -1186,101 +1186,147 @@
     "sha": "4bb64d1fe606a80deeda467fe3fac61b32e5fbba",
     "date": "2026-08-11",
     "subject": "fix(android): centralize tessitura calibration lifecycle",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Centralize three-second comfortable-pitch capture and lifecycle.",
+    "finalDisposition": "Removed by45e7012e; no PWA calibration implementation.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "4bb64d1f:android/app/src/main/java/com/sacredring/android/ComfortablePitchCapture.kt",
+      "4bb64d1f:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "4bb64d1f:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "1ef5c8de017319401ceb345dd49c1ba9221ffa75",
     "date": "2026-08-11",
     "subject": "fix(android): polish tessitura target feedback",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Calibrated-target hint tint and tool-state feedback.",
+    "finalDisposition": "Superseded by removal of calibration/hints.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "1ef5c8de:android/app/src/main/java/com/sacredring/android/DoubleTapHint.kt",
+      "1ef5c8de:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "1ef5c8de:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "cc7da0c2dabc575dda416e4eaaf4268f5bead251",
     "date": "2026-08-11",
     "subject": "fix(android): harden tessitura integration",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "test",
+    "featureDelta": "Harden tessitura UI/lifecycle/target integration with fake pitch sources.",
+    "finalDisposition": "Calibration retired; retain exclusive mic ownership/testing seam.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "cc7da0c2:android/app/build.gradle",
+      "cc7da0c2:android/app/src/androidTest/java/com/sacredring/android/TessituraUiTest.kt",
+      "cc7da0c2:android/app/src/main/java/com/sacredring/android/ComfortablePitchCapture.kt"
+    ]
   },
   {
     "sha": "502c852be7a3ca540cd683e72abd4cf5ee6e40ff",
     "date": "2026-08-11",
     "subject": "feat(quiz): refine melody pitch cards and playback",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Refine melody cards/previews and bound static audio allocation to30seconds.",
+    "finalDisposition": "Carry bounded preview allocations; final card geometry later.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "502c852b:android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "502c852b:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "502c852b:android/app/src/main/java/com/sacredring/android/QuizIntervalState.kt"
+    ]
   },
   {
     "sha": "f12a29dae4c1c23da0a25384a215c60b6b8bd7de",
     "date": "2026-08-11",
     "subject": "Merge branch 'fix/pitch-detection-accuracy'",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrate pitch-detection accuracy branch.",
+    "finalDisposition": "Attribute detector behavior to parent fixes; no duplicate feature.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "f12a29da:android/app/build.gradle",
+      "f12a29da:android/app/src/androidTest/java/com/sacredring/android/TessituraUiTest.kt",
+      "f12a29da:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt"
+    ]
   },
   {
     "sha": "acbbab771801ba2df906b7439e5fa8024c26fd64",
     "date": "2026-08-11",
     "subject": "Rename tessitura button, add octave stepper, restyle clear control",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Rename tessitura controls and expose stepper/clear styling.",
+    "finalDisposition": "Historical controls superseded by current singing octave selector.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "acbbab77:android/app/src/androidTest/java/com/sacredring/android/TessituraUiTest.kt",
+      "acbbab77:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "acbbab77:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "fe908433488d8381cb4cfa4b1fd1474853369b6f",
     "date": "2026-08-11",
     "subject": "Repair the tessitura button",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Repair target/slot assignment during tessitura control use.",
+    "finalDisposition": "Historical calibration removed; preserve current target ownership.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "fe908433:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "fe908433:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "fe908433:android/app/src/main/java/com/sacredring/android/SingingTargets.kt"
+    ]
   },
   {
     "sha": "ee96eccf5e6e3f954e66c0b2a539ab498e77714e",
     "date": "2026-08-11",
     "subject": "feat(quiz): add melody pitch singing targets",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Open single melody-pitch singing target from Playback cards.",
+    "finalDisposition": "Current card-target workflow survives.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "ee96eccf:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "ca27084b96a0ee4037ef50fda3a4a786f20a7d33",
     "date": "2026-08-13",
     "subject": "Keep chord degree labels relative to chord root",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Keep chord-tone degrees relative to effective chord root.",
+    "finalDisposition": "Retain chord-root degree fixture, independent of displayed key.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "ca27084b:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "febfadae715e5f371073e8a3c911a91d3bcb86fc",
     "date": "2026-08-13",
     "subject": "Fix Quiz playback and add draggable transport",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Streaming playback/key-at-beat lookup repair and draggable transport.",
+    "finalDisposition": "Streaming engine survives; floating transport replaced1c674526.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "febfadae:android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "febfadae:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "febfadae:android/app/src/main/java/com/sacredring/android/QuizIntervalState.kt"
+    ]
   },
   {
     "sha": "9973e748fbecaf09db02575ff2f2339d4c7d7fc0",
