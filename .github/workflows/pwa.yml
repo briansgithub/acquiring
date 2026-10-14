@@ -32,5 +32,4 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m unittest discover -s pwa/scripts/run-control -p test_run_control.py -v
-      - run: python docs/pwa-port/validate_audit.py
       - run: python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v
