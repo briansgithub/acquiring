@@ -171,18 +171,34 @@
         "pwa/src/storage/user/",
         "pwa/tests/browser/user-storage.spec.ts",
         "pwa/tests/browser/user-storage.html",
-        "pwa/tests/browser/user-storage-harness.ts"
+        "pwa/tests/browser/user-storage-harness.ts",
+        "pwa/playwright.config.ts"
       ],
       "acceptance": "Restart/migration/failure tests; catalog replacement preserves every user store",
-      "status": "in_progress",
+      "status": "validating",
       "owner": "coordinator (runtime model unknown)",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "3a8d2c4a",
       "slice": "Versioned IndexedDB user records, isolated guest/account namespaces, durable mutation receipts and atomic outbox",
-      "nextAction": "Implement transaction-only record/outbox writes, non-destructive migration and real browser restart/abort/idempotency/isolation fixtures. No account backend or product feature credited.",
-      "validation": [],
-      "progress": [],
+      "nextAction": "Commit reviewed persistence foundation. Actual OPFS catalog replacement is revalidated with T05; physical Safari/mobile checks remain future gates.",
+      "validation": [
+        {
+          "command": "npm --prefix pwa run check",
+          "revision": "T06 tree on bcd59674; no product-source changes after checks",
+          "result": "5 unit tests and1 corpus contract passed; strict typecheck and production build passed."
+        },
+        {
+          "command": "npm --prefix pwa run test:browser",
+          "revision": "same T06 tree",
+          "result": "7 passed in6.8s:3 shell and4 real IndexedDB tests; browser pageerror assertions pass after correcting already-aborted transaction handling."
+        }
+      ],
+      "progress": [
+        "Separate user schema2 preserves schema1 records; isolated guest/account keys; record+sequence+pending receipt are atomic; acknowledged receipts and tombstones retained for safe replay.",
+        "Chrome tests cover all10 stores across reload, isolated replaceable-catalog database, injected mid-write abort, replay before/after ack, changed-command collision, ack rollback, tombstones, other-connection upgrade blocking.",
+        "First typecheck exposed recursive Playwright mapped-type inference; explicit JSON fixture bridge corrected it. First browser drill exposed double-abort pageerror; safe abort and pageerror assertion corrected it. No native migration/account sync/learning feature parity claimed."
+      ],
       "blocker": null
     },
     {
