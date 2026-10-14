@@ -853,11 +853,17 @@
     "sha": "57eed0068b536f85381337fb01b2844ea3c86547",
     "date": "2026-09-07",
     "subject": "Merge branch 'claude/audio-retry-diagnostics-fix'",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "57eed006:android/AGENTS.md",
+      "57eed006:android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+      "57eed006:android/app/src/main/java/com/acquiring/android/InstrumentSession.kt",
+      "57eed006:android/app/src/main/java/com/acquiring/android/SynthVoice.kt"
+    ]
   },
   {
     "sha": "c4e7aee334f8698d9011b95596e510304bd6a9f6",
@@ -879,21 +885,29 @@
     "sha": "8711640ab8ef90e6234eae300e133fe8a2b06af3",
     "date": "2026-09-07",
     "subject": "Merge branch 'claude/chord-decode-parity'",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "8711640a:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt",
+      "8711640a:android/app/src/test/java/com/acquiring/android/CorpusParityTest.kt",
+      "8711640a:android/app/src/test/java/com/acquiring/android/HooktheoryRealParityTest.kt",
+      "8711640a:android/app/src/test/java/com/acquiring/android/ParityBaseline.kt"
+    ]
   },
   {
     "sha": "532cdabafd21b31e75c8a740365bf3dbe1b4cce2",
     "date": "2026-09-07",
     "subject": "Merge branch 'worktree-interval-tool-audio-error'",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "3d1e68c0ac0c6c3d244a303b127068e9b92b5dec",
@@ -945,31 +959,41 @@
     "sha": "9616afe01cdd106c4bd3bbae7d8279baf69f40b5",
     "date": "2026-09-08",
     "subject": "Merge remote-tracking branch 'origin/main' into codex/chord-interpretation-parity",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "48bce084100dafde7fe6afe4af9164b75dc481b0",
     "date": "2026-09-08",
     "subject": "Merge pull request #45 from briansgithub/codex/chord-interpretation-parity",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "48bce084:android/app/build.gradle",
+      "48bce084:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt",
+      "48bce084:android/app/src/main/java/com/acquiring/android/ChordLetterFormat.kt",
+      "48bce084:android/app/src/main/java/com/acquiring/android/ChordVoicing.kt"
+    ]
   },
   {
     "sha": "b5a9fe46b4f7df164fc373e9c338c344cb7cf76e",
     "date": "2026-09-08",
     "subject": "Merge compact quiz help bubbles into main",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "734ab3f5d25519363139f58fd771527f60076359",
@@ -991,21 +1015,29 @@
     "sha": "102bd4fd9d2a69e0f6b20546c6bcc98e0cb99360",
     "date": "2026-09-08",
     "subject": "Merge harvest ledger: keep manual harvests across catalog updates",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "102bd4fd:android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt",
+      "102bd4fd:android/app/src/main/java/com/acquiring/android/HarvestLedger.kt",
+      "102bd4fd:android/app/src/main/java/com/acquiring/android/HarvestService.kt",
+      "102bd4fd:android/app/src/main/java/com/acquiring/android/HarvestedSong.kt"
+    ]
   },
   {
     "sha": "271b8303256c08461cc7a15aeb118184513358cd",
     "date": "2026-09-08",
     "subject": "Merge latest quiz help leader refinements",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "035f0288c080e8f065c45c8c8407b00f9d416654",
@@ -1090,21 +1122,33 @@
     "sha": "c1568dc53d0ba6ac1473e14fb08c2d8886c8aac9",
     "date": "2026-09-11",
     "subject": "Install an empty catalog automatically and surface replace/update in Settings.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Auto-install an empty catalog; show freshness/update state in Settings.",
+    "finalDisposition": "Retain quota-aware PWA equivalent.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "c1568dc5:android/app/src/main/java/com/acquiring/android/AppSettings.kt",
+      "c1568dc5:android/app/src/main/java/com/acquiring/android/CatalogAutoInstall.kt",
+      "c1568dc5:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "c1568dc5:android/app/src/test/java/com/acquiring/android/CatalogAutoInstallTest.kt"
+    ]
   },
   {
     "sha": "1c5dd01d1e4cab7ce58199b6ff75d4915c43c240",
     "date": "2026-09-11",
     "subject": "Report Play update availability in Settings without crashing on sideloaded builds.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Check Play update availability safely for sideloaded/unknown installs.",
+    "finalDisposition": "Adapt to PWA update availability.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "1c5dd01d:android/app/build.gradle",
+      "1c5dd01d:android/app/src/main/java/com/acquiring/android/AppSettings.kt",
+      "1c5dd01d:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "1c5dd01d:android/app/src/main/java/com/acquiring/android/PlayAppUpdate.kt"
+    ]
   },
   {
     "sha": "4b2da5306e2f63ecbd68512211ef7aeba66cd1a0",
