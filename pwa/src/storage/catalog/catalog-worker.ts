@@ -1,6 +1,7 @@
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { sha256 as incrementalSha256 } from '@noble/hashes/sha2.js';
 import { fetchVerifiedChunk, sha256 } from './chunks';
+import { validateSongCatalog } from './song-schema';
 import { cachedCompressedBytes, cachedOrFetchChunk } from './chunk-cache';
 import { openCatalogJournal, type CatalogJournal, type CatalogInstall } from './journal';
 import { planInstallSpace, validateManifest, type CatalogManifest, type CatalogChunk, type CatalogFile } from './manifest';
@@ -61,15 +62,7 @@ function inspect(attemptId: string, manifest: CatalogManifest): CatalogInspectio
         if (file.name === 'aural-evidence.db' && metadata.catalog_snapshot !== manifest.sourceSnapshot) throw new CatalogError('INTEGRITY', 'Evidence snapshot mismatch');
         if (file.name === 'aural-popularity.db' && (!metadata.snapshotId || !metadata.provider)) throw new CatalogError('INTEGRITY', 'Popularity metadata missing');
       } else {
-        if (db.selectValue('PRAGMA user_version') !== 3) throw new CatalogError('INTEGRITY', 'Song catalog schema mismatch');
-        const columns = { songs: ['slug','artist','title','url','status','dataBlob'], song_browse_entries: ['slug','artist','title','alphaGroup','complexityRating','complexityBucket'], song_browse_modes: ['slug','mode'] };
-        for (const [table, required] of Object.entries(columns)) {
-          const available = db.selectObjects(`PRAGMA table_info(${table})`).map(row => String(row.name));
-          if (required.some(name => !available.includes(name))) throw new CatalogError('INTEGRITY', 'Song catalog columns missing');
-        }
-        const count = Number(db.selectValue('SELECT COUNT(*) FROM song_browse_entries'));
-        if (count < 40609) throw new CatalogError('INTEGRITY', 'Song catalog is incomplete');
-        metadata.browseRowCount = String(count);
+        Object.assign(metadata, validateSongCatalog(db));
       }
       return { name: file.name, bytes, metadata };
     } finally { db.close(); }

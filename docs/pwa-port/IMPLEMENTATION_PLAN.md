@@ -1,6 +1,6 @@
 # Android-to-PWA implementation plan
 
-Status: reviewed history, implementation not started. Updated 2026-10-14, America/New_York.
+Status: implementation authorized and underway; current task evidence and resume instructions are in tasks.json and HANDOFF.md. Updated 2026-10-14, America/New_York.
 Android authority: `801cf7984171d772afc4406ddb5c79c0cb7fd20a`. Runtime model: unknown.
 
 ## Outcome and boundaries

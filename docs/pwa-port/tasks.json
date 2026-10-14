@@ -125,8 +125,8 @@
       "branch": "codex/pwa-chord-interpretation",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
-      "slice": "Named and measured interval analysis from the frozen Android baseline",
-      "nextAction": "Same Sol/high worker ports interval analysis only within music domain, with current Kotlin-derived assertions and exact source provenance. Save/test/commit and report before unrelated learning/audio expansion. Independent captured-source accuracy gate remains explicit.",
+      "slice": "Independent captured-source and historical accuracy gates using PWA interpretation",
+      "nextAction": "Same Sol/high worker owns music-local accuracy adapters only, importing frozen pure decoder-free shared evaluators and fixtures, never old web runtime. Preserve truth/provenance/fingerprints/ambiguities and report exact assertion counts. Commit/test/report before separate display dedup utility.",
       "validation": [
         {
           "command": "npm --prefix pwa run check",
@@ -153,7 +153,8 @@
         "Bounded coreda1913c integrated: pitch/key/scale, written pitches and relative-Ionian helpers;18 native-derived tests. Combined47 unit cases+1 input contract/types/build passed with catalog contract tree.",
         "Worker9c082646 chord-root resolution integrated;36 music tests with39,040 frozen root-channel comparisons passed, including written enharmonic/context cases. Full voicing/symbol gates remain.",
         "Voicing032da71 integrated normally at22838ca1; combined58 music tests passed, including39018 ordered MIDI/pitch-class and39040 root/role comparisons. Display/interval gates remain.",
-        "Display46c3fad integrated normally;87music tests passed on combined root.39018frozen cases match all6channels,22extra role cases and4relative-Ionian cases pass. Independent accuracy and interval analysis remain open."
+        "Display46c3fad integrated normally;87music tests passed on combined root.39018frozen cases match all6channels,22extra role cases and4relative-Ionian cases pass. Independent accuracy and interval analysis remain open.",
+        "Interval2b198a4 integrated normally:116worker music tests/strict types passed first run;29new native-derived interval assertions. Root combined check follows. Read-only review identifies frozen decoder-free shared accuracy evaluators; legacy web executable wrappers are excluded."
       ],
       "blocker": null
     },
@@ -197,7 +198,8 @@
         "pwa/tests/browser/catalog-worker.spec.ts",
         "pwa/tests/browser/catalog-worker.html",
         "pwa/tests/browser/catalog-worker-harness.ts",
-        "pwa/scripts/catalog/make-browser-fixture.py"
+        "pwa/scripts/catalog/make-browser-fixture.py",
+        "pwa/tests/browser/song-catalog.spec.ts"
       ],
       "acceptance": "Full-size mobile install/query/offline cold launch; quota/corruption/second-tab recovery",
       "status": "in_progress",
@@ -205,8 +207,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
-      "slice": "Production-bundled SQLite worker with persistent-profile full catalog/cold offline proof",
-      "nextAction": "Launch recorded full-size proof against existing237chunks, job pwa/.artifacts/pwa-port/production-full-64cfa299-v1 and manifest9c493fd76f6bcda9e1ab44f5889708e6814ac5154a00c94d9a9438ee91c0e591. Save actual process/result; do not repeat packaging or discard retained profile.",
+      "slice": "Frozen Android song catalog schema/index/completeness acceptance in actual SQLite worker",
+      "nextAction": "Product installer/source configuration and actual song-release packaging/migration remain next storage slices. Preserve successful full Aural proof/profile; native quota/mobile/Safari checks are unproven, not overall implementation blockers.",
       "validation": [
         {
           "command": "python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v",
@@ -267,6 +269,16 @@
           "command": "node scripts/catalog/browser-proof.mjs <saved tiny fixture> .artifacts/pwa-port/production-small-v1 374634edc92d116110f5699dc1c7e98d447b73aba8ee1fc156f2764b660b628c (from pwa)",
           "revision": "9ad43c61 plus production proof source checkpointed next",
           "result": "Passed first run:49152raw bytes/3chunks, real production worker/WASM, browser/server shutdown then cold offline Chrome navigation and query;10user rows/10outbox entries unchanged."
+        },
+        {
+          "command": "node scripts/catalog/browser-proof.mjs ../.artifacts/pwa-port/aural-chunks-64cfa299cc74 .artifacts/pwa-port/production-full-64cfa299-v1 9c493fd76f6bcda9e1ab44f5889708e6814ac5154a00c94d9a9438ee91c0e591 (from pwa)",
+          "revision": "926954ad5652e9fd97233b9a515c4b381e7210b0",
+          "result": "Passed:1,980,387,328rawbytes/237chunks, full database hashes/quick_check/metadata, actual cold offline production-worker test-entry navigation after server/browser shutdown, user preservation. Desktop Chrome only."
+        },
+        {
+          "command": "npm --prefix pwa run typecheck; node node_modules/@playwright/test/cli.js test tests/browser/song-catalog.spec.ts (from pwa)",
+          "revision": "c6a4ef35c0a995b569f910d529286927afd68fe0 plus native-song validation source committed next",
+          "result": "Strict types passed;1real Chrome acceptance case with5databases passed in22.6s on first run."
         }
       ],
       "progress": [
@@ -279,7 +291,9 @@
         "Dedicated SQLite worker + client implemented. Explicit preservation capability check precedes SAHPool init; Web Locks excludes other tabs before VFS init. New immutable attempt IDs stream one verified chunk at a time through@noble/hashes2.4.0 incremental full-file SHA256 into real SQLite. Native quick_check/metadata/length validation; closed handles; no arbitrary SQL RPC.",
         "3 focused Chrome cases passed in10.7s through actual Vite worker: tab contention/cooperative handoff, real3-file SQLite import/abrupt worker termination/reopen/offline inspect, wrong full hash/snapshot preserving prior staging. Initial strict typecheck corrected published SAHPool constructor typing by using public readonly oo1.DB(path,r,vfs); rerun passed. No active-pointer, partial-download resume or full-size proof claimed yet.",
         "Journal/cache/activation slice:6actual Chrome cases passed including killed second-file fetch with no-repeat first-file resume, cold-worker confirmation, new-target fallback, all10user stores/outbox unchanged across update, corrupt-cache one-chunk repair and immutable retry rejection. Full-size/mobile/quota/production cold shell remain unrun.",
-        "Quota harness experiment:1MiB then0byte CDP overrides did not force this small preallocated fixture to fail. Gate remains explicitly fixme/unproven; no quota acceptance claimed. Independent network failure/same-intent resume case proceeds."
+        "Quota harness experiment:1MiB then0byte CDP overrides did not force this small preallocated fixture to fail. Gate remains explicitly fixme/unproven; no quota acceptance claimed. Independent network failure/same-intent resume case proceeds.",
+        "Full-size production test entry926954ad passed desktop Chrome:existing3files/237chunks/1,980,387,328rawbytes verified incrementally and native quick_check/metadata validated. Browser and localhost server stopped; new persistent-profile browser launched offline before navigation, loaded cached built worker/WASM, confirmed active pointer and inspected all3files.10user rows/10pending outbox entries unchanged. Receipt pwa/.artifacts/pwa-port/production-full-64cfa299-v1/runs/f7bec2db-b9aa-447d-8fd4-43279fc057f7/result.json. No phone/Safari, real quota exhaustion or public installer claim.",
+        "Native v3song schema tightened:exact columns/types/nullability/PK and3named indexes plus>=40609song/browse count and nonnull-payload coverage. Actual Chrome passed valid40609fixture +4corrupt cases (missing/wrong index, missing payload, nullable key), preserving old active catalog. Actual source song release/migration not yet ingested."
       ],
       "blocker": null
     },
