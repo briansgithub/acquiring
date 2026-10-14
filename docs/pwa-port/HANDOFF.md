@@ -4,7 +4,7 @@ Updated:2026-10-14 (America/New_York). Runtime model:unknown.
 
 ## Current outcome
 
-The two-pass audit is complete and product implementation is authorized and underway. T00 recovery controls passed at integrated revision2a54ac2; T01 is active. Read README.md, IMPLEMENTATION_PLAN.md, RUNBOOK.md and tasks.json; use HISTORY.md only for targeted historical questions. Android authority remains801cf7984171d772afc4406ddb5c79c0cb7fd20a.
+The two-pass audit is complete and product implementation is authorized and underway. T00 recovery controls passed at integrated revision2a54ac2; T01 installable shell accepted at3a8d2c4a. T02 data compatibility and T06 local persistence are active in disjoint areas. Read README.md, IMPLEMENTATION_PLAN.md, RUNBOOK.md and tasks.json; use HISTORY.md only for targeted historical questions. Android authority remains801cf7984171d772afc4406ddb5c79c0cb7fd20a.
 
 All262 full-history Android/contracts entries are classified:108 foundation,103 revision,51 Aural. Git's earlier path-simplified213 entries omitted integration history. The source JSON ledgers record actual deltas, replacements and evidence. Review was bounded metadata/source/test/comment/handoff inspection, not exhaustive patch reading or fresh runtime verification.
 
@@ -46,3 +46,7 @@ Owner requested beginning implementation and explicit sub-agent model/thinking a
 ## T01 claim2026-10-14
 
 Primary clean at2a54ac2 after T00 integration and8 passing recovery tests. Next separate worker is H:/Desktop/Acquiring/Acquiring-pwa-ui-shell, branch codex/pwa-ui-shell, GPT-6 Luna/medium. It owns only pwa/src/ui/shell; coordinator owns dependencies/contracts/routing/CI and task records. Existing worktrees retained. No publication. Run controller receipts are ignored local process state; inspect them before retry. Root runtime model unknown.
+
+## T02/T06 claim2026-10-14
+
+Primary clean source checkpoint3a8d2c4a; T01 clean install, strict types,3 unit/contract tests and3 Chrome browser tests passed on that source. Next sibling: H:/Desktop/Acquiring/Acquiring-pwa-data-compat, codex/pwa-data-compat, Sol/high, only pwa/src/domain/data. Root T06 owns pwa/src/storage/user and named browser fixtures; no package/lock/contracts/CI changes expected. Separate stores must survive catalog updates, and mutation/outbox writes must be atomic and operation-ID idempotent. UI worker19b495d integrated and its clean checkout is preserved. Actual mobile hardware/Safari/full catalogs/audio/sync remain untested.

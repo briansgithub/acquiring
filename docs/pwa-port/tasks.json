@@ -44,27 +44,27 @@
         ".github/workflows/pwa.yml"
       ],
       "acceptance": "Clean install, typecheck, test and build; shell opens",
-      "status": "validating",
+      "status": "complete",
       "owner": "coordinator + ui_shell worker (GPT-6 Luna/medium)",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "2a54ac2713af0a9c8fa304539a33f47e44c47e17",
       "slice": "Independent toolchain, contracts, cached installable shell and Android-like responsive header",
-      "nextAction": "Commit the reviewed standalone scaffold, verify that checkpoint, then mark complete and claim T02/T06.",
+      "nextAction": "Scaffold accepted at3a8d2c4a; future feature slices use its independent scripts.",
       "validation": [
         {
           "command": "node npm-cli.js --prefix pwa ci --no-audit --no-fund",
-          "revision": "T01 combined working tree after UI merge; pwa lockfile used",
+          "revision": "3a8d2c4a (same tested source tree; documentation receipt only added before commit)",
           "result": "49 packages installed; independent clean install passed."
         },
         {
           "command": "npm --prefix pwa run check",
-          "revision": "T01 combined working tree after UI merge",
+          "revision": "3a8d2c4a (same tested source tree; documentation receipt only added before commit)",
           "result": "2 route tests, 1 shared corpus input contract test, strict typecheck and production build passed;6 shell assets cached. This is not music-output parity."
         },
         {
           "command": "npm --prefix pwa run test:browser",
-          "revision": "same production build4798fb096bf7",
+          "revision": "3a8d2c4a (same tested source tree; documentation receipt only added before commit)",
           "result": "3 Chrome browser tests passed: routing/history/bookmarks,320px and200% text layout, service worker offline reload/deep link."
         }
       ],
@@ -84,13 +84,13 @@
         "pwa/src/domain/data/"
       ],
       "acceptance": "Android-equivalent raw/gzip/duplicate-tab/name fixtures",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "status": "in_progress",
+      "owner": "data_compat worker (GPT-6.1 Sol/high)",
+      "branch": "codex/pwa-data-compat",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "3a8d2c4a",
+      "slice": "Port Android raw/gzip payload decoding, narrow compatibility repair, section order, display names and metadata",
+      "nextAction": "Worker owns pwa/src/domain/data only; compile/test fixtures at Android801cf798; coordinator integrates and runs combined checks.",
       "validation": [],
       "progress": [],
       "blocker": null
@@ -168,16 +168,19 @@
         "T01"
       ],
       "allowedPaths": [
-        "pwa/src/storage/user/"
+        "pwa/src/storage/user/",
+        "pwa/tests/browser/user-storage.spec.ts",
+        "pwa/tests/browser/user-storage.html",
+        "pwa/tests/browser/user-storage-harness.ts"
       ],
       "acceptance": "Restart/migration/failure tests; catalog replacement preserves every user store",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "status": "in_progress",
+      "owner": "coordinator (runtime model unknown)",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
+      "baseCommit": "3a8d2c4a",
+      "slice": "Versioned IndexedDB user records, isolated guest/account namespaces, durable mutation receipts and atomic outbox",
+      "nextAction": "Implement transaction-only record/outbox writes, non-destructive migration and real browser restart/abort/idempotency/isolation fixtures. No account backend or product feature credited.",
       "validation": [],
       "progress": [],
       "blocker": null
