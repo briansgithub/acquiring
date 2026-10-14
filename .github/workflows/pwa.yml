@@ -21,8 +21,10 @@ jobs:
           cache: npm
           cache-dependency-path: pwa/package-lock.json
       - run: npm ci
+      - run: npm run test:sqlite-compat
       - run: npm run check
       - run: npx playwright install --with-deps chromium
+      - run: npm run test:sqlite-browser
       - run: npm run test:browser
   recovery:
     runs-on: windows-latest

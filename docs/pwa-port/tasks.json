@@ -174,16 +174,17 @@
         "pwa/scripts/sqlite-compat/",
         "pwa/package.json",
         "pwa/package-lock.json",
-        "pwa/vite.config.ts"
+        "pwa/vite.config.ts",
+        ".github/workflows/pwa.yml"
       ],
       "acceptance": "Full-size mobile install/query/offline cold launch; quota/corruption/second-tab recovery",
       "status": "in_progress",
-      "owner": "coordinator + data_compat worker (GPT-6.1 Sol/high), SQLite preservation slice",
+      "owner": "coordinator; no active catalog worker",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "cd5b2e301e64ea815af9423235e29a4f3c9f7296",
-      "slice": "Backport and test upstream SQLite preservation behavior before persistent importer",
-      "nextAction": "Reuse clean theory worktree atda1913c on codex/pwa-sqlite-safety starting from primary. Worker owns only pwa/scripts/sqlite-compat. Produce source-hash-gated minimal upstream patch plus real OPFS initialization-failure regression; root alone integrates Vite/dependencies/CI. Preserve all existing catalog files; do not deploy.",
+      "slice": "Packaging, bounded integrity/preflight and tested SQLite preservation backport checkpointed",
+      "nextAction": "At next eligible capacity choose bounded T05 actual worker/importer slice, explicit preservation/clear=false, Web Locks ownership, resumable verified staging and active pointer. T03 chord/voicing remains independent ready lane. No new work in current70% allowance window.",
       "validation": [
         {
           "command": "python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v",
@@ -204,13 +205,35 @@
           "command": "node .artifacts/pwa-port/validate-produced-manifest.mjs",
           "revision": "same manifest contract source",
           "result": "Accepted actual3-file237-chunk Aural manifest64cfa299cc74."
+        },
+        {
+          "command": "npm --prefix pwa ci --no-audit --no-fund; npm --prefix pwa run check",
+          "revision": "final safety integration source tree (source commit recorded in HANDOFF next)",
+          "result": "Clean install50 packages;47 unit tests+1 input contract, strict types and production build passed."
+        },
+        {
+          "command": "node --test pwa/scripts/sqlite-compat/patch.test.mjs",
+          "revision": "same final integration source",
+          "result": "6 passed; source/target drift fails closed; preserved/default cleanup paths covered."
+        },
+        {
+          "command": "node pwa/scripts/sqlite-compat/browser-regression.mjs (executed from pwa through npm script-equivalent path)",
+          "revision": "same final integration source",
+          "result": "Chrome OPFS passed:4 unchanged file hashes;3 handles released; saved row/quick_check recovered while failed worker alive. Receipt pwa/.artifacts/pwa-port/sqlite-safety/ccb35df0-5d5c-4456-bf07-763142dbb70b/receipt.json."
+        },
+        {
+          "command": "npm --prefix pwa run test:browser",
+          "revision": "same final integration source",
+          "result": "7 passed in7.7s; shell/history/offline/mobile and actual user storage interruption/restart/upgrade."
         }
       ],
       "progress": [
         "Official SQLite docs inspected2026-10-14. Do not pass an unsupported preserve option and assume safety. No SQLite dependency installed; no catalog mutation or publication. H: has~996GB free; Aural source immutable snapshot64cfa299cc74 present.",
         "Chunk producer7 fixtures passed after closing test SQLite handles explicitly (first run failed only fixture cleanup on Windows). Real killed-producer fixture added; verify before full source job. Full-size intended output .artifacts/pwa-port/aural-chunks-64cfa299cc74, source manifest SHA256=7c38cbac4df225e6b45d679c9b9fab2d0d23526c40f9faff594794dd9e9b9dcf. Source expected raw1,980,387,328 bytes in3 files.",
         "Producer954ceb71:8 Python tests passed including actual killed-process resume. Full source job t05-full-aural-packaging-20261014 completed:3 verified files,237 chunks,1,980,387,328 raw bytes,780,019,421 compressed bytes; manifest SHA2569c493fd76f6bcda9e1ab44f5889708e6814ac5154a00c94d9a9438ee91c0e591. Generated data remains ignored and unpublished. Observed producer working set~30MB; not a measured browser/import peak.",
-        "Strict runtime manifest, bounded gzip/raw checksum verification and advisory quota preflight implemented;5 new tests passed. Actual237-chunk source manifest accepted by browser contract. Published SQLite3.53.4-build2 now pinned for source inspection; its failure path explicitly calls removeVfs and ignores preserveOnInitFailure. No pool initialized."
+        "Strict runtime manifest, bounded gzip/raw checksum verification and advisory quota preflight implemented;5 new tests passed. Actual237-chunk source manifest accepted by browser contract. Published SQLite3.53.4-build2 now pinned for source inspection; its failure path explicitly calls removeVfs and ignores preserveOnInitFailure. No pool initialized.",
+        "SQLite safety worker completed exact-source-gated upstream backport and actual Chrome OPFS partial-acquisition failure recovery. Root integrating main/worker Vite hooks, strict types and independent checks; no full importer started.",
+        "SQLite worker33b9aec integrated normally. Main and worker Vite plugins configured with prebundling exclusion. Final independent npm ci installed50 packages;47 unit +1 corpus input contract/types/build,6 patch regressions,1 actual Chrome OPFS preservation drill and7 shell/storage browser cases all passed. CI wired for these checks; remote CI itself has not run."
       ],
       "blocker": null
     },
@@ -772,5 +795,14 @@
       "blocker": null
     }
   ],
-  "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels"
+  "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
+  "lastCheckpoint": {
+    "date": "2026-10-14",
+    "usageObserved": {
+      "fiveHourUsedPercent": 70,
+      "weeklyUsedPercent": 46
+    },
+    "reason": "No-new-work threshold reached; finish recoverable validated checkpoint and yield. Re-read live limits on resume.",
+    "activeWorker": null
+  }
 }

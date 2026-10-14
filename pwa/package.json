@@ -16,7 +16,9 @@
     "build": "npm run typecheck && vite build && node scripts/build-shell.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "check": "npm run test:unit && npm run test:parity && npm run build",
-    "test:catalog": "python -m unittest discover -s scripts/catalog -p test_package_catalog.py -v"
+    "test:catalog": "python -m unittest discover -s scripts/catalog -p test_package_catalog.py -v",
+    "test:sqlite-compat": "node --test scripts/sqlite-compat/patch.test.mjs",
+    "test:sqlite-browser": "node scripts/sqlite-compat/browser-regression.mjs"
   },
   "dependencies": {
     "@sqlite.org/sqlite-wasm": "3.53.4-build2",

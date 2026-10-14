@@ -6,4 +6,4 @@
 
 `planInstallSpace` budgets new raw files, remaining compressed staging and a safety margin against origin quota minus usage. Retained active files are already counted in usage. Unknown quota produces unknown readiness, never a successful preflight. Estimates are advisory and a later write can still fail; staging must retain the old active snapshot until successful cold launch.
 
-Full SQLite import, OPFS ownership, active-pointer recovery and physical-device storage evidence remain T05. Packaging alone does not make a catalog installed/offline-ready. Do not initialize an existing SAHPool with published3.53 while assuming the upstream3.54 preservation flag works.
+Full SQLite import, OPFS ownership, active-pointer recovery and physical-device storage evidence remain T05. Packaging alone does not make a catalog installed/offline-ready. The pinned3.53 module requires the exact-source-gated upstream preservation backport in scripts/sqlite-compat, installed in both Vite pipelines. Consumers must explicitly pass preserveOnInitFailure:true and clearOnInit:false. The controlled Chrome regression passes; full installer safety remains unproved.
