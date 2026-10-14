@@ -497,101 +497,151 @@
     "sha": "4c7ddd56b8a86f4a08496e07963b4e6df10c08ca",
     "date": "2026-09-25",
     "subject": "Add flexible Aural Quiz grouping and mode controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Separate grouping order, analysis mode/inversion controls and recursive subsequence visibility.",
+    "finalDisposition": "Current defaults/sort refinements governed byee37a312, not early grouped layout.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "4c7ddd56:android/app/src/androidTest/java/com/acquiring/android/AuralCatalogDeviceTest.kt",
+      "4c7ddd56:android/app/src/main/java/com/acquiring/android/AuralCatalog.kt",
+      "4c7ddd56:android/app/src/main/java/com/acquiring/android/AuralCatalogDownloader.kt"
+    ]
   },
   {
     "sha": "0373d5ddf34d9a95006b3787561fb6559a5b3071",
     "date": "2026-09-25",
     "subject": "Add button-based aural progression search on Android",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Button/chip progression query with chord degree/accidental/quality variants and reorder controls.",
+    "finalDisposition": "Retain constrained search and mode/inversion-aware variant lookup.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "0373d5dd:android/app/src/main/java/com/acquiring/android/AuralCatalog.kt",
+      "0373d5dd:android/app/src/main/java/com/acquiring/android/AuralCatalogScreen.kt",
+      "0373d5dd:android/app/src/main/java/com/acquiring/android/AuralProgressionQuery.kt"
+    ]
   },
   {
     "sha": "020f8ef87b42f4565ccc7fbd0f6851321c264f03",
     "date": "2026-09-25",
     "subject": "Reduce repeated loops in Aural Quiz catalog",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "optimization",
+    "featureDelta": "Reduce repeated-loop sequences while retaining original occurrence/source lookup.",
+    "finalDisposition": "Reuse offline-produced reduced catalog; preserve source provenance and child-range semantics.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "020f8ef8:android/app/src/androidTest/java/com/acquiring/android/AuralCatalogDeviceTest.kt",
+      "020f8ef8:android/app/src/main/java/com/acquiring/android/AuralCatalog.kt",
+      "020f8ef8:android/app/src/main/java/com/acquiring/android/AuralLoopReduction.kt"
+    ]
   },
   {
     "sha": "0c9b4917e14ad1ff3f328506f0f781eb152e38a8",
     "date": "2026-09-25",
     "subject": "Keep long Aural progressions navigable and sort lengths descending",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Bound/collapse long progression headers and keep song tab reachable; descending length presentation.",
+    "finalDisposition": "Current frequency-first default supersedes length-first default; long-header behavior survives.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "0c9b4917:android/app/src/androidTest/java/com/acquiring/android/AuralCatalogDeviceTest.kt",
+      "0c9b4917:android/app/src/main/java/com/acquiring/android/AuralCatalogScreen.kt",
+      "0c9b4917:android/app/src/main/java/com/acquiring/android/AuralQuizScreen.kt"
+    ]
   },
   {
     "sha": "ee37a31293cd1ea1b9c9c67165c2c9e1279a8d22",
     "date": "2026-09-28",
     "subject": "Complete Aural Quiz catalog browsing controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Frequency-first global catalog ranking, independent matching/global counts, prepared reader reuse,80% popularity filter, minimum2..9999 length and browsable controls.",
+    "finalDisposition": "Authoritative final catalog behavior; no browser re-mining or legacy-family landing.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "ee37a312:android/app/src/androidTest/java/com/acquiring/android/AuralCatalogDeviceTest.kt",
+      "ee37a312:android/app/src/main/java/com/acquiring/android/AuralCatalog.kt",
+      "ee37a312:android/app/src/main/java/com/acquiring/android/AuralCatalogDownloader.kt"
+    ]
   },
   {
     "sha": "e968a210b439137384a82dae7d571973f85555b9",
     "date": "2026-09-28",
     "subject": "Add popularity-ordered progression song queues",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Build complete popularity-ordered progression example queues, safe section lookup and ordered saved playlist snapshots.",
+    "finalDisposition": "Queue membership beyond one page; initial auto-advance/shuffle behavior superseded.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "e968a210:android/app/src/androidTest/java/com/acquiring/android/AuralCatalogDeviceTest.kt",
+      "e968a210:android/app/src/main/java/com/acquiring/android/AuralCatalog.kt",
+      "e968a210:android/app/src/main/java/com/acquiring/android/AuralCatalogScreen.kt"
+    ]
   },
   {
     "sha": "8bd551894c10682e42834afa975b1621f00b7bf6",
     "date": "2026-09-28",
     "subject": "Open progression examples in sortable queue preview",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "replacement",
+    "featureDelta": "Examples opens full queue preview; reversible whole-order shuffle and selection/save before play.",
+    "finalDisposition": "Keep active song while reordering; off restores popularity or saved baseline order.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "8bd55189:android/app/src/main/java/com/acquiring/android/AuralCatalogScreen.kt",
+      "8bd55189:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "8bd55189:android/app/src/main/java/com/acquiring/android/SongQueueControls.kt"
+    ]
   },
   {
     "sha": "5a49296d4a4af80e9e9b21a57fac178a452df681",
     "date": "2026-09-30",
     "subject": "Add tonic note and home chord buttons to Android player",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Preview sounding-key tonic note and home chord independent of inversions/relative-major display.",
+    "finalDisposition": "Current musical-home reference capability.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "5a49296d:android/app/src/androidTest/java/com/acquiring/android/PlaybackTransportDockVisibilityUiTest.kt",
+      "5a49296d:android/app/src/main/java/com/acquiring/android/PlaybackHomeReference.kt",
+      "5a49296d:android/app/src/main/java/com/acquiring/android/PlaybackView.kt"
+    ]
   },
   {
     "sha": "0b11ed8b06d308e6a2e5391692e7e1fbc2f71a4a",
     "date": "2026-10-02",
     "subject": "Move home reference buttons into player key header",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Place tonic/home previews before Lock and key in one header row.",
+    "finalDisposition": "Use final responsive header placement and accessible labels.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "0b11ed8b:android/app/src/androidTest/java/com/acquiring/android/PlaybackTransportDockVisibilityUiTest.kt",
+      "0b11ed8b:android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt",
+      "0b11ed8b:android/app/src/main/java/com/acquiring/android/PlaybackHeaderChrome.kt"
+    ]
   },
   {
     "sha": "de8c2891e6d6cc1db4559277530d0345421bfd24",
     "date": "2026-10-02",
     "subject": "Repeat aural song examples and add queue transport navigation",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "replacement",
+    "featureDelta": "Repeat generated example sections and expose previous/next queue controls even in expanded singing dock.",
+    "finalDisposition": "Explicit navigation replaces generated-example auto-advance; preserve boundary/play-intent rules.",
+    "evidence": [
+      "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+      "de8c2891:android/app/src/androidTest/java/com/acquiring/android/PlaybackTransportDockVisibilityUiTest.kt",
+      "de8c2891:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "de8c2891:android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+    ]
   },
   {
     "sha": "c01d433b3b6b15681c4b5bafb1ffc954cdfbf976",
