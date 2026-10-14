@@ -3,301 +3,675 @@
     "sha": "22217c64635b9b5a93507af3b19862350fdcf3db",
     "date": "2026-08-09",
     "subject": "Add interval singing flip-flop mode",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "superseded-import",
+    "featureDelta": "Adds a two-slot microphone tool with alternating three-second captures, permission handling, playback and relative interval display as a stray outer-repository path.",
+    "finalDisposition": "Removed immediately by 8e496fee; not an independent surviving feature. Real Android tool begins at aed98be9.",
+    "evidence": [
+      "22217c64635b9b5a93507af3b19862350fdcf3db:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "8e496feee385b26e49518ae6383e02bbd94d0eb5",
     "date": "2026-08-10",
     "subject": "Untrack stray file from nested android/ repo",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Deletes the exact stray HummingIntervalPopup file from the outer repository.",
+    "finalDisposition": "Repository-boundary correction; functional tool history is the nested Android lineage imported later.",
+    "evidence": [
+      "22217c64635b9b5a93507af3b19862350fdcf3db:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "099cadf943b30f3d6dd57604e6035354754de3a7",
     "date": "2026-07-28",
     "subject": "Initial commit for Android repository",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Creates only android/.gitignore and README; no executable application.",
+    "finalDisposition": "Historical repository scaffold only.",
+    "evidence": [
+      "099cadf943b30f3d6dd57604e6035354754de3a7:android/README.md",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ],
+    "changedPaths": [
+      "android/.gitignore",
+      "android/README.md"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "0b7abac8b8e60d325920c88ecbdcc1fd22f7de31",
     "date": "2026-07-28",
     "subject": "Fix Room coroutines support and upgrade to Kotlin 2.2.10 / AGP 9.3.1",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Introduces actual Compose app, Room song storage, Hooktheory URL harvest and extraction, slug verification/list view, and Gradle/coroutines setup.",
+    "finalDisposition": "Harvest/catalog domain survives; early inspection UI and native build stack are superseded by current Library.",
+    "evidence": [
+      "0b7abac8b8e60d325920c88ecbdcc1fd22f7de31:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HarvestService.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/implementation_plan.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/task.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/walkthrough.artifact.md",
+      "android/app/build.gradle",
+      "android/app/proguard-rules.pro",
+      "android/app/src/main/AndroidManifest.xml",
+      "android/app/src/main/java/com/sacredring/android/AppDatabase.kt",
+      "android/app/src/main/java/com/sacredring/android/DataExtractor.kt",
+      "android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/Scraper.kt",
+      "android/app/src/main/java/com/sacredring/android/Song.kt",
+      "android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "android/app/src/main/res/values/strings.xml",
+      "android/app/src/main/res/values/themes.xml",
+      "android/build.gradle",
+      "android/gradle.properties",
+      "android/gradle/gradle-daemon-jvm.properties",
+      "android/gradle/wrapper/gradle-wrapper.properties",
+      "android/settings.gradle"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "8ca545f4a4d32d57a2ae69e26b672933c936d9c2",
     "date": "2026-07-28",
     "subject": "Implement song search by title and real-time search suggestions",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Adds title search/live suggestions, manual slug lookup, compressed catalog installation/database reopening, and initial catalog tests.",
+    "finalDisposition": "Capabilities survive with current search index and staged validated catalog replacement; early installer is obsolete.",
+    "evidence": [
+      "8ca545f4a4d32d57a2ae69e26b672933c936d9c2:android/app/src/main/java/com/sacredring/android/DatabaseDownloader.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/implementation_plan.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/task.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/walkthrough.artifact.md",
+      "android/app/build.gradle",
+      "android/app/src/main/java/com/sacredring/android/DataExtractor.kt",
+      "android/app/src/main/java/com/sacredring/android/DatabaseDownloader.kt",
+      "android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "android/app/src/test/java/com/sacredring/android/ClosedLoopSongDatabaseTest.kt",
+      "android/app/src/test/java/com/sacredring/android/DatabaseDownloaderTest.kt",
+      "android/catalog.db.gz",
+      "android/gradle/wrapper/gradle-wrapper.jar",
+      "android/gradlew.bat"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "4795b73ecf721bdd2af2f20f4fa5019bf52a5435",
     "date": "2026-07-28",
     "subject": "Port advanced chord and roman numeral logic from web player",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Adds scale/chord interpretation, Roman/letter names, borrowed/applied/inversion voicing, synthesis, and song/section playback UI.",
+    "finalDisposition": "Foundational theory/playback survive; use baseline algorithms and shared fixtures.",
+    "evidence": [
+      "4795b73ecf721bdd2af2f20f4fa5019bf52a5435:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/implementation_plan.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/task.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/walkthrough.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/check_schema.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/export_cache_to_db.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/export_harvested_data.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/get_file_size.js",
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/MusicTheory.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "aa21090c1997fe787af474b6a7315ce6a4b0b24f",
     "date": "2026-07-28",
     "subject": "Implement Recent Songs and Dark Mode theme",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Adds dark theme and recent-song timestamps initially stored in catalog database.",
+    "finalDisposition": "Dark presentation survives; catalog-resident history replaced by 3fef49c6 external HistoryManager.",
+    "evidence": [
+      "aa21090c1997fe787af474b6a7315ce6a4b0b24f:android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HistoryManager.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/implementation_plan.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/task.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/walkthrough.artifact.md",
+      "android/app/src/main/java/com/sacredring/android/AppDatabase.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/Song.kt",
+      "android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "android/app/src/main/res/values/themes.xml"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "34a702ec077a23ba95ee5b050bc4cd9806275025",
     "date": "2026-07-28",
     "subject": "Clean up scratch scripts",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Removes four scratch database/export scripts from .artifacts; no runtime change.",
+    "finalDisposition": "Historical cleanup only.",
+    "evidence": [
+      "aa21090c1997fe787af474b6a7315ce6a4b0b24f:android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/check_schema.js",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/check_schema.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/export_cache_to_db.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/export_harvested_data.js",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/scratch/get_file_size.js"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "3fef49c68fdec8e9cfb96ee0db9ce54aecce3b56",
     "date": "2026-07-29",
     "subject": "Add 7-circle diatonic app icon assets and update search history integration",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-refinement",
+    "featureDelta": "Adds launcher art, external recent-slug preferences, gzip decoding, tolerant section metadata and cached opening/harvest fallback; removes catalog timestamp history.",
+    "finalDisposition": "External history/blob decoding survive; later artwork supersedes early icon.",
+    "evidence": [
+      "3fef49c68fdec8e9cfb96ee0db9ce54aecce3b56:android/app/src/main/java/com/sacredring/android/HistoryManager.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HistoryManager.kt"
+    ],
+    "changedPaths": [
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/implementation_plan.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/task.artifact.md",
+      "android/.artifacts/02fe6450-c857-46dd-9afe-eb150f98495c/walkthrough.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/implementation_plan.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/task.artifact.md",
+      "android/.artifacts/d7cde9a9-bf5f-4f8e-9ccf-2518fafb7d91/walkthrough.artifact.md",
+      "android/.gitignore",
+      "android/app/src/main/AndroidManifest.xml",
+      "android/app/src/main/java/com/sacredring/android/AppDatabase.kt",
+      "android/app/src/main/java/com/sacredring/android/DataExtractor.kt",
+      "android/app/src/main/java/com/sacredring/android/DataUtils.kt",
+      "android/app/src/main/java/com/sacredring/android/DatabaseDownloader.kt",
+      "android/app/src/main/java/com/sacredring/android/HistoryManager.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/Song.kt",
+      "android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+      "android/app/src/test/java/com/sacredring/android/ClosedLoopSongDatabaseTest.kt",
+      "android/catalog.db.gz"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "3e7a1433fe34593585fa049312276509b02965ed",
     "date": "2026-07-29",
     "subject": "Update app icon with solid black background and spread 3D diatonic nodes",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Replaces ten launcher PNGs; binary artwork replacement with no runtime logic.",
+    "finalDisposition": "Later artwork supersedes this version; use baseline resources.",
+    "evidence": [
+      "3e7a1433fe34593585fa049312276509b02965ed:android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/res/mipmap-hdpi/ic_launcher.png"
+    ],
+    "changedPaths": [
+      "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+      "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "5aa4fc87dd46265b85c108c23d3ced93893df6d6",
     "date": "2026-07-29",
     "subject": "Implement search history and associated tests",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-fix",
+    "featureDelta": "Adds block/arpeggiated chord previews, inversion rotation, suspension/alteration handling, unique chord inventory, permanent section chips and theory/audio regression tests; title underspecifies delta.",
+    "finalDisposition": "Current theory, inventory and previews survive with refined synthesis; section chips later become menus.",
+    "evidence": [
+      "5aa4fc87dd46265b85c108c23d3ced93893df6d6:android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/AudioEngine.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/MusicTheory.kt",
+      "android/app/src/main/res/drawable/ic_launcher_background.xml",
+      "android/app/src/main/res/drawable/ic_launcher_foreground.xml",
+      "android/app/src/main/res/drawable/ic_launcher_monochrome.xml",
+      "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+      "android/app/src/main/res/values/colors.xml",
+      "android/app/src/test/java/com/sacredring/android/AudioEngineTest.kt",
+      "android/app/src/test/java/com/sacredring/android/ChordInterpreterTest.kt",
+      "android/app/src/test/java/com/sacredring/android/ClosedLoopWebVsAndroidChordTest.kt",
+      "android/app/src/test/java/com/sacredring/android/EnharmonicLetterNameTest.kt",
+      "android/app/src/test/java/com/sacredring/android/InversionChordPlaybackTest.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "2f891ebe8e2c22f9318a6f0341421d03540b2e84",
     "date": "2026-07-29",
     "subject": "Fix song section labeling by using Hooktheory API for section names",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Fetches API section field and prefers readable section name over guessed scraper labels, capitalizing the display.",
+    "finalDisposition": "Refined by 0886615a which prioritizes real page tabs when IDs repeat; current SectionOrder/harvest rules prevail.",
+    "evidence": [
+      "2f891ebe8e2c22f9318a6f0341421d03540b2e84:android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HarvestService.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/Scraper.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "3989f388e0c80274415f64ae519028808dfc42b9",
     "date": "2026-07-30",
     "subject": "Enhance Quiz Tab: Dynamic key modulation, polyphonic audio engine, UI refinements, and ChordInterpreter parity fixes.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-fix",
+    "featureDelta": "Introduces Quiz playback screen, timeline, melody/chord lanes, waveform menu, dynamic per-beat keys, safe chord JSON parsing, and extensive melody/chord corpus regressions.",
+    "finalDisposition": "Survives as Playback screen and extracted engine. Current notation/theory rules include later fixes.",
+    "evidence": [
+      "3989f388e0c80274415f64ae519028808dfc42b9:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackView.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/main/java/com/sacredring/android/DataExtractor.kt",
+      "android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/MusicTheory.kt",
+      "android/app/src/test/java/com/sacredring/android/ChordInterpreterTest.kt",
+      "android/app/src/test/java/com/sacredring/android/CorpusParityTest.kt",
+      "android/app/src/test/java/com/sacredring/android/EnharmonicLetterNameTest.kt",
+      "android/app/src/test/java/com/sacredring/android/KeyChangePlaybackTest.kt",
+      "android/app/src/test/java/com/sacredring/android/MelodyAccuracyTest.kt",
+      "android/app/src/test/resources/corpus_parity.json"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "eb9e7fdf51d9f3ed7db74875ca540d615d94dc4b",
     "date": "2026-07-31",
     "subject": "Cancel playback of current notes when skipping back or resetting",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-fix",
+    "featureDelta": "Adds cancellation of sounding notes on seek/reset, global transposition, simple/root mode, direct Quiz opening, and a modulation/melody timeline device regression.",
+    "finalDisposition": "Cancellation and simple/full modes survive; present controls are later designs.",
+    "evidence": [
+      "eb9e7fdf51d9f3ed7db74875ca540d615d94dc4b:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackEngine.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/androidTest/java/com/sacredring/android/HardwareStoreTimelineTest.kt",
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "6125c7f249242b854b678014e16a3f750b6e87df",
     "date": "2026-07-31",
     "subject": "Add compact Android agent rules",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "infrastructure",
+    "featureDelta": "Adds agent instructions, bounded context and compact-check scripts, and ignored local tool artifacts.",
+    "finalDisposition": "Developer workflow only.",
+    "evidence": [
+      "6125c7f249242b854b678014e16a3f750b6e87df:android/AGENTS.md",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ],
+    "changedPaths": [
+      "android/.cursor/rules/agent-defaults.mdc",
+      "android/.gitignore",
+      "android/AGENTS.md",
+      "android/GEMINI.md",
+      "android/scripts/compact_check.py",
+      "android/scripts/context_probe.py"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "db11d8841a8aa547d7c0573d46e5888516c215f6",
     "date": "2026-07-31",
     "subject": "Remove tonic letter from Quiz key display",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Removes tonic-letter text from the early Quiz key display.",
+    "finalDisposition": "Historical header choice replaced by later relative-major and current header design; do not omit baseline tonic information.",
+    "evidence": [
+      "db11d8841a8aa547d7c0573d46e5888516c215f6:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackHeaderChrome.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "baa0c5820e5aa8918827bc5f415b3074b3a4dc38",
     "date": "2026-07-31",
     "subject": "Fix Android root-relative chord degree labels",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Identifies sounding chord root independently of inversion/applied denominator and prefers chord-relative b7 spelling for equal-distance chromatic tones.",
+    "finalDisposition": "Current theory invariant; preserve source sounding-root versus inversion-bass distinction.",
+    "evidence": [
+      "baa0c5820e5aa8918827bc5f415b3074b3a4dc38:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/MusicTheory.kt",
+      "android/app/src/test/java/com/sacredring/android/InversionChordPlaybackTest.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "c5416ebf4188f12c150254bd6ff50c03097e1856",
     "date": "2026-07-31",
     "subject": "Polish Android chord and scale-degree rendering",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-fix",
+    "featureDelta": "Introduces structured Roman numeral and scale-degree rendering, fitting/accidental handling tests, and legacy Hooktheory section/chord compatibility migration.",
+    "finalDisposition": "Current notation/compatibility behavior survives; port semantic display model and fixtures, adapting drawing to browser.",
+    "evidence": [
+      "c5416ebf4188f12c150254bd6ff50c03097e1856:android/app/src/main/java/com/sacredring/android/HooktheoryDataCompat.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HooktheoryDataCompat.kt"
+    ],
+    "changedPaths": [
+      "android/AGENTS.md",
+      "android/app/src/androidTest/java/com/sacredring/android/RomanNumeralRenderSmokeTest.kt",
+      "android/app/src/androidTest/java/com/sacredring/android/ScaleDegreeRenderSmokeTest.kt",
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryDataCompat.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/RomanNumeralLayout.kt",
+      "android/app/src/main/java/com/sacredring/android/RomanNumeralRenderer.kt",
+      "android/app/src/main/java/com/sacredring/android/ScaleDegreeRenderer.kt",
+      "android/app/src/test/java/com/sacredring/android/HooktheoryDataCompatTest.kt",
+      "android/app/src/test/java/com/sacredring/android/RomanNumeralPainterTest.kt",
+      "android/app/src/test/java/com/sacredring/android/RomanNumeralTokenizerTest.kt",
+      "android/app/src/test/java/com/sacredring/android/ScaleDegreeRendererTest.kt",
+      "android/app/src/test/resources/corpus_parity.json"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "69ceb431c7d8ab5001c8524d6966d36d1a492386",
     "date": "2026-07-31",
     "subject": "Make quiz tempo a percentage with reset",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Changes tempo from absolute BPM slider to percentage of section BPM with 100% reset and guards nonpositive playback tempo.",
+    "finalDisposition": "Percentage semantics survive; later tempo dial minimum and scheduling corrections apply.",
+    "evidence": [
+      "69ceb431c7d8ab5001c8524d6966d36d1a492386:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackDial.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "f45b6e55daada40721f3718d5104d4010ecc6e89",
     "date": "2026-07-31",
     "subject": "Match Hooktheory suspended extension voicings",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Omits only unaltered perfect fifth in extended suspended chords without explicit omission, preserving suspension/seventh/extensions and altered fifths.",
+    "finalDisposition": "Current voicing invariant backed by corpus data.",
+    "evidence": [
+      "f45b6e55daada40721f3718d5104d4010ecc6e89:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/test/resources/corpus_parity.json"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "0886615a0c3651dfe38781850632d6455dea76d9",
     "date": "2026-07-31",
     "subject": "Fix quiz playback controls and looping",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Uses source section order and page-tab metadata; fixes seek-only scrubbing, local scheduling bounds and end-loop cancellation to avoid duplicate/skipped notes.",
+    "finalDisposition": "Current behavior retained in SectionOrder and extracted playback engine; loop timing further fixed by 82c1c3ab.",
+    "evidence": [
+      "0886615a0c3651dfe38781850632d6455dea76d9:android/app/src/main/java/com/sacredring/android/SectionOrder.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/SectionOrder.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/DataExtractor.kt",
+      "android/app/src/main/java/com/sacredring/android/HarvestService.kt",
+      "android/app/src/main/java/com/sacredring/android/HooktheoryModels.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/Scraper.kt",
+      "android/app/src/main/java/com/sacredring/android/SectionOrder.kt",
+      "android/app/src/test/java/com/sacredring/android/ScraperSectionOrderTest.kt",
+      "android/app/src/test/java/com/sacredring/android/SectionOrderTest.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "9d93d9d04f7e2c3d51a6c9f2bb1f8748d9f1dae7",
     "date": "2026-07-31",
     "subject": "Fix hierarchical back navigation",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Makes visible Back and Android Back unwind Quiz to Chords to search hierarchically.",
+    "finalDisposition": "Later simplified by d1187a54 and origin-aware PlaybackDestination; preserve final navigation graph.",
+    "evidence": [
+      "9d93d9d04f7e2c3d51a6c9f2bb1f8748d9f1dae7:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "0df35199505a466786b5d01fe2b41aa0088487b3",
     "date": "2026-08-01",
     "subject": "feat: Add Hooktheory URL button to Quiz page",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Adds external Hooktheory song link and selected-song identity propagation; songs open directly into simple Quiz.",
+    "finalDisposition": "External source link survives; use current destination/header layout.",
+    "evidence": [
+      "0df35199505a466786b5d01fe2b41aa0088487b3:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackHeaderChrome.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "ad09e35e8a1a46838e5031f41b56c127da5c4461",
     "date": "2026-08-01",
     "subject": "feat: Add audiation aural-practice and pitch calibration",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Introduces microphone permission/source abstraction, YIN pitch detection, noise gating/smoothing, draggable target selection, gauge and calibration state/lifecycle handling.",
+    "finalDisposition": "Pitch capture/assessment survive. Puck and hum-calibration interaction replaced by current singing dock and 87e8a53c octave-offset change.",
+    "evidence": [
+      "ad09e35e8a1a46838e5031f41b56c127da5c4461:android/app/src/main/java/com/sacredring/android/PitchDetector.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PitchDetector.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/androidTest/java/com/sacredring/android/AudiationUiTest.kt",
+      "android/app/src/main/AndroidManifest.xml",
+      "android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "android/app/src/main/java/com/sacredring/android/MicrophonePitchTracker.kt",
+      "android/app/src/main/java/com/sacredring/android/PitchDetector.kt",
+      "android/app/src/main/java/com/sacredring/android/PitchSource.kt",
+      "android/app/src/test/java/com/sacredring/android/PitchDetectorTest.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "a32a3218e067a2339c351f3c44ee7db7c8cab386",
     "date": "2026-08-01",
     "subject": "feat: Implement custom borrowed scales and web-parity applied chord voicing",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new-and-fix",
+    "featureDelta": "Supports explicit custom borrowed scale arrays and wide-register applied/inverted/diminished voicing, with inversion regressions.",
+    "finalDisposition": "Current theory feature; port baseline normalization and fixtures.",
+    "evidence": [
+      "a32a3218e067a2339c351f3c44ee7db7c8cab386:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/ChordInterpreter.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "android/app/src/test/java/com/sacredring/android/InversionChordPlaybackTest.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "a0511d290ccc73ac169f6f9f65bdf21a203170cd",
     "date": "2026-08-01",
     "subject": "feat: add artist search, refine UI layout, and set sawtooth as default sound",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "new",
+    "featureDelta": "Adds debounced artist search with hyphen/space normalization and artist suggestions; chooses sawtooth default and adjusts target positioning.",
+    "finalDisposition": "Artist search survives as indexed Library search. Current instrument defaults and header supersede early presentation.",
+    "evidence": [
+      "a0511d290ccc73ac169f6f9f65bdf21a203170cd:android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/LibrarySearch.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/SongDao.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "e2e3f28feb71b24a2694f7fdec1fb066816c7669",
     "date": "2026-08-01",
     "subject": "refactor: optimize QuizTab layout and refine puck positioning to prevent UI overlaps",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Rearranges simple/full Quiz layout, target bounds, selectors and timeline; target selection stops transport; limits UI beat updates.",
+    "finalDisposition": "Underlying target/transport ownership survives; old layout rebuilt by later Playback components.",
+    "evidence": [
+      "e2e3f28feb71b24a2694f7fdec1fb066816c7669:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackView.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "74e67801add7b2a7ae153716f3fb1aa60b5f1044",
     "date": "2026-08-01",
     "subject": "refactor: reorganize search UI and remove suggestion limits",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Reorganizes title/artist search, expands manual harvest panel and removes ten-result suggestion limits.",
+    "finalDisposition": "Unbounded suggestions replaced by 9bb52ca0 paging; manual harvest survives in current Library.",
+    "evidence": [
+      "74e67801add7b2a7ae153716f3fb1aa60b5f1044:android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/LibrarySearchSuggestions.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "android/app/src/main/java/com/sacredring/android/SongDao.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "e1e0c8acbd47d975e1e32507c219570f78912664",
     "date": "2026-08-01",
     "subject": "feat: transform audiation puck into a magnifying glass and reorganize song search layout",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Changes draggable audiation puck to magnifying-glass visual with target centering and reorganizes search controls.",
+    "finalDisposition": "Historical target-picker UI replaced by later header microphone/current dock; not a separate PWA feature.",
+    "evidence": [
+      "e1e0c8acbd47d975e1e32507c219570f78912664:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "c551d100c5eac460ebaf44e894e6527856e26f69",
     "date": "2026-08-01",
     "subject": "fix: improve playback looping by robustly estimating endBeat and fixing boundary timing",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Derives section end from non-rest content when metadata is implausible; snaps fallback to measure boundary and schedules final tick before looping.",
+    "finalDisposition": "Current loop/end calculation must use baseline PlaybackTiming and tests; prevents truncated tail or long empty loops.",
+    "evidence": [
+      "c551d100c5eac460ebaf44e894e6527856e26f69:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackTiming.kt"
+    ],
+    "changedPaths": [
+      "android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ],
+    "evidenceDepth": "Changed-file metadata plus bounded functional patch/signature inspection; binary-only and cleanup entries inspected as metadata."
   },
   {
     "sha": "9c95f8453dd72f6fb8bbaeda1faf3b527c791b21",
