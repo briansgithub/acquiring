@@ -1,5 +1,5 @@
 import type { CatalogManifest } from './manifest';
-import { CatalogError, type CatalogCommand, type CatalogInfo, type CatalogInspection, type CatalogProgress, type CatalogRequest, type CatalogResponse } from './protocol';
+import { CatalogError, type CatalogCommand, type ActiveCatalog, type InstallStatus, type CatalogInfo, type CatalogInspection, type CatalogProgress, type CatalogRequest, type CatalogResponse } from './protocol';
 
 export class CatalogWorkerClient {
   private readonly worker = new Worker(new URL('./catalog-worker.ts', import.meta.url), { type: 'module', name: 'Acquiring catalog' });
@@ -36,6 +36,10 @@ export class CatalogWorkerClient {
   info(): Promise<CatalogInfo> { return this.request({ kind: 'info' }); }
   stage(attemptId: string, manifest: CatalogManifest, baseUrl: string): Promise<CatalogInspection> { return this.request({ kind: 'stage', attemptId, manifest, baseUrl }); }
   inspect(attemptId: string, manifest: CatalogManifest): Promise<CatalogInspection> { return this.request({ kind: 'inspect', attemptId, manifest }); }
+  prepare(attemptId: string, manifest: CatalogManifest, baseUrl: string): Promise<CatalogInspection> { return this.request({ kind: 'prepare', attemptId, manifest, baseUrl }); }
+  activate(attemptId: string): Promise<ActiveCatalog> { return this.request({ kind: 'activate', attemptId }); }
+  active(catalogKind: CatalogManifest['kind']): Promise<ActiveCatalog | null> { return this.request({ kind: 'active', catalogKind }); }
+  status(attemptId: string): Promise<InstallStatus> { return this.request({ kind: 'status', attemptId }); }
   async close(): Promise<void> {
     if (this.stopped) return;
     try { await this.request({ kind: 'close' }, 5000); }

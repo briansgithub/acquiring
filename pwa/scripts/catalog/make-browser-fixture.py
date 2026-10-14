@@ -1,4 +1,6 @@
 """Generate tiny real SQLite catalogs under ignored artifacts, never app public assets."""
+import argparse
+import re
 from contextlib import closing
 import gzip
 import hashlib
@@ -15,7 +17,12 @@ spec.loader.exec_module(producer)
 root = Path.cwd() / '.artifacts' / 'pwa-port' / 'browser-catalog' / str(uuid.uuid4())
 source, output = root / 'source', root / 'bundle'
 source.mkdir(parents=True)
-snapshot = 'd' * 64
+parser = argparse.ArgumentParser()
+parser.add_argument('--snapshot', default='d' * 64)
+args = parser.parse_args()
+snapshot = args.snapshot
+if not re.fullmatch('[0-9a-f]{64}', snapshot):
+    parser.error('Expected lowercase SHA256 snapshot')
 entries = []
 for name in sorted(producer.REQUIRED['aural']):
     path = source / name

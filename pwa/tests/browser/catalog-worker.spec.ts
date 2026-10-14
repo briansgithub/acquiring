@@ -2,19 +2,27 @@ import { execFileSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
-import type { CatalogInfo, CatalogInspection } from '../../src/storage/catalog/protocol';
+import type { CatalogInfo, CatalogInspection, ActiveCatalog, InstallStatus } from '../../src/storage/catalog/protocol';
 import type { CatalogManifest } from '../../src/storage/catalog/manifest';
 
 let fixture: { directory: string; manifest: CatalogManifest };
+let update: typeof fixture;
+let requested: string[];
+let gate: ((relative: string) => Promise<void>) | undefined;
+const base = 'http://127.0.0.1:5173/catalog-fixtures/';
 test.beforeAll(() => {
   fixture = JSON.parse(execFileSync('python', ['scripts/catalog/make-browser-fixture.py'], { encoding: 'utf8' })) as typeof fixture;
+  update = JSON.parse(execFileSync('python', ['scripts/catalog/make-browser-fixture.py', '--snapshot', 'e'.repeat(64)], { encoding: 'utf8' })) as typeof fixture;
 });
 test.beforeEach(async ({ page, context }) => {
+  requested = []; gate = undefined;
   await context.route('**/catalog-fixtures/**', async route => {
     const relative = new URL(route.request().url()).pathname.split('/catalog-fixtures/')[1]!;
-    const path = resolve(fixture.directory, relative);
-    if (!path.startsWith(resolve(fixture.directory) + sep)) throw new Error('Fixture traversal');
-    await route.fulfill({ status: 200, body: await readFile(path), headers: { 'Content-Type': 'application/octet-stream' } });
+    requested.push(relative); await gate?.(relative);
+    const selected = relative.startsWith('v2/') ? update : fixture;
+    const path = resolve(selected.directory, relative.replace(/^v[12]\//, ''));
+    if (!path.startsWith(resolve(selected.directory) + sep)) throw new Error('Fixture traversal');
+    await route.fulfill({ status: 200, body: await readFile(path), headers: { 'Content-Type': 'application/octet-stream' } }).catch(() => {});
   });
   await page.goto('http://127.0.0.1:5173/tests/browser/catalog-worker.html');
   await page.waitForFunction(() => !!window.catalogHarness);
@@ -65,4 +73,82 @@ test('wrong full database hash or snapshot never accepts a bundle and preserves 
   await expect(call(page, 'stage', ['owner', '32345678-1234-1234-1234-123456789012', badSnapshot, 'http://127.0.0.1:5173/catalog-fixtures/'])).rejects.toThrow('snapshot');
   expect(await call(page, 'inspect', ['owner', first, fixture.manifest])).toEqual(good);
   await call(page, 'close', ['owner']);
+});
+
+
+test('cut during a later file resumes receipts and confirms activation in a cold worker', async ({ page, context }) => {
+  await call(page, 'open', ['owner']);
+  const attempt = '42345678-1234-1234-1234-123456789012';
+  let reached!: () => void, release!: () => void;
+  const blocked = new Promise<void>(resolve => { reached = resolve; });
+  const proceed = new Promise<void>(resolve => { release = resolve; });
+  gate = async relative => { if (relative.includes('aural-evidence.db')) { reached(); await proceed; } };
+  try {
+    await call(page, 'beginPrepare', ['owner', attempt, fixture.manifest, base]);
+    await blocked;
+    await call(page, 'terminate', ['owner']);
+  } finally { release(); gate = undefined; }
+  await ownerReleased(page);
+  await call(page, 'open', ['resumed']);
+  const partial = await call<InstallStatus>(page, 'status', ['resumed', attempt]);
+  expect(partial?.phase).toBe('importing');
+  expect(partial?.validatedFiles).toEqual(['aural-catalog.db']);
+  expect(partial?.verifiedChunks).toContain('aural-catalog.db:0');
+  requested = [];
+  const ready = await call<CatalogInspection>(page, 'prepare', ['resumed', attempt, fixture.manifest, base]);
+  expect(ready.files).toHaveLength(3);
+  expect(requested.some(path => path.includes('aural-catalog.db'))).toBe(false);
+  expect(await call(page, 'active', ['resumed', 'aural'])).toBeNull();
+  const activated = await call<ActiveCatalog>(page, 'activate', ['resumed', attempt]);
+  expect(activated.pointer.confirmed).toBe(false);
+  await call(page, 'terminate', ['resumed']); await ownerReleased(page);
+  await call(page, 'open', ['cold']);
+  await context.setOffline(true);
+  const confirmed = await call<ActiveCatalog>(page, 'active', ['cold', 'aural']);
+  expect(confirmed.pointer).toMatchObject({ activeId: attempt, confirmed: true, previousId: null });
+  expect(confirmed.inspection).toEqual(ready);
+  await call(page, 'close', ['cold']);
+});
+
+test('real catalog update and missing-target recovery preserve all ten user stores and outbox', async ({ page }) => {
+  await call(page, 'seedUsers');
+  const users = await call<{ rows: unknown[]; pending: unknown[] }>(page, 'users');
+  expect(users.rows).toHaveLength(10); expect(users.rows.every(Boolean)).toBe(true); expect(users.pending).toHaveLength(10);
+  await call(page, 'open', ['owner']);
+  const first = '52345678-1234-1234-1234-123456789012', second = '62345678-1234-1234-1234-123456789012';
+  await call(page, 'prepare', ['owner', first, fixture.manifest, base + 'v1/']);
+  await call(page, 'activate', ['owner', first]);
+  await call(page, 'prepare', ['owner', second, update.manifest, base + 'v2/']);
+  const updated = await call<ActiveCatalog>(page, 'activate', ['owner', second]);
+  expect(updated.pointer).toMatchObject({ activeId: second, previousId: first, confirmed: false });
+  expect(updated.inspection.files[0]!.metadata.snapshot_id).toBe('e'.repeat(64));
+  expect(await call(page, 'users')).toEqual(users);
+  await call(page, 'close', ['owner']);
+  const missing = '72345678-1234-1234-1234-123456789012';
+  await call(page, 'simulateMissingActiveTarget', [missing]);
+  await call(page, 'open', ['recovery']);
+  const recovered = await call<ActiveCatalog>(page, 'active', ['recovery', 'aural']);
+  expect(recovered.recovered).toBe(true);
+  expect(recovered.pointer).toMatchObject({ activeId: first, previousId: missing, confirmed: true });
+  expect(recovered.inspection.files[0]!.metadata.snapshot_id).toBe('d'.repeat(64));
+  expect(await call(page, 'users')).toEqual(users);
+  await call(page, 'close', ['recovery']);
+});
+
+test('corrupt cached chunk refetches only its immutable bytes and mismatched retry preserves active data', async ({ page }) => {
+  await call(page, 'open', ['owner']);
+  const first = '82345678-1234-1234-1234-123456789012', second = '92345678-1234-1234-1234-123456789012';
+  await call(page, 'prepare', ['owner', first, fixture.manifest, base]);
+  const active = await call<ActiveCatalog>(page, 'activate', ['owner', first]);
+  await call(page, 'close', ['owner']);
+  const chunk = fixture.manifest.files[0]!.chunks[0]!;
+  await call(page, 'corruptCachedChunk', [chunk.compressedChecksum]);
+  await call(page, 'open', ['resumed']); requested = [];
+  await call(page, 'prepare', ['resumed', second, fixture.manifest, base]);
+  expect(requested).toEqual([chunk.path]);
+  const ready = await call<InstallStatus>(page, 'status', ['resumed', second]);
+  expect(ready?.phase).toBe('validated'); expect(ready?.validatedFiles).toHaveLength(3);
+  await expect(call(page, 'prepare', ['resumed', second, update.manifest, base + 'v2/'])).rejects.toThrow('immutable');
+  expect((await call<ActiveCatalog>(page, 'active', ['resumed', 'aural'])).inspection).toEqual(active.inspection);
+  await call(page, 'close', ['resumed']);
 });

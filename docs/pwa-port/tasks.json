@@ -125,8 +125,8 @@
       "branch": "codex/pwa-chord-interpretation",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
-      "slice": "Next bounded native ChordVoicing pipeline, durable tone roles and MIDI/tone-label corpus channels",
-      "nextAction": "Worker on same branch owns music domain only; port native voiced chord pipeline and role metadata with corresponding Kotlin/frozen expected channels. Save/test/commit then report before symbols/interval expansion.",
+      "slice": "Native chord display interpretation and six-channel fixture parity",
+      "nextAction": "Same Sol/high worker ports Roman/letter/relative-Ionian display into music domain and compares all six frozen channels. Save tested commit and report before interval-analysis expansion.",
       "validation": [
         {
           "command": "npm --prefix pwa run check",
@@ -137,11 +137,17 @@
           "command": "npm --prefix pwa run check",
           "revision": "d7871274d63fcec8801421570c81b0a7dee8260a plus pending T05 worker source, checkpointed next",
           "result": "67 total unit cases including frozen root-channel matrix,1 input-contract case, strict types and production build passed."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/music (from pwa)",
+          "revision": "22838ca1aca17ade3edda53da4ddcb2c4a5edaa3 plus disjoint pending catalog journal",
+          "result": "58 music tests passed in1.18s; five files."
         }
       ],
       "progress": [
         "Bounded coreda1913c integrated: pitch/key/scale, written pitches and relative-Ionian helpers;18 native-derived tests. Combined47 unit cases+1 input contract/types/build passed with catalog contract tree.",
-        "Worker9c082646 chord-root resolution integrated;36 music tests with39,040 frozen root-channel comparisons passed, including written enharmonic/context cases. Full voicing/symbol gates remain."
+        "Worker9c082646 chord-root resolution integrated;36 music tests with39,040 frozen root-channel comparisons passed, including written enharmonic/context cases. Full voicing/symbol gates remain.",
+        "Voicing032da71 integrated normally at22838ca1; combined58 music tests passed, including39018 ordered MIDI/pitch-class and39040 root/role comparisons. Display/interval gates remain."
       ],
       "blocker": null
     },
@@ -193,8 +199,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
-      "slice": "Dedicated SQLite catalog worker, Web Locks ownership and bounded streaming import/query with actual browser recovery fixture",
-      "nextAction": "Commit bounded worker checkpoint; then implement IndexedDB install journal + verified compressed chunk staging + resumable import and recoverable active pointer. First API stages new immutable attempts only and refuses duplicates for inspection; no installed/offline-ready pointer yet.",
+      "slice": "Verified cache and durable install journal, cut/resume and recoverable active pointer",
+      "nextAction": "Validate quota/network failures and actual full-size Aural import against preserved237chunks; production worker/offline shell and product installer UI remain explicit next gates.",
       "validation": [
         {
           "command": "python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v",
@@ -240,6 +246,11 @@
           "command": "npm --prefix pwa run check; node pwa/node_modules/@playwright/test/cli.js test tests/browser/catalog-worker.spec.ts (from pwa)",
           "revision": "catalog worker source checkpointed next with root9c082646 integration",
           "result": "67 unit+1input-contract/types/build passed;3 actual catalog-worker browser tests passed."
+        },
+        {
+          "command": "node node_modules/@playwright/test/cli.js test tests/browser/catalog-worker.spec.ts (from pwa); npm --prefix pwa run check",
+          "revision": "22838ca1 plus catalog journal checkpoint committed next",
+          "result": "6Chrome cases passed in12.6s;89unit+1input-contract/types/build passed. Strict types fixed fixture initializer once; browser first run passed."
         }
       ],
       "progress": [
@@ -250,7 +261,8 @@
         "SQLite safety worker completed exact-source-gated upstream backport and actual Chrome OPFS partial-acquisition failure recovery. Root integrating main/worker Vite hooks, strict types and independent checks; no full importer started.",
         "SQLite worker33b9aec integrated normally. Main and worker Vite plugins configured with prebundling exclusion. Final independent npm ci installed50 packages;47 unit +1 corpus input contract/types/build,6 patch regressions,1 actual Chrome OPFS preservation drill and7 shell/storage browser cases all passed. CI wired for these checks; remote CI itself has not run.",
         "Dedicated SQLite worker + client implemented. Explicit preservation capability check precedes SAHPool init; Web Locks excludes other tabs before VFS init. New immutable attempt IDs stream one verified chunk at a time through@noble/hashes2.4.0 incremental full-file SHA256 into real SQLite. Native quick_check/metadata/length validation; closed handles; no arbitrary SQL RPC.",
-        "3 focused Chrome cases passed in10.7s through actual Vite worker: tab contention/cooperative handoff, real3-file SQLite import/abrupt worker termination/reopen/offline inspect, wrong full hash/snapshot preserving prior staging. Initial strict typecheck corrected published SAHPool constructor typing by using public readonly oo1.DB(path,r,vfs); rerun passed. No active-pointer, partial-download resume or full-size proof claimed yet."
+        "3 focused Chrome cases passed in10.7s through actual Vite worker: tab contention/cooperative handoff, real3-file SQLite import/abrupt worker termination/reopen/offline inspect, wrong full hash/snapshot preserving prior staging. Initial strict typecheck corrected published SAHPool constructor typing by using public readonly oo1.DB(path,r,vfs); rerun passed. No active-pointer, partial-download resume or full-size proof claimed yet.",
+        "Journal/cache/activation slice:6actual Chrome cases passed including killed second-file fetch with no-repeat first-file resume, cold-worker confirmation, new-target fallback, all10user stores/outbox unchanged across update, corrupt-cache one-chunk repair and immutable retry rejection. Full-size/mobile/quota/production cold shell remain unrun."
       ],
       "blocker": null
     },

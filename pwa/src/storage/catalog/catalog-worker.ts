@@ -1,11 +1,15 @@
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { sha256 as incrementalSha256 } from '@noble/hashes/sha2.js';
-import { fetchVerifiedChunk } from './chunks';
-import { validateManifest, type CatalogManifest } from './manifest';
-import { CATALOG_OWNER_LOCK, CatalogError, stagedPath, type CatalogCommand, type CatalogInfo, type CatalogInspection, type CatalogProgress, type CatalogRequest, type CatalogResponse } from './protocol';
+import { fetchVerifiedChunk, sha256 } from './chunks';
+import { cachedCompressedBytes, cachedOrFetchChunk } from './chunk-cache';
+import { openCatalogJournal, type CatalogJournal, type CatalogInstall } from './journal';
+import { planInstallSpace, validateManifest, type CatalogManifest, type CatalogChunk, type CatalogFile } from './manifest';
+import { CATALOG_OWNER_LOCK, CatalogError, stagedPath, type CatalogCommand, type ActiveCatalog, type CatalogInfo, type CatalogInspection, type CatalogProgress, type CatalogRequest, type CatalogResponse } from './protocol';
 
 const scope = globalThis as unknown as { onmessage: ((event: MessageEvent<CatalogRequest>) => void) | null; postMessage: (value: CatalogResponse | CatalogProgress) => void };
 let pool: SAHPoolUtil | null = null;
+let journal: CatalogJournal | null = null;
+const sessionId = crypto.randomUUID();
 let sqlite: Sqlite3Static | null = null;
 let ownershipTask: Promise<void> | undefined;
 let releaseOwnership: (() => void) | undefined;
@@ -27,10 +31,11 @@ async function acquire(): Promise<void> {
       const options = { name: 'acquiring-catalog', directory: '/acquiring-catalog', initialCapacity: 24, preserveOnInitFailure: true, clearOnInit: false };
       pool = await sqlite.installOpfsSAHPoolVfs(options);
       await pool.reserveMinimumCapacity(24);
+      journal = await openCatalogJournal();
       ready.resolve();
       await release.promise;
     } catch (error) { ready.reject(error); }
-    finally { pool?.pauseVfs(); pool = null; sqlite = null; }
+    finally { journal?.close(); journal = null; pool?.pauseVfs(); pool = null; sqlite = null; }
   }).catch(error => ready.reject(error));
   await ready.promise;
 }
@@ -71,35 +76,119 @@ function inspect(attemptId: string, manifest: CatalogManifest): CatalogInspectio
   });
   return { attemptId, files };
 }
+async function importFile(id: string, attemptId: string, file: CatalogFile, load: (chunk: CatalogChunk) => Promise<Uint8Array>, onChunk?: (chunk: CatalogChunk) => Promise<void>): Promise<void> {
+  let index = 0, verifiedBytes = 0; const digest = incrementalSha256.create();
+  try {
+    const importedBytes = await owner().importDb(stagedPath(attemptId, file.name), async () => {
+      const chunk = file.chunks[index];
+      if (!chunk) {
+        if (verifiedBytes !== file.byteSize || hex(digest.digest()) !== file.checksum) throw new CatalogError('INTEGRITY', 'Full catalog database checksum mismatch');
+        return undefined;
+      }
+      const raw = await load(chunk); digest.update(raw); verifiedBytes += raw.byteLength;
+      await onChunk?.(chunk);
+      scope.postMessage({ type: 'progress', id, file: file.name, chunkIndex: index++, verifiedBytes });
+      return raw;
+    });
+    if (importedBytes !== file.byteSize) throw new CatalogError('INTEGRITY', 'Imported database length mismatch');
+  } finally { digest.destroy(); }
+}
+function normalizedBase(baseUrl: string): URL {
+  const base = new URL(baseUrl);
+  if (!['https:', 'http:'].includes(base.protocol) || !base.pathname.endsWith('/') || base.search || base.hash || base.username || base.password) throw new CatalogError('INVALID_REQUEST', 'Expected a trusted catalog directory URL');
+  return base;
+}
 async function stage(id: string, attemptId: string, manifest: CatalogManifest, baseUrl: string): Promise<CatalogInspection> {
   const paths = manifest.files.map(file => stagedPath(attemptId, file.name));
   if (owner().getFileNames().some(path => paths.includes(path))) throw new CatalogError('EXISTS', 'Staging attempt already has files; inspect its outcome before retrying');
-  const base = new URL(baseUrl);
-  for (const file of manifest.files) {
-    let index = 0, verifiedBytes = 0;
-    const digest = incrementalSha256.create();
-    try {
-      const importedBytes = await owner().importDb(stagedPath(attemptId, file.name), async () => {
-        const chunk = file.chunks[index];
-        if (!chunk) {
-          if (verifiedBytes !== file.byteSize || hex(digest.digest()) !== file.checksum) throw new CatalogError('INTEGRITY', 'Full catalog database checksum mismatch');
-          return undefined;
-        }
-        const { raw } = await fetchVerifiedChunk(base, chunk, AbortSignal.timeout(60_000));
-        digest.update(raw); verifiedBytes += raw.byteLength;
-        scope.postMessage({ type: 'progress', id, file: file.name, chunkIndex: index++, verifiedBytes });
-        return raw;
-      });
-      if (importedBytes !== file.byteSize) throw new CatalogError('INTEGRITY', 'Imported database length mismatch');
-    } finally { digest.destroy(); }
-  }
+  const base = normalizedBase(baseUrl);
+  for (const file of manifest.files) await importFile(id, attemptId, file, async chunk => (await fetchVerifiedChunk(base, chunk, AbortSignal.timeout(60_000))).raw);
   return inspect(attemptId, manifest);
+}
+async function manifestDigest(manifest: CatalogManifest): Promise<string> { return sha256(new TextEncoder().encode(JSON.stringify(manifest))); }
+async function validatedInstall(attemptId: string): Promise<CatalogInstall> {
+  const record = await journal!.install(attemptId);
+  if (!record || record.phase !== 'validated') throw new CatalogError('INCOMPLETE', 'Catalog install has not finished validation');
+  const manifest = validateManifest(record.manifest);
+  if (await manifestDigest(manifest) !== record.manifestDigest) throw new CatalogError('INTEGRITY', 'Catalog intent was changed');
+  return { ...record, manifest };
+}
+async function prepare(id: string, attemptId: string, manifest: CatalogManifest, baseUrl: string): Promise<CatalogInspection> {
+  const paths = manifest.files.map(file => stagedPath(attemptId, file.name));
+  const base = normalizedBase(baseUrl), digest = await manifestDigest(manifest);
+  let record = await journal!.install(attemptId);
+  if (record && (record.manifestDigest !== digest || record.baseUrl !== base.href || await manifestDigest(validateManifest(record.manifest)) !== digest)) throw new CatalogError('INTENT_MISMATCH', 'Install ID belongs to a different immutable manifest or source');
+  if (!record && owner().getFileNames().some(path => paths.includes(path))) throw new CatalogError('ORPHANED', 'Existing staging files have no receipt; preserve them and start a new attempt');
+  if (!record) {
+    record = { id: attemptId, manifest, manifestDigest: digest, baseUrl: base.href, phase: 'staging', verifiedChunks: [], validatedFiles: [], createdAt: Date.now() };
+    await journal!.save(record);
+  }
+  const pointer = await journal!.pointer(manifest.kind);
+  const protectedAttempt = pointer?.activeId === attemptId || pointer?.previousId === attemptId;
+  try {
+    if (record.phase === 'validated') {
+      try { return inspect(attemptId, manifest); }
+      catch (error) { if (protectedAttempt) throw error; }
+    }
+    const cachedBytes = await cachedCompressedBytes(manifest);
+    const space = planInstallSpace(manifest, await navigator.storage.estimate(), cachedBytes);
+    if (space.enough !== true) throw new CatalogError('QUOTA', space.enough === null ? 'Browser storage capacity cannot be verified' : 'Not enough storage; the previous catalog remains available');
+    record.phase = 'importing'; delete record.lastError; await journal!.save(record);
+    for (const file of manifest.files) {
+      if (record.validatedFiles.includes(file.name)) {
+        try { inspect(attemptId, { ...manifest, files: [file] }); continue; } catch { /* Reimport only this unprotected staging target. */ }
+      }
+      if (protectedAttempt) throw new CatalogError('PROTECTED', 'An installed catalog cannot be overwritten; start a new attempt');
+      const current = record;
+      await importFile(id, attemptId, file, chunk => cachedOrFetchChunk(base, chunk, AbortSignal.timeout(60_000)), async chunk => {
+        const key = file.name + ':' + chunk.index;
+        if (!current.verifiedChunks.includes(key)) { current.verifiedChunks.push(key); await journal!.save(current); }
+      });
+      inspect(attemptId, { ...manifest, files: [file] });
+      if (!record.validatedFiles.includes(file.name)) record.validatedFiles.push(file.name);
+      await journal!.save(record);
+    }
+    const result = inspect(attemptId, manifest);
+    record.phase = 'validated'; delete record.lastError; await journal!.save(record);
+    return result;
+  } catch (error) {
+    record.lastError = error instanceof Error ? error.message : 'Catalog install interrupted';
+    await journal!.save(record).catch(() => {}); throw error;
+  }
+}
+async function activate(attemptId: string): Promise<ActiveCatalog> {
+  const record = await validatedInstall(attemptId), inspection = inspect(attemptId, record.manifest);
+  const pointer = await journal!.activate(record, sessionId);
+  return { pointer, inspection, recovered: false };
+}
+async function active(kind: CatalogManifest['kind']): Promise<ActiveCatalog | null> {
+  if (kind !== 'aural' && kind !== 'songs') throw new CatalogError('INVALID_REQUEST', 'Unknown catalog kind');
+  const pointer = await journal!.pointer(kind);
+  if (!pointer) return null;
+  try {
+    const record = await validatedInstall(pointer.activeId);
+    if (record.manifest.kind !== kind) throw new CatalogError('INTEGRITY', 'Active catalog kind mismatch');
+    const inspection = inspect(record.id, record.manifest);
+    const confirmed = !pointer.confirmed && pointer.activatedBySession !== sessionId ? await journal!.updatePointer(pointer, { ...pointer, confirmed: true }) : pointer;
+    return { pointer: confirmed, inspection, recovered: false };
+  } catch (error) {
+    if (!pointer.previousId) throw error;
+    const previous = await validatedInstall(pointer.previousId);
+    if (previous.manifest.kind !== kind) throw new CatalogError('INTEGRITY', 'Previous catalog kind mismatch');
+    const inspection = inspect(previous.id, previous.manifest);
+    const restored = await journal!.updatePointer(pointer, { kind, activeId: previous.id, previousId: pointer.activeId, confirmed: true, activatedBySession: sessionId });
+    return { pointer: restored, inspection, recovered: true };
+  }
 }
 async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'init') { await acquire(); return info(); }
   if (command.kind === 'close') { releaseOwnership?.(); await ownershipTask; releaseOwnership = undefined; ownershipTask = undefined; return null; }
   owner();
   if (command.kind === 'info') return info();
+  if (command.kind === 'prepare') return prepare(id, command.attemptId, validateManifest(command.manifest), command.baseUrl);
+  if (command.kind === 'activate') return activate(command.attemptId);
+  if (command.kind === 'active') return active(command.catalogKind);
+  if (command.kind === 'status') return journal!.install(command.attemptId);
   if (command.kind === 'inspect') return inspect(command.attemptId, validateManifest(command.manifest));
   if (command.kind === 'stage') return stage(id, command.attemptId, validateManifest(command.manifest), command.baseUrl);
   throw new CatalogError('INVALID_REQUEST', 'Unknown catalog command');
