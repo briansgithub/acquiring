@@ -44,15 +44,34 @@
         ".github/workflows/pwa.yml"
       ],
       "acceptance": "Clean install, typecheck, test and build; shell opens",
-      "status": "in_progress",
+      "status": "validating",
       "owner": "coordinator + ui_shell worker (GPT-6 Luna/medium)",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "2a54ac2713af0a9c8fa304539a33f47e44c47e17",
       "slice": "Independent toolchain, contracts, cached installable shell and Android-like responsive header",
-      "nextAction": "Coordinator owns configuration/dependencies/contracts/routing/build/cache/CI; worker owns only pwa/src/ui/shell in sibling codex/pwa-ui-shell. Validate clean install, unit/parity/build, browser routing/offline.",
-      "validation": [],
-      "progress": [],
+      "nextAction": "Commit the reviewed standalone scaffold, verify that checkpoint, then mark complete and claim T02/T06.",
+      "validation": [
+        {
+          "command": "node npm-cli.js --prefix pwa ci --no-audit --no-fund",
+          "revision": "T01 combined working tree after UI merge; pwa lockfile used",
+          "result": "49 packages installed; independent clean install passed."
+        },
+        {
+          "command": "npm --prefix pwa run check",
+          "revision": "T01 combined working tree after UI merge",
+          "result": "2 route tests, 1 shared corpus input contract test, strict typecheck and production build passed;6 shell assets cached. This is not music-output parity."
+        },
+        {
+          "command": "npm --prefix pwa run test:browser",
+          "revision": "same production build4798fb096bf7",
+          "result": "3 Chrome browser tests passed: routing/history/bookmarks,320px and200% text layout, service worker offline reload/deep link."
+        }
+      ],
+      "progress": [
+        "UI19b495d integrated normally; root scaffold uses own package and lock. Initial unprefixed install/ci ran at monorepo root due controller cwd; only ignored dependencies changed, tracked root package/lock unchanged. Corrected with explicit --prefix pwa; actual PWA install/checks passed.",
+        "No catalogs, playback, microphone, sync or production deployment implemented by shell acceptance."
+      ],
       "blocker": null
     },
     {

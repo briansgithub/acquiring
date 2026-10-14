@@ -1,0 +1,34 @@
+{
+  "name": "@acquiring/pwa",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": "^24.0.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run src",
+    "test:parity": "vitest run tests/parity",
+    "test:browser": "playwright test",
+    "test:recovery": "python -m unittest discover -s scripts/run-control -p test_run_control.py -v",
+    "build": "npm run typecheck && vite build && node scripts/build-shell.mjs",
+    "preview": "vite preview --host 127.0.0.1",
+    "check": "npm run test:unit && npm run test:parity && npm run build"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.10.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "typescript": "7.0.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.4"
+  }
+}

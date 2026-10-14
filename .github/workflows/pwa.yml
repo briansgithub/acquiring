@@ -1,0 +1,35 @@
+name: PWA
+on:
+  pull_request:
+    paths: ["pwa/**", "contracts/**", "docs/pwa-port/**", ".github/workflows/pwa.yml"]
+  push:
+    branches: [main, "codex/**"]
+    paths: ["pwa/**", "contracts/**", "docs/pwa-port/**", ".github/workflows/pwa.yml"]
+permissions:
+  contents: read
+jobs:
+  app:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pwa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: pwa/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+  recovery:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m unittest discover -s pwa/scripts/run-control -p test_run_control.py -v
+      - run: python docs/pwa-port/validate_audit.py
