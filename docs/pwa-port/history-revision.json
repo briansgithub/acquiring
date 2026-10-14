@@ -1154,101 +1154,159 @@
     "sha": "4b2da5306e2f63ecbd68512211ef7aeba66cd1a0",
     "date": "2026-09-11",
     "subject": "Split large All Songs groups with a prefix scrubber and show complexity scores on those rows.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Prefix navigation for large All Songs groups; row complexity scores.",
+    "finalDisposition": "Finalized by3bd3d36b.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "4b2da530:android/app/src/main/java/com/acquiring/android/AllSongsView.kt",
+      "4b2da530:android/app/src/main/java/com/acquiring/android/BrowseSubgrouping.kt",
+      "4b2da530:android/app/src/main/java/com/acquiring/android/SongBrowse.kt",
+      "4b2da530:android/app/src/main/java/com/acquiring/android/SongDao.kt"
+    ]
   },
   {
     "sha": "d3ca9e2f0dc15676a52bbf8852a611c6a6d8eb3f",
     "date": "2026-09-11",
     "subject": "Confirm a successful favorite with a brief non-interactive Favorited notice.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Show Favorited notice only after successful add.",
+    "finalDisposition": "Retain rollback and success-only feedback.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "d3ca9e2f:android/app/src/main/java/com/acquiring/android/FavoritedConfirmation.kt",
+      "d3ca9e2f:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "d3ca9e2f:android/app/src/test/java/com/acquiring/android/FavoritedConfirmationTest.kt"
+    ]
   },
   {
     "sha": "a0bf1ba6923c06ebdd0b399c6fcdb13e86693571",
     "date": "2026-09-11",
     "subject": "Show a one-shot Introduction so first launch explains gestures before the library.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Persistent one-shot gesture Introduction before Library.",
+    "finalDisposition": "Use final copy and completion state.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "a0bf1ba6:android/app/src/main/java/com/acquiring/android/IntroductionPrefs.kt",
+      "a0bf1ba6:android/app/src/main/java/com/acquiring/android/IntroductionView.kt",
+      "a0bf1ba6:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "a0bf1ba6:android/app/src/test/java/com/acquiring/android/IntroductionContentTest.kt"
+    ]
   },
   {
     "sha": "cb2c77d375824b1ebb6a092033a688edc2302605",
     "date": "2026-09-11",
     "subject": "Add offline Settings Help so notation and octave guidance stay available without a network.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Offline Settings Help for notation and singing/octaves.",
+    "finalDisposition": "Later45e7012e removes obsolete calibration wording.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "cb2c77d3:android/app/src/main/java/com/acquiring/android/AppSettings.kt",
+      "cb2c77d3:android/app/src/main/java/com/acquiring/android/HelpContent.kt",
+      "cb2c77d3:android/app/src/main/java/com/acquiring/android/HelpViews.kt",
+      "cb2c77d3:android/app/src/main/java/com/acquiring/android/IntroductionView.kt"
+    ]
   },
   {
     "sha": "13e0b65c5c67ba5afcaeabfd361ec92d7823f95e",
     "date": "2026-09-11",
     "subject": "Lock phones to portrait so one-handed practice stays upright while tablets can rotate.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "platform",
+    "featureDelta": "Phones portrait-locked; tablets rotate.",
+    "finalDisposition": "PWA portrait-optimized and responsive; do not require browser orientation lock.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "13e0b65c:android/app/src/main/AndroidManifest.xml",
+      "13e0b65c:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "13e0b65c:android/app/src/main/java/com/acquiring/android/PhoneOrientationPolicy.kt",
+      "13e0b65c:android/app/src/main/res/values-sw600dp/bools.xml"
+    ]
   },
   {
     "sha": "34f034056fda54f7703477d538335f40ef7e9ed7",
     "date": "2026-09-11",
     "subject": "Add Synth Flute so the Android instrument menu matches iOS partials and gain.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Add normalized Synth Flute with synthesis/category regression.",
+    "finalDisposition": "Included in final13 instruments.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "34f03405:android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+      "34f03405:android/app/src/main/java/com/acquiring/android/SynthVoice.kt",
+      "34f03405:android/app/src/test/java/com/acquiring/android/SynthFluteTest.kt"
+    ]
   },
   {
     "sha": "4299184ab9bb65bbc8cfe68346f0791c8a176a0b",
     "date": "2026-09-11",
     "subject": "Cap Quiz timeline redraws at 60 fps or the display maximum without touching the audio clock.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Persist60fps/maximum visual refresh separately from audio clock.",
+    "finalDisposition": "Retain visual-only setting.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "4299184a:android/app/src/main/java/com/acquiring/android/AppSettings.kt",
+      "4299184a:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "4299184a:android/app/src/main/java/com/acquiring/android/QuizPlaybackEngine.kt",
+      "4299184a:android/app/src/main/java/com/acquiring/android/TimelineFrameRate.kt"
+    ]
   },
   {
     "sha": "91623c45bd9698c9af62a49c33653b93427ceace",
     "date": "2026-09-11",
     "subject": "Export allow-listed audio diagnostics and reset the engine from Settings without sharing song IDs.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Engine reset and allow-listed diagnostic export excluding song IDs/audio.",
+    "finalDisposition": "Retain browser equivalent and minimization.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "91623c45:android/app/src/main/java/com/acquiring/android/AppSettings.kt",
+      "91623c45:android/app/src/main/java/com/acquiring/android/AudioDiagnostics.kt",
+      "91623c45:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "91623c45:android/app/src/main/java/com/acquiring/android/QuizPlaybackController.kt"
+    ]
   },
   {
     "sha": "4e1c91b8d0c4c9dcb30086a8b9750cd13795c4c4",
     "date": "2026-09-11",
     "subject": "Replace hum-calibration with a singing-dock octave shifter so targets move without changing playback.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "replacement",
+    "featureDelta": "Replace hum calibration with song-specific octave shift, preserving source audio.",
+    "finalDisposition": "Finalized by45e7012e; current target range -2..+3.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "4e1c91b8:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt",
+      "4e1c91b8:android/app/src/androidTest/java/com/acquiring/android/TessituraUiTest.kt",
+      "4e1c91b8:android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt",
+      "4e1c91b8:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "1c6745262f69aaf7996d7e246c8c0834d77c8002",
     "date": "2026-09-11",
     "subject": "Put Play, beat-step, Reset, and section on one row so transport no longer floats over the singing dock.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "replacement",
+    "featureDelta": "Fixed Play/beat-step/Reset/section row replaces floating transport.",
+    "finalDisposition": "Implement final row directly.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "1c674526:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt",
+      "1c674526:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "1c674526:android/app/src/main/java/com/acquiring/android/QuizDestination.kt",
+      "1c674526:android/app/src/main/java/com/acquiring/android/QuizView.kt"
+    ]
   },
   {
     "sha": "cb5c3e044bc40d885c2ae5fd821511b60812345c",
