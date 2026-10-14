@@ -115,14 +115,22 @@
       ],
       "acceptance": "Shared corpus plus source/historic/role fixtures and current Kotlin cases",
       "status": "in_progress",
-      "owner": "data_compat worker (GPT-6.1 Sol/high), next theory slice",
+      "owner": "coordinator; no active theory worker",
       "branch": "codex/pwa-music-theory",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "cd5b2e301e64ea815af9423235e29a4f3c9f7296",
       "slice": "Pure pitch/key/scale spelling and relative-major core, then bounded chord corpus slices",
-      "nextAction": "Reuse clean data worktree on new narrow branch; own domain/music only. Port native pitch/key/scale APIs and focused native cases first. Save remaining chord/voicing parity explicitly if budget boundary reached.",
-      "validation": [],
-      "progress": [],
+      "nextAction": "Remaining T03: native chord interpretation/root/tone labels/spelling/voicing plus shared/source/historic corpus output parity. Bounded core alone does not complete task.",
+      "validation": [
+        {
+          "command": "npm --prefix pwa run check",
+          "revision": "64bec66c1717b8ab240c0f7cfa3588b3b59387eb plus pending T05 contract source (committed next)",
+          "result": "47 unit tests including18 theory cases,1 corpus input contract, strict types/build passed."
+        }
+      ],
+      "progress": [
+        "Bounded coreda1913c integrated: pitch/key/scale, written pitches and relative-Ionian helpers;18 native-derived tests. Combined47 unit cases+1 input contract/types/build passed with catalog contract tree."
+      ],
       "blocker": null
     },
     {
@@ -156,20 +164,47 @@
       ],
       "allowedPaths": [
         "pwa/src/storage/catalog/",
-        "pwa/scripts/catalog/"
+        "pwa/scripts/catalog/",
+        "pwa/scripts/sqlite-compat/",
+        "pwa/package.json",
+        "pwa/package-lock.json",
+        "pwa/vite.config.ts"
       ],
       "acceptance": "Full-size mobile install/query/offline cold launch; quota/corruption/second-tab recovery",
       "status": "in_progress",
-      "owner": "coordinator (runtime model unknown)",
+      "owner": "coordinator + data_compat worker (GPT-6.1 Sol/high), SQLite preservation slice",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "cd5b2e301e64ea815af9423235e29a4f3c9f7296",
-      "slice": "Resumable immutable8MiB chunk producer and source-hash manifest before runtime importer",
-      "nextAction": "Run8 producer fixtures, then start guarded full-size Aural packaging with incremental atomic chunk receipts. Inspect saved run/job and progress.json before retrying.",
-      "validation": [],
+      "slice": "Backport and test upstream SQLite preservation behavior before persistent importer",
+      "nextAction": "Reuse clean theory worktree atda1913c on codex/pwa-sqlite-safety starting from primary. Worker owns only pwa/scripts/sqlite-compat. Produce source-hash-gated minimal upstream patch plus real OPFS initialization-failure regression; root alone integrates Vite/dependencies/CI. Preserve all existing catalog files; do not deploy.",
+      "validation": [
+        {
+          "command": "python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v",
+          "revision": "954ceb71",
+          "result": "8 passed in0.840s; actual killed-producer resume plus source corruption, immutable mismatch and exact reconstruction."
+        },
+        {
+          "command": "python pwa/scripts/catalog/package_catalog.py --source-manifest acquiring_data/aural-catalog-delivery-v3-64cfa299cc74/aural-catalog-manifest-v3.json --output .artifacts/pwa-port/aural-chunks-64cfa299cc74 --kind aural",
+          "revision": "954ceb71",
+          "result": "Complete:3 source checksums/lengths verified,237 immutable chunks,1,980,387,328 raw bytes; output manifest9c493fd76f6b."
+        },
+        {
+          "command": "npm --prefix pwa run check",
+          "revision": "combined theory/core and catalog contract tree committed with this claim",
+          "result": "47 unit cases+1 input contract/types/build passed."
+        },
+        {
+          "command": "node .artifacts/pwa-port/validate-produced-manifest.mjs",
+          "revision": "same manifest contract source",
+          "result": "Accepted actual3-file237-chunk Aural manifest64cfa299cc74."
+        }
+      ],
       "progress": [
         "Official SQLite docs inspected2026-10-14. Do not pass an unsupported preserve option and assume safety. No SQLite dependency installed; no catalog mutation or publication. H: has~996GB free; Aural source immutable snapshot64cfa299cc74 present.",
-        "Chunk producer7 fixtures passed after closing test SQLite handles explicitly (first run failed only fixture cleanup on Windows). Real killed-producer fixture added; verify before full source job. Full-size intended output .artifacts/pwa-port/aural-chunks-64cfa299cc74, source manifest SHA256=7c38cbac4df225e6b45d679c9b9fab2d0d23526c40f9faff594794dd9e9b9dcf. Source expected raw1,980,387,328 bytes in3 files."
+        "Chunk producer7 fixtures passed after closing test SQLite handles explicitly (first run failed only fixture cleanup on Windows). Real killed-producer fixture added; verify before full source job. Full-size intended output .artifacts/pwa-port/aural-chunks-64cfa299cc74, source manifest SHA256=7c38cbac4df225e6b45d679c9b9fab2d0d23526c40f9faff594794dd9e9b9dcf. Source expected raw1,980,387,328 bytes in3 files.",
+        "Producer954ceb71:8 Python tests passed including actual killed-process resume. Full source job t05-full-aural-packaging-20261014 completed:3 verified files,237 chunks,1,980,387,328 raw bytes,780,019,421 compressed bytes; manifest SHA2569c493fd76f6bcda9e1ab44f5889708e6814ac5154a00c94d9a9438ee91c0e591. Generated data remains ignored and unpublished. Observed producer working set~30MB; not a measured browser/import peak.",
+        "Strict runtime manifest, bounded gzip/raw checksum verification and advisory quota preflight implemented;5 new tests passed. Actual237-chunk source manifest accepted by browser contract. Published SQLite3.53.4-build2 now pinned for source inspection; its failure path explicitly calls removeVfs and ignores preserveOnInitFailure. No pool initialized."
       ],
       "blocker": null
     },
