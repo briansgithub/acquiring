@@ -411,11 +411,15 @@
     "sha": "38d4dbfeff38d912c421789143a8031675b952d0",
     "date": "2026-09-02",
     "subject": "Merge remote-tracking branch 'origin/main' into codex/testflight-icon-build-3",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "38d4dbfe:android/app/build.gradle",
+      "38d4dbfe:android/app/src/main/res/drawable/ic_launcher_foreground.xml"
+    ]
   },
   {
     "sha": "9039694214d4f0e17e508c1638098d0abf8c2ab6",
@@ -448,11 +452,16 @@
     "sha": "b543f2bee9ceb94e24aa92928646bdb23f7f4526",
     "date": "2026-09-05",
     "subject": "Merge branch 'claude/ui-reset'",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "Resolution touches android/app/src/main/java/com/acquiring/android/MainActivity.kt. Use final integrated source.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "b543f2be:android/README.md",
+      "b543f2be:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "b543f2be:contracts/fixtures/ios_ui_test_catalog.json"
+    ]
   },
   {
     "sha": "2f79ed260c5e6844a910aff539030491617cde1d",
@@ -473,31 +482,40 @@
     "sha": "7d901a8d5a6f296ae9103aa7a5d9674994871917",
     "date": "2026-09-05",
     "subject": "Merge branch 'codex/instrument-refresh-ios' into codex/instrument-refresh",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "2ed8e342a763a3b1733f5a545b8826efc99a49d7",
     "date": "2026-09-05",
     "subject": "Merge completed Android instrument refresh",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "2ed8e342:android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+      "2ed8e342:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "2ed8e342:android/app/src/main/java/com/acquiring/android/SynthVoice.kt"
+    ]
   },
   {
     "sha": "2b2fad44aa08814c15215e0c7e445600f6ac5fc5",
     "date": "2026-09-05",
     "subject": "Merge validated keyboard dismissal and persistent Recents",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "ffb81ed48775777d5c2c5d66ff6ae0100a2b543b",
@@ -518,31 +536,40 @@
     "sha": "c554b5c54bff012e64fe56f20695dd315a6d5801",
     "date": "2026-09-05",
     "subject": "Integrate current onboarding and instrument catalog changes",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Reconcile refreshed instrument names/grouping and normalized gains with onboarding.",
+    "finalDisposition": "Resolution touches android/app/src/main/java/com/acquiring/android/MainActivity.kt, android/app/src/main/java/com/acquiring/android/SynthVoice.kt. Use final integrated source.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "c554b5c5:android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+      "c554b5c5:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "c554b5c5:android/app/src/main/java/com/acquiring/android/SynthVoice.kt"
+    ]
   },
   {
     "sha": "91cce16c478e46f6c1e6ee32cfa0b81432e4688e",
     "date": "2026-09-05",
     "subject": "Merge iOS keyboard dismissal and persistent Recents",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "91b75704d27acb8a0079774a4e5cc49ebaa96816",
     "date": "2026-09-05",
     "subject": "Merge commit '91cce16c' into codex/quiz-controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "f89a775cd3b8e14a6998e20a974cbbdd50792544",
@@ -564,21 +591,33 @@
     "sha": "a3e68654f39ba62ab34277400071e9b9eb191551",
     "date": "2026-09-05",
     "subject": "Merge commit 'c554b5c5' into codex/quiz-controls-android",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Reconcile instrument catalog with foreground transport/session ownership and selector tests.",
+    "finalDisposition": "Resolution touches android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt, android/app/src/main/java/com/acquiring/android/InstrumentSession.kt, android/app/src/main/java/com/acquiring/android/MainActivity.kt, android/app/src/main/java/com/acquiring/android/SynthVoice.kt, android/app/src/test/java/com/acquiring/android/InstrumentSessionOwnerTest.kt. Use final integrated source.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "a3e68654:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt",
+      "a3e68654:android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+      "a3e68654:android/app/src/main/java/com/acquiring/android/InstrumentSession.kt",
+      "a3e68654:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "41561414202eebb7fcbc5884226b8d39ff5e2891",
     "date": "2026-09-05",
     "subject": "Merge commit 'a3e68654' into codex/quiz-controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "41561414:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt",
+      "41561414:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt",
+      "41561414:android/app/src/main/AndroidManifest.xml",
+      "41561414:android/app/src/main/java/com/acquiring/android/InstrumentSession.kt"
+    ]
   },
   {
     "sha": "543e290ffae163d741af44d88345325506918c33",
