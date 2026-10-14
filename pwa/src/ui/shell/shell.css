@@ -1,0 +1,28 @@
+:root {
+  color-scheme: dark;
+  --shell-background: #1c1b1f;
+  --shell-text: #e6e1e5;
+  --shell-surface: #343434;
+  --shell-primary: #a8c7fa;
+}
+.app-shell { min-height: 100vh; min-height: 100dvh; background: var(--shell-background); color: var(--shell-text); }
+.app-shell__header { background: var(--shell-background); color: var(--shell-text); padding-top: env(safe-area-inset-top, 0px); }
+.app-shell__bar {
+  box-sizing: border-box; display: flex; align-items: center; gap: 8px;
+  width: min(100%, 960px); min-height: 64px; margin-inline: auto;
+  padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
+}
+.app-shell__title { flex: 1; min-width: 0; margin: 0; color: inherit; font: 500 1.375rem/1.3 system-ui, sans-serif; overflow-wrap: anywhere; }
+.app-shell__action, .app-shell__action-spacer { flex: 0 0 44px; width: 44px; height: 44px; }
+.app-shell__action {
+  display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%;
+  background: transparent; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.app-shell__action:hover { background: color-mix(in srgb, var(--shell-text) 8%, transparent); }
+.app-shell__action:focus-visible { outline: 2px solid var(--shell-primary); outline-offset: 2px; }
+.app-shell__action svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.app-shell__content {
+  box-sizing: border-box; width: min(100%, 960px); margin-inline: auto;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+@media (max-width: 480px) { .app-shell__bar { min-height: 56px; gap: 4px; } .app-shell__content { padding-top: 12px; } }
