@@ -121,12 +121,12 @@
       ],
       "acceptance": "Shared corpus plus source/historic/role fixtures and current Kotlin cases",
       "status": "in_progress",
-      "owner": "coordinator; no active theory worker",
-      "branch": "codex/pwa-music-theory",
+      "owner": "chord_port worker (GPT-6.1 Sol/high)",
+      "branch": "codex/pwa-chord-interpretation",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "cd5b2e301e64ea815af9423235e29a4f3c9f7296",
-      "slice": "Pure pitch/key/scale spelling and relative-major core, then bounded chord corpus slices",
-      "nextAction": "Remaining T03: native chord interpretation/root/tone labels/spelling/voicing plus shared/source/historic corpus output parity. Bounded core alone does not complete task.",
+      "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
+      "slice": "Native chord interpretation, root/tone labels and voicing in bounded corpus-backed checkpoints",
+      "nextAction": "Worker owns only pwa/src/domain/music. Preserve accepted core; port current Android chord semantics and translate native/shared fixtures. Report incremental checkpoint; complete only with declared full parity evidence.",
       "validation": [
         {
           "command": "npm --prefix pwa run check",
@@ -175,16 +175,21 @@
         "pwa/package.json",
         "pwa/package-lock.json",
         "pwa/vite.config.ts",
-        ".github/workflows/pwa.yml"
+        ".github/workflows/pwa.yml",
+        "pwa/tests/browser/catalog-worker.spec.ts",
+        "pwa/tests/browser/catalog-worker.html",
+        "pwa/tests/browser/catalog-worker-harness.ts",
+        "pwa/scripts/catalog/make-browser-fixture.py",
+        "pwa/public/test-fixtures/"
       ],
       "acceptance": "Full-size mobile install/query/offline cold launch; quota/corruption/second-tab recovery",
       "status": "in_progress",
-      "owner": "coordinator; no active catalog worker",
+      "owner": "coordinator (runtime model unknown)",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "cd5b2e301e64ea815af9423235e29a4f3c9f7296",
-      "slice": "Packaging, bounded integrity/preflight and tested SQLite preservation backport checkpointed",
-      "nextAction": "At next eligible capacity choose bounded T05 actual worker/importer slice, explicit preservation/clear=false, Web Locks ownership, resumable verified staging and active pointer. T03 chord/voicing remains independent ready lane. No new work in current70% allowance window.",
+      "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
+      "slice": "Dedicated SQLite catalog worker, Web Locks ownership and bounded streaming import/query with actual browser recovery fixture",
+      "nextAction": "Reuse existing verified chunks and preservation build hook. First implement exclusive worker lifecycle and streaming import/query on small real SQLite fixture, then journaled install/pointer recovery; do not repeat packaging or claim mobile readiness.",
       "validation": [
         {
           "command": "python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v",
@@ -804,6 +809,13 @@
     },
     "reason": "No-new-work threshold reached; finish recoverable validated checkpoint and yield. Re-read live limits on resume.",
     "activeWorker": null,
-    "sourceCommit": "3dceb355940777161d4046e21c5a743768555668"
+    "sourceCommit": "3dceb355940777161d4046e21c5a743768555668",
+    "resumeObservation": {
+      "date": "2026-10-14",
+      "fiveHourUsedPercent": 0,
+      "weeklyUsedPercent": 48,
+      "unresolvedRuns": [],
+      "reason": "Fresh window verified; normal bounded implementation resumes."
+    }
   }
 }
