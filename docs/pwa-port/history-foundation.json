@@ -1476,101 +1476,142 @@
     "sha": "0ba05f49340d64e58f1e63d00cf5a94f8abfa1f1",
     "date": "2026-08-17",
     "subject": "Update EXPECTED_BROWSE_SONGS to 40,609 to match new catalog database release.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "contract",
+    "featureDelta": "Raise expected playable catalog floor to40,609.",
+    "finalDisposition": "Use current contract minimum, not early34,101.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "0ba05f49:android/app/src/main/java/com/inquiring/android/DatabaseDownloader.kt"
+    ]
   },
   {
     "sha": "86fd395917446b7b7df3200162ea2302fdfbfa29",
     "date": "2026-08-19",
     "subject": "Redesign quiz controls and pitch practice",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Rotary tempo/arpeggio/mix controls and updated streaming/pitch practice behaviors with regressions.",
+    "finalDisposition": "Final knob options/lifecycle refined by later commits.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "86fd3959:android/app/src/androidTest/java/com/inquiring/android/TessituraUiTest.kt",
+      "86fd3959:android/app/src/main/java/com/inquiring/android/AudioEngine.kt",
+      "86fd3959:android/app/src/main/java/com/inquiring/android/HummingIntervalPopup.kt"
+    ]
   },
   {
     "sha": "fad3afed736eddeba5b044036a86fe5325682341",
     "date": "2026-08-20",
     "subject": "Revise arpeggio knob rate options",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Support fractional arpeggio cycles per beat and revised option set.",
+    "finalDisposition": "Use final ordered options; do not quantize to integer cycles.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "fad3afed:android/app/src/main/java/com/inquiring/android/AudioEngine.kt",
+      "fad3afed:android/app/src/main/java/com/inquiring/android/MainActivity.kt",
+      "fad3afed:android/app/src/main/java/com/inquiring/android/QuizPlaybackEngine.kt"
+    ]
   },
   {
     "sha": "6690689a983506d63190e81df01cc0a07de66698",
     "date": "2026-08-20",
     "subject": "Report the pitch actually being sung, not one inferred from the last note",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Held dropout estimates remain display-only and cannot become fresh captures/scores.",
+    "finalDisposition": "Preserve timestamp/freshness distinction across all pitch consumers.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "6690689a:android/app/src/main/java/com/inquiring/android/AudiationPitchPractice.kt",
+      "6690689a:android/app/src/main/java/com/inquiring/android/HummingIntervalPopup.kt",
+      "6690689a:android/app/src/main/java/com/inquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "8e96d75cc59ee95aa33089396302152537c0a073",
     "date": "2026-08-20",
     "subject": "Make tessitura and tempo behave as the settings they claim to be",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "test",
+    "featureDelta": "Add restoration/entry-point bounds regression for tessitura state.",
+    "finalDisposition": "Test-only despite subject; calibration state later removed.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "8e96d75c:android/app/src/test/java/com/inquiring/android/TessituraSessionViewModelTest.kt"
+    ]
   },
   {
     "sha": "b542d4ce2285dbec357f6eb887aff6dce1d51971",
     "date": "2026-08-20",
     "subject": "Reset arpeggio dial to default on tap; fix stale IDE project naming after 'Acquiring' rename",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Tap-reset arpeggio dial and repair stale IDE naming.",
+    "finalDisposition": "Keep tap-reset; IDE state excluded from PWA.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "b542d4ce:android/app/src/main/java/com/inquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "007a8eb4310403a65cb2f5347d380650c0da2db1",
     "date": "2026-08-20",
     "subject": "Rename the Android app from Inquiring to Acquiring",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "branding",
+    "featureDelta": "Rename Inquiring to Acquiring and current database/app identifiers.",
+    "finalDisposition": "Use current Acquiring branding; PWA profiles start fresh.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "007a8eb4:android/README.md",
+      "007a8eb4:android/app/build.gradle",
+      "007a8eb4:android/app/proguard-rules.pro"
+    ]
   },
   {
     "sha": "2f7325b84ea0389d966d03a55fe48ae44bf81b90",
     "date": "2026-08-20",
     "subject": "Complete Codex replay integration",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Add smoother retarget reset, clamp octave shift at state boundary and synchronize arpeggio tests/default.",
+    "finalDisposition": "Retarget semantics survive; old tessitura limits superseded -2..+3 selector.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "2f7325b8:android/app/src/main/java/com/acquiring/android/PitchSmoother.kt",
+      "2f7325b8:android/app/src/main/java/com/acquiring/android/QuizDial.kt",
+      "2f7325b8:android/app/src/main/java/com/acquiring/android/TessituraSessionViewModel.kt"
+    ]
   },
   {
     "sha": "6eee40551b4e653337de15a64a9cd3a0293051bb",
     "date": "2026-08-20",
     "subject": "Align arpeggio test with four-cycle maximum",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "test",
+    "featureDelta": "Correct arpeggio regression maximum from eight to four cycles.",
+    "finalDisposition": "Use current option-derived test expectations.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "6eee4055:android/app/src/test/java/com/acquiring/android/QuizPlaybackEngineTest.kt"
+    ]
   },
   {
     "sha": "655c0681a88fe9d29e35bdb853f713ec0678530f",
     "date": "2026-08-20",
     "subject": "Update Tessitura and Transpose buttons UI to match gemini branch (commit 18ce039)",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Restyle tessitura/transpose header controls.",
+    "finalDisposition": "Old calibration layout superseded.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "655c0681:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "655c0681:android/app/src/main/java/com/acquiring/android/TessituraControl.kt"
+    ]
   },
   {
     "sha": "66e7f37c3fb3ef512bb427974f0f228f21b657b9",
