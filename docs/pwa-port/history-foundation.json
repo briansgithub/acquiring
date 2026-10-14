@@ -677,101 +677,121 @@
     "sha": "9c95f8453dd72f6fb8bbaeda1faf3b527c791b21",
     "date": "2026-08-01",
     "subject": "feat: adjust default volume balance to 55% and update label",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Fixed chord loudness scaling and55% balance default.",
+    "finalDisposition": "Default later reset to50% by22e867c5; per-voice normalization later refined.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "a87967aa0f76e76ec3b6f376f62e820598cb03d4",
     "date": "2026-08-01",
     "subject": "Add unique page for each artist when searching by artist",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Dedicated artist result page with artist-specific song listing.",
+    "finalDisposition": "Current Library/artist navigation survives.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "63e36f996f2e7c9b9cc8fa291f8cf8be236c042f",
     "date": "2026-08-01",
     "subject": "Improve artist normalization and quiz navigation",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Canonical artist names and origin-aware Playback/Info/Chords Back.",
+    "finalDisposition": "Later display-name normalization supersedes simple hyphen replacement.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "16ebc2f374a54fd579ad5b576fb9421a01c39f3c",
     "date": "2026-08-01",
     "subject": "Refresh recent selections after navigation",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Refresh recent selections when returning through navigation.",
+    "finalDisposition": "Retain recent/history consistency.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "17729cb1abc76b50f7a7fbc67ac6d86ba1cf4548",
     "date": "2026-08-01",
     "subject": "Fix quiz audiation and chord previews",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Restore audiation/hover targets and chord preview integration.",
+    "finalDisposition": "Use surviving card/preview contracts; historical puck UI superseded.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "d7e09c34caa9af9cb50938fe9fcdd174a384545b",
     "date": "2026-08-01",
     "subject": "Improve quiz UI and artist history",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Persist recent artists independently and refine pitch-deviation presentation.",
+    "finalDisposition": "Current artist recents survive; feedback placement later revised.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "1e22a1322db5c395f3d5336197a7bc956dd0b669",
     "date": "2026-08-01",
     "subject": "Make quiz playback controls update in real time",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Per-layer playback generations and snapshots allow live control changes without stale tracks.",
+    "finalDisposition": "Carry cancellation/preview/transport ownership.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "82c1c3abffcfaba87126e10e8d5dd8b501a01356",
     "date": "2026-08-01",
     "subject": "Fix seamless song loop playback",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Prepared playback tokens and exclusive consumption improve seamless loop transitions.",
+    "finalDisposition": "Carry generation cancellation and boundary regression.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "e314c873c9414791dcc96fc069f65dd0da9e1918",
     "date": "2026-08-01",
     "subject": "feat: add spelling-aware interval analysis",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Typed spelled pitches/intervals and resolved chord root context separate sound from label/bass.",
+    "finalDisposition": "Prerequisite for all interval/target/notation consumers.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "eb402d750ff0cec9f703f2114618feb552397eaa",
     "date": "2026-08-01",
     "subject": "feat: integrate interval playback into quiz UI",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Connect root-interval previews and spelling-aware interval display to Playback.",
+    "finalDisposition": "Retain resolved interval semantics; final control layout differs.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "11f691b985543259187be1919848af283da3b790",
