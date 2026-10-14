@@ -84,15 +84,23 @@
         "pwa/src/domain/data/"
       ],
       "acceptance": "Android-equivalent raw/gzip/duplicate-tab/name fixtures",
-      "status": "in_progress",
+      "status": "complete",
       "owner": "data_compat worker (GPT-6.1 Sol/high)",
       "branch": "codex/pwa-data-compat",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "3a8d2c4a",
       "slice": "Port Android raw/gzip payload decoding, narrow compatibility repair, section order, display names and metadata",
-      "nextAction": "Worker owns pwa/src/domain/data only; compile/test fixtures at Android801cf798; coordinator integrates and runs combined checks.",
-      "validation": [],
-      "progress": [],
+      "nextAction": "Integrated Android data API accepted; consume from later catalog/Playback tasks.",
+      "validation": [
+        {
+          "command": "npm --prefix pwa run check",
+          "revision": "cd5b2e301e64ea815af9423235e29a4f3c9f7296",
+          "result": "24 unit tests +1 corpus input contract; strict typecheck/build passed; worker focused19 data tests included."
+        }
+      ],
+      "progress": [
+        "Worker3c9862f integrated normally; combined24 unit tests,1 corpus contract, strict types and production build passed. Numeric-ID precision boundary documented."
+      ],
       "blocker": null
     },
     {
@@ -106,13 +114,13 @@
         "pwa/src/domain/music/"
       ],
       "acceptance": "Shared corpus plus source/historic/role fixtures and current Kotlin cases",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "status": "in_progress",
+      "owner": "data_compat worker (GPT-6.1 Sol/high), next theory slice",
+      "branch": "codex/pwa-music-theory",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "cd5b2e301e64ea815af9423235e29a4f3c9f7296",
+      "slice": "Pure pitch/key/scale spelling and relative-major core, then bounded chord corpus slices",
+      "nextAction": "Reuse clean data worktree on new narrow branch; own domain/music only. Port native pitch/key/scale APIs and focused native cases first. Save remaining chord/voicing parity explicitly if budget boundary reached.",
       "validation": [],
       "progress": [],
       "blocker": null
@@ -147,18 +155,21 @@
         "T02"
       ],
       "allowedPaths": [
-        "pwa/src/storage/catalog/"
+        "pwa/src/storage/catalog/",
+        "pwa/scripts/catalog/"
       ],
       "acceptance": "Full-size mobile install/query/offline cold launch; quota/corruption/second-tab recovery",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "status": "in_progress",
+      "owner": "coordinator (runtime model unknown)",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
+      "baseCommit": "cd5b2e301e64ea815af9423235e29a4f3c9f7296",
+      "slice": "Resumable immutable8MiB chunk producer and source-hash manifest before runtime importer",
+      "nextAction": "Implement bounded-memory local packaging with atomic chunk/progress manifests; test partial output/resume/hash failures. SQLite runtime integration remains separate: npm3.53.4-build2 lacks preserveOnInitFailure introduced3.54; verify safe upstream-supported option before any existing OPFS initialization.",
       "validation": [],
-      "progress": [],
+      "progress": [
+        "Official SQLite docs inspected2026-10-14. Do not pass an unsupported preserve option and assume safety. No SQLite dependency installed; no catalog mutation or publication. H: has~996GB free; Aural source immutable snapshot64cfa299cc74 present."
+      ],
       "blocker": null
     },
     {
@@ -175,22 +186,22 @@
         "pwa/playwright.config.ts"
       ],
       "acceptance": "Restart/migration/failure tests; catalog replacement preserves every user store",
-      "status": "validating",
+      "status": "complete",
       "owner": "coordinator (runtime model unknown)",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "3a8d2c4a",
       "slice": "Versioned IndexedDB user records, isolated guest/account namespaces, durable mutation receipts and atomic outbox",
-      "nextAction": "Commit reviewed persistence foundation. Actual OPFS catalog replacement is revalidated with T05; physical Safari/mobile checks remain future gates.",
+      "nextAction": "Persistence foundation accepted at375a19a2; recheck actual catalog swap with T05 and account sync with T25.",
       "validation": [
         {
           "command": "npm --prefix pwa run check",
-          "revision": "T06 tree on bcd59674; no product-source changes after checks",
+          "revision": "375a19a2 (tested source unchanged at commit)",
           "result": "5 unit tests and1 corpus contract passed; strict typecheck and production build passed."
         },
         {
           "command": "npm --prefix pwa run test:browser",
-          "revision": "same T06 tree",
+          "revision": "375a19a2 (tested source unchanged at commit)",
           "result": "7 passed in6.8s:3 shell and4 real IndexedDB tests; browser pageerror assertions pass after correcting already-aborted transaction handling."
         }
       ],
