@@ -4,7 +4,7 @@ Updated:2026-10-14 (America/New_York). Runtime model:unknown.
 
 ## Current outcome
 
-The authorized two-pass audit and implementation/recovery plan are complete. Product implementation has not started. Read README.md, IMPLEMENTATION_PLAN.md, RUNBOOK.md and tasks.json; use HISTORY.md only for targeted historical questions. Android authority remains801cf7984171d772afc4406ddb5c79c0cb7fd20a.
+The two-pass audit is complete and product implementation is authorized and underway. T00 recovery controls passed at integrated revision2a54ac2; T01 is active. Read README.md, IMPLEMENTATION_PLAN.md, RUNBOOK.md and tasks.json; use HISTORY.md only for targeted historical questions. Android authority remains801cf7984171d772afc4406ddb5c79c0cb7fd20a.
 
 All262 full-history Android/contracts entries are classified:108 foundation,103 revision,51 Aural. Git's earlier path-simplified213 entries omitted integration history. The source JSON ledgers record actual deltas, replacements and evidence. Review was bounded metadata/source/test/comment/handoff inspection, not exhaustive patch reading or fresh runtime verification.
 
@@ -27,18 +27,22 @@ Worker checkpoints were inspected and merged normally, then the coordinator comp
 - H:/Desktop/Acquiring/Acquiring-pwa-audit-foundation; codex/pwa-audit-foundation; original30-row checkpointdd315ae5.
 - H:/Desktop/Acquiring/Acquiring-pwa-audit-aural; codex/pwa-audit-aural; original40-row checkpointd44369da.
 
-Their historical partial findings are superseded by the completed primary reports. Existing .branch-recovery worktrees remain untouched. No worker/process needs resuming. The first run's approval reviewer exhausted its usage allowance and rejected one root checkpoint before executing it; after reset the source-reviewed findings were saved and validated. The command sandbox also encountered a locked unrelated V: volume; approved targeted H: commands succeeded. Never bypass an approval rejection.
+Their historical partial findings are superseded by the completed primary reports. Existing .branch-recovery worktrees remain untouched. The historical audit workers need no resumption; active implementation claims are in tasks.json. The first run's approval reviewer exhausted its usage allowance and rejected one root checkpoint before executing it; after reset the source-reviewed findings were saved and validated. The command sandbox also encountered a locked unrelated V: volume; approved targeted H: commands succeeded. Never bypass an approval rejection.
 
 ## Automatic resumption
 
-Automation:resume-acquiring-pwa-audit, same-chat hourly. It is paused when this audit/plan is delivered; it does not authorize implementation. Once the owner asks to implement, update that same automation with the new authorized scope and this entry point instead of creating a duplicate.
+Automation:resume-acquiring-pwa-audit, same-chat hourly. It is ACTIVE for authorized PWA implementation, under the name Resume Acquiring PWA implementation. Reuse this same automation; do not create a duplicate.
 
 At each future run/slice boundary inspect live five-hour and weekly usage. Below70%used choose bounded ready work; at70%start no new slice/worker; at80%checkpoint/yield. Account limits are shared and can cut off abruptly. Persist intent before editing and receipts after small slices; preserve partial dirty work and inspect real processes/side effects before retrying. See RUNBOOK.md for task claims, exact recovery cases and budget/model routing.
 
 ## Next action
 
-Deliver the audit links and plan. Await implementation authorization, then record it in tasks.json, implement T00 recovery controls first, proceed T01 and the early storage/audio feasibility gate. Do not silently advance the Android baseline, revive superseded features or mark unavailable device/configuration checks passed. No publishing or deletion is authorized by this audit.
+Continue T01 from tasks.json, then select ready data/storage/audio slices. Integration stays on codex/pwa-foundation. Do not silently advance the Android baseline, revive superseded features or mark unavailable device/configuration checks passed. No publishing or deletion is authorized by this audit.
 
 ## Implementation authorized2026-10-14
 
 Owner requested beginning implementation and explicit sub-agent model/thinking assignments. This supersedes the earlier audit-only next action. Active coordinator branch is codex/pwa-foundation at the audit completion base675a151f; start state clean, no product tests yet. Android authority unchanged. See MODEL_ROUTING.md and tasks.json. Planned separate sibling worker: H:/Desktop/Acquiring/Acquiring-pwa-run-control on codex/pwa-run-control, T00 only. It owns pwa/scripts/run-control and its local work log; root owns task/contract/package/CI integration. Save and validate T00 before starting dependent T01. Main risks: shared rate allowance and unavailable mobile hardware; no release/deletion is implied.
+
+## T01 claim2026-10-14
+
+Primary clean at2a54ac2 after T00 integration and8 passing recovery tests. Next separate worker is H:/Desktop/Acquiring/Acquiring-pwa-ui-shell, branch codex/pwa-ui-shell, GPT-6 Luna/medium. It owns only pwa/src/ui/shell; coordinator owns dependencies/contracts/routing/CI and task records. Existing worktrees retained. No publication. Run controller receipts are ignored local process state; inspect them before retry. Root runtime model unknown.
