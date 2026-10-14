@@ -1332,101 +1332,145 @@
     "sha": "9973e748fbecaf09db02575ff2f2339d4c7d7fc0",
     "date": "2026-08-14",
     "subject": "Add persistent quiz pitch practice",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Persistent root/melody/chord-tone practice and exclusive triple-tap activation.",
+    "finalDisposition": "Retain monitoring, target ownership and accessible alternatives.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "9973e748:android/app/src/androidTest/java/com/sacredring/android/TripleClickableUiTest.kt",
+      "9973e748:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "9973e748:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
+    ]
   },
   {
     "sha": "2c7b8ae019b6eab8dab59b2074bcf0231f554721",
     "date": "2026-08-14",
     "subject": "Add live per-note scoring to melody pitch practice; fix playback and octave-lock bugs from the audit",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Per-note live scoring; literal captured-frequency replay; smoother/octave-lock and target lifecycle corrections.",
+    "finalDisposition": "Fresh voiced frames only; retain score/preview regression fixtures.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "2c7b8ae0:android/PITCH_RECORDING_AUDIT_2026-08-13.md",
+      "2c7b8ae0:android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "2c7b8ae0:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
+    ]
   },
   {
     "sha": "bc142c082e1782def9f7bf7da608ddf6f61b2829",
     "date": "2026-08-15",
     "subject": "Extract tessitura calibration UI and add melody run pitch scoring",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Contiguous melody-run median scoring and extracted calibration UI.",
+    "finalDisposition": "Run scoring survives; calibration UI removed.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "bc142c08:android/app/src/androidTest/java/com/sacredring/android/TessituraUiTest.kt",
+      "bc142c08:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "bc142c08:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
+    ]
   },
   {
     "sha": "8cce75cb357f043a4c94326d2953950618581cda",
     "date": "2026-08-15",
     "subject": "Rename the Android app from Sacred Ring to Inquiring",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "branding",
+    "featureDelta": "Rename Sacred Ring to Inquiring and centralize database filename.",
+    "finalDisposition": "Intermediate brand/database name superseded by Acquiring.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "8cce75cb:android/README.md",
+      "8cce75cb:android/app/build.gradle",
+      "8cce75cb:android/app/proguard-rules.pro"
+    ]
   },
   {
     "sha": "9765f12976e274f03cca36d68966a6a82ca7cb73",
     "date": "2026-08-15",
     "subject": "Merge branch 'rename-to-inquiring'",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrate intermediate rename branch.",
+    "finalDisposition": "No new independent feature.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "9765f129:android/README.md",
+      "9765f129:android/app/build.gradle",
+      "9765f129:android/app/proguard-rules.pro"
+    ]
   },
   {
     "sha": "d1187a54c9e5fb7af4fb0c765d4ef9f388ae61e7",
     "date": "2026-08-15",
     "subject": "Simplify quiz navigation and move header controls to the song title/key rows",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Simplify song/header navigation and Info return path.",
+    "finalDisposition": "Later173d7334 establishes final origin-aware route contract.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "d1187a54:android/app/src/main/java/com/inquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "0ba05d74fd73229a24545eebce14361819be8ad8",
     "date": "2026-08-16",
     "subject": "Adjust app icon: intermediate circle size and tighter grouping",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "branding",
+    "featureDelta": "Adjust intermediate icon circle sizes/grouping.",
+    "finalDisposition": "Use final accepted assets, not historical variations.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "0ba05d74:android/app/src/main/res/drawable/ic_launcher_foreground.xml",
+      "0ba05d74:android/app/src/main/res/drawable/ic_launcher_monochrome.xml"
+    ]
   },
   {
     "sha": "f96290d1e8e5bb3345da2d2cdb0c9fa0393227ff",
     "date": "2026-08-16",
     "subject": "\\Refine app icon: remove facet triangles, enlarge glint crescents, and mirror shadows horizontally\"",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "branding",
+    "featureDelta": "Refine icon facets/highlights/shadow geometry.",
+    "finalDisposition": "Final lighting restorationfe5d92af is authoritative.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "f96290d1:android/app/src/main/res/drawable/ic_launcher_foreground.xml"
+    ]
   },
   {
     "sha": "a78e096d03a779f5d195901154f6c3cc99e36f6e",
     "date": "2026-08-17",
     "subject": "UX Polish and Quiz Alignment: Add 'Search Hooktheory' option, improve Transpose/Volume controls, and stabilize transport state.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "External Hooktheory search, clearer singing activity feedback, transpose/mix and transport stability.",
+    "finalDisposition": "Final Library/controls subsequently reorganized.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "a78e096d:android/app/src/main/java/com/inquiring/android/HummingIntervalPopup.kt",
+      "a78e096d:android/app/src/main/java/com/inquiring/android/MainActivity.kt",
+      "a78e096d:android/app/src/main/java/com/inquiring/android/QuizPlaybackEngine.kt"
+    ]
   },
   {
     "sha": "1ed55f1c8a2c2e62b910dfdb09783fb501a94c8d",
     "date": "2026-08-17",
     "subject": "Archive pitch recording audit from 2026-08-13.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "documentation",
+    "featureDelta": "Archive pitch recording accuracy audit and known stale/capture risks.",
+    "finalDisposition": "Historical evidence only; fresh device validation still required.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "1ed55f1c:android/PITCH_RECORDING_AUDIT_2026-08-13.md",
+      "1ed55f1c:android/archive/PITCH_RECORDING_AUDIT_2026-08-13.md"
+    ]
   },
   {
     "sha": "0ba05f49340d64e58f1e63d00cf5a94f8abfa1f1",
