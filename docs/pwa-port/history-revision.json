@@ -3,11 +3,17 @@
     "sha": "97bb4af544a82fb453ab6ca7de5b46a4413579ea",
     "date": "2026-08-31",
     "subject": "Import Acquiring Android history under android/",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Import Android history under android/; repository boundary, not new copies of every feature.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "97bb4af5:android/.cursor/rules/agent-defaults.mdc",
+      "97bb4af5:android/.gitignore",
+      "97bb4af5:android/AGENTS.md",
+      "97bb4af5:android/GEMINI.md"
+    ]
   },
   {
     "sha": "34c7bd145fb9bf40cf3a18100b8319d4ba7b2ae2",
@@ -87,11 +93,17 @@
     "sha": "1efc2ae9f58a4ed773f421e39c99932cc477adfa",
     "date": "2026-08-31",
     "subject": "Merge pull request #33 from briansgithub/codex/acquiring-monorepo",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "1efc2ae9:android/.cursor/rules/agent-defaults.mdc",
+      "1efc2ae9:android/.gitignore",
+      "1efc2ae9:android/AGENTS.md",
+      "1efc2ae9:android/GEMINI.md"
+    ]
   },
   {
     "sha": "6636db1c5bb91cf48b333e664672f3f3b597d78e",
@@ -110,11 +122,14 @@
     "sha": "65daa3bb6c18a4c5a2117338c37cd66530af8215",
     "date": "2026-08-31",
     "subject": "Merge pull request #34 from briansgithub/codex/root-cleanup",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "65daa3bb:android/README.md"
+    ]
   },
   {
     "sha": "9c0ef82526d3e6aff9aec44ffe7e485cd68315ae",
@@ -136,11 +151,17 @@
     "sha": "b40273eec6e07130119030edf707a45fa09a98fa",
     "date": "2026-09-01",
     "subject": "Merge pull request #35 from briansgithub/codex/android-api36",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "b40273ee:android/app/build.gradle",
+      "b40273ee:android/app/src/main/AndroidManifest.xml",
+      "b40273ee:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "b40273ee:android/gradle/gradle-daemon-jvm.properties"
+    ]
   },
   {
     "sha": "5b2926765749c7173ee87f6b356db5cea86b0870",
@@ -162,21 +183,26 @@
     "sha": "48b1b08961bee63d0096b545cc97cb1040f8f4fd",
     "date": "2026-09-01",
     "subject": "Merge pull request #38 from briansgithub/chore/android-target-sdk-36",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "48b1b089:android/build.gradle"
+    ]
   },
   {
     "sha": "ac699387530fe016accbed6f1f8ad227a1d111d1",
     "date": "2026-09-01",
     "subject": "Merge pull request #40 from briansgithub/codex/ios-catalog-ui",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "fe5d92af8c5a04e657d5fa94c8cd4f5f4508f9f6",
@@ -268,11 +294,17 @@
     "sha": "41dde40b381b1b2aa48614eefaf8701aca6bb120",
     "date": "2026-09-02",
     "subject": "Merge pull request #41 from briansgithub/codex/android-beta-pipeline",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "41dde40b:android/.gitignore",
+      "41dde40b:android/AGENTS.md",
+      "41dde40b:android/app/build.gradle",
+      "41dde40b:android/app/src/androidTest/java/com/acquiring/android/PrivacyPolicyLinkTest.kt"
+    ]
   },
   {
     "sha": "f410e77d59d33ba8b5f7196c301f4aeb29eac13a",
@@ -292,11 +324,15 @@
     "sha": "59387866deed497c84b03634a4a0935fd0c1b602",
     "date": "2026-09-02",
     "subject": "Merge pull request #42 from briansgithub/codex/android-beta-pipeline",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "59387866:android/fastlane/release-settings.json",
+      "59387866:android/fastlane/tests/beta_release_test.rb"
+    ]
   },
   {
     "sha": "eb15490cc407719927476ad3636e91b33413757f",
@@ -315,11 +351,14 @@
     "sha": "4202d588dfc2b671226c1d11813f8bd5ef265255",
     "date": "2026-09-02",
     "subject": "Merge pull request #43 from briansgithub/codex/android-beta-pipeline",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "4202d588:android/fastlane/RELEASING.md"
+    ]
   },
   {
     "sha": "e5a75f54c4444179a8ca800669cde22b85b8a20c",
@@ -356,11 +395,17 @@
     "sha": "850f236a7cfd9f0bf170033575e4c567a6adafb2",
     "date": "2026-09-02",
     "subject": "Merge pull request #44 from briansgithub/codex/release-pitch-hint-crash-v5",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "850f236a:android/app/build.gradle",
+      "850f236a:android/app/src/androidTest/java/com/acquiring/android/PitchHintDotUiTest.kt",
+      "850f236a:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt",
+      "850f236a:android/app/src/main/java/com/acquiring/android/DoubleTapHint.kt"
+    ]
   },
   {
     "sha": "38d4dbfeff38d912c421789143a8031675b952d0",
