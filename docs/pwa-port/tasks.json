@@ -165,10 +165,11 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "cd5b2e301e64ea815af9423235e29a4f3c9f7296",
       "slice": "Resumable immutable8MiB chunk producer and source-hash manifest before runtime importer",
-      "nextAction": "Implement bounded-memory local packaging with atomic chunk/progress manifests; test partial output/resume/hash failures. SQLite runtime integration remains separate: npm3.53.4-build2 lacks preserveOnInitFailure introduced3.54; verify safe upstream-supported option before any existing OPFS initialization.",
+      "nextAction": "Run8 producer fixtures, then start guarded full-size Aural packaging with incremental atomic chunk receipts. Inspect saved run/job and progress.json before retrying.",
       "validation": [],
       "progress": [
-        "Official SQLite docs inspected2026-10-14. Do not pass an unsupported preserve option and assume safety. No SQLite dependency installed; no catalog mutation or publication. H: has~996GB free; Aural source immutable snapshot64cfa299cc74 present."
+        "Official SQLite docs inspected2026-10-14. Do not pass an unsupported preserve option and assume safety. No SQLite dependency installed; no catalog mutation or publication. H: has~996GB free; Aural source immutable snapshot64cfa299cc74 present.",
+        "Chunk producer7 fixtures passed after closing test SQLite handles explicitly (first run failed only fixture cleanup on Windows). Real killed-producer fixture added; verify before full source job. Full-size intended output .artifacts/pwa-port/aural-chunks-64cfa299cc74, source manifest SHA256=7c38cbac4df225e6b45d679c9b9fab2d0d23526c40f9faff594794dd9e9b9dcf. Source expected raw1,980,387,328 bytes in3 files."
       ],
       "blocker": null
     },
