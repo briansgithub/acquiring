@@ -5,3 +5,5 @@ export type { DiatonicLetter, LetterName, NoteNameAccidentalPreference } from '.
 export { normalizeTonic, getModifierValue, getRawDegree, generateScaleLabels, getNoteLabel, resolveScaleDegreePitch, getDegreeLabelFromSpelling, getMidiNote, getDegreeLabelFromMidi, getRelativeDegreeLabel } from './theory';
 export { relativeIonianTonicDegree, canonicalScaleName, relativeIonianKey, noteNameAccidentalPreference, degreeInKey, relativeIonianDegree, ionianContextDegreeLabel, relativeIonianDegreeLabel, ionianContextPreviewAudioNote, ionianContextStaffDegree, relativeIonianStaffDegree } from './relative-ionian';
 export type { RelativeIonianDegree } from './relative-ionian';
+export { resolveChordRoot } from './chord-root';
+export type { ChordRootContext, ResolvedChordRoot } from './chord-root';
