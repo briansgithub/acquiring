@@ -1,0 +1,7 @@
+export type { KeyInfo } from '../../contracts';
+export { NOTE_TO_PC, SCALE_INTERVALS, CHORD_QUALITIES, ROMAN_NUMERALS, MAJOR_LABELS, MINOR_LABELS } from './tables';
+export { DIATONIC_LETTERS, SpelledPitch } from './spelled-pitch';
+export type { DiatonicLetter, LetterName, NoteNameAccidentalPreference } from './spelled-pitch';
+export { normalizeTonic, getModifierValue, getRawDegree, generateScaleLabels, getNoteLabel, resolveScaleDegreePitch, getDegreeLabelFromSpelling, getMidiNote, getDegreeLabelFromMidi, getRelativeDegreeLabel } from './theory';
+export { relativeIonianTonicDegree, canonicalScaleName, relativeIonianKey, noteNameAccidentalPreference, degreeInKey, relativeIonianDegree, ionianContextDegreeLabel, relativeIonianDegreeLabel, ionianContextPreviewAudioNote, ionianContextStaffDegree, relativeIonianStaffDegree } from './relative-ionian';
+export type { RelativeIonianDegree } from './relative-ionian';
