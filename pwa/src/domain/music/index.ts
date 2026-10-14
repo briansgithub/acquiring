@@ -8,3 +8,5 @@ export type { RelativeIonianDegree } from './relative-ionian';
 export { resolveChordRoot } from './chord-root';
 export type { ChordRootContext, ResolvedChordRoot } from './chord-root';
 export { ChordTone, VoicedChord, buildChordVoicing, getChordNotes, getResolvedRootMidi, getChordToneLabels, getRootPositionChordNotes } from './chord-voicing';
+export { getRomanSymbol, getLetterName, getRelativeIonianRomanSymbol, interpret } from './chord-interpretation';
+export type { ChordInterpretation } from './chord-interpretation';
