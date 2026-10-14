@@ -797,101 +797,121 @@
     "sha": "11f691b985543259187be1919848af283da3b790",
     "date": "2026-08-01",
     "subject": "feat(quiz): add relative Ionian label context",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Relative-Ionian labels without changing source sounding pitches.",
+    "finalDisposition": "Current Lock in Major capability.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "6e9805a830bde9d8506eb550813d134b2a6e32aa",
     "date": "2026-08-01",
     "subject": "fix(quiz): keep Ionian context fixed across modulations",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Fix relative-major reference to initial section key across modulations.",
+    "finalDisposition": "Preserve source/onset/display key distinctions.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "205b8eda165b3179907657a34c30dbd45000b73e",
     "date": "2026-08-02",
     "subject": "Audiation: color-coded pitch deviation and root interval consistency",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Color pitch deviation and make root intervals agree with actual target pitches.",
+    "finalDisposition": "Retain current detector/target contract; obsolete UI presentation excluded.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "aed98be9d7d275b19cea8d1d3400a3ed6de00660",
     "date": "2026-08-03",
     "subject": "Implement persistent Humming Interval Tool with rolling pitch indicator and relative interval spelling",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Add persistent two-slot Humming Interval Tool, mic permission and spelled measured intervals.",
+    "finalDisposition": "Actual nested Android origin; later Flip-Flop and exact-frequency playback refine it.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "54279cd49ebc09369df2adaaa3089e43183ced0c",
     "date": "2026-08-03",
     "subject": "Restore complex UI chord objects, unify scrub bar position, and remove skip button",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Restore rich chord/card objects and align scrub UI while removing old skip control.",
+    "finalDisposition": "Keep final card model; historical layout later superseded.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "d4d085a2e1f0a1f1f89090f8c80b5837c5f12c42",
     "date": "2026-08-03",
     "subject": "Refine quiz playback controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Adjust Playback control dimensions/layout.",
+    "finalDisposition": "Build final extracted controls, not this intermediate arrangement.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "35c432778689a2c6b56ae1103dd61da65b9ebfbd",
     "date": "2026-08-03",
     "subject": "Polish Android quiz controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Position movable practice puck using measured slider coordinates.",
+    "finalDisposition": "Puck placement superseded by final singing dock.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "d326e53853252768573dca923dc1b315dacf72e7",
     "date": "2026-08-03",
     "subject": "Fix interval direction and coordinate mismatch",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Correct MIDI-versus-spelled-octave coordinates and interval direction/cents.",
+    "finalDisposition": "Retain numerical regression in pitch/interval core.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "22e867c5cc2c599a26a2e8e658b00eb9d088170b",
     "date": "2026-08-03",
     "subject": "Set default Chord / Melody volume balance to 0.5",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Restore equal50/50 chord/melody balance default.",
+    "finalDisposition": "Current mix zero=chords,one=melody,half=equal.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "c2f3fcefc2fa60462bf10e211730fc0a6c027168",
     "date": "2026-08-03",
     "subject": "Add inertia to melody playback timeline scrubbing",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Velocity-based inertial timeline scrubbing with beat-coordinate conversion.",
+    "finalDisposition": "Retain silent scrub/coast and conditional resume.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "e747968a1210e155f4d0e829fe0c0ae213626d77",
