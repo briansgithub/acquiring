@@ -1,0 +1,20 @@
+# T05 bounded SQLite preservation fix
+
+2026-10-14. Owner data_compat worker, assigned Sol/high; runtime identifier unknown. Clean branch codex/pwa-sqlite-safety at0c21b45b39f5303940b9336567a070c1359a02af; owned only pwa/scripts/sqlite-compat. All previous branches/worktrees retained.
+Intent: exact SHA256-gated transform for pinned @sqlite.org/sqlite-wasm3.53.4-build2 dist/index.mjs, keeping default failure cleanup and adding explicit preserveOnInitFailure. Export patch and Vite plugin without changing shared config. Test transform drift/default semantics with Node and real Chrome OPFS database preservation plus partial handle release across fresh workers. Never open production catalogs.
+Authority: official SQLite upstream file ext/wasm/api/sqlite3-vfs-opfs-sahpool.c-pp.js at immutable GitHub mirror commit40f8f74946173a0c8bcb967a1748396d7d328f55, read2026-10-14. Verified source helper lines1497-1503 and conditional1541-1545; the local patch only transplants those cleanup operations. Official preservation caveat: does not undo prior initialization writes, including clearOnInit.
+Pinned installed source:642742bytes; SHA256 a6d3fe46aa3f924e7686329f97b0564549ef1f787e0c19924179aef7f72bcc01. Source inspection bounded to pool lifecycle/acquire/release/failure lines and module loading. No generated bundle vendoring.
+Usage at entry55%five-hour/44%weekly. Stop new work70%, checkpoint80%. Next: source transform + focused tests; temporary browser harness under ignored artifacts, short owned server closed in finally.
+
+Node regression PASS6/6. First Chrome run failed only because fixture sampled pool capacity after pauseVfs clears handle maps (0 instead of4); browser/server stopped in finally. Fix cycle1 records capacity before pause; no production patch change. Next: rerun the same case. Added strict Vite declaration and integration/caveat README.
+
+Final bounded results2026-10-14:
+- PWA_SQLITE_RUNTIME_ROOT=H:/Desktop/Acquiring/Acquiring/pwa; node --test pwa/scripts/sqlite-compat/patch.test.mjs: PASS6/6. Receipt t05-sqlite-safety-node-20261014-01.
+- Same runtime root; node pwa/scripts/sqlite-compat/browser-regression.mjs: PASS on installed Chrome155.0.8059.40. Receipt t05-sqlite-safety-browser-20261014-02. Four real OPFS files preserved byte-for-byte by names/sizes/SHA256;3partial handles acquired/closed,0active;4exclusive file-handle probes;failed VFS unregistered. Thirdfreshworker read preserved-fixture-row and PRAGMA quick_check=ok while failedworker remainedalive. Preparationworker closed/paused/terminated. All workers/browser/server stopped at command completion.
+- Browser artifact receipt: .artifacts/pwa-port/sqlite-safety/6a51f5e0-1322-4541-b1eb-9ca15a2099b8/receipt.json (ignored, retained). Browser used fresh isolated context and random loopback origin; no existing catalog or user profile touched.
+- One diagnose/fix/retest cycle: fixture sampled capacity after pause (which clears handlemaps); corrected before-pause sampling and reran the same case. Production transform passed unchanged. First failed browser/controller outcome remains recorded.
+- Tested mjs digest (sorted filename+NUL+bytes+NUL, SHA256): 21ec9fa81a9b8092e7ae73da7456755257f0386a86d572b6f86ca609097eb51b.
+- Source/diff review complete; named-path/whitespace checks precede checkpoint. No worker dependency installation or shared config edits. Type declaration added for root's strict Vite integration; root must validate actual config/build/worker paths after merge. No full installer/device/Safari/concurrent-schedule/power-loss durability claim.
+- Last live allowance66%five-hour/46%weekly. No further slices started.
+
+Resumption: integrate sqlitePreservationPlugin() into root and worker Vite pipelines; exclude sqlite-wasm from prebundling, run root covering checks, ensure callers opt in to preserveOnInitFailure with clearOnInit false. Keep version/hash fail-closed; worker1 wrapper/other entry points unsupported by this transform. Retain old branches/worktrees. No publication or cleanup authorized/performed.
