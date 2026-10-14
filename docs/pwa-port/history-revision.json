@@ -1459,30 +1459,43 @@
     "sha": "24084f70daa3c87dee783dc0fea244615b0f1268",
     "date": "2026-09-12",
     "subject": "Put Hooktheory search and URL download in one accordion and open Playlists by default.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Hooktheory search/download accordion; Playlists open by default.",
+    "finalDisposition": "Current Library organization.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "24084f70:android/app/src/main/java/com/acquiring/android/LibraryHooktheorySearch.kt",
+      "24084f70:android/app/src/main/java/com/acquiring/android/LibraryView.kt",
+      "24084f70:android/app/src/main/java/com/acquiring/android/PlaylistsSection.kt"
+    ]
   },
   {
     "sha": "3bd3d36bd184692a1067df0a9c0165e73c070ca7",
     "date": "2026-09-12",
     "subject": "Keep Android and iOS quiz browse, root-only controls, and timeline rate in sync.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Finalize indexed subgroup scrubber, Root Only controls and display-rate handling.",
+    "finalDisposition": "Final source plus22b5d2f7 refresh persistence.",
+    "evidence": [
+      "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+      "3bd3d36b:android/app/src/main/java/com/acquiring/android/AllSongsView.kt",
+      "3bd3d36b:android/app/src/main/java/com/acquiring/android/BrowseScrubber.kt",
+      "3bd3d36b:android/app/src/main/java/com/acquiring/android/BrowseSubgrouping.kt",
+      "3bd3d36b:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "2655a930c6c9628e4d753547f0f7959b334b848c",
     "date": "2026-09-12",
     "subject": "Merge remote-tracking branch 'origin/main'",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   }
 ]

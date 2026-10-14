@@ -44,3 +44,7 @@ Complete the three per-commit ledgers from actual diffs/comments/tests, reconcil
 Validation before delegation: JSON inventory count/unique IDs passed, git diff --cached --check passed. Risks: default command sandbox currently fails enumerating a BitLocker-locked V: volume; approved unsandboxed commands can access the H: workspace. No app tests required for audit documents. Next: each worker saves and commits batches; coordinator integrates finished report commits without overwriting pending work. Recovery worktrees remain untouched.
 
 Automatic resumption: same-chat hourly heartbeat `resume-acquiring-pwa-audit` created ACTIVE on 2026-10-13. It resumes only this audit/planning scope, respects live account limits, avoids duplicate workers, and pauses when the deliverables are complete. Requires the host/app to be available; scheduling does not bypass rate limits.
+
+## Resume checkpoint 2026-10-14
+
+Live five-hour usage1%, weekly33% at start. Both prior agents are errored/stopped, not active. Their clean documentation branches were inspected and integrated without touching application files: foundation30/108, revision40/103, aural40/51 reviewed. The prior root command to save remaining revision findings was rejected before execution when automatic approval review exhausted its own allowance; none of those attempted writes occurred. Resume sequentially from durable rows. No new workers or worktrees are needed.
