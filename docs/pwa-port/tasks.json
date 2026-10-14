@@ -29,7 +29,7 @@
         },
         {
           "command": "python -m unittest discover -s pwa/scripts/run-control -p test_run_control.py -v",
-          "revision": "T00 contained-cwd correction tree (committed next)",
+          "revision": "cef0822b (same tested source)",
           "result": "9 passed in12.101s; explicit cwd runs under repo lock; outside-root cwd rejected before intent/child launch."
         }
       ],
@@ -208,22 +208,22 @@
         },
         {
           "command": "npm --prefix pwa ci --no-audit --no-fund; npm --prefix pwa run check",
-          "revision": "final safety integration source tree (source commit recorded in HANDOFF next)",
+          "revision": "3dceb355940777161d4046e21c5a743768555668",
           "result": "Clean install50 packages;47 unit tests+1 input contract, strict types and production build passed."
         },
         {
           "command": "node --test pwa/scripts/sqlite-compat/patch.test.mjs",
-          "revision": "same final integration source",
+          "revision": "3dceb355940777161d4046e21c5a743768555668",
           "result": "6 passed; source/target drift fails closed; preserved/default cleanup paths covered."
         },
         {
           "command": "node pwa/scripts/sqlite-compat/browser-regression.mjs (executed from pwa through npm script-equivalent path)",
-          "revision": "same final integration source",
+          "revision": "3dceb355940777161d4046e21c5a743768555668",
           "result": "Chrome OPFS passed:4 unchanged file hashes;3 handles released; saved row/quick_check recovered while failed worker alive. Receipt pwa/.artifacts/pwa-port/sqlite-safety/ccb35df0-5d5c-4456-bf07-763142dbb70b/receipt.json."
         },
         {
           "command": "npm --prefix pwa run test:browser",
-          "revision": "same final integration source",
+          "revision": "3dceb355940777161d4046e21c5a743768555668",
           "result": "7 passed in7.7s; shell/history/offline/mobile and actual user storage interruption/restart/upgrade."
         }
       ],
@@ -803,6 +803,7 @@
       "weeklyUsedPercent": 46
     },
     "reason": "No-new-work threshold reached; finish recoverable validated checkpoint and yield. Re-read live limits on resume.",
-    "activeWorker": null
+    "activeWorker": null,
+    "sourceCommit": "3dceb355940777161d4046e21c5a743768555668"
   }
 }

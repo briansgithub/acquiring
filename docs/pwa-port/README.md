@@ -1,16 +1,16 @@
-# Android-to-PWA audit
+# Android-to-PWA port
 
 Completed 2026-10-14. Runtime model: unknown. Android reference: `801cf7984171d772afc4406ddb5c79c0cb7fd20a`.
 
 The first pass classified every entry in the frozen full-history traversal of `android/` and `contracts/`: **262 commits** (108 foundation,103 revision,51 Aural). The earlier213 count was Git's path-simplified view, which hides integration history. This is not262 independent features. Each JSON row records the actual change, kind, final disposition and evidence. Review included changed-path metadata, bounded substantive diffs, tests/comments and current source/handoffs. Large patches were searched; binary artwork was inspected as metadata. No claim of exhaustive line-by-line history or fresh app/device validation is made.
 
-The second pass groups surviving behavior into **29 dependency-ordered work packages**, avoids rebuilding replaced versions, and defines ownership, acceptance and crash recovery. Product implementation has not begun.
+The second pass groups surviving behavior into **29 dependency-ordered work packages**, avoids rebuilding replaced versions, and defines ownership, acceptance and crash recovery. Product implementation was authorized2026-10-14 and has begun. T00/T01/T02/T06 foundations are accepted; T03 theory and T05 catalog work are partial. See HANDOFF.md for current source/checks and remaining work.
 
 ## Read next
 
 - [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md): current feature targets, architecture/contracts, ordered packages, parallel lanes and acceptance gates.
 - [RUNBOOK.md](RUNBOOK.md): five-hour/weekly budget policy, prewritten intent, task claims, lost-response recovery and automatic resumption.
-- [tasks.json](tasks.json): machine-readable dependency and ownership queue; all product tasks planned.
+- [tasks.json](tasks.json): machine-readable dependency, ownership and validation queue.
 - [HISTORY.md](HISTORY.md): human-readable per-commit ledger generated from history-foundation.json, history-revision.json and history-aural.json.
 - [HANDOFF.md](HANDOFF.md): current continuation state and automation disposition. Inspect Git for current branch/dirty state.
 
@@ -49,4 +49,4 @@ Do not invent dormant standalone practice or empty custom-playlist management sc
 
 Primary records: current Android source/tests and contracts; docs/quiz-controls-playback-plan.md; docs/worktree-consolidation-2026-09-05.md; docs/branch-maintenance-2026-10-02.md; docs/aural-curriculum.md; docs/aural-corpus-offline.md; docs/aural-catalog.md; docs/aural-catalog-publishing.md; android/archive/PITCH_RECORDING_AUDIT_2026-08-13.md. Legacy root handoffs describe the older web app and are historical context, not PWA authority. Published recovery snapshots contain superseded/unapproved copies and are preserved without wholesale replay. No unrelated exhaustive iOS/web history, secret/signing data, runtime databases or generated corpus internals were audited.
 
-Validation: `python docs/pwa-port/validate_audit.py --render-history` checks exact frozen commit coverage, required annotations, historical evidence resolution,29 acyclic dependencies and plan/task agreement, then renders HISTORY.md. `git diff --check` checks final documentation whitespace. These checks do not establish runtime parity. No Android build, browser suite or device test was run for this documentation-only task.
+Validation: `python docs/pwa-port/validate_audit.py --render-history` checks exact frozen commit coverage, required annotations, historical evidence resolution,29 acyclic dependencies and plan/task agreement, then renders HISTORY.md. `git diff --check` checks final documentation whitespace. These checks do not establish runtime parity. No Android build, browser suite or device test was run during the audit itself. Later implementation checks and their limits are recorded in HANDOFF.md and tasks.json.
