@@ -125,17 +125,23 @@
       "branch": "codex/pwa-chord-interpretation",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
-      "slice": "Native chord interpretation, root/tone labels and voicing in bounded corpus-backed checkpoints",
-      "nextAction": "Worker owns only pwa/src/domain/music. Preserve accepted core; port current Android chord semantics and translate native/shared fixtures. Report incremental checkpoint; complete only with declared full parity evidence.",
+      "slice": "Next bounded native ChordVoicing pipeline, durable tone roles and MIDI/tone-label corpus channels",
+      "nextAction": "Worker on same branch owns music domain only; port native voiced chord pipeline and role metadata with corresponding Kotlin/frozen expected channels. Save/test/commit then report before symbols/interval expansion.",
       "validation": [
         {
           "command": "npm --prefix pwa run check",
           "revision": "64bec66c1717b8ab240c0f7cfa3588b3b59387eb plus pending T05 contract source (committed next)",
           "result": "47 unit tests including18 theory cases,1 corpus input contract, strict types/build passed."
+        },
+        {
+          "command": "npm --prefix pwa run check",
+          "revision": "d7871274d63fcec8801421570c81b0a7dee8260a plus pending T05 worker source, checkpointed next",
+          "result": "67 total unit cases including frozen root-channel matrix,1 input-contract case, strict types and production build passed."
         }
       ],
       "progress": [
-        "Bounded coreda1913c integrated: pitch/key/scale, written pitches and relative-Ionian helpers;18 native-derived tests. Combined47 unit cases+1 input contract/types/build passed with catalog contract tree."
+        "Bounded coreda1913c integrated: pitch/key/scale, written pitches and relative-Ionian helpers;18 native-derived tests. Combined47 unit cases+1 input contract/types/build passed with catalog contract tree.",
+        "Worker9c082646 chord-root resolution integrated;36 music tests with39,040 frozen root-channel comparisons passed, including written enharmonic/context cases. Full voicing/symbol gates remain."
       ],
       "blocker": null
     },
@@ -179,8 +185,7 @@
         "pwa/tests/browser/catalog-worker.spec.ts",
         "pwa/tests/browser/catalog-worker.html",
         "pwa/tests/browser/catalog-worker-harness.ts",
-        "pwa/scripts/catalog/make-browser-fixture.py",
-        "pwa/public/test-fixtures/"
+        "pwa/scripts/catalog/make-browser-fixture.py"
       ],
       "acceptance": "Full-size mobile install/query/offline cold launch; quota/corruption/second-tab recovery",
       "status": "in_progress",
@@ -189,7 +194,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
       "slice": "Dedicated SQLite catalog worker, Web Locks ownership and bounded streaming import/query with actual browser recovery fixture",
-      "nextAction": "Reuse existing verified chunks and preservation build hook. First implement exclusive worker lifecycle and streaming import/query on small real SQLite fixture, then journaled install/pointer recovery; do not repeat packaging or claim mobile readiness.",
+      "nextAction": "Commit bounded worker checkpoint; then implement IndexedDB install journal + verified compressed chunk staging + resumable import and recoverable active pointer. First API stages new immutable attempts only and refuses duplicates for inspection; no installed/offline-ready pointer yet.",
       "validation": [
         {
           "command": "python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v",
@@ -230,6 +235,11 @@
           "command": "npm --prefix pwa run test:browser",
           "revision": "3dceb355940777161d4046e21c5a743768555668",
           "result": "7 passed in7.7s; shell/history/offline/mobile and actual user storage interruption/restart/upgrade."
+        },
+        {
+          "command": "npm --prefix pwa run check; node pwa/node_modules/@playwright/test/cli.js test tests/browser/catalog-worker.spec.ts (from pwa)",
+          "revision": "catalog worker source checkpointed next with root9c082646 integration",
+          "result": "67 unit+1input-contract/types/build passed;3 actual catalog-worker browser tests passed."
         }
       ],
       "progress": [
@@ -238,7 +248,9 @@
         "Producer954ceb71:8 Python tests passed including actual killed-process resume. Full source job t05-full-aural-packaging-20261014 completed:3 verified files,237 chunks,1,980,387,328 raw bytes,780,019,421 compressed bytes; manifest SHA2569c493fd76f6bcda9e1ab44f5889708e6814ac5154a00c94d9a9438ee91c0e591. Generated data remains ignored and unpublished. Observed producer working set~30MB; not a measured browser/import peak.",
         "Strict runtime manifest, bounded gzip/raw checksum verification and advisory quota preflight implemented;5 new tests passed. Actual237-chunk source manifest accepted by browser contract. Published SQLite3.53.4-build2 now pinned for source inspection; its failure path explicitly calls removeVfs and ignores preserveOnInitFailure. No pool initialized.",
         "SQLite safety worker completed exact-source-gated upstream backport and actual Chrome OPFS partial-acquisition failure recovery. Root integrating main/worker Vite hooks, strict types and independent checks; no full importer started.",
-        "SQLite worker33b9aec integrated normally. Main and worker Vite plugins configured with prebundling exclusion. Final independent npm ci installed50 packages;47 unit +1 corpus input contract/types/build,6 patch regressions,1 actual Chrome OPFS preservation drill and7 shell/storage browser cases all passed. CI wired for these checks; remote CI itself has not run."
+        "SQLite worker33b9aec integrated normally. Main and worker Vite plugins configured with prebundling exclusion. Final independent npm ci installed50 packages;47 unit +1 corpus input contract/types/build,6 patch regressions,1 actual Chrome OPFS preservation drill and7 shell/storage browser cases all passed. CI wired for these checks; remote CI itself has not run.",
+        "Dedicated SQLite worker + client implemented. Explicit preservation capability check precedes SAHPool init; Web Locks excludes other tabs before VFS init. New immutable attempt IDs stream one verified chunk at a time through@noble/hashes2.4.0 incremental full-file SHA256 into real SQLite. Native quick_check/metadata/length validation; closed handles; no arbitrary SQL RPC.",
+        "3 focused Chrome cases passed in10.7s through actual Vite worker: tab contention/cooperative handoff, real3-file SQLite import/abrupt worker termination/reopen/offline inspect, wrong full hash/snapshot preserving prior staging. Initial strict typecheck corrected published SAHPool constructor typing by using public readonly oo1.DB(path,r,vfs); rerun passed. No active-pointer, partial-download resume or full-size proof claimed yet."
       ],
       "blocker": null
     },

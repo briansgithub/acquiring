@@ -20,6 +20,9 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: pwa/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
       - run: npm ci
       - run: npm run test:sqlite-compat
       - run: npm run check
