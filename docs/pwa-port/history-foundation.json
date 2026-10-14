@@ -682,7 +682,9 @@
     "featureDelta": "Fixed chord loudness scaling and55% balance default.",
     "finalDisposition": "Default later reset to50% by22e867c5; per-voice normalization later refined.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "9c95f845:android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "9c95f845:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -694,7 +696,9 @@
     "featureDelta": "Dedicated artist result page with artist-specific song listing.",
     "finalDisposition": "Current Library/artist navigation survives.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "a87967aa:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "a87967aa:android/app/src/main/java/com/sacredring/android/SongDao.kt"
     ]
   },
   {
@@ -706,7 +710,10 @@
     "featureDelta": "Canonical artist names and origin-aware Playback/Info/Chords Back.",
     "finalDisposition": "Later display-name normalization supersedes simple hyphen replacement.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "63e36f99:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "63e36f99:android/app/src/main/java/com/sacredring/android/SongDao.kt",
+      "63e36f99:android/app/src/test/java/com/sacredring/android/ClosedLoopSongDatabaseTest.kt"
     ]
   },
   {
@@ -718,7 +725,8 @@
     "featureDelta": "Refresh recent selections when returning through navigation.",
     "finalDisposition": "Retain recent/history consistency.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "16ebc2f3:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -730,7 +738,9 @@
     "featureDelta": "Restore audiation/hover targets and chord preview integration.",
     "finalDisposition": "Use surviving card/preview contracts; historical puck UI superseded.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "17729cb1:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "17729cb1:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -742,7 +752,10 @@
     "featureDelta": "Persist recent artists independently and refine pitch-deviation presentation.",
     "finalDisposition": "Current artist recents survive; feedback placement later revised.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "d7e09c34:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "d7e09c34:android/app/src/main/java/com/sacredring/android/HistoryManager.kt",
+      "d7e09c34:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -754,7 +767,10 @@
     "featureDelta": "Per-layer playback generations and snapshots allow live control changes without stale tracks.",
     "finalDisposition": "Carry cancellation/preview/transport ownership.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "1e22a132:android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "1e22a132:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "1e22a132:android/app/src/main/java/com/sacredring/android/QuizPlaybackTiming.kt"
     ]
   },
   {
@@ -766,7 +782,10 @@
     "featureDelta": "Prepared playback tokens and exclusive consumption improve seamless loop transitions.",
     "finalDisposition": "Carry generation cancellation and boundary regression.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "82c1c3ab:android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "82c1c3ab:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "82c1c3ab:android/app/src/main/java/com/sacredring/android/QuizPlaybackTiming.kt"
     ]
   },
   {
@@ -778,7 +797,10 @@
     "featureDelta": "Typed spelled pitches/intervals and resolved chord root context separate sound from label/bass.",
     "finalDisposition": "Prerequisite for all interval/target/notation consumers.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "e314c873:android/app/src/main/java/com/sacredring/android/AudioPitchAdapter.kt",
+      "e314c873:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "e314c873:android/app/src/main/java/com/sacredring/android/MusicTheory.kt"
     ]
   },
   {
@@ -790,7 +812,8 @@
     "featureDelta": "Connect root-interval previews and spelling-aware interval display to Playback.",
     "finalDisposition": "Retain resolved interval semantics; final control layout differs.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "eb402d75:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -802,7 +825,10 @@
     "featureDelta": "Relative-Ionian labels without changing source sounding pitches.",
     "finalDisposition": "Current Lock in Major capability.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "11f691b9:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "11f691b9:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "11f691b9:android/app/src/main/java/com/sacredring/android/RelativeIonianContext.kt"
     ]
   },
   {
@@ -814,7 +840,10 @@
     "featureDelta": "Fix relative-major reference to initial section key across modulations.",
     "finalDisposition": "Preserve source/onset/display key distinctions.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "6e9805a8:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "6e9805a8:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "6e9805a8:android/app/src/main/java/com/sacredring/android/RelativeIonianContext.kt"
     ]
   },
   {
@@ -826,7 +855,10 @@
     "featureDelta": "Color pitch deviation and make root intervals agree with actual target pitches.",
     "finalDisposition": "Retain current detector/target contract; obsolete UI presentation excluded.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "205b8eda:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "205b8eda:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "205b8eda:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -838,7 +870,10 @@
     "featureDelta": "Add persistent two-slot Humming Interval Tool, mic permission and spelled measured intervals.",
     "finalDisposition": "Actual nested Android origin; later Flip-Flop and exact-frequency playback refine it.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "aed98be9:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "aed98be9:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "aed98be9:android/app/src/main/java/com/sacredring/android/SpelledInterval.kt"
     ]
   },
   {
@@ -850,7 +885,8 @@
     "featureDelta": "Restore rich chord/card objects and align scrub UI while removing old skip control.",
     "finalDisposition": "Keep final card model; historical layout later superseded.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "54279cd4:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -862,7 +898,8 @@
     "featureDelta": "Adjust Playback control dimensions/layout.",
     "finalDisposition": "Build final extracted controls, not this intermediate arrangement.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "d4d085a2:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -874,7 +911,9 @@
     "featureDelta": "Position movable practice puck using measured slider coordinates.",
     "finalDisposition": "Puck placement superseded by final singing dock.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "35c43277:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "35c43277:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -886,7 +925,10 @@
     "featureDelta": "Correct MIDI-versus-spelled-octave coordinates and interval direction/cents.",
     "finalDisposition": "Retain numerical regression in pitch/interval core.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "d326e538:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "d326e538:android/app/src/main/java/com/sacredring/android/SpelledInterval.kt",
+      "d326e538:android/app/src/test/java/com/sacredring/android/MeasuredIntervalTest.kt"
     ]
   },
   {
@@ -898,7 +940,8 @@
     "featureDelta": "Restore equal50/50 chord/melody balance default.",
     "finalDisposition": "Current mix zero=chords,one=melody,half=equal.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "22e867c5:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -910,7 +953,8 @@
     "featureDelta": "Velocity-based inertial timeline scrubbing with beat-coordinate conversion.",
     "finalDisposition": "Retain silent scrub/coast and conditional resume.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "c2f3fcef:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -922,7 +966,8 @@
     "featureDelta": "Rearrange playback controls and align scrub lanes with fixed spacer.",
     "finalDisposition": "Intermediate layout workaround superseded; do not port spacer hack.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "e747968a:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
@@ -934,7 +979,10 @@
     "featureDelta": "Page title/artist suggestions20 at a time and refresh audiation target when transposed.",
     "finalDisposition": "Retain paging and target invalidation; final inline UI differs.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "9bb52ca0:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "9bb52ca0:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "9bb52ca0:android/app/src/main/java/com/sacredring/android/SongDao.kt"
     ]
   },
   {
@@ -946,7 +994,8 @@
     "featureDelta": "Tap captured pitch to replay and double-tap to recapture.",
     "finalDisposition": "Exact captured-frequency playback supersedes nearest-note preview later.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "199b4061:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
     ]
   },
   {
@@ -958,7 +1007,8 @@
     "featureDelta": "Repair interval-tool double-tap gesture handling.",
     "finalDisposition": "Retain exclusive single/double action behavior.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "9aa9fe6e:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
     ]
   },
   {
@@ -970,7 +1020,10 @@
     "featureDelta": "Performance-safe All Songs alphabetical/complexity/mode browsing, scalar queries and restore states.",
     "finalDisposition": "Core catalog browse prerequisite; final subgroup refinement later.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "4aff98b9:android/.gitignore",
+      "4aff98b9:android/README.md",
+      "4aff98b9:android/app/src/androidTest/java/com/sacredring/android/AllSongsViewTest.kt"
     ]
   },
   {
@@ -982,108 +1035,152 @@
     "featureDelta": "Correct Lock in Major chord-tone spelling and applied/borrowed secondary dominants.",
     "finalDisposition": "Retain final adjudicated theory fixtures; later source evidence expands policy.",
     "evidence": [
-      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+      "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+      "f06a1235:android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt",
+      "f06a1235:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "f06a1235:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
     ]
   },
   {
     "sha": "e2a0086ef3141bf2242a0d383dac0ba289311204",
     "date": "2026-08-10",
     "subject": "Play exact recorded frequency on pitch-slot tap in Interval Singing Tool",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Replay captured pitch at exact frequency rather than nearest note.",
+    "finalDisposition": "Final literal replay bypasses global transpose after2c7b8ae0.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "e2a0086e:android/app/src/main/java/com/sacredring/android/AudioEngine.kt",
+      "e2a0086e:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
+    ]
   },
   {
     "sha": "3f35259d2da0549b40894c07af425716d2f49ed7",
     "date": "2026-08-10",
     "subject": "Quicken quiz timeline inertia and fix drag/tap edge cases",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Tune inertia and separate stop-coast taps from seek taps.",
+    "finalDisposition": "Preserve exclusive gesture ownership and bounded scrub.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "3f35259d:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "248d5bc44ae03b963cac340258bccf559af8abe9",
     "date": "2026-08-10",
     "subject": "Redesign Info tab with grouped sections and chord progression view",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Grouped song Info with key/BPM/meter/duration/events, progression and source links.",
+    "finalDisposition": "Use current detail metadata and preview behavior.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "248d5bc4:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "c9207437bc2a4e1355fb3aed65f6c49ca01f4157",
     "date": "2026-08-10",
     "subject": "Prevent search field from auto-focusing and showing keyboard on launch",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Prevent automatic search focus/keyboard on launch.",
+    "finalDisposition": "Retain explicit-focus suggestions.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "c9207437:android/app/src/main/AndroidManifest.xml",
+      "c9207437:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "a18fad1aec4b6ec63cbd02eedffa568fd74e9518",
     "date": "2026-08-11",
     "subject": "Add double-tap interval singing; fix search/download filtering and catalog validation",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Double-tap interval singing plus playable-only search/download filtering and catalog-floor validation.",
+    "finalDisposition": "Use final singing workflow and schema checks; old puck interaction superseded.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "a18fad1a:android/app/src/androidTest/java/com/sacredring/android/AudiationUiTest.kt",
+      "a18fad1a:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "a18fad1a:android/app/src/main/java/com/sacredring/android/DatabaseDownloader.kt"
+    ]
   },
   {
     "sha": "eb232242d845c57d693eac7f9f53cd972468bbd0",
     "date": "2026-08-11",
     "subject": "Show relative-major tonic in quiz header when Lock in Major is checked",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Show relative-major tonic when Lock in Major enabled.",
+    "finalDisposition": "Display-only context; source audio unaffected.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "eb232242:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "7bb6e4ed434656e888895b5413557990b62716f1",
     "date": "2026-08-11",
     "subject": "Add tessitura octave-shift display, negative transpose range, melody interval note buttons",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Negative transpose and individual melody interval note previews; tessitura shift display.",
+    "finalDisposition": "Signed transpose/previews survive; calibration display replaced45e7012e.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "7bb6e4ed:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "7bb6e4ed:android/app/src/main/java/com/sacredring/android/MainActivity.kt"
+    ]
   },
   {
     "sha": "893193de261d7ac405ab103266309b4a839fe4c7",
     "date": "2026-08-11",
     "subject": "Fix systematic flat bias in YIN pitch detection",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Correct YIN flat bias and microphone capture restart/route handling.",
+    "finalDisposition": "Port tested numerical detector; browser input API differs.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "893193de:android/app/src/main/java/com/sacredring/android/AudiationPitchPractice.kt",
+      "893193de:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "893193de:android/app/src/main/java/com/sacredring/android/MicrophonePitchTracker.kt"
+    ]
   },
   {
     "sha": "838b161bc22673a9d3327379fb84a4b9da47d58c",
     "date": "2026-08-11",
     "subject": "refactor(android): model tessitura singing targets",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refactor",
+    "featureDelta": "Typed singing-target requests and register-resolution model.",
+    "finalDisposition": "Keep semantic separation; calibration resolver replaced by octave offset.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "838b161b:android/app/src/main/java/com/sacredring/android/QuizIntervalState.kt",
+      "838b161b:android/app/src/main/java/com/sacredring/android/SingingTargets.kt",
+      "838b161b:android/app/src/test/java/com/sacredring/android/QuizIntervalStateTest.kt"
+    ]
   },
   {
     "sha": "73f1259aca06a97c56148475021d1a5c6487aae1",
     "date": "2026-08-11",
     "subject": "fix(android): isolate singing targets from source playback",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Separate singing targets from source playback configuration.",
+    "finalDisposition": "Core invariant: singing octave never transposes source transport.",
+    "evidence": [
+      "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+      "73f1259a:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+      "73f1259a:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+      "73f1259a:android/app/src/main/java/com/sacredring/android/SingingTargets.kt"
+    ]
   },
   {
     "sha": "4bb64d1fe606a80deeda467fe3fac61b32e5fbba",
