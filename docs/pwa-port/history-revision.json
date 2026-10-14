@@ -623,11 +623,13 @@
     "sha": "543e290ffae163d741af44d88345325506918c33",
     "date": "2026-09-05",
     "subject": "Merge branch 'codex/quiz-controls-ios' into codex/quiz-controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "2c16f571b99cb0b86f732dc796cb36331a8bed62",
@@ -647,61 +649,79 @@
     "sha": "d9389981e88e2545c2d8f8d870fde5adfebe50c3",
     "date": "2026-09-05",
     "subject": "Merge branch 'codex/quiz-controls-android' into codex/quiz-controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "d9389981:android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+      "d9389981:android/app/src/main/java/com/acquiring/android/QuizPlaybackController.kt"
+    ]
   },
   {
     "sha": "79c14a71b753ba4042de369626eaa6608db1e678",
     "date": "2026-09-05",
     "subject": "Merge branch 'codex/quiz-controls-ios' into codex/quiz-controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "a767092631c15c7b82e895710bcd6f8412ae496b",
     "date": "2026-09-05",
     "subject": "Merge branch 'codex/quiz-controls-ios' into codex/quiz-controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "e5db6d9bad78edabf6268f6f16e11a9388c7b49c",
     "date": "2026-09-05",
     "subject": "Merge branch 'codex/quiz-controls-ios' into codex/quiz-controls",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "af6774c71b9c8a7d263e236914687c69cd7534fb",
     "date": "2026-09-05",
     "subject": "Merge verified Quiz controls and illustrated onboarding with global singing dock",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrates existing parent-history Android/contracts work; source commits carry feature attribution.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "af6774c7:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt",
+      "af6774c7:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt",
+      "af6774c7:android/app/src/main/AndroidManifest.xml",
+      "af6774c7:android/app/src/main/java/com/acquiring/android/InstrumentSession.kt"
+    ]
   },
   {
     "sha": "4b17548e2c636863036ba91294ae1e2a22440acb",
     "date": "2026-09-05",
     "subject": "Record original welcome ancestry already incorporated by Quiz onboarding",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Record already-squashed welcome ancestry without first-parent Android delta, corroborated by consolidation handoff.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "a138937322c71b06bf88d3e33af255c9fffcc35d",
@@ -721,11 +741,13 @@
     "sha": "818ef2451b36f2532e7f7735b5559c545f899c4d",
     "date": "2026-09-05",
     "subject": "Merge intro card updates",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "91a68b20c7ae6862d27d9ce03901a34d890847cf",
@@ -777,21 +799,26 @@
     "sha": "36768156b08d80d80b799e95872b85047a2f75e8",
     "date": "2026-09-06",
     "subject": "Merge branch 'codex/fix-android-song-search' into main",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Integrate search repair while preserving newer navigation UI tests.",
+    "finalDisposition": "Resolution touches android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt. Use final integrated source.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed.",
+      "36768156:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt"
+    ]
   },
   {
     "sha": "a4220d0658a6d848514dcb23a1dee47e25af1916",
     "date": "2026-09-06",
     "subject": "Merge branch 'worktree-audio-engine-playback-fix'",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "merge",
+    "featureDelta": "Ancestry/integration only; no first-parent Android/contracts delta.",
+    "finalDisposition": "No combined Android/contracts resolution delta; do not double-count imported features.",
+    "evidence": [
+      "First-parent changed paths and combined merge file list inspected; critical instrument/navigation resolution excerpts reviewed."
+    ]
   },
   {
     "sha": "ef887fbb8e4899ff1036c22587aadcf20c1fb1aa",
