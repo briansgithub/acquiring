@@ -917,61 +917,73 @@
     "sha": "e747968a1210e155f4d0e829fe0c0ae213626d77",
     "date": "2026-08-03",
     "subject": "Refactor Quiz UI: rearrange controls, align sliders, and adjust scrub bar positioning. Note: Added Spacer(68.dp) hack to vertically align scrub bars across modes.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "refinement",
+    "featureDelta": "Rearrange playback controls and align scrub lanes with fixed spacer.",
+    "finalDisposition": "Intermediate layout workaround superseded; do not port spacer hack.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "9bb52ca0099e3d35c338f5eb436fd44942369fce",
     "date": "2026-08-03",
     "subject": "Refactor Database Search UI, implement search suggestion paging, and fix audiation pitch target tracking on transposition change",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Page title/artist suggestions20 at a time and refresh audiation target when transposed.",
+    "finalDisposition": "Retain paging and target invalidation; final inline UI differs.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "199b406112e2eef32269fe6530e1edb9bf286f71",
     "date": "2026-08-03",
     "subject": "Add single tap to play back nearest hummed pitch. Double tap to re-record.",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Tap captured pitch to replay and double-tap to recapture.",
+    "finalDisposition": "Exact captured-frequency playback supersedes nearest-note preview later.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "9aa9fe6e7d9f6e3481b6145e78bdd9014efb9e40",
     "date": "2026-08-03",
     "subject": "Fix the double tap behavior of the Humming Interval Tool",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Repair interval-tool double-tap gesture handling.",
+    "finalDisposition": "Retain exclusive single/double action behavior.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "4aff98b9245fd164566d5e157cb2010aeaaaca2b",
     "date": "2026-08-09",
     "subject": "Add performance-safe All Songs browser",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "feature",
+    "featureDelta": "Performance-safe All Songs alphabetical/complexity/mode browsing, scalar queries and restore states.",
+    "finalDisposition": "Core catalog browse prerequisite; final subgroup refinement later.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "f06a12353b66f7b2991f263210b8524faa6d0c95",
     "date": "2026-08-10",
     "subject": "Fix Lock in Major chord-tone spelling and applied+borrowed secondary dominants",
-    "reviewStatus": "pending",
-    "kind": null,
-    "featureDelta": null,
-    "finalDisposition": null,
-    "evidence": []
+    "reviewStatus": "reviewed",
+    "kind": "fix",
+    "featureDelta": "Correct Lock in Major chord-tone spelling and applied/borrowed secondary dominants.",
+    "finalDisposition": "Retain final adjudicated theory fixtures; later source evidence expands policy.",
+    "evidence": [
+      "Coordinator inspected bounded functional diff/comment/test excerpts; final source cross-checks are in implementation inventory. No app test execution."
+    ]
   },
   {
     "sha": "e2a0086ef3141bf2242a0d383dac0ba289311204",
