@@ -951,15 +951,16 @@
   "lastCheckpoint": {
     "date": "2026-10-15",
     "usageObserved": {
-      "fiveHourUsedPercent": 56,
-      "weeklyUsedPercent": 69
+      "fiveHourUsedPercent": 57,
+      "weeklyUsedPercent": 70
     },
-    "reason": "Validated product/catalog/notation/synth/Library checkpoints saved;no active worker/owned helper and no unresolved root runs. Near weekly threshold;read live usage before next claim. No new work at70%,checkpoint/yield at80%.",
+    "reason": "2026-10-15T05:11Z live weekly70% no-new-work threshold reached. Primarybb736970clean;all workers idle/no owned helper process. No slice,worker or expensive check started. Existing validated source/next actions preserved;wait for applicable weekly reset and verify live allowance. Five-hour reset alone does not reopen work.",
     "activeWorker": null,
     "sourceCommit": "bc583bacd3d2149aa7decc416f6c1284c97ffb7c",
     "fiveHourResetUnix": 1792055253,
     "weeklyResetUnix": 1792521503,
-    "unresolvedRuns": []
+    "unresolvedRuns": [],
+    "applicableWeeklyResetAt": "2026-10-20T18:38:23+00:00"
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
 }
