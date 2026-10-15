@@ -482,15 +482,24 @@
         "pwa/src/features/library/"
       ],
       "acceptance": "Debounce, paging, normalization, grouping, retry, Back/focus restoration and rollback",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
-      "validation": [],
-      "progress": [],
+      "status": "in_progress",
+      "owner": "coordinator (runtime model unknown)",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
+      "baseCommit": "11c7a274",
+      "slice": "Native pure All Songs groups/filter/rating/mode metadata only",
+      "nextAction": "Pure grouping slice validated;next bounded slice is parameterized paged read-only song/artist/group queries on the existing exclusive catalog worker,with native DAO ordering/filter/loadable parity and actual SQLite fixtures. Coordinator must extend only named contracts/protocol/worker/client and test harness;no arbitrary SQL RPC. Library UI/debounce/restoration/favorites remain open.",
+      "validation": [
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/library; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
+          "revision": "11c7a274 plus reviewed grouping tree committed next",
+          "result": "8native-derived cases/strict combined types passed first run and again after review narrowed metadata projection to omit runtime payload fields. Exact final guards window3-library-grouping-final-tests/types-20261015."
+        }
+      ],
+      "progress": [
+        "2026-10-15 pre-edit primary11c7a274clean;root owns pwa/src/features/library only. One independent Sol/high staticPCMworker owns pwa/src/audio/synth. Live45%five-hour/68%weekly. Native grouping/DAO inspected for future bounded paged read queries;current slicepure helpers only.",
+        "Pure AllSongsGrouping metadata/helpers complete:native group order/labels,single expansion,case/separator fuzzy matching,ten-point+ones subgroups,aliases/allsection mode union,and explicit payload-free browse projection.8native-derived cases/types passed. No SQL/RPC/UI exposure or whole T10acceptance claimed."
+      ],
       "blocker": null,
       "dependencyGates": {
         "T05": "desktop-catalog-runtime"
