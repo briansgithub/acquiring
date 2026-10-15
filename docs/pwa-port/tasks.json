@@ -458,9 +458,11 @@
       "worktree": null,
       "baseCommit": null,
       "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "nextAction": "With both windows below70%,claim one Sol/high worker in a clean preserved sibling worktree for foreground preview/output owner first:actual AudioContext sample rate,user-gesture unlock,request generations/discard stale preparation,consume once,24ms preview retirement,stop/pagehide/hidden andexplicit resume. Freeze local interfaces before edits and actual-browser onset/completion evidence before a runtime milestone. Then stream PCM sink/clock andnative load/play/pause/scrub/seek/config revisions. No worker has started this slice.",
       "validation": [],
-      "progress": [],
+      "progress": [
+        "2026-10-15 bounded source planning only at67%/10%:frozen AudioEngine.kt23-25/57-90/251-285 governs24ms retirement,invalidate-before-fade,prepared consumption/generations;PlaybackEngine.ktload/play/pauseForLifecycle/pauseForScrub/seek/reset/updateConfig/release separates command intent/revision from delayed published state. Existing static-renderer and PlaybackPcmRenderer already cover pure PCM,so do not reimplement DSP. Actual WebAudio owner/clock/onset/foreground/silent-scrub remains unimplemented/unproven. T14pure learning is a disjoint ready coordinator lane after audio contract freeze;one worker maximum."
+      ],
       "blocker": null
     },
     {
@@ -1039,24 +1041,17 @@
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
     "date": "2026-10-15",
+    "sourceCommit": "12c09caa",
     "usageObserved": {
-      "fiveHourUsedPercent": 57,
-      "weeklyUsedPercent": 70
+      "fiveHourUsedPercent": 68,
+      "weeklyUsedPercent": 11
     },
-    "reason": "2026-10-15T05:11Z live weekly70% no-new-work threshold reached. Primarybb736970clean;all workers idle/no owned helper process. No slice,worker or expensive check started. Existing validated source/next actions preserved;wait for applicable weekly reset and verify live allowance. Five-hour reset alone does not reopen work.",
+    "fiveHourResetUnix": 1792066478,
+    "weeklyResetUnix": 1792653278,
     "activeWorker": null,
-    "sourceCommit": "bc583bacd3d2149aa7decc416f6c1284c97ffb7c",
-    "fiveHourResetUnix": 1792055253,
-    "weeklyResetUnix": 1792521503,
     "unresolvedRuns": [],
-    "resumeObservation": {
-      "date": "2026-10-15T07:14Z",
-      "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 0,
-      "fiveHourResetUnix": 1792066478,
-      "weeklyResetUnix": 1792653278,
-      "reason": "Live authoritative account allowance reports both counters0and both new reset timestamps. Prior predicted weekly reset belongs to superseded window;no reset credit redeemed/purchase/model switch. All3reset credits still available. Primary1725eef7clean;workers idle;no unresolved root runs/helper process."
-    }
+    "reason": "Recoverable Library partial feature12c09caa and pure pitch merge906c9243 committed. All worker source integrated/idle and primary clean before documentation refresh. Known SettingsBack64px scroll gate still awaits existing owner approval after two cycles. Other packages remain ready;resume according to live usage70/80 thresholds. No credit/reset/model change.",
+    "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows."
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
 }
