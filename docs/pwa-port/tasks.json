@@ -172,25 +172,34 @@
         "T03"
       ],
       "allowedPaths": [
-        "pwa/src/ui/notation/"
+        "pwa/src/ui/notation/",
+        "pwa/tests/browser/notation.html",
+        "pwa/tests/browser/notation-harness.tsx",
+        "pwa/tests/browser/notation.spec.ts"
       ],
       "acceptance": "Geometry/semantic cases for extensions, alterations, rests, narrow/large text",
-      "status": "in_progress",
-      "owner": "notation worker (gpt-6-luna/medium)",
-      "branch": "codex/pwa-notation",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
+      "status": "complete",
+      "owner": "coordinator; Luna/medium source integrated and reviewed",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "82639a57",
-      "slice": "Accessible React musical notation with native semantic rows and bounded browser geometry",
-      "nextAction": "Same Luna/medium worker ports React RomanNumeral and ScaleDegree components within notation path using frozen native measure/layout rules, explicit accessible labels, fitted stacked rows/hats/borrowed labels. Extend all native tokenizer/label cases and object-borrowing guard. Commit/test/report; root owns browser fixture/geometry proof and app wiring.",
+      "slice": "Native semantics/measured SVG with actual browser acceptance",
+      "nextAction": "Complete at134dd5df. Reuse components in T11/T12/T17; platform-wide physical/Safari evidence remains T27, not a claimed pass.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/ui/notation (from pwa)",
           "revision": "normal1028688 integration plus disjoint installer source",
           "result": "7tests passed in297ms."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/ui/notation; node node_modules/typescript/lib/tsc.js --noEmit; node node_modules/@playwright/test/cli.js test notation.spec.ts (each from pwa)",
+          "revision": "134dd5df4fcf945317abfbea0c8a3abfadd65809",
+          "result": "13unit/strict combined types and3actualChrome cases passed.21renderings per mode; normal900px,320px/200percent,6pxbelow-minimum slots; visible figured ink/native baseline spacing,hat clearance,full labels and finite contained bounds. Normal/narrow screenshots visually inspected."
         }
       ],
       "progress": [
-        "Pure notation1028688 integrated normally;7native-derived tests passed on combined primary. Launch failure diagnosed as multiword --next-action argument splitting, not guard defect; single snake_case next-action and ignored helper scripts work. Canvas/React rendering remains open."
+        "Pure notation1028688 integrated normally;7native-derived tests passed on combined primary. Launch failure diagnosed as multiword --next-action argument splitting, not guard defect; single snake_case next-action and ignored helper scripts work. Canvas/React rendering remains open.",
+        "Measured renderer46f72a7 integrated normally. Actual Chrome exposed glyph overhang/hinting clipping; root134dd5df adds ink-safe inset/geometricPrecision without changing native row centers/scales. Em-box overlap assertion corrected to actual browser painted-digit metrics plus native baseline-separation guard. All3browser cases,13unit and strict combined types pass; T04complete."
       ],
       "blocker": null
     },
@@ -226,8 +235,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
-      "slice": "Controlled catalog source configuration and product installer recovery UI",
-      "nextAction": "Capture actual native song release as immutable local source; normalize older schema in a separate derivative before verified packaging. Do not publish endpoints; default discovery remains empty. Continue notation worker independently.",
+      "slice": "Desktop product installer and actual full native catalogs validated; device/quota gates open",
+      "nextAction": "Do not repeat successful full Aural/song or4product UI proofs. Next T05proof requires materially different real quota-exhaustion fixture/physical constrained device; phone/Safari and hosted deployment configuration remain unrun. Continue independent ready T07/T14 packages while these gates are open.",
       "validation": [
         {
           "command": "python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v",
@@ -308,6 +317,11 @@
           "command": "npm --prefix pwa run check; node node_modules/@playwright/test/cli.js test tests/browser/shell.spec.ts (from pwa)",
           "revision": "1028688normal integration plus product installer tree committed next",
           "result": "173unit+1input-contract/strict types/production build passed;3shell cases passed in5.2s including320px/200percent and cold offline deep link. 4installer UI cases already passed same source."
+        },
+        {
+          "command": "node scripts/catalog/browser-proof.mjs ../.artifacts/pwa-port/song-chunks-bbc85b2f8688 .artifacts/pwa-port/production-songs-bbc85b2f-v1 5a8a00f479c0a03f4036bcaead372b3a3abed9cf8e36b0d650fbd2bbcca86259 (from pwa)",
+          "revision": "b87c10cdffaa6db2e9ddc5b95b4e4322ac13ff26",
+          "result": "Passed full actual native source in desktop Chrome production-built test entry;40979complete rows,cold offline browser/server shutdown/restart,10user rows+outbox unchanged."
         }
       ],
       "progress": [
@@ -323,7 +337,10 @@
         "Quota harness experiment:1MiB then0byte CDP overrides did not force this small preallocated fixture to fail. Gate remains explicitly fixme/unproven; no quota acceptance claimed. Independent network failure/same-intent resume case proceeds.",
         "Full-size production test entry926954ad passed desktop Chrome:existing3files/237chunks/1,980,387,328rawbytes verified incrementally and native quick_check/metadata validated. Browser and localhost server stopped; new persistent-profile browser launched offline before navigation, loaded cached built worker/WASM, confirmed active pointer and inspected all3files.10user rows/10pending outbox entries unchanged. Receipt pwa/.artifacts/pwa-port/production-full-64cfa299-v1/runs/f7bec2db-b9aa-447d-8fd4-43279fc057f7/result.json. No phone/Safari, real quota exhaustion or public installer claim.",
         "Native v3song schema tightened:exact columns/types/nullability/PK and3named indexes plus>=40609song/browse count and nonnull-payload coverage. Actual Chrome passed valid40609fixture +4corrupt cases (missing/wrong index, missing payload, nullable key), preserving old active catalog. Actual source song release/migration not yet ingested.",
-        "Controlled runtime discovery config/manifest byte hashes and product Settings installer implemented;10security unit cases passed. Actual production app builds real worker/WASM;4first-run Chrome UI cases passed in9.1s:verified3SQLite install/cold offline page reload, pause/page loss with stableID and skipped complete DB, corrupt manifest update retaining installed data, tab ownership guidance/retry. Default public sources remain empty until hosted data is configured; no publication."
+        "Controlled runtime discovery config/manifest byte hashes and product Settings installer implemented;10security unit cases passed. Actual production app builds real worker/WASM;4first-run Chrome UI cases passed in9.1s:verified3SQLite install/cold offline page reload, pause/page loss with stableID and skipped complete DB, corrupt manifest update retaining installed data, tab ownership guidance/retry. Default public sources remain empty until hosted data is configured; no publication.",
+        "Captured native release361308226/asset550095410:75,955,685bytes SHA2566cff571af30826cef79c03b0168b5346a62beb4a328560f60c8f69c6dfafe9d4. Preserved raw inspection derivative110,346,240bytes SHAbbc85b2f868858beeffbd2ab5f60c50445b95672994b4a815d62c57f53103cc1, schema3, quick_check ok,40,979songs/allwithpayloads. Native browse/alpha/backfill parity preflight saved separately before packaging; no migration or source modification inferred.",
+        "Current native source already has schema3 and exact browse/backfill/alpha normalization:40,979songs/browse rows,allwithpayloads,46,111mode rows;0missingbrowse/alphamismatches. No migration needed or source bytes modified. Existing producer completed1file/14chunks/110,346,240rawbytes/75,871,355compressedbytes; manifest5a8a00f479c0a03f4036bcaead372b3a3abed9cf8e36b0d650fbd2bbcca86259, output .artifacts/pwa-port/song-chunks-bbc85b2f8688.",
+        "Actual native full-song source proofb87c10cd passed:110,346,240rawbytes/14chunks,all40,979song/browse/payload rows and native indexes/columns accepted,10user stores/outbox preserved,server/browser stopped before fresh offline worker startup. Receipt pwa/.artifacts/pwa-port/production-songs-bbc85b2f-v1/runs/63b02cbe-49fc-4442-b6e8-2831ab5daf87/result.json. No source migration needed; preserved source+profile/chunks unpublished."
       ],
       "blocker": null
     },
@@ -378,13 +395,13 @@
         "pwa/src/audio/synth/"
       ],
       "acceptance": "Android audio regressions: finite/clipping/gain/envelope/loop/sample-rate cases",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "status": "in_progress",
+      "owner": "synth worker (gpt-6.1-sol/high)",
+      "branch": "codex/pwa-synth",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "5f3ee4f0bf1ea10dd459cefb0bd05c3d4297b588",
+      "slice": "Native13instrument stateful oscillator and gain profile core",
+      "nextAction": "Reuse clean data-compat tree at1e729b on new synth branch from saved base, preserving prior theory branch. Own only pwa/src/audio/synth. Port SynthVoice and AudioEngine waveform metadata/current native tests, meaningful finite/gain/spectral checks. Save/test/commit/report before PCM renderer/transport expansion.",
       "validation": [],
       "progress": [],
       "blocker": null
