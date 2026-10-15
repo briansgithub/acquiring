@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-14",
+  "updated": "2026-10-15",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -342,7 +342,18 @@
         "Current native source already has schema3 and exact browse/backfill/alpha normalization:40,979songs/browse rows,allwithpayloads,46,111mode rows;0missingbrowse/alphamismatches. No migration needed or source bytes modified. Existing producer completed1file/14chunks/110,346,240rawbytes/75,871,355compressedbytes; manifest5a8a00f479c0a03f4036bcaead372b3a3abed9cf8e36b0d650fbd2bbcca86259, output .artifacts/pwa-port/song-chunks-bbc85b2f8688.",
         "Actual native full-song source proofb87c10cd passed:110,346,240rawbytes/14chunks,all40,979song/browse/payload rows and native indexes/columns accepted,10user stores/outbox preserved,server/browser stopped before fresh offline worker startup. Receipt pwa/.artifacts/pwa-port/production-songs-bbc85b2f-v1/runs/63b02cbe-49fc-4442-b6e8-2831ab5daf87/result.json. No source migration needed; preserved source+profile/chunks unpublished."
       ],
-      "blocker": null
+      "blocker": null,
+      "milestones": {
+        "desktop-catalog-runtime": {
+          "status": "complete",
+          "revision": "b87c10cdffaa6db2e9ddc5b95b4e4322ac13ff26",
+          "evidence": "4product install/pause-resume/bad-update/ownership Chrome cases;actual full Aural926954ad and40979songb87c10cd production-worker/cold-offline receipts in validation. Exclusive worker,immutable verified activation/recovery and user-store isolation exist. Read-only query operations are owned by T10/T15,not already implemented."
+        },
+        "mobile-quota-acceptance": {
+          "status": "planned",
+          "evidence": "Physical full-size Android/iPhone/iPad/Safari,actual quota-write exhaustion and configured-hosting checks are unrun. Small CDP override experiments did not force exhaustion. T05 remains in_progress;T26/T27/T28 keep full dependencies."
+        }
+      }
     },
     {
       "id": "T06",
@@ -480,7 +491,10 @@
       "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
       "validation": [],
       "progress": [],
-      "blocker": null
+      "blocker": null,
+      "dependencyGates": {
+        "T05": "desktop-catalog-runtime"
+      }
     },
     {
       "id": "T11",
@@ -595,7 +609,10 @@
       "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
       "validation": [],
       "progress": [],
-      "blocker": null
+      "blocker": null,
+      "dependencyGates": {
+        "T05": "desktop-catalog-runtime"
+      }
     },
     {
       "id": "T16",
@@ -762,7 +779,10 @@
       "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
       "validation": [],
       "progress": [],
-      "blocker": null
+      "blocker": null,
+      "dependencyGates": {
+        "T05": "desktop-catalog-runtime"
+      }
     },
     {
       "id": "T23",
@@ -929,5 +949,6 @@
       "unresolvedRuns": [],
       "reason": "Recorded reset passed; fresh live window verified. Primary clean82639a57; no active worker/owned preview."
     }
-  }
+  },
+  "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
 }
