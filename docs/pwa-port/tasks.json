@@ -495,7 +495,9 @@
         "pwa/scripts/catalog/make-library-browser-fixture.py",
         "pwa/tests/browser/library-queries.spec.ts",
         "pwa/tests/browser/catalog-worker-harness.ts",
-        "pwa/src/storage/catalog/library-queries.test.ts"
+        "pwa/src/storage/catalog/library-queries.test.ts",
+        "pwa/src/app/App.tsx",
+        "pwa/tests/browser/library.spec.ts"
       ],
       "acceptance": "Debounce, paging, normalization, grouping, retry, Back/focus restoration and rollback",
       "status": "in_progress",
@@ -503,8 +505,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
-      "slice": "Library search/artist asynchronous controller and immutable snapshot restoration",
-      "nextAction": "Checkpoint validated controller and frozen view-contract. Once sole synth worker is committed/idle,reuse preserved UI-shell on new narrow Library branch from this validated primary. Luna/medium owns presentation/css only;root owns lifecycle/App/root tests/shared edits. Preserve prior notation branch.",
+      "slice": "Frozen Library controller;prepare disjoint bounded presentation worker",
+      "nextAction": "Preserved UI-shell/codex/pwa-notation clean46f72a7;create codex/pwa-library-ui from primary56fe5359without deleting prior branch. Do not dispatch until sole synth worker commits/idles. Luna/medium owns only LibraryContent.tsx/library.css/UI_WORKLOG.md;frozen view-contract.ts/controller/source adapters consumed read-only. Root owns LibraryScreen lifecycle/cache/App/root browser tests. Validate actual product search/paging/history/offline after normal integration.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
@@ -537,6 +539,19 @@
       "blocker": null,
       "dependencyGates": {
         "T05": "desktop-catalog-runtime"
+      },
+      "presentationAssignment": {
+        "model": "gpt-6-luna",
+        "thinking": "medium",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
+        "branch": "codex/pwa-library-ui",
+        "baseCommit": "56fe5359",
+        "status": "prepared;awaiting sole synth worker idle before dispatch",
+        "ownedPaths": [
+          "pwa/src/features/library/LibraryContent.tsx",
+          "pwa/src/features/library/library.css",
+          "pwa/src/features/library/UI_WORKLOG.md"
+        ]
       }
     },
     {
