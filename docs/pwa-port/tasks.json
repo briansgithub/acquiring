@@ -456,16 +456,24 @@
       ],
       "acceptance": "Seek/config/loop/cancellation races, silent scrub and explicit-resume cases",
       "status": "in_progress",
-      "owner": "preview worker (gpt-6.1-sol/high); coordinator owns contracts/browser integration",
+      "owner": "coordinator integration/browser evidence; preview worker idle (gpt-6.1-sol/high)",
       "branch": "codex/pwa-preview",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "9ee99a7b",
       "slice": "Foreground static preview WebAudio owner with native cancellation and retirement",
-      "nextAction": "Root freezes transport/contracts.ts and commits intent,then reuses clean pitch tree on new codex/pwa-preview from that checkpoint,preserving pitch/synth/theory branches. One Sol/high worker implements PreviewOwner/local tests/worklog only;root owns actual-browser harness and parallel pure pitch assessment in T14. No app wiring or whole T08 completion yet.",
-      "validation": [],
+      "nextAction": "Normally merge reviewed b98849f5 into primary00a2d681 preserving owned dirty tasks and3untracked browser files. Frozen contract unchanged;4worker-only transport additions. Then combined unit/input/types/build and4actualWebAudio Chrome component cases. T08 remains in_progress;stream transport and App wiring unimplemented.",
+      "validation": [
+        {
+          "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
+          "revision": "b98849f5cedd72acce58f1df3ce42ca25d644789",
+          "result": "25/25fake cases and strict owned types PASS;preview-typecheck-20261015-14/preview-fakes-20261015-15. Initial test-only typed-array generic mismatch corrected once. Root actual-browser acceptance pending;no physical output claim."
+        }
+      ],
       "progress": [
         "2026-10-15 bounded source planning only at67%/10%:frozen AudioEngine.kt23-25/57-90/251-285 governs24ms retirement,invalidate-before-fade,prepared consumption/generations;PlaybackEngine.ktload/play/pauseForLifecycle/pauseForScrub/seek/reset/updateConfig/release separates command intent/revision from delayed published state. Existing static-renderer and PlaybackPcmRenderer already cover pure PCM,so do not reimplement DSP. Actual WebAudio owner/clock/onset/foreground/silent-scrub remains unimplemented/unproven. T14pure learning is a disjoint ready coordinator lane after audio contract freeze;one worker maximum.",
-        "2026-10-15T15:31Z pre-branch:primary9ee99a7bclean;data-compat codex/pwa-pitch24a3f78bclean;all agents idle/no recovery runs. Live10%five-hour/13%weekly,new five-hour reset1792093757 supersedes prior reached boundary;weekly unchanged,no credit action. Preserve all old worktrees/branches/profiles. Root freezes preview-only interfaces and independently owns T14assessment;one worker maximum."
+        "2026-10-15T15:31Z pre-branch:primary9ee99a7bclean;data-compat codex/pwa-pitch24a3f78bclean;all agents idle/no recovery runs. Live10%five-hour/13%weekly,new five-hour reset1792093757 supersedes prior reached boundary;weekly unchanged,no credit action. Preserve all old worktrees/branches/profiles. Root freezes preview-only interfaces and independently owns T14assessment;one worker maximum.",
+        "Root pre-browser intent atprimary00a2d681:4actualChrome component cases will exercise44100/48000 realAudioContexts,user-gesture resume/native PCM/analyser nonzero signal/render-clock receipts/natural end/context reuse,out-of-order injected async native preparation cancellation,andtrusted tab blur/hidden stop/explicit new gesture/permanent release. Test-only dev5173harness;no shipped App/production-offline/device claim. Default suspended/frozen clock/fade/resource boundaries are worker unit scope. Root browser files pending worker implementation merge;do not count a missing import/no-tests run as acceptance. W3C WebAudio1.1 currentTime/resume/AudioScheduledSourceNode/Analyser consulted2026-10-15;source link in validation notes later.",
+        "2026-10-15 pre-integration:primary00a2d681 owns only tasks diff and3untracked preview browser files;staged empty. Worker codex/pwa-preview b98849f5 clean/idle,4transport additions only,25fake-context cases/types pass. Root reviewed source/cleanup/tests,requested release-promise latch/pre-copy32voice and30s injectedPCM bounds,all covered. Live32%five-hour/16%weekly. Merge normally;preserve all worktrees/branches and pending Library scroll gate."
       ],
       "blocker": null
     },
