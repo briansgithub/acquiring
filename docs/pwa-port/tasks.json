@@ -407,12 +407,12 @@
       ],
       "acceptance": "Android audio regressions: finite/clipping/gain/envelope/loop/sample-rate cases",
       "status": "in_progress",
-      "owner": "coordinator; synth worker idle after integrated checkpoints",
+      "owner": "synth worker (gpt-6.1-sol/high)",
       "branch": "codex/pwa-synth",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "d0413f038bb937c2086c24e21346bee342b32783",
-      "slice": "Native oscillator and bounded static preview PCM validated",
-      "nextAction": "Do not repeat native fixture captures or validated static/core tests without relevant changes. Next bounded Sol/high slice:T07pure streaming PCM/chord+melody voice lifetime/sample-rate/envelope/loop regressions from frozen native source. Reuse clean synth worktree6de96d44;normal integration/claim first. Full T07remains in_progress;WebAudio/transport/device evidence is unrun. Check live budget before any new work.",
+      "baseCommit": "6de96d447816046d0c3f5b1c6928661ef0f39d7f",
+      "slice": "Pure native streaming PCM renderer and voice/envelope/loop regression slice",
+      "nextAction": "Reuse existing clean codex/pwa-synth tree6de96d44,one worker only. Read frozen PlaybackPcmRenderer/related source+tests and port one bounded pure stream renderer API with explicit rate/resource bounds;native independent fixtures and meaningful loop/block/envelope/mute/gain tests. No WebAudio/transport/UI/shared edits. Save intent/check/commit/report before any expansion.",
       "validation": [
         {
           "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check (from pwa)",
@@ -429,7 +429,8 @@
         "2026-10-15 pre-integration:primary8ea59b43clean,worker codex/pwa-synth d0413f03clean. Root reviewed native source/formulas,metadata,15tests and independent52case/416checkpoint JVM fixture capture. Sourceonly pwa/src/audio/synth;no shared/dependency change. Live42%five-hour/67%weekly. Expected normal merge then combined check; no PCM/device acceptance inferred.",
         "2026-10-15 core d0413f03 integrated normally atce40a2f1;combined194unit/1input/types/build passed. Before next bounded claim:primaryce40a2f1onlydirtytasksowned by coordinator;worker d0413f03clean/idle;allbranches/worktrees preserved. Live42%five-hour/67%weekly. One next Sol/high slice is static PCM only,with original30s ceiling enforced and no new work at70%.",
         "2026-10-15 pre-integration:reviewed native static method,explicit rate/30s/voice-work/delay limits,Float gain/Int16 saturation,envelopes/slot boundary/cancellation. Worker6de96d44passed24synth tests/types and52independent full native PCM buffers/38,480samples with0LSBdifference,weighted loudness/dense preview/arp/headroom/mute/gain. No device/stream acceptance. Six owned paths only;normal integration planned.",
-        "Static worker6de96d44integrated normally;combined211unit/input/types/build passed atbc583bacd3d2149aa7decc416f6c1284c97ffb7c. Native static PCM formulas/envelopes/slot completion/Float gain/saturation/cancellation and explicit resources validated;worker clean/idle,all branches/worktrees preserved. Remaining T07streaming/loop/device gates are open."
+        "Static worker6de96d44integrated normally;combined211unit/input/types/build passed atbc583bacd3d2149aa7decc416f6c1284c97ffb7c. Native static PCM formulas/envelopes/slot completion/Float gain/saturation/cancellation and explicit resources validated;worker clean/idle,all branches/worktrees preserved. Remaining T07streaming/loop/device gates are open.",
+        "2026-10-15T07:14Z live counters0/0,new windows1792066478/1792653278 supersede old forecast. Root1725eef7clean,synth6de96d44clean,allworkers idle,allrecovery work retained. One next Sol/high stream PCM slice;root independently owns bounded T10read queries."
       ],
       "blocker": null
     },
@@ -486,16 +487,23 @@
         "T06"
       ],
       "allowedPaths": [
-        "pwa/src/features/library/"
+        "pwa/src/features/library/",
+        "pwa/src/storage/catalog/library-queries.ts",
+        "pwa/src/storage/catalog/protocol.ts",
+        "pwa/src/storage/catalog/client.ts",
+        "pwa/src/storage/catalog/catalog-worker.ts",
+        "pwa/scripts/catalog/make-library-browser-fixture.py",
+        "pwa/tests/browser/library-queries.spec.ts",
+        "pwa/tests/browser/catalog-worker-harness.ts"
       ],
       "acceptance": "Debounce, paging, normalization, grouping, retry, Back/focus restoration and rollback",
       "status": "in_progress",
       "owner": "coordinator (runtime model unknown)",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "11c7a274",
-      "slice": "Native pure All Songs groups/filter/rating/mode metadata only",
-      "nextAction": "Pure grouping slice validated;next bounded slice is parameterized paged read-only song/artist/group queries on the existing exclusive catalog worker,with native DAO ordering/filter/loadable parity and actual SQLite fixtures. Coordinator must extend only named contracts/protocol/worker/client and test harness;no arbitrary SQL RPC. Library UI/debounce/restoration/favorites remain open.",
+      "baseCommit": "1725eef7",
+      "slice": "Bounded native paged song search/artist query RPC",
+      "nextAction": "Extend exclusive worker/client/protocol with typed bounded parameterized searchSuggestions and artistSong pages only. Preserve native loadable filter,title ordering,hyphen replacement/SQLite LIKE semantics. Return scalar rows/snapshot/paging only,no BLOB/rawSQL. Add actual SQLite browser fixtures for payload exclusion,ordering,null/blank,separators,wildcards/paging/reopen and missing catalog;strict types plus covering tests. Group query/UI remain separate slices.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
@@ -505,7 +513,8 @@
       ],
       "progress": [
         "2026-10-15 pre-edit primary11c7a274clean;root owns pwa/src/features/library only. One independent Sol/high staticPCMworker owns pwa/src/audio/synth. Live45%five-hour/68%weekly. Native grouping/DAO inspected for future bounded paged read queries;current slicepure helpers only.",
-        "Pure AllSongsGrouping metadata/helpers complete:native group order/labels,single expansion,case/separator fuzzy matching,ten-point+ones subgroups,aliases/allsection mode union,and explicit payload-free browse projection.8native-derived cases/types passed. No SQL/RPC/UI exposure or whole T10acceptance claimed."
+        "Pure AllSongsGrouping metadata/helpers complete:native group order/labels,single expansion,case/separator fuzzy matching,ten-point+ones subgroups,aliases/allsection mode union,and explicit payload-free browse projection.8native-derived cases/types passed. No SQL/RPC/UI exposure or whole T10acceptance claimed.",
+        "2026-10-15 before root query edits:primary1725eef7clean;one disjoint synth worker on existing tree. Own named shared protocol/client/worker query surfaces plus Library fixture only. Native SongDao query/order/comments govern;no arbitrary SQL,libraryUI or blob resolution in first slice."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -960,7 +969,14 @@
     "fiveHourResetUnix": 1792055253,
     "weeklyResetUnix": 1792521503,
     "unresolvedRuns": [],
-    "applicableWeeklyResetAt": "2026-10-20T18:38:23+00:00"
+    "resumeObservation": {
+      "date": "2026-10-15T07:14Z",
+      "fiveHourUsedPercent": 0,
+      "weeklyUsedPercent": 0,
+      "fiveHourResetUnix": 1792066478,
+      "weeklyResetUnix": 1792653278,
+      "reason": "Live authoritative account allowance reports both counters0and both new reset timestamps. Prior predicted weekly reset belongs to superseded window;no reset credit redeemed/purchase/model switch. All3reset credits still available. Primary1725eef7clean;workers idle;no unresolved root runs/helper process."
+    }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
 }
