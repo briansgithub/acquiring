@@ -1043,14 +1043,14 @@
     "date": "2026-10-15",
     "sourceCommit": "12c09caa",
     "usageObserved": {
-      "fiveHourUsedPercent": 68,
+      "fiveHourUsedPercent": 70,
       "weeklyUsedPercent": 11
     },
     "fiveHourResetUnix": 1792066478,
     "weeklyResetUnix": 1792653278,
     "activeWorker": null,
     "unresolvedRuns": [],
-    "reason": "Recoverable Library partial feature12c09caa and pure pitch merge906c9243 committed. All worker source integrated/idle and primary clean before documentation refresh. Known SettingsBack64px scroll gate still awaits existing owner approval after two cycles. Other packages remain ready;resume according to live usage70/80 thresholds. No credit/reset/model change.",
+    "reason": "2026-10-15T08:13Z live five-hour70% no-new-work threshold reached. Primary1ed03002 clean,all workers idle,no owned helper processes or unresolved runs. No new slice,worker or expensive check started. Preserve ready T08 plan and pending T10 approval;resume after applicable five-hour reset 2026-10-15T12:14:38+00:00 and live allowance verification. No credits/resets/model change.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows."
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
