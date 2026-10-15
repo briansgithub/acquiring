@@ -474,15 +474,17 @@
         "pwa/src/audio/capture/"
       ],
       "acceptance": "Synthetic pitch/noise/harmonic/dropout cases; actual microphone smoke test",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "status": "in_progress",
+      "owner": "pitch worker (gpt-6.1-sol/high)",
+      "branch": "codex/pwa-pitch",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "7a75f69c7f3b64292c42b3a2534e94da601f4554",
+      "slice": "Pure native YIN detector and pitch smoothing only",
+      "nextAction": "Reuse clean synth tree c242f775onnew codex/pwa-pitch from7a75f69c;preserve synth branch. One Sol/high worker owns audio/capture pure detector/smoother/types/fixtures. Frozen PitchDetector/PitchSmoother/current tests govern. Meaningful native/synthetic signal/dropout tests,independent native capture ifneeded,bounded input/work;no microphone,permissions,WebAudio,resampler/shared contract/UI scope. Commit/test/report before expansion.",
       "validation": [],
-      "progress": [],
+      "progress": [
+        "2026-10-15 pre-branch:primary7a75f69cowned dirty Library lifecycle/App/controller/tests anduntracked LibraryScreen,allpreserved. Existing data-compat tree codex/pwa-synth c242f775clean/idle;UIworker e968599bclean/idle andintegrated. Live33%five-hour/5%weekly. Create narrow pitch branch from clean committed primary base;no duplicates/deletion. PureT07complete atb11a3af4;actual microphone remains open."
+      ],
       "blocker": null
     },
     {
@@ -542,7 +544,8 @@
         "Pure AllSongsGrouping metadata/helpers complete:native group order/labels,single expansion,case/separator fuzzy matching,ten-point+ones subgroups,aliases/allsection mode union,and explicit payload-free browse projection.8native-derived cases/types passed. No SQL/RPC/UI exposure or whole T10acceptance claimed.",
         "2026-10-15 before root query edits:primary1725eef7clean;one disjoint synth worker on existing tree. Own named shared protocol/client/worker query surfaces plus Library fixture only. Native SongDao query/order/comments govern;no arbitrary SQL,libraryUI or blob resolution in first slice.",
         "Native fixed search/artist scalar pageRPC passes strict types,2input/binding cases and1actual ChromeSQLite case (18.8s):nonnull/emptyBLOB eligibility,null/blanktitle order,case/hyphen/SQLite wildcard/quote semantics,page continuity,2MBpayload exclusion,readonly reopen,cache snapshot switch and10user stores/outbox unchanged. Scratch fixture generator quote failure wrote no files;corrected once,then types/browserbehavior passed first actual run. No libraryUI/groupqueries claimed.",
-        "Observable Library controller and frozen presentation props saved;7behavioral async cases/types pass. Coordinator owns lifecycle/cache/App routing;bounded Luna presentational UI may follow only after sole synth worker idles. No productUI acceptance yet."
+        "Observable Library controller and frozen presentation props saved;7behavioral async cases/types pass. Coordinator owns lifecycle/cache/App routing;bounded Luna presentational UI may follow only after sole synth worker idles. No productUI acceptance yet.",
+        "2026-10-15 pre-UIintegration:primary5ace7210has only owned dirty App/routes/controller/controller-test plus untracked LibraryScreen. UIbranch e968599bclean/idle,3newpresentation paths only;strict owned types passed. Root reviewedmarkup/css;merge normally preserving partial lifecycle work,then final semantic/missing-catalog review and actual browser product tests. No UI acceptance yet."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -554,7 +557,7 @@
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
         "branch": "codex/pwa-library-ui",
         "baseCommit": "56fe5359",
-        "status": "active after synth worker committed/idle",
+        "status": "e968599bclean/idle,normally integrated at7a75f69c;root browser integration pending",
         "ownedPaths": [
           "pwa/src/features/library/LibraryContent.tsx",
           "pwa/src/features/library/library.css",
