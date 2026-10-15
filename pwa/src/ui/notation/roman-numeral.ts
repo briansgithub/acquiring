@@ -124,7 +124,7 @@ export interface RomanNumeralDisplay { symbol: string; borrowedLabel: string | n
 export function romanNumeralDisplayFromChord(symbol: string, borrowed: unknown): RomanNumeralDisplay {
   let label: string | null = null;
   if (Array.isArray(borrowed)) label = '(bor)';
-  else if (borrowed !== null && borrowed !== undefined) {
+  else if (typeof borrowed === 'string' || typeof borrowed === 'number' || typeof borrowed === 'boolean') {
     const value = String(borrowed);
     label = borrowedTags[value] ? `(${borrowedTags[value]})` : value.startsWith('[') ? '(bor)' : null;
   }

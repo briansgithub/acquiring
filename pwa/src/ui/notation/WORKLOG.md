@@ -12,3 +12,36 @@ Validation:
 - `node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/lib/tsc.js --project H:/Desktop/Acquiring/Acquiring-pwa-ui-shell/.artifacts/pwa-port/t04-tsconfig.json`: passed strict owned-source/test check (receipt `T04-notation-011-types-final`).
 - The first type attempt lacked type-root resolution; the second exposed Vite ambient types unnecessary for this pure module. Local ignored config now references the installed primary Node/Vitest dependencies. No packages installed.
 - Only tokenizer/display and degree-label semantics are implemented. Canvas measurement, React rendering, styles, routing, and integration checks are outside this first slice.
+
+
+2026-10-15: Began the measured-rendering T04 slice from the integrated semantic commit `1028688cd33624d1cd84af5929a37b2fcc29633b`. Intent: add locally owned React SVG components and pure measurable geometry/fit helpers for Roman numerals and scale degrees, using Android `RomanNumeralRenderer.kt` and `ScaleDegreeRenderer.kt` at `801cf798`. Keep SVG glyphs hidden from assistive technology and expose full semantic labels. Add geometry/fit/markup assertions and a JSON-object borrowed-field regression. Local props remain unconsumed until coordinator wiring; no app, routing, or shared changes.
+
+
+Scope added: pure browser-measured Roman/scale-degree SVG renderers with 12-step bounded fitting, preserving native Roman row offsets/scales/quality glyph and scale-degree hat geometry. Local props: RomanNumeral(display, fontSizePx=32, minFontSizePx=8, paired maxWidthPx/maxHeightPx, verticalTopGapPx, color, className, style); ScaleDegree(label, fontSizePx=48, minFontSizePx=12, paired maxWidthPx/maxHeightPx, fitToBounds, color, className, style). Browser fixture geometry/accessibility checks remain coordinator-owned.
+
+Also corrected borrowed JSON semantics: only arrays and primitive scalar values can form a borrowed label; object fields now remain unlabelled like native JsonObject. Literal cases were extended from the Android tokenizer suite.
+
+
+Validation checkpoint on the measured-rendering source:
+
+- `node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --root H:/Desktop/Acquiring/Acquiring-pwa-ui-shell/pwa --config H:/Desktop/Acquiring/Acquiring-pwa-ui-shell/.artifacts/pwa-port/t04-vitest.config.mjs src/ui/notation`: passed, 2 files / 12 tests (run receipt `T04-notation-033-native-literal-tests`).
+- `node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/lib/tsc.js --project H:/Desktop/Acquiring/Acquiring-pwa-ui-shell/.artifacts/pwa-port/t04-tsconfig.json`: passed strict TS and TSX check (receipt `T04-notation-034-native-literal-types`).
+- Test config aliases JSX runtime to the existing primary React installation. No tracked package/config/lockfile changes were made; ignored local configs were used and no packages installed. No ReactDOM package is needed by the direct React-element accessibility assertions.
+- Browser rendering and cross-source integration remain coordinator gates; this worker did not run app wiring or browser QA.
+
+
+Final pre-commit checks after literal native coverage and shared canvas-context caching:
+
+- Focused Vitest passed 2 files / 12 tests (receipt `T04-notation-037-final-tests`) using ignored `t04-vitest.config.mjs` so React JSX runtime resolves from the primary installed package tree.
+- Strict TypeScript passed including `.tsx` (receipt `T04-notation-038-final-types`).
+- Scoped `git diff --check -- pwa/src/ui/notation` passed. Browser geometry QA and app integration have not been run in this worker; coordinator owns those gates.
+
+
+2026-10-15 review correction: baseline and text-centering math now follows native `baselineForMiddle`: browser ascent/descent metrics derive `baseline=centerY+(ascent-descent)/2` and bounds `centerY±(ascent+descent)/2`. Scale degree stores and draws at native `degreeCenterYPx`, preserving the full hat-to-digit gap. Constrained SVG viewports clamp width/height and retain the intrinsic viewBox so browser aspect-ratio fitting scales the complete drawing without clipping when the minimum text size cannot fit.
+
+
+Review correction validation on 2026-10-15:
+
+- Focused Vitest passed 2 files / 13 tests (guard receipt `T04-notation-047-coordinate-tests`), including exact asymmetric ascent/descent baseline bounds, native ScaleDegree center, and tiny SVG viewBox/viewport constraints.
+- Strict TS/TSX passed (receipt `T04-notation-048-coordinate-types`).
+- `centeredTextBounds` mirrors Android `baselineForMiddle`; SVG `<text>` now uses explicit alphabetic baselines from those same metrics and no `dominantBaseline` override. Layout top/bottom bounds use the native centered ascent+descent half-height. SVG preserves its intrinsic viewBox while clamping viewport width/height, so narrow bounds scale the full drawing without clipping.
