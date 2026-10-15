@@ -35,3 +35,13 @@ Final pre-commit checks after literal native coverage and shared canvas-context 
 - Focused Vitest passed 2 files / 12 tests (receipt `T04-notation-037-final-tests`) using ignored `t04-vitest.config.mjs` so React JSX runtime resolves from the primary installed package tree.
 - Strict TypeScript passed including `.tsx` (receipt `T04-notation-038-final-types`).
 - Scoped `git diff --check -- pwa/src/ui/notation` passed. Browser geometry QA and app integration have not been run in this worker; coordinator owns those gates.
+
+
+2026-10-15 review correction: baseline and text-centering math now follows native `baselineForMiddle`: browser ascent/descent metrics derive `baseline=centerY+(ascent-descent)/2` and bounds `centerY±(ascent+descent)/2`. Scale degree stores and draws at native `degreeCenterYPx`, preserving the full hat-to-digit gap. Constrained SVG viewports clamp width/height and retain the intrinsic viewBox so browser aspect-ratio fitting scales the complete drawing without clipping when the minimum text size cannot fit.
+
+
+Review correction validation on 2026-10-15:
+
+- Focused Vitest passed 2 files / 13 tests (guard receipt `T04-notation-047-coordinate-tests`), including exact asymmetric ascent/descent baseline bounds, native ScaleDegree center, and tiny SVG viewBox/viewport constraints.
+- Strict TS/TSX passed (receipt `T04-notation-048-coordinate-types`).
+- `centeredTextBounds` mirrors Android `baselineForMiddle`; SVG `<text>` now uses explicit alphabetic baselines from those same metrics and no `dominantBaseline` override. Layout top/bottom bounds use the native centered ascent+descent half-height. SVG preserves its intrinsic viewBox while clamping viewport width/height, so narrow bounds scale the full drawing without clipping.

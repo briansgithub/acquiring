@@ -4,10 +4,15 @@ import { romanNumeralStackSpanAt, type RomanNumeralDisplay, tokenizeRomanNumeral
 
 export type NotationTextStyle = 'BASE' | 'SUPER' | 'SUB' | 'FIGURED' | 'SUFFIX' | 'DIMINISHED' | 'BORROWED' | 'DEGREE' | 'ACCIDENTAL';
 export interface TextMetrics { width: number; ascent: number; descent: number }
+export interface CenteredTextBounds { baselinePx:number; topPx:number; bottomPx:number }
+export function centeredTextBounds(centerYPx:number, metrics:TextMetrics):CenteredTextBounds {
+  const baselinePx=centerYPx+(metrics.ascent-metrics.descent)/2;
+  return {baselinePx,topPx:baselinePx-metrics.ascent,bottomPx:baselinePx+metrics.descent};
+}
 export type MeasureText = (text: string, style: NotationTextStyle, sizePx: number) => TextMetrics;
 export interface RomanGlyph { text: string; xPx: number; centerYPx: number; style: NotationTextStyle }
 export interface RomanLayout { display: RomanNumeralDisplay; fontSizePx: number; widthPx: number; topPx: number; bottomPx: number; romanCenterYPx: number; borrowedCenterYPx: number; borrowedWidthPx: number; glyphs: RomanGlyph[] }
-export interface ScaleDegreeLayout { label: ScaleDegreeLabel; fontSizePx: number; widthPx: number; topPx: number; bottomPx: number; prefixWidthPx: number; degreeWidthPx: number; degreeCenterXPx: number; suffixXPx: number; suffixWidthPx: number; hatLeftXPx: number; hatTipXPx: number; hatRightXPx: number; hatTipYPx: number; hatBaseYPx: number }
+export interface ScaleDegreeLayout { label: ScaleDegreeLabel; fontSizePx: number; widthPx: number; topPx: number; bottomPx: number; degreeCenterYPx:number; prefixWidthPx: number; degreeWidthPx: number; degreeCenterXPx: number; suffixXPx: number; suffixWidthPx: number; hatLeftXPx: number; hatTipXPx: number; hatRightXPx: number; hatTipYPx: number; hatBaseYPx: number }
 
 const scales: Record<NotationTextStyle, number> = { BASE:1, SUPER:.68, SUB:.58, FIGURED:.58, SUFFIX:.72, DIMINISHED:.46, BORROWED:.55, DEGREE:1, ACCIDENTAL:.66 };
 const isRegular = (style: NotationTextStyle) => style === 'SUFFIX' || style === 'BORROWED' || style === 'ACCIDENTAL';
@@ -57,13 +62,14 @@ export function measureRomanDisplay(display: RomanNumeralDisplay, baseSize: numb
     }
     index++;
   }
-  const romanTop = glyphs.length ? Math.min(...glyphs.map(g => g.centerYPx - measure(g.text, g.style, baseSize * scales[g.style]).ascent)) : -baseSize / 2;
-  const romanBottom = glyphs.length ? Math.max(...glyphs.map(g => g.centerYPx + measure(g.text, g.style, baseSize * scales[g.style]).descent)) : baseSize / 2;
+  const romanTop = glyphs.length ? Math.min(...glyphs.map(g => centeredTextBounds(g.centerYPx,measure(g.text,g.style,baseSize*scales[g.style])).topPx)) : -baseSize/2;
+  const romanBottom = glyphs.length ? Math.max(...glyphs.map(g => centeredTextBounds(g.centerYPx,measure(g.text,g.style,baseSize*scales[g.style])).bottomPx)) : baseSize/2;
   const borrowed = display.borrowedLabel;
   const borrowedCenter = borrowed ? baseSize * .30 : 0;
   const borrowedMetrics = borrowed ? baselineMetrics(measure, borrowed, 'BORROWED', baseSize * scales.BORROWED) : { width:0, ascent:0, descent:0 };
-  const top = borrowed ? Math.min(romanTop - borrowedCenter, borrowedCenter - borrowedMetrics.ascent) : romanTop;
-  const bottom = borrowed ? Math.max(romanBottom - borrowedCenter, borrowedCenter + borrowedMetrics.descent) : romanBottom;
+  const borrowedBounds=borrowed?centeredTextBounds(borrowedCenter,borrowedMetrics):null;
+  const top = borrowed ? Math.min(romanTop-borrowedCenter,borrowedBounds!.topPx) : romanTop;
+  const bottom = borrowed ? Math.max(romanBottom-borrowedCenter,borrowedBounds!.bottomPx) : romanBottom;
   return {
     display, fontSizePx:baseSize, widthPx:borrowed ? widest(cursor, borrowedMetrics.width) : cursor, topPx:top, bottomPx:bottom,
     romanCenterYPx:borrowed ? -borrowedCenter : 0, borrowedCenterYPx:borrowedCenter, borrowedWidthPx:borrowedMetrics.width, glyphs,
@@ -88,9 +94,10 @@ export function measureScaleDegree(source: string | ScaleDegreeLabel, fontSize: 
   const degreeColumn=widest(degree.width,hatWidth), prefixGap=label.prefix ? fontSize*.04 : 0, suffixGap=label.suffix ? fontSize*.04 : 0;
   const width=prefix.width+prefixGap+degreeColumn+suffixGap+suffix.width, degreeCenter=prefix.width+prefixGap+degreeColumn/2;
   const blockTop=-(hatHeight+gap+fontSize)/2, hatTip=blockTop, hatBase=blockTop+hatHeight, degreeCenterY=blockTop+hatHeight+gap+fontSize/2;
-  let top=Math.min(hatTip,degreeCenterY-degree.ascent), bottom=Math.max(hatBase,degreeCenterY+degree.descent);
-  if(label.prefix||label.suffix){top=Math.min(top,degreeCenterY-prefix.ascent);bottom=Math.max(bottom,degreeCenterY+prefix.descent);}
-  return { label,fontSizePx:fontSize,widthPx:width,topPx:top,bottomPx:bottom,prefixWidthPx:prefix.width,degreeWidthPx:degree.width,degreeCenterXPx:degreeCenter,suffixXPx:prefix.width+prefixGap+degreeColumn+suffixGap,suffixWidthPx:suffix.width,hatLeftXPx:degreeCenter-hatWidth/2,hatTipXPx:degreeCenter,hatRightXPx:degreeCenter+hatWidth/2,hatTipYPx:hatTip,hatBaseYPx:hatBase };
+  const degreeBounds=centeredTextBounds(degreeCenterY,degree);
+  let top=Math.min(hatTip,degreeBounds.topPx), bottom=Math.max(hatBase,degreeBounds.bottomPx);
+  if(label.prefix||label.suffix){const accidentalBounds=centeredTextBounds(degreeCenterY,prefix);top=Math.min(top,accidentalBounds.topPx);bottom=Math.max(bottom,accidentalBounds.bottomPx);}
+  return { label,fontSizePx:fontSize,widthPx:width,topPx:top,bottomPx:bottom,prefixWidthPx:prefix.width,degreeWidthPx:degree.width,degreeCenterXPx:degreeCenter,suffixXPx:prefix.width+prefixGap+degreeColumn+suffixGap,suffixWidthPx:suffix.width,hatLeftXPx:degreeCenter-hatWidth/2,hatTipXPx:degreeCenter,hatRightXPx:degreeCenter+hatWidth/2,hatTipYPx:hatTip,hatBaseYPx:hatBase,degreeCenterYPx:degreeCenterY };
 }
 
 export function fitScaleDegree(source: string, minSize: number, maxSize: number, maxWidth: number, maxHeight: number, measure: MeasureText): ScaleDegreeLayout | null {
