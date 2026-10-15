@@ -175,13 +175,13 @@
         "pwa/src/ui/notation/"
       ],
       "acceptance": "Geometry/semantic cases for extensions, alterations, rests, narrow/large text",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "status": "in_progress",
+      "owner": "notation worker (gpt-6-luna/medium)",
+      "branch": "codex/pwa-notation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
+      "baseCommit": "82639a57",
+      "slice": "Frozen native Roman tokenizer and scale-degree semantic label helpers",
+      "nextAction": "Reuse clean UI-shell checkout19b495d on new notation branch from82639a57, preserving old branch. Own only pwa/src/ui/notation. Port pure native tokenization/display-label parsing with current native unit cases; commit/report before rendering expansion. No app/router/shared dependencies changes.",
       "validation": [],
       "progress": [],
       "blocker": null
@@ -205,7 +205,11 @@
         "pwa/tests/browser/catalog-worker.html",
         "pwa/tests/browser/catalog-worker-harness.ts",
         "pwa/scripts/catalog/make-browser-fixture.py",
-        "pwa/tests/browser/song-catalog.spec.ts"
+        "pwa/tests/browser/song-catalog.spec.ts",
+        "pwa/src/features/catalog/",
+        "pwa/src/app/App.tsx",
+        "pwa/public/catalog-sources.json",
+        "pwa/tests/browser/catalog-install.spec.ts"
       ],
       "acceptance": "Full-size mobile install/query/offline cold launch; quota/corruption/second-tab recovery",
       "status": "in_progress",
@@ -213,8 +217,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
-      "slice": "Frozen Android song catalog schema/index/completeness acceptance in actual SQLite worker",
-      "nextAction": "Product installer/source configuration and actual song-release packaging/migration remain next storage slices. Preserve successful full Aural proof/profile; native quota/mobile/Safari checks are unproven, not overall implementation blockers.",
+      "slice": "Controlled catalog source configuration and product installer recovery UI",
+      "nextAction": "Root adds bounded trusted manifest configuration/hash loader and restart-safe installer coordinator; then wire Settings/Library and test real production worker through product UI. No publication; absent hosting config is explicit, independent development continues.",
       "validation": [
         {
           "command": "python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v",
@@ -871,6 +875,13 @@
     "reason": "No-new-work threshold reached. In-flight helper and required integrated checks completed; durable checkpoint and yield. Read live limits next run.",
     "applicableFiveHourResetAt": "2026-10-15T03:02:30Z",
     "activeWorker": null,
-    "sourceCommit": "4b087ba4cfda23fccb124f5834cd50a1085b5f15"
+    "sourceCommit": "4b087ba4cfda23fccb124f5834cd50a1085b5f15",
+    "resumeObservation": {
+      "date": "2026-10-15",
+      "fiveHourUsedPercent": 0,
+      "weeklyUsedPercent": 61,
+      "unresolvedRuns": [],
+      "reason": "Recorded reset passed; fresh live window verified. Primary clean82639a57; no active worker/owned preview."
+    }
   }
 }
