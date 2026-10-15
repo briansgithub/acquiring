@@ -502,9 +502,9 @@
       "owner": "coordinator (runtime model unknown)",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "1725eef7",
-      "slice": "Bounded native paged song search/artist query RPC",
-      "nextAction": "Run covering integrated check then checkpoint queryRPC. Next bounded product slice:Library search/artist list consumes typed paging with debounce/generation guards,explicit catalog states/retry,Back state and accessible load-more. Root owns routing/integration;groups/favorites/recents separate. Do not repeat full catalog installs for unchanged import code.",
+      "baseCommit": "9ce279c1",
+      "slice": "Library search/artist asynchronous controller and immutable snapshot restoration",
+      "nextAction": "Checkpoint validated controller and frozen view-contract. Once sole synth worker is committed/idle,reuse preserved UI-shell on new narrow Library branch from this validated primary. Luna/medium owns presentation/css only;root owns lifecycle/App/root tests/shared edits. Preserve prior notation branch.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
@@ -515,13 +515,24 @@
           "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; node node_modules/@playwright/test/cli.js test library-queries.spec.ts (from pwa)",
           "revision": "f22c2ae3 plus named query tree committed next",
           "result": "2unit cases,strict types and1actualChromeSQLitecase passed. Guards window4-library-query-unit-types/browser-types/browser-first-20261015. Native SongDao search/artist semantics and scalar recovery/page snapshot acceptance only."
+        },
+        {
+          "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check (from pwa)",
+          "revision": "9ce279c1 query tree",
+          "result": "213unit+1input/strict types/production build passed;real querybrowser already passed18.8s. Product bundle contains bounded queryworker;no full-data/import proof repeated."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/library/controller.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
+          "revision": "9ce279c1 plus reviewed controller tree committed next",
+          "result": "7async race/retry/ownership/paging/snapshot/artist cases and strict types passed. Initial6/7failurewas fixture setup before old query submitted;one microtask-drain correction. Review also clears stale focus on new catalog."
         }
       ],
       "progress": [
         "2026-10-15 pre-edit primary11c7a274clean;root owns pwa/src/features/library only. One independent Sol/high staticPCMworker owns pwa/src/audio/synth. Live45%five-hour/68%weekly. Native grouping/DAO inspected for future bounded paged read queries;current slicepure helpers only.",
         "Pure AllSongsGrouping metadata/helpers complete:native group order/labels,single expansion,case/separator fuzzy matching,ten-point+ones subgroups,aliases/allsection mode union,and explicit payload-free browse projection.8native-derived cases/types passed. No SQL/RPC/UI exposure or whole T10acceptance claimed.",
         "2026-10-15 before root query edits:primary1725eef7clean;one disjoint synth worker on existing tree. Own named shared protocol/client/worker query surfaces plus Library fixture only. Native SongDao query/order/comments govern;no arbitrary SQL,libraryUI or blob resolution in first slice.",
-        "Native fixed search/artist scalar pageRPC passes strict types,2input/binding cases and1actual ChromeSQLite case (18.8s):nonnull/emptyBLOB eligibility,null/blanktitle order,case/hyphen/SQLite wildcard/quote semantics,page continuity,2MBpayload exclusion,readonly reopen,cache snapshot switch and10user stores/outbox unchanged. Scratch fixture generator quote failure wrote no files;corrected once,then types/browserbehavior passed first actual run. No libraryUI/groupqueries claimed."
+        "Native fixed search/artist scalar pageRPC passes strict types,2input/binding cases and1actual ChromeSQLite case (18.8s):nonnull/emptyBLOB eligibility,null/blanktitle order,case/hyphen/SQLite wildcard/quote semantics,page continuity,2MBpayload exclusion,readonly reopen,cache snapshot switch and10user stores/outbox unchanged. Scratch fixture generator quote failure wrote no files;corrected once,then types/browserbehavior passed first actual run. No libraryUI/groupqueries claimed.",
+        "Observable Library controller and frozen presentation props saved;7behavioral async cases/types pass. Coordinator owns lifecycle/cache/App routing;bounded Luna presentational UI may follow only after sole synth worker idles. No productUI acceptance yet."
       ],
       "blocker": null,
       "dependencyGates": {

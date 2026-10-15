@@ -1,0 +1,54 @@
+import {afterEach,expect,it,vi} from 'vitest';
+import {CatalogError} from '../../storage/catalog/protocol';
+import {LibraryController,type LibraryClient} from './controller';
+import type {SongPage} from '../../storage/catalog/library-queries';
+function deferred<T>(){let resolve!:(value:T)=>void,reject!:(error:unknown)=>void;const promise=new Promise<T>((yes,no)=>{resolve=yes;reject=no;});return {promise,resolve,reject};}
+const page=(slug:string,sourceSnapshot='one',nextOffset:number|null=null):SongPage=>({sourceSnapshot,rows:[{slug,title:slug,artist:'Artist',complexityRating:null}],hasMore:nextOffset!==null,nextOffset});
+function fixture(){const client={songPage:vi.fn<LibraryClient['songPage']>(),terminate:vi.fn()};return {client,open:vi.fn(async()=>client)};}
+afterEach(()=>vi.useRealTimers());
+it('debounces text and never publishes an older response after a newer query',async()=>{
+  vi.useFakeTimers();const {client,open}=fixture(),old=deferred<SongPage>(),fresh=deferred<SongPage>();
+  client.songPage.mockReturnValueOnce(old.promise).mockReturnValueOnce(fresh.promise);
+  const library=new LibraryController(undefined,open);const start=library.start();await vi.advanceTimersByTimeAsync(0);
+  library.search('b');library.search('beta');await vi.advanceTimersByTimeAsync(199);expect(client.songPage).toHaveBeenCalledTimes(1);
+  await vi.advanceTimersByTimeAsync(1);expect(client.songPage).toHaveBeenLastCalledWith({mode:'search',text:'beta',limit:20,offset:0});
+  fresh.resolve(page('beta'));await vi.runAllTimersAsync();old.resolve(page('stale'));await start;
+  expect(library.getSnapshot().rows[0]!.slug).toBe('beta');library.dispose();
+});
+it('does not submit obsolete text while reader ownership is still opening',async()=>{
+  vi.useFakeTimers();const {client}=fixture(),opening=deferred<LibraryClient>();client.songPage.mockResolvedValue(page('new'));
+  const library=new LibraryController(undefined,()=>opening.promise);const start=library.start();library.search('new');await vi.advanceTimersByTimeAsync(200);
+  opening.resolve(client);await start;await vi.runAllTimersAsync();
+  expect(client.songPage).toHaveBeenCalledTimes(1);expect(library.getSnapshot().text).toBe('new');library.dispose();
+});
+it('appends one bounded page at a time and resets instead of mixing snapshots',async()=>{
+  const {client,open}=fixture();client.songPage.mockResolvedValueOnce(page('a','one',20)).mockResolvedValueOnce(page('b','one',40)).mockResolvedValueOnce(page('new-page','two',60)).mockResolvedValueOnce(page('new-first','two'));
+  const library=new LibraryController(undefined,open);await library.start();const pending=library.loadMore();await library.loadMore();await pending;
+  expect(library.getSnapshot().rows.map(row=>row.slug)).toEqual(['a','b']);expect(client.songPage).toHaveBeenCalledTimes(2);
+  await library.loadMore();expect(library.getSnapshot().rows.map(row=>row.slug)).toEqual(['new-first']);expect(library.getSnapshot().sourceSnapshot).toBe('two');library.dispose();
+});
+it('restores loaded rows/focus only for the same immutable source and retains artist context',async()=>{
+  const remembered={text:'draft',artist:'Raw-Artist',rows:[...page('a').rows,...page('b').rows],sourceSnapshot:'one',nextOffset:40,focusSlug:'b'};
+  const {client,open}=fixture();client.songPage.mockResolvedValue(page('a'));
+  const library=new LibraryController(remembered,open);await library.start();expect(library.capture()).toEqual(remembered);
+  expect(client.songPage).toHaveBeenCalledWith({mode:'artist',text:'Raw-Artist',limit:20,offset:0});library.dispose();
+  client.songPage.mockResolvedValue(page('new','two'));
+  const changed=new LibraryController(remembered,open);await changed.start();expect(changed.getSnapshot().rows.map(row=>row.slug)).toEqual(['new']);expect(changed.getSnapshot().focusSlug).toBeUndefined();changed.dispose();
+});
+it('keeps missing/busy/error messages meaningful and retries failed ownership',async()=>{
+  const {client}=fixture(),open=vi.fn<()=>Promise<LibraryClient>>().mockRejectedValueOnce(new CatalogError('BUSY','internal')).mockResolvedValue(client);
+  const library=new LibraryController(undefined,open);await library.start();expect(library.getSnapshot().message).toContain('another tab');
+  client.songPage.mockRejectedValueOnce(new CatalogError('NOT_INSTALLED','internal'));await library.retry();expect(library.getSnapshot().phase).toBe('missing');
+  client.songPage.mockResolvedValue(page('ok'));await library.retry();expect(library.getSnapshot().phase).toBe('ready');library.dispose();
+});
+it('terminates late ownership and never emits or requests after disposal',async()=>{
+  vi.useFakeTimers();const {client}=fixture(),opening=deferred<LibraryClient>();const library=new LibraryController(undefined,()=>opening.promise),listener=vi.fn();library.subscribe(listener);
+  const start=library.start();library.search('draft');library.dispose();listener.mockClear();opening.resolve(client);await start;await vi.runAllTimersAsync();
+  expect(client.terminate).toHaveBeenCalledTimes(1);expect(client.songPage).not.toHaveBeenCalled();expect(listener).not.toHaveBeenCalled();
+});
+it('artist detail uses exact raw identity and returning to search keeps the draft',async()=>{
+  vi.useFakeTimers();const {client,open}=fixture();client.songPage.mockResolvedValue(page('x'));
+  const library=new LibraryController(undefined,open);await library.start();library.search('draft');await vi.advanceTimersByTimeAsync(200);
+  await library.showArtist('Raw-Artist');expect(client.songPage).toHaveBeenLastCalledWith({mode:'artist',text:'Raw-Artist',limit:20,offset:0});
+  library.clearArtist();await vi.advanceTimersByTimeAsync(200);expect(client.songPage).toHaveBeenLastCalledWith({mode:'search',text:'draft',limit:20,offset:0});library.dispose();
+});
