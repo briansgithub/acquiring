@@ -449,19 +449,23 @@
         "T07"
       ],
       "allowedPaths": [
-        "pwa/src/audio/transport/"
+        "pwa/src/audio/transport/",
+        "pwa/tests/browser/audio-preview.spec.ts",
+        "pwa/tests/browser/audio-preview-harness.ts",
+        "pwa/tests/browser/audio-preview.html"
       ],
       "acceptance": "Seek/config/loop/cancellation races, silent scrub and explicit-resume cases",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "With both windows below70%,claim one Sol/high worker in a clean preserved sibling worktree for foreground preview/output owner first:actual AudioContext sample rate,user-gesture unlock,request generations/discard stale preparation,consume once,24ms preview retirement,stop/pagehide/hidden andexplicit resume. Freeze local interfaces before edits and actual-browser onset/completion evidence before a runtime milestone. Then stream PCM sink/clock andnative load/play/pause/scrub/seek/config revisions. No worker has started this slice.",
+      "status": "in_progress",
+      "owner": "preview worker (gpt-6.1-sol/high); coordinator owns contracts/browser integration",
+      "branch": "codex/pwa-preview",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "9ee99a7b",
+      "slice": "Foreground static preview WebAudio owner with native cancellation and retirement",
+      "nextAction": "Root freezes transport/contracts.ts and commits intent,then reuses clean pitch tree on new codex/pwa-preview from that checkpoint,preserving pitch/synth/theory branches. One Sol/high worker implements PreviewOwner/local tests/worklog only;root owns actual-browser harness and parallel pure pitch assessment in T14. No app wiring or whole T08 completion yet.",
       "validation": [],
       "progress": [
-        "2026-10-15 bounded source planning only at67%/10%:frozen AudioEngine.kt23-25/57-90/251-285 governs24ms retirement,invalidate-before-fade,prepared consumption/generations;PlaybackEngine.ktload/play/pauseForLifecycle/pauseForScrub/seek/reset/updateConfig/release separates command intent/revision from delayed published state. Existing static-renderer and PlaybackPcmRenderer already cover pure PCM,so do not reimplement DSP. Actual WebAudio owner/clock/onset/foreground/silent-scrub remains unimplemented/unproven. T14pure learning is a disjoint ready coordinator lane after audio contract freeze;one worker maximum."
+        "2026-10-15 bounded source planning only at67%/10%:frozen AudioEngine.kt23-25/57-90/251-285 governs24ms retirement,invalidate-before-fade,prepared consumption/generations;PlaybackEngine.ktload/play/pauseForLifecycle/pauseForScrub/seek/reset/updateConfig/release separates command intent/revision from delayed published state. Existing static-renderer and PlaybackPcmRenderer already cover pure PCM,so do not reimplement DSP. Actual WebAudio owner/clock/onset/foreground/silent-scrub remains unimplemented/unproven. T14pure learning is a disjoint ready coordinator lane after audio contract freeze;one worker maximum.",
+        "2026-10-15T15:31Z pre-branch:primary9ee99a7bclean;data-compat codex/pwa-pitch24a3f78bclean;all agents idle/no recovery runs. Live10%five-hour/13%weekly,new five-hour reset1792093757 supersedes prior reached boundary;weekly unchanged,no credit action. Preserve all old worktrees/branches/profiles. Root freezes preview-only interfaces and independently owns T14assessment;one worker maximum."
       ],
       "blocker": null
     },
@@ -685,15 +689,17 @@
         "pwa/src/domain/learning/"
       ],
       "acceptance": "Deterministic Android cases; supported/independent/transfer rules; corrupt-state recovery",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "status": "in_progress",
+      "owner": "coordinator (runtime model unknown)",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
+      "baseCommit": "9ee99a7b",
+      "slice": "Pure native Aural pitch assessment only",
+      "nextAction": "Port frozen assessAuralPitch and local immutable frame/result types from AuralPitchAssessment.kt;exclude coroutine capture/device ownership and later curriculum/session/scheduler. Native tests plus bounded malformed-input/stability/freshness/sequence edges;independent JVM pure capture if useful. No persistent learning outcome or full T14 completion.",
       "validation": [],
-      "progress": [],
+      "progress": [
+        "2026-10-15 pre-edit:root owns pwa/src/domain/learning pitch assessment source/tests/WORKLOG only. One disjoint Sol/high preview worker owns audio/transport implementation after root contract freeze. Native pure assessment read:held/no-signal/low confidence/unclear boundaries must remain technical uncertainty,not a musical error. Source authority unchanged801cf798;actual capture/scoring integration unrun."
+      ],
       "blocker": null
     },
     {
@@ -1051,7 +1057,15 @@
     "activeWorker": null,
     "unresolvedRuns": [],
     "reason": "2026-10-15T08:13Z live five-hour70% no-new-work threshold reached. Primary1ed03002 clean,all workers idle,no owned helper processes or unresolved runs. No new slice,worker or expensive check started. Preserve ready T08 plan and pending T10 approval;resume after applicable five-hour reset 2026-10-15T12:14:38+00:00 and live allowance verification. No credits/resets/model change.",
-    "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows."
+    "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
+    "resumeObservation": {
+      "date": "2026-10-15T15:31Z",
+      "fiveHourUsedPercent": 10,
+      "weeklyUsedPercent": 13,
+      "fiveHourResetUnix": 1792093757,
+      "weeklyResetUnix": 1792653278,
+      "reason": "Recorded earlier five-hour reset passed;live counters permit new bounded slices. Same account/all3reset credits available;no purchase/redemption/model switch."
+    }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
 }
