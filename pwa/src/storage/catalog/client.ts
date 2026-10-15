@@ -1,3 +1,4 @@
+import type { SongPageRequest, SongPage } from './library-queries';
 import type { CatalogManifest } from './manifest';
 import { CatalogError, type CatalogCommand, type ActiveCatalog, type InstallStatus, type CatalogInfo, type CatalogInspection, type CatalogProgress, type CatalogRequest, type CatalogResponse } from './protocol';
 
@@ -33,6 +34,7 @@ export class CatalogWorkerClient {
       this.worker.postMessage(message);
     });
   }
+  songPage(query: SongPageRequest): Promise<SongPage> { return this.request({ kind: 'songPage', query }); }
   info(): Promise<CatalogInfo> { return this.request({ kind: 'info' }); }
   stage(attemptId: string, manifest: CatalogManifest, baseUrl: string): Promise<CatalogInspection> { return this.request({ kind: 'stage', attemptId, manifest, baseUrl }); }
   inspect(attemptId: string, manifest: CatalogManifest): Promise<CatalogInspection> { return this.request({ kind: 'inspect', attemptId, manifest }); }

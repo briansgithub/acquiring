@@ -1,3 +1,4 @@
+import { songPageQuery, type SongPageRequest, type SongPage } from './library-queries';
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { sha256 as incrementalSha256 } from '@noble/hashes/sha2.js';
 import { fetchVerifiedChunk, sha256 } from './chunks';
@@ -8,6 +9,7 @@ import { planInstallSpace, validateManifest, type CatalogManifest, type CatalogC
 import { CATALOG_OWNER_LOCK, CatalogError, stagedPath, type CatalogCommand, type ActiveCatalog, type CatalogInfo, type CatalogInspection, type CatalogProgress, type CatalogRequest, type CatalogResponse } from './protocol';
 
 const scope = globalThis as unknown as { onmessage: ((event: MessageEvent<CatalogRequest>) => void) | null; postMessage: (value: CatalogResponse | CatalogProgress) => void };
+let confirmedSongRead: { id:string; sourceSnapshot:string } | null = null;
 let pool: SAHPoolUtil | null = null;
 let journal: CatalogJournal | null = null;
 const sessionId = crypto.randomUUID();
@@ -36,7 +38,7 @@ async function acquire(): Promise<void> {
       ready.resolve();
       await release.promise;
     } catch (error) { ready.reject(error); }
-    finally { journal?.close(); journal = null; pool?.pauseVfs(); pool = null; sqlite = null; }
+    finally { confirmedSongRead = null; journal?.close(); journal = null; pool?.pauseVfs(); pool = null; sqlite = null; }
   }).catch(error => ready.reject(error));
   await ready.promise;
 }
@@ -173,11 +175,34 @@ async function active(kind: CatalogManifest['kind']): Promise<ActiveCatalog | nu
     return { pointer: restored, inspection, recovered: true };
   }
 }
+/** Check active/cold recovery once per snapshot; never scan the full catalog per page. */
+async function songPage(request:SongPageRequest):Promise<SongPage> {
+  const plan=songPageQuery(request);
+  const pointer=await journal!.pointer('songs');
+  if(!pointer)throw new CatalogError('NOT_INSTALLED','Download the song catalog before browsing');
+  if(confirmedSongRead?.id!==pointer.activeId){
+    const current=await active('songs');
+    if(!current)throw new CatalogError('NOT_INSTALLED','Download the song catalog before browsing');
+    const record=await validatedInstall(current.pointer.activeId);
+    confirmedSongRead={id:record.id,sourceSnapshot:record.manifest.sourceSnapshot};
+  }
+  const source=confirmedSongRead!;
+  let db:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
+  try {
+    db=new sqlite!.oo1.DB(stagedPath(source.id,'catalog.db'),'r',owner().vfsName);
+    const records=db.selectObjects(plan.sql,plan.bind);
+    const hasMore=records.length>plan.limit;
+    const rows=records.slice(0,plan.limit).map(row=>({slug:String(row.slug),artist:row.artist===null?null:String(row.artist),title:row.title===null?null:String(row.title),complexityRating:null}));
+    return {sourceSnapshot:source.sourceSnapshot,rows,hasMore,nextOffset:hasMore?plan.offset+rows.length:null};
+  } catch(error){confirmedSongRead=null;throw error;}
+  finally {db?.close();}
+}
 async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'init') { await acquire(); return info(); }
   if (command.kind === 'close') { releaseOwnership?.(); await ownershipTask; releaseOwnership = undefined; ownershipTask = undefined; return null; }
   owner();
   if (command.kind === 'info') return info();
+  if (command.kind === 'songPage') return songPage(command.query);
   if (command.kind === 'prepare') return prepare(id, command.attemptId, validateManifest(command.manifest), command.baseUrl);
   if (command.kind === 'activate') return activate(command.attemptId);
   if (command.kind === 'active') return active(command.catalogKind);

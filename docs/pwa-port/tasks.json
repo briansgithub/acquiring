@@ -494,7 +494,8 @@
         "pwa/src/storage/catalog/catalog-worker.ts",
         "pwa/scripts/catalog/make-library-browser-fixture.py",
         "pwa/tests/browser/library-queries.spec.ts",
-        "pwa/tests/browser/catalog-worker-harness.ts"
+        "pwa/tests/browser/catalog-worker-harness.ts",
+        "pwa/src/storage/catalog/library-queries.test.ts"
       ],
       "acceptance": "Debounce, paging, normalization, grouping, retry, Back/focus restoration and rollback",
       "status": "in_progress",
@@ -503,18 +504,24 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "1725eef7",
       "slice": "Bounded native paged song search/artist query RPC",
-      "nextAction": "Extend exclusive worker/client/protocol with typed bounded parameterized searchSuggestions and artistSong pages only. Preserve native loadable filter,title ordering,hyphen replacement/SQLite LIKE semantics. Return scalar rows/snapshot/paging only,no BLOB/rawSQL. Add actual SQLite browser fixtures for payload exclusion,ordering,null/blank,separators,wildcards/paging/reopen and missing catalog;strict types plus covering tests. Group query/UI remain separate slices.",
+      "nextAction": "Run covering integrated check then checkpoint queryRPC. Next bounded product slice:Library search/artist list consumes typed paging with debounce/generation guards,explicit catalog states/retry,Back state and accessible load-more. Root owns routing/integration;groups/favorites/recents separate. Do not repeat full catalog installs for unchanged import code.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
           "revision": "11c7a274 plus reviewed grouping tree committed next",
           "result": "8native-derived cases/strict combined types passed first run and again after review narrowed metadata projection to omit runtime payload fields. Exact final guards window3-library-grouping-final-tests/types-20261015."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; node node_modules/@playwright/test/cli.js test library-queries.spec.ts (from pwa)",
+          "revision": "f22c2ae3 plus named query tree committed next",
+          "result": "2unit cases,strict types and1actualChromeSQLitecase passed. Guards window4-library-query-unit-types/browser-types/browser-first-20261015. Native SongDao search/artist semantics and scalar recovery/page snapshot acceptance only."
         }
       ],
       "progress": [
         "2026-10-15 pre-edit primary11c7a274clean;root owns pwa/src/features/library only. One independent Sol/high staticPCMworker owns pwa/src/audio/synth. Live45%five-hour/68%weekly. Native grouping/DAO inspected for future bounded paged read queries;current slicepure helpers only.",
         "Pure AllSongsGrouping metadata/helpers complete:native group order/labels,single expansion,case/separator fuzzy matching,ten-point+ones subgroups,aliases/allsection mode union,and explicit payload-free browse projection.8native-derived cases/types passed. No SQL/RPC/UI exposure or whole T10acceptance claimed.",
-        "2026-10-15 before root query edits:primary1725eef7clean;one disjoint synth worker on existing tree. Own named shared protocol/client/worker query surfaces plus Library fixture only. Native SongDao query/order/comments govern;no arbitrary SQL,libraryUI or blob resolution in first slice."
+        "2026-10-15 before root query edits:primary1725eef7clean;one disjoint synth worker on existing tree. Own named shared protocol/client/worker query surfaces plus Library fixture only. Native SongDao query/order/comments govern;no arbitrary SQL,libraryUI or blob resolution in first slice.",
+        "Native fixed search/artist scalar pageRPC passes strict types,2input/binding cases and1actual ChromeSQLite case (18.8s):nonnull/emptyBLOB eligibility,null/blanktitle order,case/hyphen/SQLite wildcard/quote semantics,page continuity,2MBpayload exclusion,readonly reopen,cache snapshot switch and10user stores/outbox unchanged. Scratch fixture generator quote failure wrote no files;corrected once,then types/browserbehavior passed first actual run. No libraryUI/groupqueries claimed."
       ],
       "blocker": null,
       "dependencyGates": {

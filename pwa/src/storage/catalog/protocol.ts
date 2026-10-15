@@ -1,3 +1,4 @@
+import type { SongPageRequest } from './library-queries';
 import type { CatalogManifest } from './manifest';
 import type { CatalogInstall, CatalogPointer } from './journal';
 export const CATALOG_OWNER_LOCK = 'acquiring-catalog-owner-v1';
@@ -10,7 +11,8 @@ export type CatalogCommand =
   | { kind: 'prepare'; attemptId: string; manifest: CatalogManifest; baseUrl: string }
   | { kind: 'activate'; attemptId: string }
   | { kind: 'active'; catalogKind: CatalogManifest['kind'] }
-  | { kind: 'status'; attemptId: string };
+  | { kind: 'status'; attemptId: string }
+  | { kind: 'songPage'; query: SongPageRequest };
 export interface ActiveCatalog { pointer: CatalogPointer; inspection: CatalogInspection; recovered: boolean }
 export type InstallStatus = CatalogInstall | null;
 export interface CatalogRequest { id: string; command: CatalogCommand }
