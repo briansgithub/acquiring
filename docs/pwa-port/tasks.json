@@ -406,13 +406,13 @@
         "pwa/src/audio/synth/"
       ],
       "acceptance": "Android audio regressions: finite/clipping/gain/envelope/loop/sample-rate cases",
-      "status": "in_progress",
-      "owner": "synth worker (gpt-6.1-sol/high)",
+      "status": "complete",
+      "owner": "coordinator;Sol/high source integrated and reviewed",
       "branch": "codex/pwa-synth",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "6de96d447816046d0c3f5b1c6928661ef0f39d7f",
-      "slice": "Pure native streaming PCM renderer and voice/envelope/loop regression slice",
-      "nextAction": "Reuse existing clean codex/pwa-synth tree6de96d44,one worker only. Read frozen PlaybackPcmRenderer/related source+tests and port one bounded pure stream renderer API with explicit rate/resource bounds;native independent fixtures and meaningful loop/block/envelope/mute/gain tests. No WebAudio/transport/UI/shared edits. Save intent/check/commit/report before any expansion.",
+      "slice": "Pure native oscillator/static/streaming PCM acceptance complete",
+      "nextAction": "Complete pure T07atb11a3af40de5ee3cb245b5999287af7c138d874f. Use frozen local synth APIs in T08AudioContext/foreground output owner and later T12timeline construction. Actual WebAudio/transport/device/audio evidence remains T08/T27,unrun;not counted as DSP acceptance. Preserve worker c242f775andnative fixtures;no repeat unchanged captures.",
       "validation": [
         {
           "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check (from pwa)",
@@ -423,6 +423,11 @@
           "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check (from pwa)",
           "revision": "bc583bacd3d2149aa7decc416f6c1284c97ffb7c",
           "result": "Combined211unit+1input contract/strict types/production build passed. Includes24synth cases and8Library grouping cases;52independent native static PCM buffers/38,480samples match exactly,plus416core sample checkpoints. No actual audio/device acceptance."
+        },
+        {
+          "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check (from pwa)",
+          "revision": "b11a3af40de5ee3cb245b5999287af7c138d874f",
+          "result": "239unit/1input/strict types/build passed.43DSPcases include bounded stream/static/core native regression channels;234independent stream blocks/45,916PCM samples/1,378onsets plusclock/completion exact. Pure T07finite/clipping/gain/envelope/loop/rate acceptance established;no actual output/device test claimed."
         }
       ],
       "progress": [
@@ -430,7 +435,9 @@
         "2026-10-15 core d0413f03 integrated normally atce40a2f1;combined194unit/1input/types/build passed. Before next bounded claim:primaryce40a2f1onlydirtytasksowned by coordinator;worker d0413f03clean/idle;allbranches/worktrees preserved. Live42%five-hour/67%weekly. One next Sol/high slice is static PCM only,with original30s ceiling enforced and no new work at70%.",
         "2026-10-15 pre-integration:reviewed native static method,explicit rate/30s/voice-work/delay limits,Float gain/Int16 saturation,envelopes/slot boundary/cancellation. Worker6de96d44passed24synth tests/types and52independent full native PCM buffers/38,480samples with0LSBdifference,weighted loudness/dense preview/arp/headroom/mute/gain. No device/stream acceptance. Six owned paths only;normal integration planned.",
         "Static worker6de96d44integrated normally;combined211unit/input/types/build passed atbc583bacd3d2149aa7decc416f6c1284c97ffb7c. Native static PCM formulas/envelopes/slot completion/Float gain/saturation/cancellation and explicit resources validated;worker clean/idle,all branches/worktrees preserved. Remaining T07streaming/loop/device gates are open.",
-        "2026-10-15T07:14Z live counters0/0,new windows1792066478/1792653278 supersede old forecast. Root1725eef7clean,synth6de96d44clean,allworkers idle,allrecovery work retained. One next Sol/high stream PCM slice;root independently owns bounded T10read queries."
+        "2026-10-15T07:14Z live counters0/0,new windows1792066478/1792653278 supersede old forecast. Root1725eef7clean,synth6de96d44clean,allworkers idle,allrecovery work retained. One next Sol/high stream PCM slice;root independently owns bounded T10read queries.",
+        "2026-10-15 pre-integration:root25988f34clean,worker c242f775clean/idle. Exactly6owned synth paths;root reviewed complete renderer/native fixture producer/resource cases. Independent234blocks/45,916PCM samples/1,378onsets+clock/completion exact;43tests/types pass. Preserve prior branches/worktrees;normal integration then combined check.",
+        "Pure streaming c242f775normally integrated atb11a3af4;239combined unit+input/types/build passed. T07declared pure DSP/PCM acceptance is complete. Browser output ownership and hardware behavior are explicit T08/T27gates,not fake passed checks. Timeline construction belongs downstream consumer;one sole Luna UIworker now active."
       ],
       "blocker": null
     },
@@ -497,7 +504,8 @@
         "pwa/tests/browser/catalog-worker-harness.ts",
         "pwa/src/storage/catalog/library-queries.test.ts",
         "pwa/src/app/App.tsx",
-        "pwa/tests/browser/library.spec.ts"
+        "pwa/tests/browser/library.spec.ts",
+        "pwa/src/app/routes.ts"
       ],
       "acceptance": "Debounce, paging, normalization, grouping, retry, Back/focus restoration and rollback",
       "status": "in_progress",
@@ -505,8 +513,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
-      "slice": "Frozen Library controller;prepare disjoint bounded presentation worker",
-      "nextAction": "Preserved UI-shell/codex/pwa-notation clean46f72a7;create codex/pwa-library-ui from primary56fe5359without deleting prior branch. Do not dispatch until sole synth worker commits/idles. Luna/medium owns only LibraryContent.tsx/library.css/UI_WORKLOG.md;frozen view-contract.ts/controller/source adapters consumed read-only. Root owns LibraryScreen lifecycle/cache/App/root browser tests. Validate actual product search/paging/history/offline after normal integration.",
+      "slice": "Luna presentation plus coordinator lifecycle/history/browser integration",
+      "nextAction": "Root now owns LibraryScreen wrapper/transient search+artist cache,history-state navigation,worker teardown/BFCache recovery,App wiring and actual product browser cases. Luna owns only frozen presentation3files in UIworktree. Add controller.restore(view) with behavioral back-view test. Validate together after normal worker integration;do not typecheck missing pending component as a completed result.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
@@ -546,7 +554,7 @@
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
         "branch": "codex/pwa-library-ui",
         "baseCommit": "56fe5359",
-        "status": "prepared;awaiting sole synth worker idle before dispatch",
+        "status": "active after synth worker committed/idle",
         "ownedPaths": [
           "pwa/src/features/library/LibraryContent.tsx",
           "pwa/src/features/library/library.css",
