@@ -407,22 +407,29 @@
       ],
       "acceptance": "Android audio regressions: finite/clipping/gain/envelope/loop/sample-rate cases",
       "status": "in_progress",
-      "owner": "synth worker (gpt-6.1-sol/high)",
+      "owner": "coordinator; synth worker idle after integrated checkpoints",
       "branch": "codex/pwa-synth",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "d0413f038bb937c2086c24e21346bee342b32783",
-      "slice": "Native bounded static preview PCM renderer only",
-      "nextAction": "Before editing recheck usage below70%both. Reuse clean codex/pwa-synth tree d0413f03;no branch/worktree duplication. Port frozen AudioEngine.staticPlaybackSampleCount/renderStaticSamples into explicit-sample-rate pure Int16 PCM with native slot/envelopes/headroom/gain/cancellation and hard resource bounds. Add static-only native regression/JVM fixtures if feasible;no streaming/transport/WebAudio. Save/test/commit/report before expansion.",
+      "slice": "Native oscillator and bounded static preview PCM validated",
+      "nextAction": "Do not repeat native fixture captures or validated static/core tests without relevant changes. Next bounded Sol/high slice:T07pure streaming PCM/chord+melody voice lifetime/sample-rate/envelope/loop regressions from frozen native source. Reuse clean synth worktree6de96d44;normal integration/claim first. Full T07remains in_progress;WebAudio/transport/device evidence is unrun. Check live budget before any new work.",
       "validation": [
         {
           "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check (from pwa)",
           "revision": "ce40a2f1cd6f43c96ddd1121abe78b3fe5147449",
           "result": "Combined194unit+1input contract/strict types/production build passed after normal d0413f03 oscillator integration. Native fixture52cases/416checkpoints and15DSPtests covered. No PCM/device claim."
+        },
+        {
+          "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check (from pwa)",
+          "revision": "bc583bacd3d2149aa7decc416f6c1284c97ffb7c",
+          "result": "Combined211unit+1input contract/strict types/production build passed. Includes24synth cases and8Library grouping cases;52independent native static PCM buffers/38,480samples match exactly,plus416core sample checkpoints. No actual audio/device acceptance."
         }
       ],
       "progress": [
         "2026-10-15 pre-integration:primary8ea59b43clean,worker codex/pwa-synth d0413f03clean. Root reviewed native source/formulas,metadata,15tests and independent52case/416checkpoint JVM fixture capture. Sourceonly pwa/src/audio/synth;no shared/dependency change. Live42%five-hour/67%weekly. Expected normal merge then combined check; no PCM/device acceptance inferred.",
-        "2026-10-15 core d0413f03 integrated normally atce40a2f1;combined194unit/1input/types/build passed. Before next bounded claim:primaryce40a2f1onlydirtytasksowned by coordinator;worker d0413f03clean/idle;allbranches/worktrees preserved. Live42%five-hour/67%weekly. One next Sol/high slice is static PCM only,with original30s ceiling enforced and no new work at70%."
+        "2026-10-15 core d0413f03 integrated normally atce40a2f1;combined194unit/1input/types/build passed. Before next bounded claim:primaryce40a2f1onlydirtytasksowned by coordinator;worker d0413f03clean/idle;allbranches/worktrees preserved. Live42%five-hour/67%weekly. One next Sol/high slice is static PCM only,with original30s ceiling enforced and no new work at70%.",
+        "2026-10-15 pre-integration:reviewed native static method,explicit rate/30s/voice-work/delay limits,Float gain/Int16 saturation,envelopes/slot boundary/cancellation. Worker6de96d44passed24synth tests/types and52independent full native PCM buffers/38,480samples with0LSBdifference,weighted loudness/dense preview/arp/headroom/mute/gain. No device/stream acceptance. Six owned paths only;normal integration planned.",
+        "Static worker6de96d44integrated normally;combined211unit/input/types/build passed atbc583bacd3d2149aa7decc416f6c1284c97ffb7c. Native static PCM formulas/envelopes/slot completion/Float gain/saturation/cancellation and explicit resources validated;worker clean/idle,all branches/worktrees preserved. Remaining T07streaming/loop/device gates are open."
       ],
       "blocker": null
     },
@@ -942,22 +949,17 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-14",
+    "date": "2026-10-15",
     "usageObserved": {
-      "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 59
+      "fiveHourUsedPercent": 56,
+      "weeklyUsedPercent": 69
     },
-    "reason": "No-new-work threshold reached. In-flight helper and required integrated checks completed; durable checkpoint and yield. Read live limits next run.",
-    "applicableFiveHourResetAt": "2026-10-15T03:02:30Z",
+    "reason": "Validated product/catalog/notation/synth/Library checkpoints saved;no active worker/owned helper and no unresolved root runs. Near weekly threshold;read live usage before next claim. No new work at70%,checkpoint/yield at80%.",
     "activeWorker": null,
-    "sourceCommit": "4b087ba4cfda23fccb124f5834cd50a1085b5f15",
-    "resumeObservation": {
-      "date": "2026-10-15",
-      "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 61,
-      "unresolvedRuns": [],
-      "reason": "Recorded reset passed; fresh live window verified. Primary clean82639a57; no active worker/owned preview."
-    }
+    "sourceCommit": "bc583bacd3d2149aa7decc416f6c1284c97ffb7c",
+    "fiveHourResetUnix": 1792055253,
+    "weeklyResetUnix": 1792521503,
+    "unresolvedRuns": []
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
 }
