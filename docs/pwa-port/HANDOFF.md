@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-15. Coordinator runtime model: unknown. Primary: H:/Desktop/Acquiring/Acquiring, branch codex/pwa-foundation. Latest source checkpoint: 12c09caa. All implementation workers are idle and their committed source is integrated. Inspect Git, processes, run receipts and live usage before resumption.
+Updated 2026-10-15. Coordinator runtime model: unknown. Primary H:/Desktop/Acquiring/Acquiring, codex/pwa-foundation. Current source96274a3d includes validated preview component4d826c33 and pure assessment00a2d681 plus typed evidence contract. ONE active Sol/high worker preview_owner owns the saved T14 evidence slice on codex/pwa-evidence in the existing data-compat sibling; inspect its live state and do not duplicate it. Current detailed claim in tasks.json overrides older milestone records below. Live last54%five-hour/20%weekly, reset1792093757/1792653278;the earlier70%window boundary has passed.
 
 ## Authority and completion
 

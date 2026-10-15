@@ -1084,16 +1084,31 @@
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
     "date": "2026-10-15",
-    "sourceCommit": "12c09caa",
+    "sourceCommit": "4d826c33",
     "usageObserved": {
-      "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 11
+      "fiveHourUsedPercent": 54,
+      "weeklyUsedPercent": 20
     },
-    "fiveHourResetUnix": 1792066478,
+    "fiveHourResetUnix": 1792093757,
     "weeklyResetUnix": 1792653278,
-    "activeWorker": null,
+    "activeWorker": {
+      "agent": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "task": "T14",
+      "branch": "codex/pwa-evidence",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "96274a3d",
+      "ownedPaths": [
+        "pwa/src/domain/learning/aural-evidence.ts",
+        "pwa/src/domain/learning/aural-evidence.test.ts",
+        "pwa/src/domain/learning/fixtures/generate-evidence-native.py",
+        "pwa/src/domain/learning/fixtures/native-evidence.json",
+        "pwa/src/domain/learning/WORKLOG.md"
+      ]
+    },
     "unresolvedRuns": [],
-    "reason": "2026-10-15T08:13Z live five-hour70% no-new-work threshold reached. Primary1ed03002 clean,all workers idle,no owned helper processes or unresolved runs. No new slice,worker or expensive check started. Preserve ready T08 plan and pending T10 approval;resume after applicable five-hour reset 2026-10-15T12:14:38+00:00 and live allowance verification. No credits/resets/model change.",
+    "reason": "Preview component4d826c33accepted309unit/input/types/build and4actualChrome cases+1explicitunprovenfixme. Pure assessment00a2d681accepted119nativecases. Frozen evidence96274a3dstrict typesPASS. One Sol/high evidence worker active under recorded narrow claim;inspect its process/diff/receipts,never duplicate. Root only coordinates/reviews/docs until worker checkpoint. Settings-scroll approval remains separate/pending;audio pagehideapproval was granted and proof passed.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-15T15:31Z",
