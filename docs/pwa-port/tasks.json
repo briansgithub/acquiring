@@ -714,23 +714,29 @@
       ],
       "acceptance": "Deterministic Android cases; supported/independent/transfer rules; corrupt-state recovery",
       "status": "in_progress",
-      "owner": "evidence worker (gpt-6.1-sol/high); coordinator owns frozen contracts/integration",
+      "owner": "coordinator; evidence worker gpt-6.1-sol/high idle at validated c82473a3",
       "branch": "codex/pwa-evidence",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "4d826c33",
-      "slice": "Pure native evidence normalization/begin/evaluate/record reducer",
-      "nextAction": "Root freezes evidence-contracts.ts from reviewed read-only proposal;reuse clean previewb98849f5tree onnew codex/pwa-evidence fromcontract checkpoint,preserving preview/pitch/synth/theory branches. Sole Sol/high worker owns aural-evidence.ts/local tests/native fixture producer+data andlearning WORKLOG only. Exclude assessment files,contracts,generator/target selection,unlock API,session persistence,capture andUI. Independent native fixtures must establish evidence/neutral uncertainty/normalization/operation order;T14notcomplete.",
+      "baseCommit": "96274a3d",
+      "slice": "Pure evidence reducer validated on worker branch; integration deferred at usage boundary",
+      "nextAction": "After applicable reset and live counters below70%, inspect clean primary/worker/processes and c82473a3703d3778c7343d5fa483eabb34a0bd80. Save integration intent, normally merge the exact worker tip into codex/pwa-foundation, then run covering combined types/unit/input/build checks on the actual integrated revision. Do not rerun the native producer or unchanged catalogs/browser proofs. T14 generator, target selection/unlock, scheduler and saved-session repair remain open; do not mark whole task complete. No active worker or running check; preserve all branches/worktrees.",
       "validation": [
         {
           "command": "python pwa/src/domain/learning/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/domain/learning/pitch-assessment.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (node commands from pwa)",
           "revision": "951264a7 plus named pure assessment tree committed next",
           "result": "Native119assessments/1907explicit frames captured from unchanged frozen Kotlin;all status/reason/cents results exactly match.6behavioral test groups and strict combined types PASS first run. Guards window6-assessment-native/unit/types-20261015. No capture/device or full T14 acceptance."
+        },
+        {
+          "command": "python pwa/src/domain/learning/fixtures/generate-evidence-native.py; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t14-evidence-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t14-evidence-vitest.config.mjs (node commands from worker pwa)",
+          "revision": "c82473a3703d3778c7343d5fa483eabb34a0bd80 on codex/pwa-evidence; not yet integrated",
+          "result": "Native60typed Kotlin cases/80steps, scoped strict types and8unit groups PASS first actual runs. Guards evidence-native-capture-20261015-31/evidence-types-20261015-35/evidence-unit-20261015-36. Frozen inputs unchanged; opaque corpus snapshots and richer metadata retained, canonical signed64-bit decimal seeds exact. Coordinator reviewed all reducer/producer/tests and five-file commit scope; unchanged frozen contract hash. Combined primary checks deferred at live72%five-hour/23%weekly; no integrated acceptance claimed."
         }
       ],
       "progress": [
         "2026-10-15 pre-edit:root owns pwa/src/domain/learning pitch assessment source/tests/WORKLOG only. One disjoint Sol/high preview worker owns audio/transport implementation after root contract freeze. Native pure assessment read:held/no-signal/low confidence/unclear boundaries must remain technical uncertainty,not a musical error. Source authority unchanged801cf798;actual capture/scoring integration unrun.",
         "Pure Aural pitch assessment complete119native cases/1907frames exact full outputs,6tests/strict types PASS first run. Preserves original-order error priority,held/no-signal technical uncertainty,cadence/coverage/stability/inlier/gap/sequence/octave semantics;input arrays untouched,results immutable,bounded browser-domain safety extensions explicit. Portable298320byte fixture is intentional source-derived data,not a cache. Session/evidence/curriculum/scheduler/repair and capture ownership remain open;T14in_progress.",
-        "2026-10-15 pre-branch:primary4d826c33clean;previewb98849f5 siblingclean/idle andnormallyintegrated. Root reviewed Sol/high read-only evidence contract proposal. Freeze readonly native fields/explicitnow/canonical decimal-string signedLong seeds/opaqueJson corpus andgeneric begin preserving extras. Atlast49%five-hour/19%weekly;oneworker maximum. Preserve root assessment00a2d681andall prior branches/worktrees. No new audio/Library lifecycle investigation delegated."
+        "2026-10-15 pre-branch:primary4d826c33clean;previewb98849f5 siblingclean/idle andnormallyintegrated. Root reviewed Sol/high read-only evidence contract proposal. Freeze readonly native fields/explicitnow/canonical decimal-string signedLong seeds/opaqueJson corpus andgeneric begin preserving extras. Atlast49%five-hour/19%weekly;oneworker maximum. Preserve root assessment00a2d681andall prior branches/worktrees. No new audio/Library lifecycle investigation delegated.",
+        "2026-10-15T19:34Z:worker c82473a3703d3778c7343d5fa483eabb34a0bd80 clean/idle; only five authorized learning paths changed. Native sequencing and uncertainty/familiarity/assistance/mic-kind evidence gates preserved. Root review requested opaque JSON alias isolation; snapshot fix and legal-later-mutation case pass. Worker scoped checks passed before boundary; root stopped new work at72%/23%, deferring normal merge/combined checks to next capacity window. No owned process or unresolved guard run observed in either tree. All branches/worktrees/ignored profiles preserved."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1084,14 +1090,26 @@
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
     "date": "2026-10-15",
-    "sourceCommit": "4d826c33",
+    "sourceCommit": "acf139d4de023361c0d1aeac2861342bfde5b50a",
     "usageObserved": {
-      "fiveHourUsedPercent": 54,
-      "weeklyUsedPercent": 20
+      "fiveHourUsedPercent": 72,
+      "weeklyUsedPercent": 23
     },
     "fiveHourResetUnix": 1792093757,
     "weeklyResetUnix": 1792653278,
-    "activeWorker": {
+    "unresolvedRuns": [],
+    "reason": "No new slice/worker/expensive check at72%five-hour/23%weekly. Primary acf139d4 source includes preview4d826c33, assessment00a2d681 and evidence contract96274a3d; worker c82473a3 is validated/reviewed/clean/idle but unmerged. Save documentation checkpoint only, then yield. Next capacity window: record integration intent, normally merge exact worker tip and run combined checks. Audio pagehide approval granted and actual proof passed; separate Library Settings-scroll approval still pending. No owned helper/server/test process or unresolved guard run observed. No credits/reset/model action.",
+    "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
+    "resumeObservation": {
+      "date": "2026-10-15T15:31Z",
+      "fiveHourUsedPercent": 10,
+      "weeklyUsedPercent": 13,
+      "fiveHourResetUnix": 1792093757,
+      "weeklyResetUnix": 1792653278,
+      "reason": "Recorded earlier five-hour reset passed;live counters permit new bounded slices. Same account/all3reset credits available;no purchase/redemption/model switch."
+    },
+    "activeWorker": null,
+    "completedWorker": {
       "agent": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
@@ -1105,18 +1123,9 @@
         "pwa/src/domain/learning/fixtures/generate-evidence-native.py",
         "pwa/src/domain/learning/fixtures/native-evidence.json",
         "pwa/src/domain/learning/WORKLOG.md"
-      ]
-    },
-    "unresolvedRuns": [],
-    "reason": "Preview component4d826c33accepted309unit/input/types/build and4actualChrome cases+1explicitunprovenfixme. Pure assessment00a2d681accepted119nativecases. Frozen evidence96274a3dstrict typesPASS. One Sol/high evidence worker active under recorded narrow claim;inspect its process/diff/receipts,never duplicate. Root only coordinates/reviews/docs until worker checkpoint. Settings-scroll approval remains separate/pending;audio pagehideapproval was granted and proof passed.",
-    "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
-    "resumeObservation": {
-      "date": "2026-10-15T15:31Z",
-      "fiveHourUsedPercent": 10,
-      "weeklyUsedPercent": 13,
-      "fiveHourResetUnix": 1792093757,
-      "weeklyResetUnix": 1792653278,
-      "reason": "Recorded earlier five-hour reset passed;live counters permit new bounded slices. Same account/all3reset credits available;no purchase/redemption/model switch."
+      ],
+      "commit": "c82473a3703d3778c7343d5fa483eabb34a0bd80",
+      "status": "validated, clean, idle; not integrated"
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
