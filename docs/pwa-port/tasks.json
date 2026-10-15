@@ -695,10 +695,17 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ee99a7b",
       "slice": "Pure native Aural pitch assessment only",
-      "nextAction": "Port frozen assessAuralPitch and local immutable frame/result types from AuralPitchAssessment.kt;exclude coroutine capture/device ownership and later curriculum/session/scheduler. Native tests plus bounded malformed-input/stability/freshness/sequence edges;independent JVM pure capture if useful. No persistent learning outcome or full T14 completion.",
-      "validation": [],
+      "nextAction": "After the small assessment checkpoint,select a separate bounded native curriculum/evidence/generator/scheduler or saved-session recovery slice. Preserve pure119case assessment proof;actual capture belongs T09 and learning-event eligibility/persistence is not implemented. Coordinator continues actual preview browser harness once worker API is implemented.",
+      "validation": [
+        {
+          "command": "python pwa/src/domain/learning/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/domain/learning/pitch-assessment.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (node commands from pwa)",
+          "revision": "951264a7 plus named pure assessment tree committed next",
+          "result": "Native119assessments/1907explicit frames captured from unchanged frozen Kotlin;all status/reason/cents results exactly match.6behavioral test groups and strict combined types PASS first run. Guards window6-assessment-native/unit/types-20261015. No capture/device or full T14 acceptance."
+        }
+      ],
       "progress": [
-        "2026-10-15 pre-edit:root owns pwa/src/domain/learning pitch assessment source/tests/WORKLOG only. One disjoint Sol/high preview worker owns audio/transport implementation after root contract freeze. Native pure assessment read:held/no-signal/low confidence/unclear boundaries must remain technical uncertainty,not a musical error. Source authority unchanged801cf798;actual capture/scoring integration unrun."
+        "2026-10-15 pre-edit:root owns pwa/src/domain/learning pitch assessment source/tests/WORKLOG only. One disjoint Sol/high preview worker owns audio/transport implementation after root contract freeze. Native pure assessment read:held/no-signal/low confidence/unclear boundaries must remain technical uncertainty,not a musical error. Source authority unchanged801cf798;actual capture/scoring integration unrun.",
+        "Pure Aural pitch assessment complete119native cases/1907frames exact full outputs,6tests/strict types PASS first run. Preserves original-order error priority,held/no-signal technical uncertainty,cadence/coverage/stability/inlier/gap/sequence/octave semantics;input arrays untouched,results immutable,bounded browser-domain safety extensions explicit. Portable298320byte fixture is intentional source-derived data,not a cache. Session/evidence/curriculum/scheduler/repair and capture ownership remain open;T14in_progress."
       ],
       "blocker": null
     },
