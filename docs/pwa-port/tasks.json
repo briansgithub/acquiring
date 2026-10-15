@@ -399,11 +399,20 @@
       "owner": "synth worker (gpt-6.1-sol/high)",
       "branch": "codex/pwa-synth",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "5f3ee4f0bf1ea10dd459cefb0bd05c3d4297b588",
-      "slice": "Native13instrument stateful oscillator and gain profile core",
-      "nextAction": "Reuse clean data-compat tree at1e729b on new synth branch from saved base, preserving prior theory branch. Own only pwa/src/audio/synth. Port SynthVoice and AudioEngine waveform metadata/current native tests, meaningful finite/gain/spectral checks. Save/test/commit/report before PCM renderer/transport expansion.",
-      "validation": [],
-      "progress": [],
+      "baseCommit": "d0413f038bb937c2086c24e21346bee342b32783",
+      "slice": "Native bounded static preview PCM renderer only",
+      "nextAction": "Before editing recheck usage below70%both. Reuse clean codex/pwa-synth tree d0413f03;no branch/worktree duplication. Port frozen AudioEngine.staticPlaybackSampleCount/renderStaticSamples into explicit-sample-rate pure Int16 PCM with native slot/envelopes/headroom/gain/cancellation and hard resource bounds. Add static-only native regression/JVM fixtures if feasible;no streaming/transport/WebAudio. Save/test/commit/report before expansion.",
+      "validation": [
+        {
+          "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check (from pwa)",
+          "revision": "ce40a2f1cd6f43c96ddd1121abe78b3fe5147449",
+          "result": "Combined194unit+1input contract/strict types/production build passed after normal d0413f03 oscillator integration. Native fixture52cases/416checkpoints and15DSPtests covered. No PCM/device claim."
+        }
+      ],
+      "progress": [
+        "2026-10-15 pre-integration:primary8ea59b43clean,worker codex/pwa-synth d0413f03clean. Root reviewed native source/formulas,metadata,15tests and independent52case/416checkpoint JVM fixture capture. Sourceonly pwa/src/audio/synth;no shared/dependency change. Live42%five-hour/67%weekly. Expected normal merge then combined check; no PCM/device acceptance inferred.",
+        "2026-10-15 core d0413f03 integrated normally atce40a2f1;combined194unit/1input/types/build passed. Before next bounded claim:primaryce40a2f1onlydirtytasksowned by coordinator;worker d0413f03clean/idle;allbranches/worktrees preserved. Live42%five-hour/67%weekly. One next Sol/high slice is static PCM only,with original30s ceiling enforced and no new work at70%."
+      ],
       "blocker": null
     },
     {
