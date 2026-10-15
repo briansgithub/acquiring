@@ -180,10 +180,18 @@
       "branch": "codex/pwa-notation",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
       "baseCommit": "82639a57",
-      "slice": "Frozen native Roman tokenizer and scale-degree semantic label helpers",
-      "nextAction": "Reuse clean UI-shell checkout19b495d on new notation branch from82639a57, preserving old branch. Own only pwa/src/ui/notation. Port pure native tokenization/display-label parsing with current native unit cases; commit/report before rendering expansion. No app/router/shared dependencies changes.",
-      "validation": [],
-      "progress": [],
+      "slice": "Accessible React musical notation with native semantic rows and bounded browser geometry",
+      "nextAction": "Same Luna/medium worker ports React RomanNumeral and ScaleDegree components within notation path using frozen native measure/layout rules, explicit accessible labels, fitted stacked rows/hats/borrowed labels. Extend all native tokenizer/label cases and object-borrowing guard. Commit/test/report; root owns browser fixture/geometry proof and app wiring.",
+      "validation": [
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/ui/notation (from pwa)",
+          "revision": "normal1028688 integration plus disjoint installer source",
+          "result": "7tests passed in297ms."
+        }
+      ],
+      "progress": [
+        "Pure notation1028688 integrated normally;7native-derived tests passed on combined primary. Launch failure diagnosed as multiword --next-action argument splitting, not guard defect; single snake_case next-action and ignored helper scripts work. Canvas/React rendering remains open."
+      ],
       "blocker": null
     },
     {
@@ -209,7 +217,8 @@
         "pwa/src/features/catalog/",
         "pwa/src/app/App.tsx",
         "pwa/public/catalog-sources.json",
-        "pwa/tests/browser/catalog-install.spec.ts"
+        "pwa/tests/browser/catalog-install.spec.ts",
+        "pwa/scripts/build-shell.mjs"
       ],
       "acceptance": "Full-size mobile install/query/offline cold launch; quota/corruption/second-tab recovery",
       "status": "in_progress",
@@ -218,7 +227,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "3bac1f927868cb9a87ab8f55296310d05ddd301d",
       "slice": "Controlled catalog source configuration and product installer recovery UI",
-      "nextAction": "Root adds bounded trusted manifest configuration/hash loader and restart-safe installer coordinator; then wire Settings/Library and test real production worker through product UI. No publication; absent hosting config is explicit, independent development continues.",
+      "nextAction": "Capture actual native song release as immutable local source; normalize older schema in a separate derivative before verified packaging. Do not publish endpoints; default discovery remains empty. Continue notation worker independently.",
       "validation": [
         {
           "command": "python -m unittest discover -s pwa/scripts/catalog -p test_package_catalog.py -v",
@@ -289,6 +298,16 @@
           "command": "npm --prefix pwa run typecheck; node node_modules/@playwright/test/cli.js test tests/browser/song-catalog.spec.ts (from pwa)",
           "revision": "c6a4ef35c0a995b569f910d529286927afd68fe0 plus native-song validation source committed next",
           "result": "Strict types passed;1real Chrome acceptance case with5databases passed in22.6s on first run."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/sources.test.ts; npm --prefix pwa run build; node node_modules/@playwright/test/cli.js test tests/browser/catalog-install.spec.ts (from pwa)",
+          "revision": "e1329754 plus controlled discovery/product installer tree committed next",
+          "result": "10security cases, strict types/production build,4actual product UI Chrome cases passed first run. Product worker/WASM included in shell cache; mutable discovery excluded."
+        },
+        {
+          "command": "npm --prefix pwa run check; node node_modules/@playwright/test/cli.js test tests/browser/shell.spec.ts (from pwa)",
+          "revision": "1028688normal integration plus product installer tree committed next",
+          "result": "173unit+1input-contract/strict types/production build passed;3shell cases passed in5.2s including320px/200percent and cold offline deep link. 4installer UI cases already passed same source."
         }
       ],
       "progress": [
@@ -303,7 +322,8 @@
         "Journal/cache/activation slice:6actual Chrome cases passed including killed second-file fetch with no-repeat first-file resume, cold-worker confirmation, new-target fallback, all10user stores/outbox unchanged across update, corrupt-cache one-chunk repair and immutable retry rejection. Full-size/mobile/quota/production cold shell remain unrun.",
         "Quota harness experiment:1MiB then0byte CDP overrides did not force this small preallocated fixture to fail. Gate remains explicitly fixme/unproven; no quota acceptance claimed. Independent network failure/same-intent resume case proceeds.",
         "Full-size production test entry926954ad passed desktop Chrome:existing3files/237chunks/1,980,387,328rawbytes verified incrementally and native quick_check/metadata validated. Browser and localhost server stopped; new persistent-profile browser launched offline before navigation, loaded cached built worker/WASM, confirmed active pointer and inspected all3files.10user rows/10pending outbox entries unchanged. Receipt pwa/.artifacts/pwa-port/production-full-64cfa299-v1/runs/f7bec2db-b9aa-447d-8fd4-43279fc057f7/result.json. No phone/Safari, real quota exhaustion or public installer claim.",
-        "Native v3song schema tightened:exact columns/types/nullability/PK and3named indexes plus>=40609song/browse count and nonnull-payload coverage. Actual Chrome passed valid40609fixture +4corrupt cases (missing/wrong index, missing payload, nullable key), preserving old active catalog. Actual source song release/migration not yet ingested."
+        "Native v3song schema tightened:exact columns/types/nullability/PK and3named indexes plus>=40609song/browse count and nonnull-payload coverage. Actual Chrome passed valid40609fixture +4corrupt cases (missing/wrong index, missing payload, nullable key), preserving old active catalog. Actual source song release/migration not yet ingested.",
+        "Controlled runtime discovery config/manifest byte hashes and product Settings installer implemented;10security unit cases passed. Actual production app builds real worker/WASM;4first-run Chrome UI cases passed in9.1s:verified3SQLite install/cold offline page reload, pause/page loss with stableID and skipped complete DB, corrupt manifest update retaining installed data, tab ownership guidance/retry. Default public sources remain empty until hosted data is configured; no publication."
       ],
       "blocker": null
     },

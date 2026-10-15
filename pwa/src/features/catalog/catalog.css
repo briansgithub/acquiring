@@ -1,0 +1,5 @@
+.catalog-card { border-top: 1px solid #605d62; padding-block: 1rem; margin-top: 1rem; }
+.catalog-card h3 { margin: 0 0 .5rem; font-size: 1rem; }
+.catalog-card .action { margin-right: .5rem; max-width: 100%; overflow-wrap: anywhere; }
+.catalog-card .action:disabled { opacity: .55; cursor: default; }
+.catalog-card progress { display: block; max-width: 100%; width: 100%; margin-block: .75rem; accent-color: #A8C7FA; }
