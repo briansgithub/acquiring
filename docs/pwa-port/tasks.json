@@ -714,12 +714,12 @@
       ],
       "acceptance": "Deterministic Android cases; supported/independent/transfer rules; corrupt-state recovery",
       "status": "in_progress",
-      "owner": "coordinator (runtime model unknown)",
-      "branch": "codex/pwa-foundation",
-      "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "9ee99a7b",
-      "slice": "Pure native Aural pitch assessment only",
-      "nextAction": "After the small assessment checkpoint,select a separate bounded native curriculum/evidence/generator/scheduler or saved-session recovery slice. Preserve pure119case assessment proof;actual capture belongs T09 and learning-event eligibility/persistence is not implemented. Coordinator continues actual preview browser harness once worker API is implemented.",
+      "owner": "evidence worker (gpt-6.1-sol/high); coordinator owns frozen contracts/integration",
+      "branch": "codex/pwa-evidence",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "4d826c33",
+      "slice": "Pure native evidence normalization/begin/evaluate/record reducer",
+      "nextAction": "Root freezes evidence-contracts.ts from reviewed read-only proposal;reuse clean previewb98849f5tree onnew codex/pwa-evidence fromcontract checkpoint,preserving preview/pitch/synth/theory branches. Sole Sol/high worker owns aural-evidence.ts/local tests/native fixture producer+data andlearning WORKLOG only. Exclude assessment files,contracts,generator/target selection,unlock API,session persistence,capture andUI. Independent native fixtures must establish evidence/neutral uncertainty/normalization/operation order;T14notcomplete.",
       "validation": [
         {
           "command": "python pwa/src/domain/learning/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/domain/learning/pitch-assessment.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (node commands from pwa)",
@@ -729,12 +729,13 @@
       ],
       "progress": [
         "2026-10-15 pre-edit:root owns pwa/src/domain/learning pitch assessment source/tests/WORKLOG only. One disjoint Sol/high preview worker owns audio/transport implementation after root contract freeze. Native pure assessment read:held/no-signal/low confidence/unclear boundaries must remain technical uncertainty,not a musical error. Source authority unchanged801cf798;actual capture/scoring integration unrun.",
-        "Pure Aural pitch assessment complete119native cases/1907frames exact full outputs,6tests/strict types PASS first run. Preserves original-order error priority,held/no-signal technical uncertainty,cadence/coverage/stability/inlier/gap/sequence/octave semantics;input arrays untouched,results immutable,bounded browser-domain safety extensions explicit. Portable298320byte fixture is intentional source-derived data,not a cache. Session/evidence/curriculum/scheduler/repair and capture ownership remain open;T14in_progress."
+        "Pure Aural pitch assessment complete119native cases/1907frames exact full outputs,6tests/strict types PASS first run. Preserves original-order error priority,held/no-signal technical uncertainty,cadence/coverage/stability/inlier/gap/sequence/octave semantics;input arrays untouched,results immutable,bounded browser-domain safety extensions explicit. Portable298320byte fixture is intentional source-derived data,not a cache. Session/evidence/curriculum/scheduler/repair and capture ownership remain open;T14in_progress.",
+        "2026-10-15 pre-branch:primary4d826c33clean;previewb98849f5 siblingclean/idle andnormallyintegrated. Root reviewed Sol/high read-only evidence contract proposal. Freeze readonly native fields/explicitnow/canonical decimal-string signedLong seeds/opaqueJson corpus andgeneric begin preserving extras. Atlast49%five-hour/19%weekly;oneworker maximum. Preserve root assessment00a2d681andall prior branches/worktrees. No new audio/Library lifecycle investigation delegated."
       ],
       "blocker": null,
       "proposalAssignment": {
         "owner": "preview_owner gpt-6.1-sol/high",
-        "status": "read-only proposal complete; worker idle; canonical decimal-string native seed representation selected by coordinator for upcoming contract",
+        "status": "complete; coordinator freezes agreed contract before worker edits",
         "scope": "Native normalization/beginExercise/evaluate/record evidence reducer only;exclude generation/target selection/session storage;read native types/tests and propose minimal compatible coordinator-owned local contract."
       }
     },
