@@ -52,9 +52,9 @@ export function LibraryContent({
     <header className="library-header">
       {browsingArtist ? <>
         <button className="library-back" type="button" onClick={onClearArtist}>Back to search</button>
-        <h1 id="library-heading">{displayArtist(state.artist)}</h1>
+        <h2 id="library-heading">{displayArtist(state.artist)}</h2>
       </> : <>
-        <h1 id="library-heading">Songs</h1>
+        <h2 id="library-heading">Songs</h2>
         <label className="library-search-label" htmlFor="library-song-search">Search songs</label>
         <div className="library-search-row">
           <input

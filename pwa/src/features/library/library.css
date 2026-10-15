@@ -17,7 +17,7 @@
 .library-content *::after { box-sizing: border-box; }
 
 .library-header { display: grid; gap: .65rem; min-width: 0; }
-.library-header h1 { margin: 0 0 .25rem; font-size: 1.5rem; line-height: 1.25; }
+.library-header h2 { margin: 0 0 .25rem; font-size: 1.5rem; line-height: 1.25; }
 .library-search-label { font-size: .95rem; font-weight: 600; }
 .library-search-row { display: flex; flex-wrap: wrap; gap: .5rem; min-width: 0; }
 .library-search-input {

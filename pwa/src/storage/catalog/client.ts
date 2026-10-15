@@ -18,10 +18,14 @@ export class CatalogWorkerClient {
     this.worker.onerror = event => this.terminate(new CatalogError('WORKER_FAILED', event.message || 'Catalog worker stopped'));
     this.worker.onmessageerror = () => this.terminate(new CatalogError('WORKER_FAILED', 'Catalog response could not be read'));
   }
-  static async open(onProgress?: (progress: CatalogProgress) => void): Promise<CatalogWorkerClient> {
+  static async open(onProgress?: (progress: CatalogProgress) => void, signal?: AbortSignal): Promise<CatalogWorkerClient> {
+    if (signal?.aborted) throw new CatalogError('CLOSED', 'Catalog open cancelled');
     const client = new CatalogWorkerClient(onProgress);
+    const abort = () => client.terminate(new CatalogError('CLOSED', 'Catalog open cancelled'));
+    signal?.addEventListener('abort', abort, { once: true });
     try { await client.request({ kind: 'init' }, 30_000); return client; }
     catch (error) { client.terminate(); throw error; }
+    finally { signal?.removeEventListener('abort', abort); }
   }
   private request<T>(command: CatalogCommand, timeoutMs?: number): Promise<T> {
     if (this.stopped) return Promise.reject(new CatalogError('CLOSED', 'Catalog worker is closed'));

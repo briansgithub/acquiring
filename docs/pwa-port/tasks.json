@@ -475,22 +475,28 @@
       ],
       "acceptance": "Synthetic pitch/noise/harmonic/dropout cases; actual microphone smoke test",
       "status": "in_progress",
-      "owner": "coordinator integration; pitch worker idle (gpt-6.1-sol/high)",
-      "branch": "codex/pwa-pitch",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "7a75f69c7f3b64292c42b3a2534e94da601f4554",
-      "slice": "Pure native YIN detector and pitch smoothing only",
-      "nextAction": "Normally merge reviewed pure pitch24a3f78b into primary30d10a75, preserving all owned dirty Library files; no overlapping paths. Run combined unit/input/types/build and independently covering installer/shell regressions. Actual microphone/timed publication/scoring remain open. No further scroll investigation without pending owner answer.",
+      "owner": "coordinator (runtime model unknown); pure pitch worker idle",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
+      "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
+      "slice": "Pure native pitch core integrated; capture and timed publication remain open",
+      "nextAction": "Select bounded exclusive microphone owner/window-hop/Float32-PCM and timed200ms freshness slice after recording interfaces and source evidence. No actual mic/device/scoring acceptance inferred from pure core.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
           "revision": "24a3f78b0302bd116a6981d1fdfb1eb4cf0abf51",
           "result": "22cases/2files and strict types PASS; t09-pitch-tests/types-20261015-02. Native producer receipt t09-pitch-native-20261015-01:62cases/115713samples exact detector fields,18gate edges/68smoother operations. Actual microphone/timed publication/scoring unrun."
+        },
+        {
+          "command": "npm run check; focused client cancellation3cases; npm run build (node npm-cli; from pwa)",
+          "revision": "906c9243 plus named Library lifecycle tree committed next",
+          "result": "266unit+1input PASS;new test fixture missing result discriminator caused typecheck failure only,corrected once;focused3cases and full strict/build PASS in window4-library-final-covering-20261015. No production changes after final covering checks."
         }
       ],
       "progress": [
         "2026-10-15 pre-branch:primary7a75f69cowned dirty Library lifecycle/App/controller/tests anduntracked LibraryScreen,allpreserved. Existing data-compat tree codex/pwa-synth c242f775clean/idle;UIworker e968599bclean/idle andintegrated. Live33%five-hour/5%weekly. Create narrow pitch branch from clean committed primary base;no duplicates/deletion. PureT07complete atb11a3af4;actual microphone remains open.",
-        "2026-10-15 pre-integration:primary30d10a75 has8owned tracked Library changes plus LibraryScreen/library browser untracked;no staged changes. Pitch24a3f78b clean/idle,9capture-only additions;native62PCM/18gate/68smoother outputs exact and22tests/types passed. Root reviewed implementation/fixtures/bounds;normal merge preserves UI partials and all branches. Live60%five-hour/9%weekly;no unresolved guard runs/helpers."
+        "2026-10-15 pre-integration:primary30d10a75 has8owned tracked Library changes plus LibraryScreen/library browser untracked;no staged changes. Pitch24a3f78b clean/idle,9capture-only additions;native62PCM/18gate/68smoother outputs exact and22tests/types passed. Root reviewed implementation/fixtures/bounds;normal merge preserves UI partials and all branches. Live60%five-hour/9%weekly;no unresolved guard runs/helpers.",
+        "Pure pitch24a3f78b normally integrated at906c9243 preserving owned Library work. Combined266unit+1input PASS;final focused3cancellation/types/build and10coveringChrome cases PASS after one test-only discriminator correction. T09 remains in_progress:actual microphone/clock/dropout owner unimplemented. All workers idle."
       ],
       "blocker": null
     },
@@ -516,7 +522,8 @@
         "pwa/tests/browser/library.spec.ts",
         "pwa/src/app/routes.ts",
         "pwa/src/features/catalog/CatalogPanel.tsx",
-        "pwa/src/ui/shell/shell.css"
+        "pwa/src/ui/shell/shell.css",
+        "pwa/src/storage/catalog/client.test.ts"
       ],
       "acceptance": "Debounce, paging, normalization, grouping, retry, Back/focus restoration and rollback",
       "status": "in_progress",
@@ -525,7 +532,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
       "slice": "Luna presentation plus coordinator lifecycle/history/browser integration",
-      "nextAction": "Preserve owned dirty Library/App/routes/toolbar/CatalogPanel/controller/browser source atknown1bbc3d25base.2product cases passed andoneexactscrollcase remainsfailed64px;no wholeT10acceptance. Await owner answer before further scroll investigation;run unaffected crossflow regressions/complete independent T08/T09work. Do not discard/hide source or mark failing gate passed.",
+      "nextAction": "Partial Library flow is recoverably checkpointed with its failing Settings Back scroll test intact. Await existing owner approval before further scroll investigation or retest (two cycles exhausted). Independent T08/T09 and later Library grouping/recents/favorites/playlist work may continue under new claims. Song route still T11 placeholder;T10 not complete.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
@@ -551,6 +558,11 @@
           "command": "node node_modules/@playwright/test/cli.js test library.spec.ts; node node_modules/@playwright/test/cli.js test library.spec.ts -g \"actual Library installs\" (from pwa)",
           "revision": "1bbc3d25plusownedLibrary integration working tree",
           "result": "Actual UIartist/history/retry/tabownership andfresh offline320px200percent passed;search/paging/songBack restores40rows/query/focus/scroll. SettingsBack exactscroll remains64pxaftertwo bounded cycles. Finalfailedreceipt window4-library-product-browser-fix2-20261015;approvalpending,not passed. Strict types/build/9controller cases passed."
+        },
+        {
+          "command": "node node_modules/@playwright/test/cli.js test catalog-install.spec.ts shell.spec.ts library.spec.ts --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library/final-covering (from pwa)",
+          "revision": "906c9243 plus named Library integration tree committed next",
+          "result": "10passed35.3s;window4-library-final-covering-20261015. Exact SettingsBack scroll test explicitly not rerun or passed. Focused3client cases/strict/build also PASS. Independent StrictMode first run failed BUSY;cycle1 abort fix passed unchanged test8.6s and final8.4s. No real mobile/hardware claim."
         }
       ],
       "progress": [
@@ -561,7 +573,9 @@
         "Observable Library controller and frozen presentation props saved;7behavioral async cases/types pass. Coordinator owns lifecycle/cache/App routing;bounded Luna presentational UI may follow only after sole synth worker idles. No productUI acceptance yet.",
         "2026-10-15 pre-UIintegration:primary5ace7210has only owned dirty App/routes/controller/controller-test plus untracked LibraryScreen. UIbranch e968599bclean/idle,3newpresentation paths only;strict owned types passed. Root reviewedmarkup/css;merge normally preserving partial lifecycle work,then final semantic/missing-catalog review and actual browser product tests. No UI acceptance yet.",
         "Pre-browser integration review:Settings installer singleton still retained catalog ownership after panel unmount,so add panel cleanup pause before Library opens its reader. Also save Library scroll before header Settings navigation,clear stale cached rows on missing catalog,and use h2under shell h1. These are coordinator-owned lifecycle/semantic corrections;actualbrowserproof next.",
-        "First actualLibrary UI browser run:offline320px/200percent passed;open-song Back restored40rows/query/scroll/focus. Settingsroundtrip scroll failed because header was scrolled offscreen and clicking it moved the page to0;pin shell topbar like nativeScaffold. Artistview itself worked;fixture expected Artist A but native display adapter correctly preserves mixed-case Artist-A. Correct literal,remove redundantlocator assertion;one bounded fix/retest cycle1. No acceptance claimed for failed checks."
+        "First actualLibrary UI browser run:offline320px/200percent passed;open-song Back restored40rows/query/scroll/focus. Settingsroundtrip scroll failed because header was scrolled offscreen and clicking it moved the page to0;pin shell topbar like nativeScaffold. Artistview itself worked;fixture expected Artist A but native display adapter correctly preserves mixed-case Artist-A. Correct literal,remove redundantlocator assertion;one bounded fix/retest cycle1. No acceptance claimed for failed checks.",
+        "Luna/medium review found independent development StrictMode effect replay starts an already disposed reader;not the blocked scroll issue. Screenshot visually inspected:controls/text wrap without obvious clipping/overflow. Pre-edit root owns a readonly closed flag and fresh-reader recreation on replay,with actual dev-origin install/search/Settings teardown proof. Do not investigate or rerun the failing scroll gate. Combined pitch tree263unit+input/types/build PASS before this narrow lifecycle fix;live63%/10%.",
+        "Actual Library integrated:search/debounce/page/artist/history/draft/focus/worker teardown/BFCache;9controller cases. Luna readonly review found dev StrictMode replay uses disposed reader;fresh replacement plus abort of pending worker open corrected one ownership race. Final10Chrome cases PASS35.3s:4installer,3shell,artist/ownership,offline320px200percent andactual dev StrictMode install/search/remount. Source not fully accepted:Settings Back64px scroll drift remains and its test is unchanged/excluded explicitly from covering run. Root source checkpoint is partial feature with known gate,not T10 completion. Optional client AbortSignal3meaningful cancellation cases pass. No dependencies/contracts/lockfile or production publication changed."
       ],
       "blocker": "Exact Settings->Library scroll restoration remains64pxdifferent after2diagnose/fix/retest cycles. Query/draft/40loaded rows andsongBack focus/scroll pass;artist/browserBack/ownership andoffline320px200percent cases pass. User AGENTS.mdrequiresaskingbeforeexpanding;asyncapproval question pending. Do not attempt a third scroll fix or relax assertion without that answer. Continue independent packages.",
       "dependencyGates": {
@@ -573,7 +587,7 @@
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
         "branch": "codex/pwa-library-ui",
         "baseCommit": "56fe5359",
-        "status": "e968599bclean/idle,normally integrated at7a75f69c;root browser integration pending",
+        "status": "complete; e968599b integrated at7a75f69c; worker idle",
         "ownedPaths": [
           "pwa/src/features/library/LibraryContent.tsx",
           "pwa/src/features/library/library.css",
@@ -583,7 +597,7 @@
       "reviewAssignment": {
         "model": "gpt-6-luna",
         "thinking": "medium",
-        "status": "read-only review pending",
+        "status": "complete; read-only screenshot and source review",
         "scope": "Review current primary Library source and existing narrow-large screenshot for non-scroll accessibility/rendering issues only; no edits/tests or further scroll diagnosis."
       }
     },

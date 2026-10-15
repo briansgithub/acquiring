@@ -11,9 +11,9 @@ export function parseRoute(pathname: string): Route {
   }
   return { kind: 'not-found' };
 }
-export function navigate(path: string): void {
+export function navigate(path: string, state: unknown = null): void {
   if (!path.startsWith('/') || path.startsWith('//')) throw new Error('Expected a local app route');
-  history.pushState(null, '', path);
+  history.pushState(state, '', path);
   window.dispatchEvent(new Event('acquiring:navigate'));
 }
 export function subscribeRoute(listener: () => void): () => void {

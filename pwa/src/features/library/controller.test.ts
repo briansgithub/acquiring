@@ -52,3 +52,16 @@ it('artist detail uses exact raw identity and returning to search keeps the draf
   await library.showArtist('Raw-Artist');expect(client.songPage).toHaveBeenLastCalledWith({mode:'artist',text:'Raw-Artist',limit:20,offset:0});
   library.clearArtist();await vi.advanceTimersByTimeAsync(200);expect(client.songPage).toHaveBeenLastCalledWith({mode:'search',text:'draft',limit:20,offset:0});library.dispose();
 });
+
+it('restores a previous search page/focus after artist navigation without mixing contexts',async()=>{
+  const {client,open}=fixture();client.songPage.mockResolvedValueOnce(page('a','one',20)).mockResolvedValueOnce(page('b','one',40)).mockResolvedValueOnce(page('artist')).mockResolvedValueOnce(page('a','one',20));
+  const library=new LibraryController(undefined,open);await library.start();await library.loadMore();library.rememberFocused('b');const search=library.capture();
+  await library.showArtist('Raw-Artist');await library.restore(search);
+  expect(library.capture()).toEqual(search);expect(client.songPage).toHaveBeenLastCalledWith({mode:'search',text:'',limit:20,offset:0});library.dispose();
+});
+
+it('does not offer cached songs if the catalog has disappeared',async()=>{
+  const {client,open}=fixture();client.songPage.mockRejectedValue(new CatalogError('NOT_INSTALLED','missing'));
+  const library=new LibraryController({text:'',artist:null,rows:page('old').rows,sourceSnapshot:'one',nextOffset:20,focusSlug:'old'},open);
+  await library.start();expect(library.getSnapshot().phase).toBe('missing');expect(library.getSnapshot().rows).toEqual([]);expect(library.getSnapshot().sourceSnapshot).toBeNull();library.dispose();
+});

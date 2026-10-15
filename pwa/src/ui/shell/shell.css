@@ -6,7 +6,7 @@
   --shell-primary: #a8c7fa;
 }
 .app-shell { min-height: 100vh; min-height: 100dvh; background: var(--shell-background); color: var(--shell-text); }
-.app-shell__header { background: var(--shell-background); color: var(--shell-text); padding-top: env(safe-area-inset-top, 0px); }
+.app-shell__header { position: sticky; top: 0; z-index: 10; background: var(--shell-background); color: var(--shell-text); padding-top: env(safe-area-inset-top, 0px); }
 .app-shell__bar {
   box-sizing: border-box; display: flex; align-items: center; gap: 8px;
   width: min(100%, 960px); min-height: 64px; margin-inline: auto;

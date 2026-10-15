@@ -28,10 +28,12 @@ export class LibraryController {
   private generation=0;
   private disposed=false;
   private started=false;
-  constructor(remembered?:LibraryView,private readonly open:()=>Promise<LibraryClient>=()=>CatalogWorkerClient.open()) {
+  private readonly lifetime=new AbortController();
+  constructor(remembered?:LibraryView,private readonly open:(signal:AbortSignal)=>Promise<LibraryClient>=(signal)=>CatalogWorkerClient.open(undefined,signal)) {
     const view=remembered?{...remembered,rows:[...remembered.rows]}:emptyView();
     this.state={...view,phase:'loading',loadingMore:false};
   }
+  get closed():boolean {return this.disposed;}
   getSnapshot=():LibraryState=>this.state;
   subscribe=(listener:()=>void)=>{this.listeners.add(listener);return ()=>{this.listeners.delete(listener);};};
   private publish(patch:Partial<LibraryState>):void {
@@ -42,9 +44,15 @@ export class LibraryController {
     const {text,artist,rows,sourceSnapshot,nextOffset,focusSlug}=this.state;
     return {text,artist,rows:[...rows],sourceSnapshot,nextOffset,focusSlug};
   }
+  restore(view:LibraryView):Promise<void> {
+    if(this.disposed)return Promise.resolve();
+    this.generation++;clearTimeout(this.timer);
+    this.publish({...view,rows:[...view.rows],phase:'loading',loadingMore:false,message:undefined});
+    return this.load(false,view);
+  }
   rememberFocused(slug:string):void {this.publish({focusSlug:slug});}
   private reader():Promise<LibraryClient> {
-    if(!this.opening)this.opening=this.open().then(client=>{
+    if(!this.opening)this.opening=this.open(this.lifetime.signal).then(client=>{
       if(this.disposed){client.terminate();throw new CatalogError('CLOSED','Reader closed');}
       this.client=client;return client;
     }).catch(error=>{this.opening=undefined;throw error;});
@@ -95,11 +103,11 @@ export class LibraryController {
     } catch(error){
       if(this.disposed||generation!==this.generation)return;
       const missing=error instanceof CatalogError&&error.code==='NOT_INSTALLED';
-      this.publish({phase:missing?'missing':'error',message:missing?undefined:errorMessage(error),loadingMore:false});
+      this.publish({...(missing?{rows:[],sourceSnapshot:null,nextOffset:null,focusSlug:undefined}:{}),phase:missing?'missing':'error',message:missing?undefined:errorMessage(error),loadingMore:false});
     }
   }
   dispose():void {
     if(this.disposed)return;
-    this.disposed=true;this.generation++;clearTimeout(this.timer);this.client?.terminate();this.client=undefined;this.listeners.clear();
+    this.disposed=true;this.lifetime.abort();this.generation++;clearTimeout(this.timer);this.client?.terminate();this.client=undefined;this.listeners.clear();
   }
 }

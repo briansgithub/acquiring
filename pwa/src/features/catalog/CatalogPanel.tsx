@@ -4,7 +4,7 @@ import './catalog.css';
 const names = { songs: 'Song library', aural: 'Aural practice' };
 export function CatalogPanel() {
   const state = useSyncExternalStore(catalogInstaller.subscribe, catalogInstaller.getSnapshot);
-  useEffect(() => { void catalogInstaller.refresh(); }, []);
+  useEffect(() => { void catalogInstaller.refresh(); return () => catalogInstaller.pause(); }, []);
   return <section className="panel" aria-labelledby="catalogs-heading">
     <h2 id="catalogs-heading">Catalogs</h2>
     <p>Download catalogs to keep them on this device. Downloads can be paused and resumed.</p>
