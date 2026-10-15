@@ -507,7 +507,9 @@
         "pwa/src/storage/catalog/library-queries.test.ts",
         "pwa/src/app/App.tsx",
         "pwa/tests/browser/library.spec.ts",
-        "pwa/src/app/routes.ts"
+        "pwa/src/app/routes.ts",
+        "pwa/src/features/catalog/CatalogPanel.tsx",
+        "pwa/src/ui/shell/shell.css"
       ],
       "acceptance": "Debounce, paging, normalization, grouping, retry, Back/focus restoration and rollback",
       "status": "in_progress",
@@ -516,7 +518,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
       "slice": "Luna presentation plus coordinator lifecycle/history/browser integration",
-      "nextAction": "Root now owns LibraryScreen wrapper/transient search+artist cache,history-state navigation,worker teardown/BFCache recovery,App wiring and actual product browser cases. Luna owns only frozen presentation3files in UIworktree. Add controller.restore(view) with behavioral back-view test. Validate together after normal worker integration;do not typecheck missing pending component as a completed result.",
+      "nextAction": "Preserve owned dirty Library/App/routes/toolbar/CatalogPanel/controller/browser source atknown1bbc3d25base.2product cases passed andoneexactscrollcase remainsfailed64px;no wholeT10acceptance. Await owner answer before further scroll investigation;run unaffected crossflow regressions/complete independent T08/T09work. Do not discard/hide source or mark failing gate passed.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
@@ -537,6 +539,11 @@
           "command": "node node_modules/vitest/vitest.mjs run src/features/library/controller.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
           "revision": "9ce279c1 plus reviewed controller tree committed next",
           "result": "7async race/retry/ownership/paging/snapshot/artist cases and strict types passed. Initial6/7failurewas fixture setup before old query submitted;one microtask-drain correction. Review also clears stale focus on new catalog."
+        },
+        {
+          "command": "node node_modules/@playwright/test/cli.js test library.spec.ts; node node_modules/@playwright/test/cli.js test library.spec.ts -g \"actual Library installs\" (from pwa)",
+          "revision": "1bbc3d25plusownedLibrary integration working tree",
+          "result": "Actual UIartist/history/retry/tabownership andfresh offline320px200percent passed;search/paging/songBack restores40rows/query/focus/scroll. SettingsBack exactscroll remains64pxaftertwo bounded cycles. Finalfailedreceipt window4-library-product-browser-fix2-20261015;approvalpending,not passed. Strict types/build/9controller cases passed."
         }
       ],
       "progress": [
@@ -545,9 +552,11 @@
         "2026-10-15 before root query edits:primary1725eef7clean;one disjoint synth worker on existing tree. Own named shared protocol/client/worker query surfaces plus Library fixture only. Native SongDao query/order/comments govern;no arbitrary SQL,libraryUI or blob resolution in first slice.",
         "Native fixed search/artist scalar pageRPC passes strict types,2input/binding cases and1actual ChromeSQLite case (18.8s):nonnull/emptyBLOB eligibility,null/blanktitle order,case/hyphen/SQLite wildcard/quote semantics,page continuity,2MBpayload exclusion,readonly reopen,cache snapshot switch and10user stores/outbox unchanged. Scratch fixture generator quote failure wrote no files;corrected once,then types/browserbehavior passed first actual run. No libraryUI/groupqueries claimed.",
         "Observable Library controller and frozen presentation props saved;7behavioral async cases/types pass. Coordinator owns lifecycle/cache/App routing;bounded Luna presentational UI may follow only after sole synth worker idles. No productUI acceptance yet.",
-        "2026-10-15 pre-UIintegration:primary5ace7210has only owned dirty App/routes/controller/controller-test plus untracked LibraryScreen. UIbranch e968599bclean/idle,3newpresentation paths only;strict owned types passed. Root reviewedmarkup/css;merge normally preserving partial lifecycle work,then final semantic/missing-catalog review and actual browser product tests. No UI acceptance yet."
+        "2026-10-15 pre-UIintegration:primary5ace7210has only owned dirty App/routes/controller/controller-test plus untracked LibraryScreen. UIbranch e968599bclean/idle,3newpresentation paths only;strict owned types passed. Root reviewedmarkup/css;merge normally preserving partial lifecycle work,then final semantic/missing-catalog review and actual browser product tests. No UI acceptance yet.",
+        "Pre-browser integration review:Settings installer singleton still retained catalog ownership after panel unmount,so add panel cleanup pause before Library opens its reader. Also save Library scroll before header Settings navigation,clear stale cached rows on missing catalog,and use h2under shell h1. These are coordinator-owned lifecycle/semantic corrections;actualbrowserproof next.",
+        "First actualLibrary UI browser run:offline320px/200percent passed;open-song Back restored40rows/query/scroll/focus. Settingsroundtrip scroll failed because header was scrolled offscreen and clicking it moved the page to0;pin shell topbar like nativeScaffold. Artistview itself worked;fixture expected Artist A but native display adapter correctly preserves mixed-case Artist-A. Correct literal,remove redundantlocator assertion;one bounded fix/retest cycle1. No acceptance claimed for failed checks."
       ],
-      "blocker": null,
+      "blocker": "Exact Settings->Library scroll restoration remains64pxdifferent after2diagnose/fix/retest cycles. Query/draft/40loaded rows andsongBack focus/scroll pass;artist/browserBack/ownership andoffline320px200percent cases pass. User AGENTS.mdrequiresaskingbeforeexpanding;asyncapproval question pending. Do not attempt a third scroll fix or relax assertion without that answer. Continue independent packages.",
       "dependencyGates": {
         "T05": "desktop-catalog-runtime"
       },
