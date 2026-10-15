@@ -6,5 +6,5 @@ export default defineConfig({
   plugins: [sqlitePreservationPlugin(), react()],
   optimizeDeps: { exclude: ['@sqlite.org/sqlite-wasm'] },
   worker: { format: 'es', plugins: () => [sqlitePreservationPlugin()] },
-  test: { environment: 'node', exclude: ['tests/browser/**', 'node_modules/**', 'dist/**'] },
+  test: { environment: 'node', maxWorkers: 2, exclude: ['tests/browser/**', 'node_modules/**', 'dist/**'] },
 });

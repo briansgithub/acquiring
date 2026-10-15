@@ -206,8 +206,8 @@ describe('native streaming gain, headroom and envelope channels', () => {
       arpeggiateCycles: arpeggiated ? 1 : 0 }), 44_100), 88_200);
   }
 
-  it('all13presets retain native234dense chord/arpeggio/register/balance headroom cases', () => {
-    for (const { waveform } of INSTRUMENTS) for (const transpose of [-12, 0, 12]) {
+  it.each(INSTRUMENTS)('$waveform retains18native dense chord/arpeggio/register/balance headroom cases', ({ waveform }) => {
+    for (const transpose of [-12, 0, 12]) {
       for (const arp of [false, true]) for (const balance of [0, 0.5, 1]) {
         const samples = stream(waveform, balance, 1 - balance, arp, transpose);
         expect(samples.some((sample) => sample !== 0), `${waveform} silent`).toBe(true);

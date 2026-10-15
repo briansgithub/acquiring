@@ -452,30 +452,46 @@
         "pwa/src/audio/transport/",
         "pwa/tests/browser/audio-preview.spec.ts",
         "pwa/tests/browser/audio-preview-harness.ts",
-        "pwa/tests/browser/audio-preview.html"
+        "pwa/tests/browser/audio-preview.html",
+        "pwa/src/audio/synth/playback-pcm.test.ts",
+        "pwa/vite.config.ts"
       ],
       "acceptance": "Seek/config/loop/cancellation races, silent scrub and explicit-resume cases",
       "status": "in_progress",
-      "owner": "coordinator integration/browser evidence; preview worker idle (gpt-6.1-sol/high)",
-      "branch": "codex/pwa-preview",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "9ee99a7b",
-      "slice": "Foreground static preview WebAudio owner with native cancellation and retirement",
-      "nextAction": "Normally merge reviewed b98849f5 into primary00a2d681 preserving owned dirty tasks and3untracked browser files. Frozen contract unchanged;4worker-only transport additions. Then combined unit/input/types/build and4actualWebAudio Chrome component cases. T08 remains in_progress;stream transport and App wiring unimplemented.",
+      "owner": "coordinator (runtime model unknown); preview implementation worker idle",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
+      "baseCommit": "8e4ebeb9e48f424173026333fc15634adb70459c",
+      "slice": "Static preview component accepted; shared stream transport remains open",
+      "nextAction": "Continue independent stream transport intent/revision/sink/audio-clock slice after freezing single-context ownership. Current PreviewOwner is not wired into App;future stream/capture must reuse one application output context rather than introduce duplicate owners. Trusted tab blur/hidden andphysicaldevice behavior remain open;actual pagehide/new-document behavior is evidenced. Owner approved focused audio lifecycle;separate Settings-scroll approval is still pending.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
           "revision": "b98849f5cedd72acce58f1df3ce42ca25d644789",
           "result": "25/25fake cases and strict owned types PASS;preview-typecheck-20261015-14/preview-fakes-20261015-15. Initial test-only typed-array generic mismatch corrected once. Root actual-browser acceptance pending;no physical output claim."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src --maxWorkers=2; node node_modules/vitest/vitest.mjs run tests/parity --maxWorkers=2; npm run build; Playwright audio-preview.spec.ts --workers=1; owner-approved --grep \"trusted pagehide\" (from pwa)",
+          "revision": "8e4ebeb9 plus root browser fixture and identical dense DSP test organization",
+          "result": "309unit+1input/strict types/build PASS atwindow6-preview-combined-retry2-20261015. Initial oversubscription8timeouts;cap2workers resolved7,parameterizing identical234dense scenarios resolved last with no timeout/assertion change.3actualWebAudio cases PASS44100/48000clock/PCM/end/reuse andstale preparation;trusted pagehide/new-document/release case PASS3.6s guardwindow6-preview-approved-pagehide-browser-20261015. Original trusted-tab gate emitted noevents in both automation modes and is explicit fixme/unproven,not passed. Owner approved pagehide investigation after earlier auto-review rejection;separate Settings-scroll approval still pending."
+        },
+        {
+          "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check; node node_modules/@playwright/test/cli.js test audio-preview.spec.ts --workers=1 --output .artifacts/pwa-port/audio-preview/browser-final (from pwa)",
+          "revision": "8e4ebeb9 plus named final browser/config/test-organization tree committed next",
+          "result": "Normal configured check PASS309unit+1input/strict types/production build (window6-preview-final-config-check-20261015). Final actual Chrome4passed23.2s,1explicitfixme(skipped trusted-tab gate),window6-preview-browser-final-20261015. No productsource change since passes. No physical output/Safari/App audio/BFCache claim."
         }
       ],
       "progress": [
         "2026-10-15 bounded source planning only at67%/10%:frozen AudioEngine.kt23-25/57-90/251-285 governs24ms retirement,invalidate-before-fade,prepared consumption/generations;PlaybackEngine.ktload/play/pauseForLifecycle/pauseForScrub/seek/reset/updateConfig/release separates command intent/revision from delayed published state. Existing static-renderer and PlaybackPcmRenderer already cover pure PCM,so do not reimplement DSP. Actual WebAudio owner/clock/onset/foreground/silent-scrub remains unimplemented/unproven. T14pure learning is a disjoint ready coordinator lane after audio contract freeze;one worker maximum.",
         "2026-10-15T15:31Z pre-branch:primary9ee99a7bclean;data-compat codex/pwa-pitch24a3f78bclean;all agents idle/no recovery runs. Live10%five-hour/13%weekly,new five-hour reset1792093757 supersedes prior reached boundary;weekly unchanged,no credit action. Preserve all old worktrees/branches/profiles. Root freezes preview-only interfaces and independently owns T14assessment;one worker maximum.",
         "Root pre-browser intent atprimary00a2d681:4actualChrome component cases will exercise44100/48000 realAudioContexts,user-gesture resume/native PCM/analyser nonzero signal/render-clock receipts/natural end/context reuse,out-of-order injected async native preparation cancellation,andtrusted tab blur/hidden stop/explicit new gesture/permanent release. Test-only dev5173harness;no shipped App/production-offline/device claim. Default suspended/frozen clock/fade/resource boundaries are worker unit scope. Root browser files pending worker implementation merge;do not count a missing import/no-tests run as acceptance. W3C WebAudio1.1 currentTime/resume/AudioScheduledSourceNode/Analyser consulted2026-10-15;source link in validation notes later.",
-        "2026-10-15 pre-integration:primary00a2d681 owns only tasks diff and3untracked preview browser files;staged empty. Worker codex/pwa-preview b98849f5 clean/idle,4transport additions only,25fake-context cases/types pass. Root reviewed source/cleanup/tests,requested release-promise latch/pre-copy32voice and30s injectedPCM bounds,all covered. Live32%five-hour/16%weekly. Merge normally;preserve all worktrees/branches and pending Library scroll gate."
+        "2026-10-15 pre-integration:primary00a2d681 owns only tasks diff and3untracked preview browser files;staged empty. Worker codex/pwa-preview b98849f5 clean/idle,4transport additions only,25fake-context cases/types pass. Root reviewed source/cleanup/tests,requested release-promise latch/pre-copy32voice and30s injectedPCM bounds,all covered. Live32%five-hour/16%weekly. Merge normally;preserve all worktrees/branches and pending Library scroll gate.",
+        "Combined first run8timeouts under32worker startup;cycle1cap2workers passes296/297,only unchanged monolithic234scenario DSP test still53s vs existing30s cap. No assertion mismatch/source regression observed. Cycle2narrow test organization only:parameterize the same13presets into13cases,each retains all18transpose/arpeggio/balance combinations,88200frames and identical assertions/tolerance/30s per-case timeout. No DSP/fixture/product change;one retry remains this cycle,then ask before any expansion if failure persists. Full check with2workers follows,not a timeout increase.",
+        "Owner answered Approve the focused lifecycle investigation to the explicit real-navigation pagehide question on2026-10-15. Earlier auto-review rejected that fixture expansion under AGENTS two-cycle rule before any source mutation. This direct new owner approval authorizes the recorded pagehide fixture;original trusted-tab assertion remains an explicit unproven gate,not a pass. Approval scope is audio lifecycle only and does not authorize the separate pending Library Settings-scroll investigation.",
+        "Actual audio browser3cases pass unchanged;trusted tab blur/hidden gate emitted no events in either headless or offscreen headed automation (first correction). Natural completion was correctly rejected as lifecycle evidence. Preserve that exact test as explicit fixme/unproven for a real window/device gate,not passed. Separate next fixture uses genuine same-origin navigation pagehide and stores snapshot after owner handler,then proves fresh document silent until new gesture and permanent release. No synthetic lifecycle event substitution/no production source change. Failed traces remain in browser-first/browser-headed-cycle1.",
+        "Static preview component actual-browser evidence established4cases across first/pagehide runs;product App still does not expose previews/transport. Test-specific trusted tab visibility remains explicitly unproven and retained asfixme;pagehide is genuine trusted navigation evidence,not BFCache/speaker/device proof. Bound default Vitest worker count to2 in existing config so ordinary npm check reproduces the covering concurrency setting;same234DSP scenarios/30s per-preset gate retained. Final full configured check follows before checkpoint;T08in_progress."
       ],
-      "blocker": null
+      "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture."
     },
     {
       "id": "T09",
@@ -715,7 +731,12 @@
         "2026-10-15 pre-edit:root owns pwa/src/domain/learning pitch assessment source/tests/WORKLOG only. One disjoint Sol/high preview worker owns audio/transport implementation after root contract freeze. Native pure assessment read:held/no-signal/low confidence/unclear boundaries must remain technical uncertainty,not a musical error. Source authority unchanged801cf798;actual capture/scoring integration unrun.",
         "Pure Aural pitch assessment complete119native cases/1907frames exact full outputs,6tests/strict types PASS first run. Preserves original-order error priority,held/no-signal technical uncertainty,cadence/coverage/stability/inlier/gap/sequence/octave semantics;input arrays untouched,results immutable,bounded browser-domain safety extensions explicit. Portable298320byte fixture is intentional source-derived data,not a cache. Session/evidence/curriculum/scheduler/repair and capture ownership remain open;T14in_progress."
       ],
-      "blocker": null
+      "blocker": null,
+      "proposalAssignment": {
+        "owner": "preview_owner gpt-6.1-sol/high",
+        "status": "read-only proposal complete; worker idle; canonical decimal-string native seed representation selected by coordinator for upcoming contract",
+        "scope": "Native normalization/beginExercise/evaluate/record evidence reducer only;exclude generation/target selection/session storage;read native types/tests and propose minimal compatible coordinator-owned local contract."
+      }
     },
     {
       "id": "T15",
