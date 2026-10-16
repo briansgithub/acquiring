@@ -1,4 +1,4 @@
-import type {StaticRenderOptions} from '../synth';
+import type {StaticRenderOptions,PlaybackTimeline} from '../synth';
 
 /** Exact frequencies bypass transpose. Rendering uses the context output rate. */
 export type PreviewRequest = Omit<StaticRenderOptions, 'sampleRate'|'shouldAbort'|'random'>;
@@ -73,4 +73,45 @@ export interface ApplicationAudioContextOwner {
   resumeFromGesture():Promise<AudioContext>;
   subscribeInvalidation(listener:(reason:AudioContextInvalidationReason)=>void):()=>void;
   release():Promise<void>;
+}
+
+
+export const PLAYBACK_CLOCK_LIMITS=Object.freeze({segments:512,segmentFrames:65536,sampleRateMin:1000,sampleRateMax:384000});
+/** Absolute integer sample-frame coordinates, selected from one actual audio clock. */
+export interface PlaybackClockSegment {
+  readonly startFrame:number;
+  readonly frameCount:number;
+  readonly startBeat:number;
+  readonly beatsPerFrame:number;
+}
+export interface PlaybackClockQueue {
+  readonly sampleRate:number;
+  readonly startBeat:number;
+  readonly endBeat:number;
+  readonly completionKey:string|null;
+  readonly anchorFrame:number;
+  readonly anchorBeat:number;
+  readonly lastEndFrame:number|null;
+  readonly segments:readonly PlaybackClockSegment[];
+}
+export interface PlaybackClockReading {
+  readonly beat:number;
+  /** Scheduled PCM tail reached; NOT renderer/source/revision completion evidence. */
+  readonly queueDrained:boolean;
+}
+/** Pure native played-head math with explicit browser lead/gap/drain extensions.
+ * Safe nonnegative integer frame coordinates; bounded native rate/beat/slope domain.
+ * Append accepts only ordered nonoverlapping positive bounded segments, clones/freezes
+ * inputs, rejects overflow/cap rather than dropping unplayed history. Read holds the
+ * anchor before first scheduling and endpoint across silence; loops modulo, once clamps.
+ * Prune removes only consumed mappings and preserves anchor/lastEndFrame/drain meaning.
+ * Reads before retained anchor are rejected. No wall-clock extrapolation or clock blending.
+ */
+export interface PlaybackClockApi {
+  createPlaybackClock(timeline:Pick<PlaybackTimeline,'startBeat'|'endBeat'|'completionKey'>,sampleRate:number,anchorBeat?:number):PlaybackClockQueue;
+  appendPlaybackClock(clock:PlaybackClockQueue,segment:PlaybackClockSegment):PlaybackClockQueue;
+  readPlaybackClock(clock:PlaybackClockQueue,playedFrame:number):PlaybackClockReading;
+  prunePlaybackClock(clock:PlaybackClockQueue,playedFrame:number):PlaybackClockQueue;
+  /** Conservatively floor nonnegative finite contextTime*sampleRate; reject unsafe arithmetic. */
+  playbackFrameAtTime(contextTime:number,sampleRate:number):number;
 }

@@ -546,7 +546,8 @@
         "2026-10-16T01:46Z root freezes application context contract in existing contracts.ts before implementation. Selected smaller slice from Sol/high proposal:application owner+preview borrowing first;stream protocol/sink next after checkpoint. Primary timeline adapter checkpoint and clean evidencec82473a3sibling preserved. Root separately owns music boolean parity and browser harness;no duplicateworker.",
         "2026-10-16T01:59Z preintegration:primarybe204b08clean;worker4d960244clean/idle,sixownedcontext/previewpaths,50faketests/scopedtypesPASS. Rootreviewedcontext/previewsource andfinalclose-resolverfix. Live45%five-hour/30%weekly;oneboundedcombined/browseracceptanceslice. Preservefrozen63fdcontract,timeline04941/musicbe204,everybranch/worktree/profile. Rootwilldirtyonlytasks/HANDOFFbeforemerge;stagedempty;workerdidnottouchdocs.",
         "Actualcombined5f8a1cbfplus3browserfixturesPASS348unit/1input/strict types/build(window7-context-combined-check-20261015),shell4cbe15e19ddeunchanged. Prebrowseroutputaudit:oldpreviewafterEachwouldoverwriteearlierignoredJSON,sorootclaimsoutput-onlyafterEachpathchangeinold+newfixtures,usingPlaywrighttestInfo.outputPath(proof.json)undereachuniquerun.Noassertion/productchange;nativemetadataandoldproofsretained.Stricttypesthenactualbrowserchecks.",
-        "2026-10-16T02:02Z context/preview runtimeaccepted348unit/input/types/buildand8actualChrome+1explicittrustedtabgap. Static-preview-runtime milestonepermitsT11metadata/chordpreviewdevelopmentwithoutwaitingforfullstreamingT08;T12/T26remainfullgated. This isdependencysequencingonly,notfullT08/T11acceptance. Sol/highclockproposalreviewed14nativeheadcases+browsergapextensions,notimplemented. Nextfreezecontracts/claimbeforeworkerreuse."
+        "2026-10-16T02:02Z context/preview runtimeaccepted348unit/input/types/buildand8actualChrome+1explicittrustedtabgap. Static-preview-runtime milestonepermitsT11metadata/chordpreviewdevelopmentwithoutwaitingforfullstreamingT08;T12/T26remainfullgated. This isdependencysequencingonly,notfullT08/T11acceptance. Sol/highclockproposalreviewed14nativeheadcases+browsergapextensions,notimplemented. Nextfreezecontracts/claimbeforeworkerreuse.",
+        "2026-10-16T02:05Z prebranchintent:primaryd5391e68cleanafter348combinedand8actualChrome;applicationworker4d960244clean/idle. Clockproposalacceptedfivepurefunctions/14nativeheadcases. Rootfreezesboundedclocktypesand512segment/65536frame/rate1000..384000limitsbeforeoneSol/highworkeredit. Source/fixturepathsdisjoint;allolderbranches/profilespreserved. Lastlive54%five-hour/32%weekly;checkagainbeforedispatch."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -610,6 +611,24 @@
           "revision": "5f8a1cbf6178e87aed2753d95c70de643ca19f13 plus named root browser fixtures checkpointed next",
           "evidence": "NativePCM/realtimegraph/clock/ended/cancellation actualChrome44100/48000;singlelazyapplicationcontext,twoindependentborrowers,childreleasekeepsotherusable,applicationreleaseclosesonce/permanently,actualsuspendpermission/newgesture,trustedpagehide/newdocumentcleanup. Combined348unit/input/types/buildPASS;8ChromePASS13.8s. Components not yetwiredintoApp. Excludesstreamtransport,physicalhearing,Safari,realtrustedtabvisibility andBFCache;wholeT08in_progress."
         }
+      },
+      "clockAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-playback-clock",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "frozen clock contract checkpoint from d5391e68;exact tip recorded before dispatch",
+        "ownedPaths": [
+          "pwa/src/audio/transport/playback-clock.ts",
+          "pwa/src/audio/transport/playback-clock.test.ts",
+          "pwa/src/audio/transport/fixtures/generate-clock-native.py",
+          "pwa/src/audio/transport/fixtures/native-clock.json",
+          "pwa/src/audio/transport/CLOCK_WORKLOG.md",
+          "pwa/src/audio/transport/index.ts"
+        ],
+        "scope": "Five pure clock API functions from readonly proposal;integer actual-clock frame mapping,loop/once/tempoboundary,finitegap/initiallead,prune/drain/bounds. Independent unchanged native audibleBeat body14cases with fixture-only scope bindings;browserextensions explicit. No applicationcontext/preview/timeline/DSP/streamsink/worker/App/dependency/task/contract edits.",
+        "nextAction": "Afterrootcontracttypes/checkpointandliveusagebelow70,reinspectcleansiblingapplication4d960244,createpreservednewcodex/pwa-playback-clockfromexactrootcontracttip;persistlocalintent,implementsmallhelpersand14nativefixtures,scopedtests/types,validatedcheckpoint. At70nonewcheck/slice;savepartialsifcutoff. Rootreviews/integratesandrunscoveringactualcombinedchecks."
       }
     },
     {
