@@ -17,6 +17,7 @@ const int=(value:number)=>Number.isNaN(value)?0:Math.min(2147483647,Math.max(-21
 const round=(value:number)=>int(Math.floor(value+.5));
 const compare=(a:number,b:number)=>a===b?0:Number.isNaN(a)?Number.isNaN(b)?0:1:Number.isNaN(b)?-1:a<b?-1:1;
 export const prettyScale=(scale:string)=>scale.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,char=>char.toUpperCase());
+const complexityFormat=new Intl.NumberFormat('en-US',{useGrouping:false,minimumFractionDigits:1,maximumFractionDigits:1});
 const beatFormat=new Intl.NumberFormat('en-US',{useGrouping:false,minimumFractionDigits:2,maximumFractionDigits:2});
 export const formatBeat=(beat:number)=>Number.isInteger(beat)?String(int(beat)):!Number.isFinite(beat)?String(beat):beatFormat.format(beat).replace(/0+$/,'').replace(/\.$/,'');
 function objects(section:ExtractedSection,field:string):JsonObject[]{
@@ -26,7 +27,7 @@ function objects(section:ExtractedSection,field:string):JsonObject[]{
   return value.filter(isObject);
 }
 /** Source-matched InfoTab projection; existing data/theory helpers retain native JSON/key semantics. */
-export function songOverview(section:ExtractedSection,uniqueChords:number):SongOverview {
+export function songOverview(section:ExtractedSection,uniqueChords:number,complexityRating:number|null=null):SongOverview {
   if(section.chords.length>INFO_LIMITS.chords)throw new RangeError('This section has too many chords to display.');
   objects(section,'keys');
   const keys=getKeys(section),tempos=objects(section,'tempos'),meters=objects(section,'meters'),bpm=getBpm(section);
@@ -45,6 +46,7 @@ export function songOverview(section:ExtractedSection,uniqueChords:number):SongO
     rows.push({label:'Beats',value:formatBeat(beats)+(bars===null?'':' · '+bars+' bars')});
   }
   rows.push({label:'Chords',value:section.chords.length+' ('+uniqueChords+' unique)'});
+  if(complexityRating!==null&&Number.isFinite(complexityRating))rows.push({label:'Complexity score',value:complexityFormat.format(complexityRating)+' / 100'});
   const raw=Array.isArray(section.notes)?section.notes:isObject(section.notes)&&Array.isArray(section.notes.melody1)?section.notes.melody1:[];
   if(raw.length>INFO_LIMITS.notes)throw new RangeError('This section has too many melody entries to display.');
   const notes=raw.filter(isObject),sounded=notes.filter(note=>nativeBooleanOrNull(note.isRest)!==true&&nativeBooleanOrNull(note.rest)!==true).length;

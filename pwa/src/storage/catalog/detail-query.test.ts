@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {SONG_DETAIL_LIMITS,songDetailQuery,songPayloadRecord} from './detail-query';
+import {SONG_DETAIL_LIMITS,songDetailQuery,songPayloadRecord,readSongComplexity} from './detail-query';
 const row=()=>({slug:'A/raw slug',artist:null,title:'Raw_Title',url:'https://example.test',status:'complete',payloadType:'blob',payloadBytes:2,dataBlob:new Uint8Array([1,2])});
 it('uses native exact equality with bound raw slug and caps materialized blob in SQL',()=>{
   const slug="x' OR 1=1 --_%";const plan=songDetailQuery(slug);
@@ -21,4 +21,14 @@ it('rejects oversized/type-corrupt/truncated responses without converting them t
     expect(()=>songPayloadRecord('s',{...row(),...change})).toThrow();
   }
   expect(()=>songPayloadRecord('s',{...row(),payloadBytes:SONG_DETAIL_LIMITS.compressedBytes+1,dataBlob:null})).toThrow('browser limit');
+});
+
+it('reads optional complexity by bound exact slug without clamping, and isolates lookup failures',()=>{
+  const slug="raw'_%";
+  for(const score of [0,77.05,-1,101])expect(readSongComplexity(slug,(sql,bind)=>{
+    expect(sql).toBe('SELECT complexityRating FROM song_browse_entries WHERE slug=? LIMIT 1');
+    expect(bind).toEqual([slug]);return score;
+  })).toBe(score);
+  for(const score of [null,undefined,'77',NaN,Infinity])expect(readSongComplexity(slug,()=>score)).toBeNull();
+  expect(readSongComplexity(slug,()=>{throw new Error('unavailable optional metadata');})).toBeNull();
 });

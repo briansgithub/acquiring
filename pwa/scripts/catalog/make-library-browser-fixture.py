@@ -24,13 +24,14 @@ with closing(sqlite3.connect(path)) as db:
           ('case-artist','artist a','ArtistTitle',b'fixture')]
     if args.details or args.song_screen:
         payload=json.dumps({'10':{'sectionName':'Chorus','sectionIndex':1,'chords':[{'root':4,'type':5,'beat':1,'duration':2}],'metadata':{'youtube':{'id':None}}},'2':{'sectionName':'Verse','sectionIndex':0,'chords':[{'root':1,'type':5,'beat':1,'duration':1},{'root':5,'type':7,'beat':2,'duration':1}],'numericId':'12345','notes':{'melody1':[{'sd':'1','beat':1},{'rest':True},{}]},'metadata':{'endBeat':9,'tempos':[{'bpm':90,'beat':1},{'bpm':120,'beat':5}],'meters':[{'numBeats':4,'beat':1},{'numBeats':3,'beat':5}],'keys':[{'tonic':'C','scale':'major','beat':1},{'tonic':'D','scale':'minor','beat':2}],'youtube':{'id':'fixture&part=2'}}}}).encode('utf-8')
-        rows.extend([('detail-gzip','Detail Artist','Detail_Gzip',gzip.compress(payload,mtime=0)),('detail-raw',None,'Detail Raw',payload),('detail-broken',None,'Detail Broken',b'{broken')])
+        rows.extend([('detail-gzip','Detail Artist','Detail_Gzip',gzip.compress(payload,mtime=0)),('detail-raw',None,'Detail Raw',payload),('detail-unrated',None,'Detail Unrated',payload),('detail-broken',None,'Detail Broken',b'{broken')])
         if args.details:rows.append(('detail-oversize',None,'Detail Oversize',b'Z'*(8*1024*1024+1)))
     for slug,artist,title,blob in rows:
         db.execute('INSERT INTO songs VALUES(?,?,?,?,?,?)',(slug,artist,'Updated Search' if args.variant=='new' and slug=='a-alpha' else title,'https://example.test','complete',blob))
     for slug,artist,title in db.execute('SELECT slug,artist,title FROM songs WHERE dataBlob IS NOT NULL').fetchall():
         first=(title or '').strip()[:1].upper();alpha=first if len(first)==1 and first in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' else '#'
-        db.execute('INSERT INTO song_browse_entries VALUES(?,?,?,?,?,?)',(slug,artist,title,alpha,77.,7))
+        rating=None if slug=='detail-unrated' else 0. if slug=='detail-raw' else 77.05 if slug=='detail-gzip' else 77.
+        db.execute('INSERT INTO song_browse_entries VALUES(?,?,?,?,?,?)',(slug,artist,title,alpha,rating,None if rating is None else int(rating//10)))
     db.commit()
 raw=path.read_bytes();compressed=gzip.compress(raw,mtime=0);(source/'catalog.db.gz').write_bytes(compressed)
 manifest={'schemaVersion':3,'snapshotId':hashlib.sha256(raw).hexdigest(),'files':[{'name':'catalog.db','byteSize':len(raw),'checksum':hashlib.sha256(raw).hexdigest(),'compressedByteSize':len(compressed),'compressedChecksum':hashlib.sha256(compressed).hexdigest()}]}

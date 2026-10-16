@@ -1,5 +1,5 @@
 import { songPageQuery, type SongPageRequest, type SongPage } from './library-queries';
-import {songDetailQuery,songPayloadRecord,type SongPayload} from './detail-query';
+import {songDetailQuery,songPayloadRecord,readSongComplexity,type SongPayload} from './detail-query';
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { sha256 as incrementalSha256 } from '@noble/hashes/sha2.js';
 import { fetchVerifiedChunk, sha256 } from './chunks';
@@ -193,7 +193,8 @@ async function songPayload(slug:string):Promise<SongPayload|null> {
   let db:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
   try {
     db=new sqlite!.oo1.DB(stagedPath(source.id,'catalog.db'),'r',owner().vfsName);
-    return songPayloadRecord(source.sourceSnapshot,db.selectObjects(plan.sql,plan.bind)[0]);
+    const payload=songPayloadRecord(source.sourceSnapshot,db.selectObjects(plan.sql,plan.bind)[0]);
+    return payload&&{...payload,complexityRating:readSongComplexity(slug,(sql,bind)=>db!.selectValue(sql,bind))};
   } catch(error){confirmedSongRead=null;throw error;}
   finally {db?.close();}
 }

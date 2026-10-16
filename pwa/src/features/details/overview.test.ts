@@ -40,3 +40,12 @@ it('keeps native Formatter half-up decimal beat labels, including negative round
   // Independently checked with the installed JBR Formatter; immutable guard receipt retained.
   expect([1.005,2.675,-1.005,1.015,-.001].map(formatBeat)).toEqual(['1.01','2.68','-1.01','1.02','-0']);
 });
+
+it('shows native optional complexity after chords, preserves zero and rounds to one decimal',()=>{
+  const section={chords:[]} as Parameters<typeof songOverview>[0];
+  for(const [score,value] of [[0,'0.0 / 100'],[77.05,'77.1 / 100'],[-1,'-1.0 / 100'],[101,'101.0 / 100']] as const){
+    const rows=songOverview(section,0,score).rows,index=rows.findIndex(row=>row.label==='Complexity score');
+    expect(rows[index].value).toBe(value);expect(rows[index-1].label).toBe('Chords');expect(rows[index+1].label).toBe('Melody notes');
+  }
+  expect(songOverview(section,0).rows.some(row=>row.label==='Complexity score')).toBe(false);
+});

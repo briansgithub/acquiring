@@ -38,3 +38,10 @@ it('does not publish a cancelled read before or after a pending catalog response
   after.abort();resolve(payload(new TextEncoder().encode(sections)));
   await expect(pending).rejects.toMatchObject({code:'CLOSED'});
 });
+
+it('retains optional song-level scores including zero without changing the decoded sections',async()=>{
+  for(const score of [0,77.05,null,undefined]){
+    const result=await readSongDetails({songPayload:async()=>({...payload(new TextEncoder().encode(sections)),complexityRating:score})},'raw-slug');
+    expect(result?.complexityRating).toBe(score??null);expect(result?.sections.map(([id])=>id)).toEqual(['2','10']);
+  }
+});

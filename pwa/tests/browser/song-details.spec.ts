@@ -135,3 +135,18 @@ test('expanded Info preserves native metadata, key-at-beat previews and source l
   await overview.screenshot({path:testInfo.outputPath('overview-narrow.png')});
   const path=testInfo.outputPath('info-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});
 });
+
+test('optional native complexity is song-level, zero-preserving and available after offline reload',async({page,context})=>{
+  await install(page);
+  const overview=page.getByRole('region',{name:'Overview',exact:true});
+  await expect(overview.getByText('Complexity score',{exact:true})).toBeVisible();
+  await expect(overview.getByText('77.1 / 100',{exact:true})).toBeVisible();
+  await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');
+  await expect(overview.getByText('77.1 / 100',{exact:true})).toBeVisible();
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise<void>(resolve=>navigator.serviceWorker.addEventListener('controllerchange',()=>resolve(),{once:true}));});
+  await context.setOffline(true);await page.reload();
+  await expect(overview.getByText('77.1 / 100',{exact:true})).toBeVisible();
+  await page.goto('/songs/detail-raw');await expect(overview.getByText('0.0 / 100',{exact:true})).toBeVisible();
+  await page.goto('/songs/detail-unrated');await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+  await expect(overview.getByText('Complexity score',{exact:true})).toHaveCount(0);
+});

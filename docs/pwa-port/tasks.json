@@ -495,7 +495,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
       "slice": "Composed streaming transport component accepted; App/device integration remains open",
-      "nextAction": "Resume from accepted composed-stream-runtime; do not reimplement/recapture accepted components. Before T12 consumption, explicitly resolve the existing fullT08 dependency with a justified development milestone or complete remaining acceptance. Independent T11 optional complexity lookup/final covering acceptance remains ready. No new operation until current live usage can be verified below70% in both windows.",
+      "nextAction": "Composed-stream-runtime accepted8ee74c09; no component reimplementation/check pending. T11complete through existingstatic-preview gate. FullT08trustedtab/device/App integration remains open. Before T12development explicitly resolve its current fullT08dependency; no newgate added. Independent T14generator/target/unlock/session-repair orT15catalogqueries remain ready.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -1086,13 +1086,13 @@
         "pwa/tests/browser/song-details.spec.ts"
       ],
       "acceptance": "Canonical metadata, block previews, transition ranking and route preservation",
-      "status": "in_progress",
+      "status": "complete",
       "owner": "coordinator runtime unknown",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "ec3876da",
-      "slice": "Offline Song Info/Chords/static previews and native-ranked transitions accepted",
-      "nextAction": "Optional native complexity score lookup and final covering acceptance remain. Expanded overview/progression/key/tempo/meter/melody/source links, scale/selected-tone previews, native ranked transitions and Roman+Letters display are accepted at68bb1924 and prior recorded receipts. Do not repeat their implementation/native datasets. Pending Library Settings-scroll owner question remains separate.",
+      "slice": "Song Info/Chords, native transitions/source/overview/previews and optional complexity accepted",
+      "nextAction": "No remaining T11 implementation. Preserve source/fixtures/proofs; full Playback belongs to T12 and device/accessibility parity across the app to T27. Pending Library Settings-scroll approval remains separate.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/detail-query.test.ts src/features/details/reader.test.ts src/storage/catalog/library-queries.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test song-details-reader.spec.ts --workers=1 --output .artifacts/pwa-port/song-details/reader-first (from pwa through run-control)",
@@ -1123,6 +1123,11 @@
           "command": "npm run build; node node_modules/@playwright/test/cli.js test song-details.spec.ts --grep \"product Song\" --workers=1 --output .artifacts/pwa-port/song-details/letters-first (pwa/rootguard,localChrome)",
           "revision": "8eacfd2e plusnamedSongScreen/producttestpaths",
           "result": "PASS firstchecks strict types/buildshell48feed8a9593/window9-letters-build-first-20261016;actualChrome1PASS15.7s/24.0soverall/window9-letters-browser-first-20261016. RomanIVandletterFtogether,selectionand3tonesretained,no sourcedstopontoggle;existingpreviewPCM/clock/end/sectionstop/transitions/Back/reopen/coldoffline320px200%nooverflow. No unchangedInfo/sink/native/DSP/catalogrecapture. No fullT11/Safari/physicalhearingclaim."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/details src/storage/catalog/detail-query.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test song-details.spec.ts -g \"optional native complexity\" --output=.artifacts/pwa-port/song-complexity/browser-first; node node_modules/@playwright/test/cli.js test song-details.spec.ts --output=.artifacts/pwa-port/song-complexity/final-covering (pwa via root run-control)",
+          "revision": "8ee74c0960c64cdf328055bd7b9522295f8c0263 plus exact complexityAssignment.testedSha256 source tree committed next",
+          "result": "PASS22focused details/query unit checks1.62s, combined strict types/production build43e5a745cf9f; focused actual productChrome1PASS11.7s/16.9soverall and finalall4SongInfo/ChordsChromePASS48.7s. Exactoptional77.05->77.1/100,0.0/100,nullrowomission,song-level score persists throughsectionchanges/coldofflinereload; metadata/progression/key-at-beatpreviews/source links/transitionranking/Roman+Letters/tonecontrols/Back/StrictMode/downloadreturn and320px200%nooverlap remainPASS. New overview screenshot visually inspected. No failure/correctioncycle. Guards window11-complexity-unit/build/browser-first-20261016 and window11-song-final-covering-20261016. Existing native/catalog datasets not recaptured; no physicaldevice/Safari/wholeapp parity claim."
         }
       ],
       "progress": [
@@ -1141,7 +1146,10 @@
         "2026-10-16T12:03:02.539058+00:00 bounded expanded Info/source claim saved; native SongInfoChords.kt129-319 inspected. Root disjoint from Sol/high readonly transport proposal. Whole T11 stillopen, complexity score excluded until its own read contract.",
         "2026-10-16T12:16:31Z expandedInfo accepted with source-matched overview/progression/key-at-beat previews/changes/source links and explicitcaps512metadata/65536notes/4096chords;progression32at-time. NativezeroBPMdurationIntMAXretained;nonfiniteBPMdisplayUnknownbrowserextension. NullYouTubeabsent,IDsURL-encoded. Remainingcomplexity/Lettersvisualselectionparity recorded; no fullT11 claim.",
         "2026-10-16T12:19:46.720005+00:00 nextboundednativeLettersparity claim; nativeSongInfoChords.kt490-522keepsRomanandselectedChordwhenswitchchanges. RootthreepathsdisjointfromSol/highpureintentworker.",
-        "2026-10-16T12:22:32Z Lettersparityaccepted:displayaddslettertoretainedRoman,selection/tonecontrols/currentpreview/paginationuntouched;section/tabstillstop/reset. Currentproductunit/sourceproofsremainpreserved. WholeT11stillopencomplexity/finalacceptance."
+        "2026-10-16T12:22:32Z Lettersparityaccepted:displayaddslettertoretainedRoman,selection/tonecontrols/currentpreview/paginationuntouched;section/tabstillstop/reset. Currentproductunit/sourceproofsremainpreserved. WholeT11stillopencomplexity/finalacceptance.",
+        "2026-10-16T17:48:02.255972+00:00 primary8ee74c09 clean, workersidle,0recovery/no node/python child observed. Usagefetch recovered live38%/68%, reset1792187464/1792653278. Optional complexity slice ready under existing T11static-preview milestone; preserve all branches/ignored evidence. Frozen native SongDao39-40/MainActivity435-442/SongInfoChords206-207 establish exactslug optionaltrycatch scalar and one-decimal/100 row.",
+        "2026-10-16T17:50:49.390116+00:00 optional complexity firstchecks PASS22unit1.62s/window11-complexity-unit-20261016, strict types/build/window11-complexity-build-20261016, focused actualChrome1PASS11.7s/16.9soverall/window11-complexity-browser-first-20261016. Exactscore77.05->77.1/100, unchangedacrosssections, cold offlinereload,zero0.0/100,nullrowomission. No failures/cycles. Final4case product covering intent; existing Libraryscroll not run. Live43%/69%; rootreviews named diff beforecommit, workeridle.",
+        "2026-10-16T17:53:16.516758+00:00 T11declared feature acceptance complete using existing T08static-preview-runtime gate; T08parent/fullT12/T26release gates unchanged. Read-only Luna/medium native review completed,no edits/tests there. All rootchecks firstPASS, finaloverviewimage viewed. Rootguard0recovery/no helper observed aftertestexit; all recoverytrees/ignoredprofiles preserved. Lastlive46%/69%, reset1792187464/1792653278; checkfresh at nextslice, no newwork70%."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1256,6 +1264,40 @@
         "scope": "Native ChordsTab Letter switch adds letter text beneath Roman, preserves selected chord/tones/currentpreview and pagination. Section/tab changes retain existingstop/reset. No UIroute/sharedaudio/contract/dependency/Libraryscroll changes.",
         "status": "Accepted at68bb1924:strict types/build and actual product Chrome15.7s; no failure.",
         "nextAction": "No pending Letters work. Preserve Roman+letter text, selected chord/tones/preview and pagination on letter toggle."
+      },
+      "complexityAssignment": {
+        "owner": "coordinator runtime unknown",
+        "branch": "codex/pwa-foundation",
+        "baseCommit": "8ee74c0960c64cdf328055bd7b9522295f8c0263",
+        "worktree": "H:/Desktop/Acquiring/Acquiring",
+        "ownedPaths": [
+          "pwa/src/storage/catalog/detail-query.ts",
+          "pwa/src/storage/catalog/detail-query.test.ts",
+          "pwa/src/storage/catalog/catalog-worker.ts",
+          "pwa/src/features/details/reader.ts",
+          "pwa/src/features/details/reader.test.ts",
+          "pwa/src/features/details/SongScreen.tsx",
+          "pwa/src/features/details/WORKLOG.md",
+          "pwa/scripts/catalog/make-library-browser-fixture.py",
+          "pwa/tests/browser/song-details.spec.ts",
+          "pwa/src/features/details/overview.ts",
+          "pwa/src/features/details/overview.test.ts"
+        ],
+        "scope": "Optional exact-slug native complexityRating scalar from song_browse_entries, separate failure->null from required payload read, transport to Song Info and native one-decimal score/100 display. Null/absent lookup omits row, legitimate0shown; no clamp/recompute/section-derived score. No newRPC/generalSQL/dependencies/DBwrites/fullcatalogrecapture/Libraryscroll/audio edits.",
+        "nextAction": "No remaining complexity work; commit named validated tree.",
+        "status": "Accepted first checks and final4productChrome; root reviewed all11namedpaths. Same Luna/medium read-only review completed/idle.",
+        "testedSha256": {
+          "pwa/src/storage/catalog/detail-query.ts": "255ad84c08f56976378cd212a5bfce183ea1c28d1a0a2332cdc0ee23e3dbdd4a",
+          "pwa/src/storage/catalog/detail-query.test.ts": "b6c309ae300d0415ff37865ba9780c7a5f07430a58861ade2d9677a2ca03953a",
+          "pwa/src/storage/catalog/catalog-worker.ts": "6492e726ecba2b9f2029c4fd39b33c7f24c790d3948780c0ede18cea4ceeca8c",
+          "pwa/src/features/details/reader.ts": "e791cb95c35b049ff0fb5ac9df17a130efaf4c923179c4b862954365192c4387",
+          "pwa/src/features/details/reader.test.ts": "446f7801e2bfa3c941b5a0bc1d4fbe57279299e627cf36853eb419b7d7fa835b",
+          "pwa/src/features/details/SongScreen.tsx": "445e496cc1bf09e3ab24a7e5cc9fd26662d819ae0e7af72c6ea27ef53880267f",
+          "pwa/scripts/catalog/make-library-browser-fixture.py": "6a8862fc1673cf33ed4eb1b059bd4eccae35734b6956c3051a0d96b01041ea16",
+          "pwa/tests/browser/song-details.spec.ts": "814c5362a95d1ad8eacb7e926529986bb9e45f6643d8ee432406fb10da8c4399",
+          "pwa/src/features/details/overview.ts": "3d7fadba4586b6d9fe97da1bbe24624f91c2866643151b7c9b9aa5d8dec04dec",
+          "pwa/src/features/details/overview.test.ts": "a05222dc93f5aab9179099ad8057107c9b085ab9af5e396196aa81885f6d99e6"
+        }
       }
     },
     {
@@ -1698,16 +1740,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-16T17:16:50.841873+00:00",
-    "sourceCommit": "e084ccb601e2e7918e922574c62a7d95345984d6",
+    "date": "2026-10-16T17:53:16.516758+00:00",
+    "sourceCommit": "8ee74c0960c64cdf328055bd7b9522295f8c0263",
     "usageObserved": {
-      "fiveHourUsedPercent": 34,
-      "weeklyUsedPercent": 67
+      "fiveHourUsedPercent": 46,
+      "weeklyUsedPercent": 69
     },
     "fiveHourResetUnix": 1792187464,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Composed stream component accepted; checkpoint before further work because live quota fetch became unavailable. No threshold/reset inferred.",
+    "reason": "T11complete after22units/types/build andfinal4actualproductChrome; coherent recoverable checkpoint. No newdependency/releasegate.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T16:51:44.987830+00:00",
@@ -1750,8 +1792,25 @@
       "cwd": "pwa",
       "commit": "e084ccb601e2e7918e922574c62a7d95345984d6"
     },
-    "usageAvailability": "Last successful live observation34%/67%; subsequent query unresponsive/cancelled. Verify live before next slice.",
-    "nextAction": "Resume from accepted composed-stream-runtime; do not reimplement/recapture accepted components. Before T12 consumption, explicitly resolve the existing fullT08 dependency with a justified development milestone or complete remaining acceptance. Independent T11 optional complexity lookup/final covering acceptance remains ready. No new operation until current live usage can be verified below70% in both windows."
+    "usageAvailability": "Live counters responding:46%/69%; verify again before any nextslice.",
+    "nextAction": "After fresh usagecheck below70%bothwindows, select bounded readyT14generator/target/unlock/sessionrepair orT15Auralcatalogquery slice and freeze contract before workerassignment. Do not repeat accepted T11/audio/catalog proofs. At70%weekly startnothing and wait for1792653278 (2026-10-22T07:14:38Z); fivehourreset alone is insufficient.",
+    "latestAcceptedProductTree": {
+      "baseCommit": "8ee74c0960c64cdf328055bd7b9522295f8c0263",
+      "shell": "43e5a745cf9f",
+      "task": "T11",
+      "testedSha256": {
+        "pwa/src/storage/catalog/detail-query.ts": "255ad84c08f56976378cd212a5bfce183ea1c28d1a0a2332cdc0ee23e3dbdd4a",
+        "pwa/src/storage/catalog/detail-query.test.ts": "b6c309ae300d0415ff37865ba9780c7a5f07430a58861ade2d9677a2ca03953a",
+        "pwa/src/storage/catalog/catalog-worker.ts": "6492e726ecba2b9f2029c4fd39b33c7f24c790d3948780c0ede18cea4ceeca8c",
+        "pwa/src/features/details/reader.ts": "e791cb95c35b049ff0fb5ac9df17a130efaf4c923179c4b862954365192c4387",
+        "pwa/src/features/details/reader.test.ts": "446f7801e2bfa3c941b5a0bc1d4fbe57279299e627cf36853eb419b7d7fa835b",
+        "pwa/src/features/details/SongScreen.tsx": "445e496cc1bf09e3ab24a7e5cc9fd26662d819ae0e7af72c6ea27ef53880267f",
+        "pwa/scripts/catalog/make-library-browser-fixture.py": "6a8862fc1673cf33ed4eb1b059bd4eccae35734b6956c3051a0d96b01041ea16",
+        "pwa/tests/browser/song-details.spec.ts": "814c5362a95d1ad8eacb7e926529986bb9e45f6643d8ee432406fb10da8c4399",
+        "pwa/src/features/details/overview.ts": "3d7fadba4586b6d9fe97da1bbe24624f91c2866643151b7c9b9aa5d8dec04dec",
+        "pwa/src/features/details/overview.test.ts": "a05222dc93f5aab9179099ad8057107c9b085ab9af5e396196aa81885f6d99e6"
+      }
+    }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
 }

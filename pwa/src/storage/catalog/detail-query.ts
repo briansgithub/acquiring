@@ -2,7 +2,7 @@ import type {Song} from '../../contracts';
 import {CatalogError} from './protocol';
 
 export const SONG_DETAIL_LIMITS=Object.freeze({slugCharacters:2048,compressedBytes:8*1024*1024,decodedBytes:32*1024*1024,sections:4096,jsonDepth:128});
-export interface SongPayload {readonly sourceSnapshot:string;readonly song:Song;readonly data:Uint8Array|null}
+export interface SongPayload {readonly sourceSnapshot:string;readonly song:Song;readonly data:Uint8Array|null;readonly complexityRating?:number|null}
 
 /** Native SongDao.getSongBySlug equality, with bounded materialization before the blob crosses RPC. */
 export function songDetailQuery(slug:string):{sql:string;bind:(string|number)[]} {
@@ -26,4 +26,12 @@ export function songPayloadRecord(sourceSnapshot:string,row:Record<string,unknow
   if(row.payloadType==='blob'&&(!(row.dataBlob instanceof Uint8Array)||row.dataBlob.byteLength!==row.payloadBytes))throw new CatalogError('INTEGRITY','Incomplete song payload');
   return {sourceSnapshot,song:{slug:row.slug,artist:row.artist,title:row.title,url:row.url,status:row.status},
     data:row.payloadType==='null'?null:new Uint8Array(row.dataBlob as Uint8Array)};
+}
+
+/** Native optional metadata lookup: failure never makes an otherwise valid song unavailable. */
+export function readSongComplexity(slug:string,read:(sql:string,bind:string[])=>unknown):number|null {
+  try {
+    const score=read('SELECT complexityRating FROM song_browse_entries WHERE slug=? LIMIT 1',[slug]);
+    return typeof score==='number'&&Number.isFinite(score)?score:null;
+  }catch{return null;}
 }

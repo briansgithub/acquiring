@@ -3,7 +3,7 @@ import {parseSections,sectionsInSongOrder} from '../../domain/data';
 import {SONG_DETAIL_LIMITS,type SongPayload} from '../../storage/catalog/detail-query';
 import {CatalogError} from '../../storage/catalog/protocol';
 
-export interface SongDetails {readonly sourceSnapshot:string;readonly song:Song;readonly sections:readonly (readonly [string,ExtractedSection])[]}
+export interface SongDetails {readonly sourceSnapshot:string;readonly song:Song;readonly complexityRating?:number|null;readonly sections:readonly (readonly [string,ExtractedSection])[]}
 export interface SongDetailClient {songPayload(slug:string):Promise<SongPayload|null>}
 function checkAbort(signal?:AbortSignal):void {if(signal?.aborted)throw new CatalogError('CLOSED','Song read cancelled');}
 
@@ -58,5 +58,6 @@ export async function readSongDetails(client:SongDetailClient,slug:string,signal
   const text=await boundedText(payload.data,signal);checkDepth(text);checkAbort(signal);
   const sections=parseSections(text);
   if(sections.size>SONG_DETAIL_LIMITS.sections)throw new CatalogError('LIMIT','Song section count exceeds the browser limit');
-  return {sourceSnapshot,song,sections:sectionsInSongOrder(sections)};
+  const score=payload.complexityRating;
+  return {sourceSnapshot,song,complexityRating:typeof score==='number'&&Number.isFinite(score)?score:null,sections:sectionsInSongOrder(sections)};
 }

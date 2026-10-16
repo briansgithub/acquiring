@@ -44,7 +44,7 @@ export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:(
       const key=getParsedKey(section);return {key,chords:getUniqueDisplayChords(section.chords,key),error:null};
     }catch{return {key:{tonic:'C',scale:'major'},chords:[],error:'These chords could not be displayed.'};}
   },[section]);
-  const info=useMemo(()=>{try{return section&&analysis?{value:songOverview(section,analysis.chords.length),error:null}:null;}catch(error){return {value:null,error:error instanceof Error?error.message:'Song information is unavailable.'};}},[section,analysis]);
+  const info=useMemo(()=>{try{return section&&analysis?{value:songOverview(section,analysis.chords.length,details?.complexityRating??null),error:null}:null;}catch(error){return {value:null,error:error instanceof Error?error.message:'Song information is unavailable.'};}},[section,analysis,details?.complexityRating]);
   const scale=useMemo(()=>analysis?generateScaleLabels(analysis.key.tonic,Object.hasOwn(SCALE_INTERVALS,analysis.key.scale)?SCALE_INTERVALS[analysis.key.scale]:SCALE_INTERVALS.major):[],[analysis]);
   const tones=useMemo(()=>selectedChord&&analysis?interpret(selectedChord,analysis.key):null,[selectedChord,analysis]);
   const transitions=useMemo(()=>{try{return section?chordTransitions(section,rootOnlyTransitions):[];}catch{return[];}},[section,rootOnlyTransitions]);
