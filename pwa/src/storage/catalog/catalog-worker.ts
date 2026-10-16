@@ -1,4 +1,5 @@
 import { songPageQuery, type SongPageRequest, type SongPage } from './library-queries';
+import {songDetailQuery,songPayloadRecord,type SongPayload} from './detail-query';
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { sha256 as incrementalSha256 } from '@noble/hashes/sha2.js';
 import { fetchVerifiedChunk, sha256 } from './chunks';
@@ -176,8 +177,7 @@ async function active(kind: CatalogManifest['kind']): Promise<ActiveCatalog | nu
   }
 }
 /** Check active/cold recovery once per snapshot; never scan the full catalog per page. */
-async function songPage(request:SongPageRequest):Promise<SongPage> {
-  const plan=songPageQuery(request);
+async function confirmedSongs():Promise<{id:string;sourceSnapshot:string}> {
   const pointer=await journal!.pointer('songs');
   if(!pointer)throw new CatalogError('NOT_INSTALLED','Download the song catalog before browsing');
   if(confirmedSongRead?.id!==pointer.activeId){
@@ -186,7 +186,19 @@ async function songPage(request:SongPageRequest):Promise<SongPage> {
     const record=await validatedInstall(current.pointer.activeId);
     confirmedSongRead={id:record.id,sourceSnapshot:record.manifest.sourceSnapshot};
   }
-  const source=confirmedSongRead!;
+  return confirmedSongRead!;
+}
+async function songPayload(slug:string):Promise<SongPayload|null> {
+  const plan=songDetailQuery(slug),source=await confirmedSongs();
+  let db:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
+  try {
+    db=new sqlite!.oo1.DB(stagedPath(source.id,'catalog.db'),'r',owner().vfsName);
+    return songPayloadRecord(source.sourceSnapshot,db.selectObjects(plan.sql,plan.bind)[0]);
+  } catch(error){confirmedSongRead=null;throw error;}
+  finally {db?.close();}
+}
+async function songPage(request:SongPageRequest):Promise<SongPage> {
+  const plan=songPageQuery(request),source=await confirmedSongs();
   let db:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
   try {
     db=new sqlite!.oo1.DB(stagedPath(source.id,'catalog.db'),'r',owner().vfsName);
@@ -203,6 +215,7 @@ async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   owner();
   if (command.kind === 'info') return info();
   if (command.kind === 'songPage') return songPage(command.query);
+  if (command.kind === 'songPayload') return songPayload(command.slug);
   if (command.kind === 'prepare') return prepare(id, command.attemptId, validateManifest(command.manifest), command.baseUrl);
   if (command.kind === 'activate') return activate(command.attemptId);
   if (command.kind === 'active') return active(command.catalogKind);

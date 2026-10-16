@@ -12,7 +12,8 @@ export type CatalogCommand =
   | { kind: 'activate'; attemptId: string }
   | { kind: 'active'; catalogKind: CatalogManifest['kind'] }
   | { kind: 'status'; attemptId: string }
-  | { kind: 'songPage'; query: SongPageRequest };
+  | { kind: 'songPage'; query: SongPageRequest }
+  | { kind: 'songPayload'; slug: string };
 export interface ActiveCatalog { pointer: CatalogPointer; inspection: CatalogInspection; recovered: boolean }
 export type InstallStatus = CatalogInstall | null;
 export interface CatalogRequest { id: string; command: CatalogCommand }

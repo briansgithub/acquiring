@@ -1,4 +1,5 @@
 import { CatalogWorkerClient } from '../../src/storage/catalog/client';
+import {readSongDetails} from '../../src/features/details/reader';
 import { openUserDatabase, USER_STORES } from '../../src/storage/user';
 import type { CatalogManifest } from '../../src/storage/catalog/manifest';
 const clients = new Map<string, CatalogWorkerClient>();
@@ -44,6 +45,7 @@ export const catalogHarness = {
     } finally { db.close(); }
   },
   async open(name: string) { clients.set(name, await CatalogWorkerClient.open(value => { progress = value; })); return clients.get(name)!.info(); },
+  songDetails(name:string,slug:string) {return readSongDetails(clients.get(name)!,slug);},
   songPage(name:string,query:import('../../src/storage/catalog/library-queries').SongPageRequest) { return clients.get(name)!.songPage(query); },
   prepare(name: string, attempt: string, manifest: CatalogManifest, base: string) { return clients.get(name)!.prepare(attempt, manifest, base); },
   activate(name: string, attempt: string) { return clients.get(name)!.activate(attempt); },
