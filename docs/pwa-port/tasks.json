@@ -490,12 +490,12 @@
       ],
       "acceptance": "Seek/config/loop/cancellation races, silent scrub and explicit-resume cases",
       "status": "in_progress",
-      "owner": "coordinator integration; Sol/high PCM worker completed/idle",
+      "owner": "coordinator; Sol/high sink worker saved unvalidated partial and is idle",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
-      "slice": "Pure clock, shared static runtime and actual PCM module worker accepted; streaming sink next",
-      "nextAction": "Observe sole Sol/high bounded sink implementation. Worker must stop starting new operations at70% shared usage and checkpoint by80%; root actual-browser sink acceptance remains later. Preserve exact branch/source/receipts after interruption, no duplicate worker.",
+      "slice": "Accepted clock/PCM worker/static runtime; sink partial saved at allowance cutoff",
+      "nextAction": "Wait for reset1792150939 (2026-10-16T11:42:19Z), then verify live counters below70% in both windows. Inspect clean existing codex/pwa-pcm-sink4799fba8, source/test/SINK_WORKLOG and guards/processes; resume SAME Sol/high worker/branch, do not duplicate or integrate as validated. First retest saved narrow type fixes, then run four saved fake groups and complete missing bounded acceptance. Root review/normal merge/combined checks/actual sink browser proof only after worker acceptance.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -561,6 +561,11 @@
           "command": "node node_modules/typescript/bin/tsc --noEmit (from pwa through run-control)",
           "revision": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
           "result": "PASS combined strict types window8-sink-contract-types-20261016 for frozen sink-contracts.ts. No sink runtime implementation/acceptance implied."
+        },
+        {
+          "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-sink-tsconfig.json (worker pwa through sibling run-control)",
+          "revision": "4799fba8108caa42af0a7ecbfdce578714ec6cdb UNVALIDATED partial; fixes saved after failed check",
+          "result": "FAILED2types at pcm-sink-types-20261016-06: fake invalidation callback reason signature and optional AudioTimestamp.contextTime. Narrow fix07 saved, UNRETESTED when70%/48% reached. Four initial fake groups saved but NONE RUN; about8additional acceptance groups still missing. No root sink/browser/build acceptance; not integrated. Worker clean/idle, four assigned paths only, both guards clear and no relevant persistent process observed. Preserve SINK_WORKLOG exact next commands/hashes."
         }
       ],
       "progress": [
@@ -587,7 +592,8 @@
         "2026-10-16 pre-branch worker pre-branch intent: primary ec3876da has coordinator-owned T11 reader/docs changes, staged empty; clock sibling2a38ff5a clean/idle. Root freezes separate worker-contracts.ts; only seven worker transport paths authorized on future codex/pwa-pcm-worker from exact contract checkpoint. Sol/high proposal reviewed; T11/catalog excluded. Preserve all branches/worktrees; no duplicateworker. Coordinator runtime unknown and unchanged.",
         "2026-10-16T07:07:01Z PCM integration intent: primary19bdc764 has ONLY owned T11 product source/tests/docs dirty and staged empty, no active browser process. Worker cc525d4e clean/idle after29tests/types; originaldfafbd7c preserved. Root reviewed7file scope and follow-up input/identity/cancellation regressions. Normal merge then root dedicated-worker browser proof; one Luna/medium read-only T11 review active with no edits. Preserve all worktrees and ignored evidence.",
         "2026-10-16T07:10:35Z PCM worker accepted after normal merge aca52d64:49 covering unit/types/build and1 real module-worker Chrome passed. Source review corrected three bounded identity/getter/iterator edges in preserved cc525d4e. Full sink/transport remains open; no unchanged DSP/native/catalog/browser recapture.",
-        "2026-10-16T07:19:16Z pre-branch sink intent: primary56efe22b clean after32native transition cases/3unit/types/build andactual productChrome28.4s. PCM siblingcc525d4e clean/idle, sink proposal completed read-only. Root freezes separate sink-contracts.ts; four worker paths only, excludes all root T11/browser/contracts. Preserve old branches/worktrees/profiles. Root runtime unknown and unchanged; no duplicateworker."
+        "2026-10-16T07:19:16Z pre-branch sink intent: primary56efe22b clean after32native transition cases/3unit/types/build andactual productChrome28.4s. PCM siblingcc525d4e clean/idle, sink proposal completed read-only. Root freezes separate sink-contracts.ts; four worker paths only, excludes all root T11/browser/contracts. Preserve old branches/worktrees/profiles. Root runtime unknown and unchanged; no duplicateworker.",
+        "2026-10-16T07:25:25Z allowance checkpoint: root72%five-hour/48%weekly; no new slice/worker/check. Sink4799fba8 saved explicitly UNVALIDATED at worker70% threshold, clean/idle/unmerged. Two narrow type fixes remain unretested; four saved fake groups unrun. Primary source ddcd7d88 accepted contract and product56efe22b unchanged; root only saves recoverable docs. No relevant process or unresolved guard run in either tree. Reset1792150939; preserve all branches/worktrees/profiles."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -732,8 +738,9 @@
           "pwa/src/audio/transport/index.ts"
         ],
         "scope": "Five synchronous methods from frozen sink-contracts.ts only. Shared-context borrowed permission/epoch, opaque generation run identity, integer source scheduling/80ms prime/20ms lead/200ms+4096 cap,512source/mapping cap, fixed selected audio clock, pure clock prune/gap/drain, immediate invalidation/cleanup. No timers/resume/worker coordination/full transport/App/DSP/preview/context/catalog/T11/dependency/contracts/task edits.",
-        "status": "assigned exact frozen contract; sole Sol/high worker implements bounded sink",
-        "nextAction": "Reuse clean preserved cc525d4e sibling on new codex/pwa-pcm-sink from exact contract commit. Implement small guarded source/fakes receipts; check live before every new check, stop starting operations70%, checkpoint by80%. Root owns actual-browser acceptance and integration."
+        "status": "UNVALIDATED PARTIAL4799fba8, clean/idle/unmerged; two type errors fixed but unretested, four fake groups unrun",
+        "nextAction": "Resume existing branch from4799fba8 after capacity reset. Read SINK_WORKLOG: scoped types06 failed callback reason and optional timestamp.contextTime; fix07 saved, first retest pending. Then focused fake config, complete missing queue/frame/cap/stale/permission/gap/failure/late-callback/reentrancy/release groups. No fake/browser/build acceptance exists. Do not mark complete/integrate until reviewed and validated.",
+        "commit": "4799fba8108caa42af0a7ecbfdce578714ec6cdb"
       }
     },
     {
@@ -1451,13 +1458,13 @@
     "date": "2026-10-16",
     "sourceCommit": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
     "usageObserved": {
-      "fiveHourUsedPercent": 64,
-      "weeklyUsedPercent": 47
+      "fiveHourUsedPercent": 72,
+      "weeklyUsedPercent": 48
     },
     "fiveHourResetUnix": 1792150939,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Accepted song/transition source and frozen sink contract saved. Sole Sol/high bounded sink worker active, latest live64%/47%; root starts no duplicate or unrelated large slice. Worker checks live before operations and checkpoints untested partials explicitly at cutoff. Full sink root acceptance remains unrun.",
+    "reason": "Stop new work at usage threshold. Offline product Song Info/Chords/previews/native transitions and PCM worker accepted/committed; sink4799fba8 is unvalidated partial, clean/idle/unmerged. Type fix07 unretested; four fake groups unrun; complete missing acceptance next window. Both worktrees clean, guards clear, no relevant process. Wait applicable reset then live capacity; no credit/reset/model actions.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T06:42Z",
@@ -1467,7 +1474,8 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Applicable reset passed; live counters permit bounded integration. No credit/reset redemption."
     },
-    "activeWorker": {
+    "activeWorker": null,
+    "completedWorker": {
       "agent": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
@@ -1475,31 +1483,12 @@
       "branch": "codex/pwa-pcm-sink",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
+      "commit": "4799fba8108caa42af0a7ecbfdce578714ec6cdb",
+      "status": "UNVALIDATED PARTIAL; clean/idle/unmerged; type fix unretested and4fake groups unrun",
       "ownedPaths": [
         "pwa/src/audio/transport/pcm-queue-sink.ts",
         "pwa/src/audio/transport/pcm-queue-sink.test.ts",
         "pwa/src/audio/transport/SINK_WORKLOG.md",
-        "pwa/src/audio/transport/index.ts"
-      ],
-      "status": "bounded sink implementation; root browser acceptance pending"
-    },
-    "completedWorker": {
-      "agent": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "task": "T08",
-      "branch": "codex/pwa-pcm-worker",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "fb879a5c",
-      "commit": "cc525d4e3eb2d6b25f49701a6863811e8da3b1ac",
-      "status": "normally integrated aca52d64; covering root unit/types/build/actual module-worker acceptance passed; clean/idle",
-      "ownedPaths": [
-        "pwa/src/audio/transport/pcm-worker-session.ts",
-        "pwa/src/audio/transport/pcm-worker-session.test.ts",
-        "pwa/src/audio/transport/pcm-worker-client.ts",
-        "pwa/src/audio/transport/pcm-worker-client.test.ts",
-        "pwa/src/audio/transport/pcm-worker.ts",
-        "pwa/src/audio/transport/WORKER_WORKLOG.md",
         "pwa/src/audio/transport/index.ts"
       ]
     }

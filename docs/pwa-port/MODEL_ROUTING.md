@@ -31,3 +31,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-16T07:10:35Z actual assignments: preview_owner gpt-6.1-sol/high completed bounded PCM worker dfafbd7c and reviewed edge corrections cc525d4e; normally integrated aca52d64 and root actual-module-worker acceptance passed. song_ui_review gpt-6-luna/medium performed read-only T11 controller/SongScreen/App/CSS/screenshot review, no material findings. Both idle. Coordinator runtime unknown/unchanged; maxoneworker remains.
 
 2026-10-16T07:20:37Z preview_owner gpt-6.1-sol/high assigned only bounded synchronous PCM queue sink from root-frozen ddcd7d88; four task-listed transport paths on new codex/pwa-pcm-sink in preserved sibling. Last61%/46%; no new operation70%, checkpoint80%. No other worker active; coordinator runtime unknown/unchanged.
+
+2026-10-16T07:25:25Z preview_owner gpt-6.1-sol/high checkpointed UNVALIDATED sink4799fba8 at70%/48%; root observed72%/48%. Worker clean/idle/unmerged; no tests passed for sink, fix07 unretested and4fake groups unrun. Resume same assignment after reset, no duplicate worker/model change. Luna review completed/idle.
