@@ -1,5 +1,6 @@
+import { getApplicationAudioContextOwner } from './application-audio-context';
 import { MAX_STATIC_PLAYBACK_MS, MAX_STATIC_VOICES, renderStaticSamples } from '../synth';
-import type { AudioPreviewOwner, PreviewOwnerOptions, PreviewReceipt, PreviewRequest, PreviewState } from './contracts';
+import type { ApplicationAudioContextOwner, AudioContextInvalidationReason, AudioPreviewOwner, PreviewOwnerOptions, PreviewReceipt, PreviewRequest, PreviewState } from './contracts';
 
 const FADE_SECONDS = 0.024;
 const RESUME_WAIT_MS = 1500;
@@ -18,6 +19,8 @@ export class PreviewOwner implements AudioPreviewOwner {
   private context?:AudioContext;
   private state:PreviewState = Object.freeze({phase:'idle', revision:0, requestId:null});
   private readonly listeners = new Set<()=>void>();
+  private readonly contextOwner?:ApplicationAudioContextOwner;
+  private readonly unsubscribeInvalidation?:()=>void;
   private readonly render:NonNullable<PreviewOwnerOptions['render']>;
   private readonly doc?:Document;
   private readonly win?:Window;
@@ -29,12 +32,18 @@ export class PreviewOwner implements AudioPreviewOwner {
   private releaseResult?:Promise<void>;
 
   constructor(private readonly options:PreviewOwnerOptions = {}) {
+    if (options.contextOwner && options.createContext) throw new RangeError('Choose borrowed contextOwner or isolated createContext.');
     this.render = options.render ?? renderStaticSamples;
     this.doc = options.document ?? (typeof document === 'undefined' ? undefined : document);
     this.win = options.window ?? (typeof window === 'undefined' ? undefined : window);
-    this.doc?.addEventListener('visibilitychange', this.onVisibility);
-    this.win?.addEventListener('blur', this.onLeave);
-    this.win?.addEventListener('pagehide', this.onLeave);
+    this.contextOwner = options.createContext ? undefined : options.contextOwner ?? getApplicationAudioContextOwner();
+    if (this.contextOwner) {
+      this.unsubscribeInvalidation = this.contextOwner.subscribeInvalidation(this.onApplicationInvalidation);
+    } else {
+      this.doc?.addEventListener('visibilitychange', this.onVisibility);
+      this.win?.addEventListener('blur', this.onLeave);
+      this.win?.addEventListener('pagehide', this.onLeave);
+    }
   }
 
   getSnapshot = ():PreviewState => this.state;
@@ -67,11 +76,11 @@ export class PreviewOwner implements AudioPreviewOwner {
       }
       const context = this.getContext();
       if (context.state === 'closed') throw new Error('Audio context is closed.');
-      const resumed = context.resume();
+      const resumed:Promise<unknown> = this.contextOwner ? this.contextOwner.resumeFromGesture() : context.resume();
       if (this.isPending(pending)) this.update('preparing', requestId);
       void Promise.resolve(resumed).then(async () => {
         if (!this.isPending(pending)) return;
-        if (context.state !== 'running') {
+        if (context.state !== 'running' || this.contextOwner && !this.contextOwner.getSnapshot().canRender) {
           this.fail(pending, 'blocked', 'Audio is suspended. Try another explicit gesture.');
           return;
         }
@@ -82,7 +91,7 @@ export class PreviewOwner implements AudioPreviewOwner {
         const pcm = await this.render({...snapshot, sampleRate:context.sampleRate,
           shouldAbort:() => !this.isPending(pending)});
         if (!this.isPending(pending)) return;
-        if (context.state !== 'running') {
+        if (context.state !== 'running' || this.contextOwner && !this.contextOwner.getSnapshot().canRender) {
           this.fail(pending, 'blocked', 'Audio is no longer running.');
           return;
         }
@@ -118,22 +127,28 @@ export class PreviewOwner implements AudioPreviewOwner {
     this.releaseResult = new Promise<void>((resolve) => { finish = resolve; });
     this.released = true;
     this.invalidate(true);
-    this.doc?.removeEventListener('visibilitychange', this.onVisibility);
-    this.win?.removeEventListener('blur', this.onLeave);
-    this.win?.removeEventListener('pagehide', this.onLeave);
-    this.context?.removeEventListener('statechange', this.onContextState);
+    this.unsubscribeInvalidation?.();
+    if (!this.contextOwner) {
+      this.doc?.removeEventListener('visibilitychange', this.onVisibility);
+      this.win?.removeEventListener('blur', this.onLeave);
+      this.win?.removeEventListener('pagehide', this.onLeave);
+      this.context?.removeEventListener('statechange', this.onContextState);
+    }
     this.update('released', null);
     this.listeners.clear();
     // Release remains permanent even when the browser rejects close().
-    try { void Promise.resolve(this.context?.close()).then(finish, finish); }
+    try {
+      if (this.contextOwner) finish();
+      else void Promise.resolve(this.context?.close()).then(() => finish(), () => finish());
+    }
     catch { finish(); }
     return this.releaseResult;
   }
 
   private getContext():AudioContext {
     if (!this.context) {
-      this.context = this.options.createContext?.() ?? new AudioContext();
-      this.context.addEventListener('statechange', this.onContextState);
+      this.context = this.contextOwner?.getContext() ?? this.options.createContext!();
+      if (!this.contextOwner) this.context.addEventListener('statechange', this.onContextState);
     }
     return this.context;
   }
@@ -191,6 +206,10 @@ export class PreviewOwner implements AudioPreviewOwner {
   private checkClock(voice:Voice):void {
     const context = this.context;
     if (!context || this.current !== voice || voice.revision !== this.revision || this.released) return;
+    if (this.contextOwner && !this.contextOwner.getSnapshot().canRender) {
+      this.onApplicationInvalidation('suspended');
+      return;
+    }
     if (context.state !== 'running') {
       this.onContextState();
       return;
@@ -272,6 +291,13 @@ export class PreviewOwner implements AudioPreviewOwner {
     }
   }
 
+  private readonly onApplicationInvalidation = (reason:AudioContextInvalidationReason):void => {
+    if (this.released) return;
+    if (reason === 'released') { void this.release(); return; }
+    this.invalidate(true);
+    this.update(reason === 'lifecycle' ? 'idle' : reason === 'closed' ? 'error' : 'blocked',null,
+      reason === 'lifecycle' ? undefined : 'Application audio stopped. A new explicit gesture is required.');
+  };
   private readonly onLeave = ():void => {
     if (this.released) return;
     this.invalidate(true);

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { PreviewOwner, getPreviewOwner } from './index';
-import type { PreviewOwnerOptions, PreviewReceipt, PreviewRequest } from './contracts';
+import { ApplicationAudioContext, getApplicationAudioContextOwner, PreviewOwner, getPreviewOwner } from './index';
+import type { ApplicationAudioContextOwner, PreviewOwnerOptions, PreviewReceipt, PreviewRequest } from './contracts';
 import type { StaticRenderOptions } from '../synth';
 
 function deferred<T>() {
@@ -394,5 +394,172 @@ describe('static preview output owner', () => {
     expect(context.buffers[0].some(sample => sample !== 0)).toBe(true);
     expect(getPreviewOwner()).toBe(getPreviewOwner());
     await getPreviewOwner().release();
+  });
+});
+
+describe('preview borrowers of application audio', () => {
+  const previews:PreviewOwner[] = [], applications:ApplicationAudioContextOwner[] = [];
+  let context:FakeContext, doc:FakeDocument, win:FakeWindow;
+  function shared() {
+    const createContext = vi.fn(() => context as unknown as AudioContext);
+    const application = new ApplicationAudioContext({createContext,document:doc as unknown as Document,window:win as unknown as Window});
+    applications.push(application);
+    return {application,createContext};
+  }
+  function preview(application:ApplicationAudioContextOwner,render:NonNullable<PreviewOwnerOptions['render']> =
+    () => new Int16Array([1,2])) {
+    const owner = new PreviewOwner({contextOwner:application,render});
+    previews.push(owner);
+    return owner;
+  }
+  beforeEach(() => { vi.useFakeTimers(); context = new FakeContext(); doc = new FakeDocument(); win = new FakeWindow(); });
+  afterEach(async () => {
+    for (const owner of previews.splice(0)) await owner.release();
+    for (const application of applications.splice(0)) await application.release();
+    vi.unstubAllGlobals(); vi.useRealTimers();
+  });
+
+  it('rejects conflicting ownership options before borrowing or creating a context', () => {
+    const {application,createContext} = shared();
+    expect(() => new PreviewOwner({contextOwner:application,createContext})).toThrow(RangeError);
+    expect(createContext).not.toHaveBeenCalled();
+    expect(application.getSnapshot().sampleRate).toBeNull();
+  });
+
+  it('shares one actual-rate context between independent previews and never closes it on borrower release', async () => {
+    const {application,createContext} = shared();
+    const a = preview(application), b = preview(application);
+    expect(createContext).not.toHaveBeenCalled();
+    await a.play('a',request()); await b.play('b',request());
+    expect(createContext).toHaveBeenCalledTimes(1);
+    expect(application.getSnapshot()).toMatchObject({sampleRate:48_000,canRender:true});
+    expect(context.sources.filter(source => source.connected)).toHaveLength(2);
+    await a.release();
+    expect(context.closeCalls).toBe(0);
+    expect(context.sources[0].connected).toBe(false);
+    expect(context.sources[1].connected).toBe(true);
+    await b.play('still-usable',request());
+    expect(context.closeCalls).toBe(0);
+    await b.release();
+    expect(context.closeCalls).toBe(0);
+    expect(application.getSnapshot().canRender).toBe(true);
+    await application.release();
+    expect(context.closeCalls).toBe(1);
+  });
+
+  it('immediately cancels pending render on application blur; returning never resumes stale preparation', async () => {
+    const {application} = shared(), gate = deferred<Int16Array|null>();
+    const render = vi.fn<NonNullable<PreviewOwnerOptions['render']>>()
+      .mockImplementationOnce(() => gate.promise).mockReturnValue(new Int16Array([2]));
+    const owner = preview(application,render);
+    const pending = owner.play('stale',request()); await flush();
+    win.dispatchEvent(new Event('blur')); await pending;
+    expect(owner.getSnapshot().phase).toBe('idle');
+    expect(application.getSnapshot().canRender).toBe(false);
+    win.dispatchEvent(new Event('focus')); gate.resolve(new Int16Array([1])); await flush();
+    expect(context.resumeCalls).toBe(1);
+    expect(context.sources).toHaveLength(0);
+    await owner.play('new-gesture',request());
+    expect(context.resumeCalls).toBe(2);
+    expect(context.sources).toHaveLength(1);
+  });
+
+  it('settles pagehide during shared resume and needs pageshow plus a new explicit gesture', async () => {
+    const gate = deferred<void>(); context.resumeGate = gate;
+    const {application} = shared(), owner = preview(application);
+    const pending = owner.play('old',request());
+    expect(context.resumeCalls).toBe(1);
+    win.dispatchEvent(new Event('pagehide')); await pending;
+    context.state = 'running'; gate.resolve(); await flush();
+    expect(context.sources).toHaveLength(0);
+    win.dispatchEvent(new Event('pageshow')); win.dispatchEvent(new Event('focus'));
+    expect(application.getSnapshot().canRender).toBe(false);
+    expect(context.resumeCalls).toBe(1);
+    context.resumeGate = undefined;
+    await owner.play('new',request());
+    expect(context.sources).toHaveLength(1);
+    expect(context.resumeCalls).toBe(2);
+  });
+
+  it('stops sounding borrowers on suspension/hidden without stale clock receipts and permits a new gesture', async () => {
+    const {application} = shared();
+    const receipts:PreviewReceipt[] = [];
+    const owner = new PreviewOwner({contextOwner:application,render:() => new Int16Array([1]),
+      onReceipt:receipt => receipts.push(receipt)});
+    previews.push(owner);
+    await owner.play('old',request());
+    const staleEnded = context.sources[0].onended!;
+    context.change('suspended');
+    expect(context.sources[0].connected).toBe(false);
+    expect(owner.getSnapshot().phase).toBe('blocked');
+    context.change('running'); context.currentTime += 1; staleEnded(); await vi.advanceTimersByTimeAsync(20);
+    expect(receipts).toEqual([]);
+    expect(context.resumeCalls).toBe(1);
+    await owner.play('new',request());
+    context.currentTime += 0.01; await vi.advanceTimersByTimeAsync(20);
+    expect(receipts.map(receipt => receipt.requestId)).toEqual(['new']);
+    doc.hidden = true; doc.dispatchEvent(new Event('visibilitychange'));
+    expect(context.sources.every(source => !source.connected)).toBe(true);
+    expect(owner.getSnapshot().phase).toBe('idle');
+    doc.hidden = false; doc.dispatchEvent(new Event('visibilitychange'));
+    expect(context.resumeCalls).toBe(2);
+  });
+
+  it('releasing a pending borrower leaves the application resume and other borrower usable', async () => {
+    const gate = deferred<void>(); context.resumeGate = gate;
+    const {application,createContext} = shared(), a = preview(application), b = preview(application);
+    const pending = a.play('a',request()); await a.release(); await pending;
+    expect(context.closeCalls).toBe(0);
+    context.state = 'running'; gate.resolve(); await flush(); context.resumeGate = undefined;
+    expect(context.sources).toHaveLength(0);
+    await b.play('b',request());
+    expect(context.sources).toHaveLength(1);
+    expect(createContext).toHaveBeenCalledTimes(1);
+  });
+
+  it('application release permanently retires pending/current/fading borrowers and closes only once', async () => {
+    const {application} = shared(), a = preview(application), b = preview(application);
+    await a.play('a',request()); await a.play('replacement',request());
+    const gate = deferred<Int16Array|null>();
+    const c = preview(application,() => gate.promise), pending = c.play('pending',request()); await flush();
+    await b.play('b',request());
+    const released = application.release(); await pending; await released;
+    expect(context.sources.every(source => !source.connected && source.onended === null)).toBe(true);
+    expect([a,b,c].map(owner => owner.getSnapshot().phase)).toEqual(['released','released','released']);
+    gate.resolve(new Int16Array([1])); await flush();
+    await a.play('never',request()); await b.release();
+    expect(context.closeCalls).toBe(1);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+
+  it('isolated close rejection keeps release permanent and resolves void', async () => {
+    const owner = new PreviewOwner({createContext:() => context as unknown as AudioContext,
+      render:() => new Int16Array([1]),document:doc as unknown as Document,window:win as unknown as Window});
+    previews.push(owner);
+    await owner.play('isolated',request());
+    const close = vi.spyOn(context,'close').mockRejectedValueOnce(new Error('close denied'));
+    await expect(owner.release()).resolves.toBeUndefined();
+    await owner.play('never',request());
+    expect(owner.getSnapshot().phase).toBe('released');
+    expect(close).toHaveBeenCalledTimes(1);
+  });
+
+  it('default previews borrow the production singleton and releasing them retains its context', async () => {
+    const createContext = vi.fn(function () { return context; });
+    vi.stubGlobal('AudioContext',createContext);
+    const application = getApplicationAudioContextOwner();
+    applications.push(application);
+    const a = new PreviewOwner({render:() => new Int16Array([1])});
+    const b = new PreviewOwner({render:() => new Int16Array([2])});
+    previews.push(a,b);
+    await a.play('default-a',request()); await b.play('default-b',request());
+    expect(createContext).toHaveBeenCalledTimes(1);
+    await a.release(); await b.release();
+    expect(context.closeCalls).toBe(0);
+    expect(application.getSnapshot()).toMatchObject({canRender:true,sampleRate:48_000});
+    await application.release();
+    expect(context.closeCalls).toBe(1);
+    expect(getApplicationAudioContextOwner()).toBe(application);
   });
 });
