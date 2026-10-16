@@ -90,3 +90,5 @@ Continue download -> find -> play -> favorite -> restart offline. Do not let the
 2026-10-16T02:07Z exactprebranch:primaryad058de0sourceclean,application4d960244siblingclean/idle;clockcontracttypesPASS. Datedclaimrecordsad058de0andsixpathsbeforeauthorizednewcodex/pwa-playback-clockreuse. Last56%/32%;workerchecklivebeforechecksandcheckpointpartialsatboundary. No duplicateworker,nothingpublished/removed.
 
 2026-10-16T02:12:34Z boundary checkpoint: clock2a38ff5a validated14 native cases/8 groups/types, clean/idle and reviewed; merge/combined checks deferred at71%/35%. Shared preview component d5391e68 already accepted348 combined checks and8 actual Chrome cases/1 explicit tab gap. No new work or check after the threshold. Next action/reset above; automation remains active.
+
+2026-10-16T06:42Z integration intent: primary b67fbce7 and clock2a38ff5a sibling clean; worker idle, guards clear and no relevant process. Live0%/37% after reset1792132396; new five-hour reset1792150939. Normally merge exact2a38ff5a, then covering clock tests and combined types/build. Preserve all worktrees/profiles; do not repeat successful native/browser/catalog evidence.
