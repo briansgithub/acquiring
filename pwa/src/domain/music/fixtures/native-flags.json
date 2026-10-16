@@ -1,0 +1,4156 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "sourceSha256": {
+    "MusicTheory": "46af5e1e502ba2e1e67e3cba4d2d227cea1061454fd7f5285b2a033925de98ca",
+    "HooktheoryModels": "24ce7329ba97a77c0048d35eb66707a1f5a33bb1bcdc14f44572d888fc55771f",
+    "SpelledInterval": "ddcc1cf8692f077c4d3b72137ce6cf4c61abe21f474c39eadccbc1fc470dbda3",
+    "RelativeIonianContext": "2c5afe3f9e45684a6d5e483001a463b60cd20e7465d6d7179e0171c8d30fe1ed",
+    "AudioPitchAdapter": "54d2a1b314064ce690eac55788c3807c327610723a262f06ca12644396199a68",
+    "ChordInterpreter": "646b65b99ba39c8e2fa78c44f6e80525590f472ccceadb69f855ceb7f144f61d",
+    "ChordLetterFormat": "55e63e3afca04ee0cee6d1fd1ac191d661f40197f79e9b2c693c1c260f1e000b",
+    "ChordVoicing": "082ab84c561844c03055914d66277c355ba6b2e559fdd6c1ad30f2b29cd6fbd3"
+  },
+  "adapter": "Unchanged real native theory/JSON primitive parser; JSON input/output only; no TypeScript.",
+  "cases": [
+    {
+      "label": "isRest:true",
+      "flag": "isRest",
+      "value": true,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": true
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "",
+        "letter": "",
+        "midi": [],
+        "rootMidi": null,
+        "toneLabels": [],
+        "pcs": [],
+        "simpleRoot": null
+      }
+    },
+    {
+      "label": "isRest:false",
+      "flag": "isRest",
+      "value": false,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": false
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:\"true\"",
+      "flag": "isRest",
+      "value": "true",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": "true"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "",
+        "letter": "",
+        "midi": [],
+        "rootMidi": null,
+        "toneLabels": [],
+        "pcs": [],
+        "simpleRoot": null
+      }
+    },
+    {
+      "label": "isRest:\"false\"",
+      "flag": "isRest",
+      "value": "false",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": "false"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:\"True\"",
+      "flag": "isRest",
+      "value": "True",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": "True"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "",
+        "letter": "",
+        "midi": [],
+        "rootMidi": null,
+        "toneLabels": [],
+        "pcs": [],
+        "simpleRoot": null
+      }
+    },
+    {
+      "label": "isRest:\"FALSE\"",
+      "flag": "isRest",
+      "value": "FALSE",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": "FALSE"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:\"tRuE\"",
+      "flag": "isRest",
+      "value": "tRuE",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": "tRuE"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "",
+        "letter": "",
+        "midi": [],
+        "rootMidi": null,
+        "toneLabels": [],
+        "pcs": [],
+        "simpleRoot": null
+      }
+    },
+    {
+      "label": "isRest:\"fAlSe\"",
+      "flag": "isRest",
+      "value": "fAlSe",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": "fAlSe"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:\" true\"",
+      "flag": "isRest",
+      "value": " true",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": " true"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:\"false \"",
+      "flag": "isRest",
+      "value": "false ",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": "false "
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:\"yes\"",
+      "flag": "isRest",
+      "value": "yes",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": "yes"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:1",
+      "flag": "isRest",
+      "value": 1,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": 1
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:0",
+      "flag": "isRest",
+      "value": 0,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": 0
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:null",
+      "flag": "isRest",
+      "value": null,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": null
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:{}",
+      "flag": "isRest",
+      "value": {},
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": {}
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "isRest:[]",
+      "flag": "isRest",
+      "value": [],
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "isRest": []
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:true",
+      "flag": "rest",
+      "value": true,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": true
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "",
+        "letter": "",
+        "midi": [],
+        "rootMidi": null,
+        "toneLabels": [],
+        "pcs": [],
+        "simpleRoot": null
+      }
+    },
+    {
+      "label": "rest:false",
+      "flag": "rest",
+      "value": false,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": false
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:\"true\"",
+      "flag": "rest",
+      "value": "true",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": "true"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "",
+        "letter": "",
+        "midi": [],
+        "rootMidi": null,
+        "toneLabels": [],
+        "pcs": [],
+        "simpleRoot": null
+      }
+    },
+    {
+      "label": "rest:\"false\"",
+      "flag": "rest",
+      "value": "false",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": "false"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:\"True\"",
+      "flag": "rest",
+      "value": "True",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": "True"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "",
+        "letter": "",
+        "midi": [],
+        "rootMidi": null,
+        "toneLabels": [],
+        "pcs": [],
+        "simpleRoot": null
+      }
+    },
+    {
+      "label": "rest:\"FALSE\"",
+      "flag": "rest",
+      "value": "FALSE",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": "FALSE"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:\"tRuE\"",
+      "flag": "rest",
+      "value": "tRuE",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": "tRuE"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "",
+        "letter": "",
+        "midi": [],
+        "rootMidi": null,
+        "toneLabels": [],
+        "pcs": [],
+        "simpleRoot": null
+      }
+    },
+    {
+      "label": "rest:\"fAlSe\"",
+      "flag": "rest",
+      "value": "fAlSe",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": "fAlSe"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:\" true\"",
+      "flag": "rest",
+      "value": " true",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": " true"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:\"false \"",
+      "flag": "rest",
+      "value": "false ",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": "false "
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:\"yes\"",
+      "flag": "rest",
+      "value": "yes",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": "yes"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:1",
+      "flag": "rest",
+      "value": 1,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": 1
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:0",
+      "flag": "rest",
+      "value": 0,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": 0
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:null",
+      "flag": "rest",
+      "value": null,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": null
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:{}",
+      "flag": "rest",
+      "value": {},
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": {}
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "rest:[]",
+      "flag": "rest",
+      "value": [],
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "rest": []
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:true",
+      "flag": "useMaj7",
+      "value": true,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": true
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:false",
+      "flag": "useMaj7",
+      "value": false,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": false
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:\"true\"",
+      "flag": "useMaj7",
+      "value": "true",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": "true"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:\"false\"",
+      "flag": "useMaj7",
+      "value": "false",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": "false"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:\"True\"",
+      "flag": "useMaj7",
+      "value": "True",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": "True"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:\"FALSE\"",
+      "flag": "useMaj7",
+      "value": "FALSE",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": "FALSE"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:\"tRuE\"",
+      "flag": "useMaj7",
+      "value": "tRuE",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": "tRuE"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:\"fAlSe\"",
+      "flag": "useMaj7",
+      "value": "fAlSe",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": "fAlSe"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:\" true\"",
+      "flag": "useMaj7",
+      "value": " true",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": " true"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:\"false \"",
+      "flag": "useMaj7",
+      "value": "false ",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": "false "
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:\"yes\"",
+      "flag": "useMaj7",
+      "value": "yes",
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": "yes"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:1",
+      "flag": "useMaj7",
+      "value": 1,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": 1
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:0",
+      "flag": "useMaj7",
+      "value": 0,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": 0
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:null",
+      "flag": "useMaj7",
+      "value": null,
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": null
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:{}",
+      "flag": "useMaj7",
+      "value": {},
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": {}
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "useMaj7:[]",
+      "flag": "useMaj7",
+      "value": [],
+      "chord": {
+        "root": 5,
+        "type": 7,
+        "inversion": 1,
+        "useMaj7": []
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65",
+        "letter": "G7/B",
+        "midi": [
+          59,
+          62,
+          65,
+          67
+        ],
+        "rootMidi": 55,
+        "toneLabels": [
+          "3̂",
+          "5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          7,
+          11
+        ],
+        "simpleRoot": 55
+      }
+    },
+    {
+      "label": "dimTriad:true",
+      "flag": "dimTriad",
+      "value": true,
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": true
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:false",
+      "flag": "dimTriad",
+      "value": false,
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": false
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:\"true\"",
+      "flag": "dimTriad",
+      "value": "true",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": "true"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:\"false\"",
+      "flag": "dimTriad",
+      "value": "false",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": "false"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:\"True\"",
+      "flag": "dimTriad",
+      "value": "True",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": "True"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:\"FALSE\"",
+      "flag": "dimTriad",
+      "value": "FALSE",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": "FALSE"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:\"tRuE\"",
+      "flag": "dimTriad",
+      "value": "tRuE",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": "tRuE"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:\"fAlSe\"",
+      "flag": "dimTriad",
+      "value": "fAlSe",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": "fAlSe"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:\" true\"",
+      "flag": "dimTriad",
+      "value": " true",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": " true"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:\"false \"",
+      "flag": "dimTriad",
+      "value": "false ",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": "false "
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:\"yes\"",
+      "flag": "dimTriad",
+      "value": "yes",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": "yes"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:1",
+      "flag": "dimTriad",
+      "value": 1,
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": 1
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:0",
+      "flag": "dimTriad",
+      "value": 0,
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": 0
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:null",
+      "flag": "dimTriad",
+      "value": null,
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": null
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:{}",
+      "flag": "dimTriad",
+      "value": {},
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": {}
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "dimTriad:[]",
+      "flag": "dimTriad",
+      "value": [],
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "dimTriad": []
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:true",
+      "flag": "halfDim",
+      "value": true,
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": true
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "6̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:false",
+      "flag": "halfDim",
+      "value": false,
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": false
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:\"true\"",
+      "flag": "halfDim",
+      "value": "true",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": "true"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "6̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:\"false\"",
+      "flag": "halfDim",
+      "value": "false",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": "false"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:\"True\"",
+      "flag": "halfDim",
+      "value": "True",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": "True"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "6̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:\"FALSE\"",
+      "flag": "halfDim",
+      "value": "FALSE",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": "FALSE"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:\"tRuE\"",
+      "flag": "halfDim",
+      "value": "tRuE",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": "tRuE"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "6̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:\"fAlSe\"",
+      "flag": "halfDim",
+      "value": "fAlSe",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": "fAlSe"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:\" true\"",
+      "flag": "halfDim",
+      "value": " true",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": " true"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:\"false \"",
+      "flag": "halfDim",
+      "value": "false ",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": "false "
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:\"yes\"",
+      "flag": "halfDim",
+      "value": "yes",
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": "yes"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:1",
+      "flag": "halfDim",
+      "value": 1,
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": 1
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:0",
+      "flag": "halfDim",
+      "value": 0,
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": 0
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:null",
+      "flag": "halfDim",
+      "value": null,
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": null
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:{}",
+      "flag": "halfDim",
+      "value": {},
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": {}
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "halfDim:[]",
+      "flag": "halfDim",
+      "value": [],
+      "chord": {
+        "root": 7,
+        "type": 7,
+        "inversion": 1,
+        "alterations": [
+          "b5"
+        ],
+        "halfDim": []
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "viiø6(b5)5",
+        "letter": "Dm6",
+        "midi": [
+          62,
+          65,
+          68,
+          71
+        ],
+        "rootMidi": 59,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 59
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:true",
+      "flag": "flattenHalfDimB5",
+      "value": true,
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": true
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          59,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:false",
+      "flag": "flattenHalfDimB5",
+      "value": false,
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": false
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:\"true\"",
+      "flag": "flattenHalfDimB5",
+      "value": "true",
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": "true"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          59,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:\"false\"",
+      "flag": "flattenHalfDimB5",
+      "value": "false",
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": "false"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:\"True\"",
+      "flag": "flattenHalfDimB5",
+      "value": "True",
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": "True"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          59,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:\"FALSE\"",
+      "flag": "flattenHalfDimB5",
+      "value": "FALSE",
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": "FALSE"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:\"tRuE\"",
+      "flag": "flattenHalfDimB5",
+      "value": "tRuE",
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": "tRuE"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          59,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:\"fAlSe\"",
+      "flag": "flattenHalfDimB5",
+      "value": "fAlSe",
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": "fAlSe"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:\" true\"",
+      "flag": "flattenHalfDimB5",
+      "value": " true",
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": " true"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:\"false \"",
+      "flag": "flattenHalfDimB5",
+      "value": "false ",
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": "false "
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:\"yes\"",
+      "flag": "flattenHalfDimB5",
+      "value": "yes",
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": "yes"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:1",
+      "flag": "flattenHalfDimB5",
+      "value": 1,
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": 1
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:0",
+      "flag": "flattenHalfDimB5",
+      "value": 0,
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": 0
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:null",
+      "flag": "flattenHalfDimB5",
+      "value": null,
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": null
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:{}",
+      "flag": "flattenHalfDimB5",
+      "value": {},
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": {}
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "flattenHalfDimB5:[]",
+      "flag": "flattenHalfDimB5",
+      "value": [],
+      "chord": {
+        "root": 2,
+        "type": 7,
+        "inversion": 1,
+        "halfDim": true,
+        "alterations": [
+          "b5"
+        ],
+        "flattenHalfDimB5": []
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "iiø6(b5)5",
+        "letter": "Fm6",
+        "midi": [
+          53,
+          56,
+          60,
+          62
+        ],
+        "rootMidi": 50,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          0,
+          2,
+          5,
+          8
+        ],
+        "simpleRoot": 50
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:true",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": true,
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": true
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:false",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": false,
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": false
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:\"true\"",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": "true",
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": "true"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:\"false\"",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": "false",
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": "false"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:\"True\"",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": "True",
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": "True"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:\"FALSE\"",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": "FALSE",
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": "FALSE"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:\"tRuE\"",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": "tRuE",
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": "tRuE"
+      },
+      "expected": {
+        "parsed": true,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:\"fAlSe\"",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": "fAlSe",
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": "fAlSe"
+      },
+      "expected": {
+        "parsed": false,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:\" true\"",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": " true",
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": " true"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:\"false \"",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": "false ",
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": "false "
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:\"yes\"",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": "yes",
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": "yes"
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:1",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": 1,
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": 1
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:0",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": 0,
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": 0
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:null",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": null,
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": null
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:{}",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": {},
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": {}
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    },
+    {
+      "label": "retainHalfDimOmittedFifth:[]",
+      "flag": "retainHalfDimOmittedFifth",
+      "value": [],
+      "chord": {
+        "root": 6,
+        "type": 7,
+        "inversion": 1,
+        "applied": 5,
+        "halfDim": true,
+        "omits": [
+          5
+        ],
+        "retainHalfDimOmittedFifth": []
+      },
+      "expected": {
+        "parsed": null,
+        "roman": "V65(no5)/vi",
+        "letter": "E7(no5)/G#",
+        "midi": [
+          43,
+          70,
+          62,
+          64
+        ],
+        "rootMidi": 52,
+        "toneLabels": [
+          "♭3̂",
+          "♭5̂",
+          "♭7̂",
+          "1̂"
+        ],
+        "pcs": [
+          2,
+          4,
+          7,
+          10
+        ],
+        "simpleRoot": 52
+      }
+    }
+  ]
+}

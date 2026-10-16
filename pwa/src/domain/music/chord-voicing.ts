@@ -1,3 +1,4 @@
+import { nativeBooleanOrNull } from './native-json';
 /** Ordered voicing port from Android ChordVoicing.kt at 801cf798. */
 import type { JsonObject, JsonValue, KeyInfo } from '../../contracts';
 import { CHORD_QUALITIES, SCALE_INTERVALS } from './tables';
@@ -38,10 +39,7 @@ function string(chord: JsonObject, name: string): string {
   const value = chord[name];
   return value != null && typeof value !== 'object' ? String(value) : '';
 }
-function booleanOrNull(value: JsonValue | undefined): boolean | null {
-  return value === true || value === 'true' ? true : value === false || value === 'false' ? false : null;
-}
-function flag(chord: JsonObject, name: string): boolean { return booleanOrNull(chord[name]) === true; }
+function flag(chord: JsonObject, name: string): boolean { return nativeBooleanOrNull(chord[name]) === true; }
 function ints(chord: JsonObject, name: string): number[] {
   const value = chord[name];
   return Array.isArray(value) ? value.map(intOrNull).filter((item): item is number => item !== null) : [];
@@ -283,7 +281,7 @@ function buildFrame(chord: JsonObject, key: KeyInfo, rootName: string, rawQualit
   }
   const modifierHalf = appliedFrame ? halfDim : !dimTriad && (halfDim || policyHalf);
   let effectiveOmits = omits;
-  const retainOmittedFifth = appliedFrame ? booleanOrNull(chord.retainHalfDimOmittedFifth) ?? (!dimTriad && halfDim) : !dimTriad && halfDim;
+  const retainOmittedFifth = appliedFrame ? nativeBooleanOrNull(chord.retainHalfDimOmittedFifth) ?? (!dimTriad && halfDim) : !dimTriad && halfDim;
   if (retainOmittedFifth && omits.includes(5)) effectiveOmits = omits.filter(omit => omit !== 5);
   if (omits.includes(3) && (suspensions.includes(2) || suspensions.includes(4))) effectiveOmits = omits.filter(omit => omit !== 3);
   if (!appliedFrame && quality === 'augmented' && omits.includes(5) && (!omits.includes(3) && type < 7 || omits.includes(3))) effectiveOmits = omits.filter(omit => omit !== 5);

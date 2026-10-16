@@ -1,3 +1,4 @@
+import { nativeBooleanOrNull } from './native-json';
 /** Display-only helpers from Android ChordInterpreter.kt; keep raw and normalized custom arrays distinct. */
 import type { JsonObject, JsonValue, KeyInfo } from '../../contracts';
 import { CHORD_QUALITIES, NOTE_TO_PC, SCALE_INTERVALS } from './tables';
@@ -16,7 +17,7 @@ export function intOrNull(value: JsonValue | undefined): number | null {
 }
 export function safeInt(value: JsonValue | undefined, fallback = 0): number { return intOrNull(value) ?? fallback; }
 export function safeString(value: JsonValue | undefined, fallback = ''): string { return value != null && typeof value !== 'object' ? String(value) : fallback; }
-export function safeBoolean(value: JsonValue | undefined): boolean { return value === true || value === 'true'; }
+export function safeBoolean(value: JsonValue | undefined): boolean { return nativeBooleanOrNull(value) === true; }
 export function ints(value: JsonValue | undefined): number[] {
   return Array.isArray(value) ? value.map(intOrNull).filter((item): item is number => item !== null) : [];
 }

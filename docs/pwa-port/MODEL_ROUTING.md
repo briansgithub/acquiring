@@ -21,3 +21,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-15 current route:preview_owner gpt-6.1-sol/high completed bounded previewb98849f5,integrated8e4ebeb9;root actualbrowser accepted4d826c33 with4passed/1explicitfixme. Same worker now owns only T14pure evidence normalize/begin/evaluate/record in codex/pwa-evidence after frozen contract96274a3d;canonical decimal-textLong seeds andopaqueJSON corpus. One worker maximum;root runtime unknown,unchanged.
 
 2026-10-15T19:34Z:preview_owner gpt-6.1-sol/high completed pure evidence c82473a3 after native60cases/80steps and8unit groups/scoped types PASS. Worker clean/idle;exact-tip integration deferred at72%five-hour/23%weekly. No active worker/new assignment;root runtime unknown,unchanged. Next run integrates/checks before further delegation.
+
+2026-10-16T01:47Z:preview_owner gpt-6.1-sol/high assigned boundedsharedapplicationcontextandPreviewOwnerborrowing adaptation,fromfrozen63fd5c52onnewcodex/pwa-application-audioinexistingsibling. This precedes streamingworker/sink;no duplicateworkerorrootmodelswitch. Rootownscontracts,independentmusicbooleanparity,browserfixtures/integration.

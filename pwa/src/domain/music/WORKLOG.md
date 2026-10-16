@@ -173,3 +173,15 @@ Final display-dedup helper evidence2026-10-14:
 - Added/exported getUniqueDisplayChords(chords,key): global first occurrence with source object identity and order retained; rest/nonpositive/empty Roman skipped. Signature exactly preserves native fields and ordered JSON array text. Adds/omits/custom borrowing arrays intentionally remain excluded; native policy is not broadened.
 - New source/tests fully reviewed; named staging/whitespace/staged-isolation checks precede commit. Only music helper/export/test/WORKLOG changed. No full application/browser/device/audio check in this worker; coordinator owns combined-source checks and T03 status.
 - Parent reported70%five-hour/59%weekly during final validation. This slice began at fresh69%/58%; only its in-flight checkpoint is being finished. No additional work starts after commit/report. All recorded T03 pure-domain implementation/evidence items are delivered; frozen source ambiguities remain disclosed rather than claimed resolved.
+
+2026-10-16T01:53Z coordinator correction:independent timeline fixture exposed KotlinJsonPrimitive.booleanOrNull accepts mixed-case true/false primitive strings. Three existing root/display/voicing parsers wrongly accepted lowercase only;one shared internal nativeBooleanOrNull now retains true/false/null,no-whitespace/number/container coercion semantics. Independent unchanged real Kotlin theory/JSON producer captured112cases across7flags and full public channels,79787bytes. Old handwritten restTRUEsounds-C expectation was corrected to null only after captured native truth;all prior39018six-channel/22role fixture data remain unchanged.
+
+Checks through run-control:window7-music-flags-native-fix1-20261015 capturePASS;window7-music-flags-parity-fix1-20261015 11files/131testsPASS(existingmusic+timelineconsumer);window7-music-flags-types-fix1-20261015 combinedstrict typesPASS. Firstcapturecompiled/ranbutCP1252stdoutfailedUTF8decode;explicitfile/stdoutUTF8fixedcaptureandrawbytesarepreservedignored. Dependenttestsincorrectlystartedbeforefixtureexisted,reportedmissingfixture+oldwrongTRUEexpectation;oneboundedcorrectionthenpassed. Firsttypescheckrequiredonefixture-onlyJSONunioncastannotation,no runtime/expectationchange. Full combined check/build follows audio-context integration;no physical/App acceptance implied.
+SHA256 native-json.ts: b392c6e72a8625288afad1359ccd893f13d0adee747e0e54750f52b15e4ee7f5
+SHA256 native-json.test.ts: 7a97fc6c7fe1c77772b1871524409343db0ab80ef11a8f213736402250c51ee6
+SHA256 chord-root.ts: 9ca79016e170d599fc41e79b839d9d66168508c0e2afc9748b4c19a407918ea7
+SHA256 chord-display-support.ts: 3c911797e9a1bf19013b1b1b213a2372355fdcc5e3835aa58254b196b275c4cf
+SHA256 chord-voicing.ts: 00e1d6bbfedd8f8e4a966570c00ad3bb063b5954611bf14f9ac1c53feab62c11
+SHA256 chord-root.test.ts: 8417050ce40670317e5478bc513b3374976b17c421d0fe1ee67c7517e2cc9d31
+SHA256 fixtures/generate-flags-native.py: a8cb0cf049b94ad520c314ba334d80dfb7f36d2e6e7d0ce8cd9d2f8ba189f7a7
+SHA256 fixtures/native-flags.json: f858232e55689d12b509cb66468d5c3f2b089e22b72a8a3d5fb1172cbdb02f4e

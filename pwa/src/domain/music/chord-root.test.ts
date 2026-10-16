@@ -79,7 +79,8 @@ describe('native written chord-root resolution', () => {
     expect(resolveChordRoot({ root: '+2' }, cMajor)?.pitch.noteName).toBe('D');
     expect(resolveChordRoot({ root: 1, rest: 'true' }, cMajor)).toBeNull();
     expect(resolveChordRoot({ root: 1, isRest: true }, cMajor)).toBeNull();
-    expect(resolveChordRoot({ root: 1, rest: 'TRUE' }, cMajor)?.pitch.noteName).toBe('C');
+    // Independent frozen Kotlin flag capture confirms case-insensitive primitive booleans.
+    expect(resolveChordRoot({ root: 1, rest: 'TRUE' }, cMajor)).toBeNull();
     expect(resolveChordRoot({ root: 1 }, { tonic: 'invalid', scale: 'major' })).toBeNull();
   });
   it('retains explicit letter-root spelling and quality', () => {

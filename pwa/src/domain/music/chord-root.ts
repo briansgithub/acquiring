@@ -1,3 +1,4 @@
+import { nativeBooleanOrNull } from './native-json';
 /** Written-root interpretation port from Android ChordInterpreter.kt at 801cf798. */
 import type { JsonObject, JsonValue, KeyInfo } from '../../contracts';
 import { CHORD_QUALITIES, SCALE_INTERVALS } from './tables';
@@ -29,7 +30,7 @@ function safeInt(value: JsonValue | undefined, fallback = 0): number {
 function safeString(value: JsonValue | undefined, fallback = ''): string {
   return value != null && typeof value !== 'object' ? String(value) : fallback;
 }
-function safeBoolean(value: JsonValue | undefined): boolean { return value === true || value === 'true'; }
+function safeBoolean(value: JsonValue | undefined): boolean { return nativeBooleanOrNull(value) === true; }
 function strings(value: JsonValue | undefined): string[] {
   return Array.isArray(value) ? value.filter(item => item != null && typeof item !== 'object').map(item => String(item)) : [];
 }
