@@ -487,12 +487,12 @@
       ],
       "acceptance": "Seek/config/loop/cancellation races, silent scrub and explicit-resume cases",
       "status": "in_progress",
-      "owner": "coordinator; shared-context implementation worker idle, clock proposal complete",
+      "owner": "coordinator; pure clock worker validated and idle, integration deferred at usage boundary",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
       "slice": "Shared static-preview runtime accepted; next pure clock then streaming transport",
-      "nextAction": "Reuse accepted ApplicationAudioContext singleton/borrowed PreviewOwner. Root freezes tiny pure clock-segment contract from reviewed Sol/high proposal,then records clean sibling/new narrow branch and bounded helper/native-head-fixture slice. Full streaming worker/sink/intent/revision/load/play/pause/silent scrub/seek/config/drained completion remains open. T11 may develop against explicit static-preview-runtime milestone;T12/T26 still require fullT08. App audio/mic/device/Safari/trusted-tab/BFCache acceptance remains open.",
+      "nextAction": "First resume the validated unmerged clock2a38ff5a using clockAssignment.nextAction after the allowance reset. Then freeze the full worker/sink/transport command API using the saved proposal and existing PCM/context/clock helpers. T11 can proceed against the explicit static-preview-runtime milestone; T12/fullT08 remain gated. Never infer device, Safari, trusted-tab visibility, BFCache, microphone or App audio acceptance from component tests.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -528,6 +528,16 @@
           "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check; node node_modules/typescript/bin/tsc --noEmit; node node_modules/@playwright/test/cli.js test audio-context.spec.ts audio-preview.spec.ts --workers=1 --output .artifacts/pwa-port/audio-context/browser-first (from pwa through run-control)",
           "revision": "5f8a1cbf6178e87aed2753d95c70de643ca19f13 plus named root browser fixtures/output-only proof preservation change committed next",
           "result": "PASS348unit+1input-contract/strict types/production build(window7-context-combined-check-20261015). Output-onlyafterEachpathchange followedbystrict typesPASS(window7-context-browser-final-types-20261015). ActualChrome8PASS13.8s,1originaltrusted-tabfixme/skipped(window7-context-browser-first-20261015). Noassertionrelaxed;newper-testproof.jsonunderuniquebrowser-first,priorignoredsnapshotsunchanged. Shell4cbe15e19ddeunchangedbecausecomponentnotAppwired. Noownedprocess/unresolvedguardrun aftercompletion;physical/Safari/Appstream/BFCacheunrun."
+        },
+        {
+          "command": "node node_modules/typescript/bin/tsc --noEmit (from pwa through run-control)",
+          "revision": "ad058de0frozenclockcontract",
+          "result": "PASS combinedstrict types(window7-clock-contract-types-20261015). No clockimplementationimplied."
+        },
+        {
+          "command": "python pwa/src/audio/transport/fixtures/generate-clock-native.py; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-clock-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-clock-vitest.config.mjs (node commands from worker pwa; exact owned config paths also in CLOCK_WORKLOG)",
+          "revision": "2a38ff5ac8536fdc212c083a78cfd56b2d54d912 on codex/pwa-playback-clock; not integrated",
+          "result": "PASS first runs:14 unchanged native audibleBeat head cases, scoped strict types and8unit groups. Guards clock-native-20261015-68/clock-types-20261015-70/clock-unit-20261015-71. Native head results compared at12decimal places; separate browser lead/gap/padding/prune/drain/immutability/resource/time-safety tests. Root reviewed complete helper/producer/tests and6-file commit scope; frozen contract/context/preview/timeline/DSP unchanged. Combined primary acceptance deferred at71%five-hour/35%weekly. queueDrained alone is not completion or output evidence."
         }
       ],
       "progress": [
@@ -547,7 +557,8 @@
         "2026-10-16T01:59Z preintegration:primarybe204b08clean;worker4d960244clean/idle,sixownedcontext/previewpaths,50faketests/scopedtypesPASS. Rootreviewedcontext/previewsource andfinalclose-resolverfix. Live45%five-hour/30%weekly;oneboundedcombined/browseracceptanceslice. Preservefrozen63fdcontract,timeline04941/musicbe204,everybranch/worktree/profile. Rootwilldirtyonlytasks/HANDOFFbeforemerge;stagedempty;workerdidnottouchdocs.",
         "Actualcombined5f8a1cbfplus3browserfixturesPASS348unit/1input/strict types/build(window7-context-combined-check-20261015),shell4cbe15e19ddeunchanged. Prebrowseroutputaudit:oldpreviewafterEachwouldoverwriteearlierignoredJSON,sorootclaimsoutput-onlyafterEachpathchangeinold+newfixtures,usingPlaywrighttestInfo.outputPath(proof.json)undereachuniquerun.Noassertion/productchange;nativemetadataandoldproofsretained.Stricttypesthenactualbrowserchecks.",
         "2026-10-16T02:02Z context/preview runtimeaccepted348unit/input/types/buildand8actualChrome+1explicittrustedtabgap. Static-preview-runtime milestonepermitsT11metadata/chordpreviewdevelopmentwithoutwaitingforfullstreamingT08;T12/T26remainfullgated. This isdependencysequencingonly,notfullT08/T11acceptance. Sol/highclockproposalreviewed14nativeheadcases+browsergapextensions,notimplemented. Nextfreezecontracts/claimbeforeworkerreuse.",
-        "2026-10-16T02:05Z prebranchintent:primaryd5391e68cleanafter348combinedand8actualChrome;applicationworker4d960244clean/idle. Clockproposalacceptedfivepurefunctions/14nativeheadcases. Rootfreezesboundedclocktypesand512segment/65536frame/rate1000..384000limitsbeforeoneSol/highworkeredit. Source/fixturepathsdisjoint;allolderbranches/profilespreserved. Lastlive54%five-hour/32%weekly;checkagainbeforedispatch."
+        "2026-10-16T02:05Z prebranchintent:primaryd5391e68cleanafter348combinedand8actualChrome;applicationworker4d960244clean/idle. Clockproposalacceptedfivepurefunctions/14nativeheadcases. Rootfreezesboundedclocktypesand512segment/65536frame/rate1000..384000limitsbeforeoneSol/highworkeredit. Source/fixturepathsdisjoint;allolderbranches/profilespreserved. Lastlive54%five-hour/32%weekly;checkagainbeforedispatch.",
+        "2026-10-16T02:12:34Z: allowance boundary reached71%/35%. Clock worker2a38ff5a is validated/reviewed/clean/idle; root starts no new slice, worker or expensive check. Preserve exact branch and all ignored data; defer normal merge and covering combined checks to next window. No relevant helper/server/test process or recoveryRequired guard run observed in either primary or sibling. Shared preview runtime remains accepted atd5391e68; full stream/App audio is open."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -602,13 +613,13 @@
       },
       "clockProposalAssignment": {
         "owner": "preview_owner gpt-6.1-sol/high",
-        "status": "complete;root freezing bounded pure clock contract before any worker edit/branch",
+        "status": "complete; frozencontractad058de0 implemented and validated at2a38ff5a, unmerged",
         "scope": "Small pure clock-segment mapping API for native played-head/loop/once-only/tempo behavior plus explicit browser gap/lead extensions. Fullstreamsink/worker remains deferred until its own frozen contract. Root performs currentbrowserintegration;oneworkeronly."
       },
       "milestones": {
         "static-preview-runtime": {
           "status": "complete",
-          "revision": "5f8a1cbf6178e87aed2753d95c70de643ca19f13 plus named root browser fixtures checkpointed next",
+          "revision": "d5391e68",
           "evidence": "NativePCM/realtimegraph/clock/ended/cancellation actualChrome44100/48000;singlelazyapplicationcontext,twoindependentborrowers,childreleasekeepsotherusable,applicationreleaseclosesonce/permanently,actualsuspendpermission/newgesture,trustedpagehide/newdocumentcleanup. Combined348unit/input/types/buildPASS;8ChromePASS13.8s. Components not yetwiredintoApp. Excludesstreamtransport,physicalhearing,Safari,realtrustedtabvisibility andBFCache;wholeT08in_progress."
         }
       },
@@ -618,7 +629,7 @@
         "thinking": "high",
         "branch": "codex/pwa-playback-clock",
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-        "baseCommit": "frozen clock contract checkpoint from d5391e68;exact tip recorded before dispatch",
+        "baseCommit": "ad058de0",
         "ownedPaths": [
           "pwa/src/audio/transport/playback-clock.ts",
           "pwa/src/audio/transport/playback-clock.test.ts",
@@ -628,7 +639,9 @@
           "pwa/src/audio/transport/index.ts"
         ],
         "scope": "Five pure clock API functions from readonly proposal;integer actual-clock frame mapping,loop/once/tempoboundary,finitegap/initiallead,prune/drain/bounds. Independent unchanged native audibleBeat body14cases with fixture-only scope bindings;browserextensions explicit. No applicationcontext/preview/timeline/DSP/streamsink/worker/App/dependency/task/contract edits.",
-        "nextAction": "Afterrootcontracttypes/checkpointandliveusagebelow70,reinspectcleansiblingapplication4d960244,createpreservednewcodex/pwa-playback-clockfromexactrootcontracttip;persistlocalintent,implementsmallhelpersand14nativefixtures,scopedtests/types,validatedcheckpoint. At70nonewcheck/slice;savepartialsifcutoff. Rootreviews/integratesandrunscoveringactualcombinedchecks."
+        "nextAction": "After the applicable reset and live counters below70% in both windows, inspect primary/sibling/process/guard state and exact2a38ff5ac8536fdc212c083a78cfd56b2d54d912. Persist integration intent, normally merge this tip, then run covering clock tests and combined strict types/build on the actual integrated revision. Do not recapture14native cases or rerun unchanged Chrome/catalog proofs. Full streaming transport remains open.",
+        "status": "validated, reviewed, clean and idle; not integrated at usage boundary",
+        "commit": "2a38ff5ac8536fdc212c083a78cfd56b2d54d912"
       }
     },
     {
@@ -1240,15 +1253,15 @@
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
     "date": "2026-10-15",
-    "sourceCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
+    "sourceCommit": "ad058de03d2fbc963c3785e6edd0cd967b143667",
     "usageObserved": {
-      "fiveHourUsedPercent": 49,
-      "weeklyUsedPercent": 31
+      "fiveHourUsedPercent": 71,
+      "weeklyUsedPercent": 35
     },
     "fiveHourResetUnix": 1792132396,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Sharedapplicationcontext/staticpreviewaccepted348unit/input/types/build+8actualChrome13.8s/1originaltrustedtabfixme. Timeline22native/flags112nativeaccepted. ComponentsnotAppwired. Pureclockproposalcomplete;rootfreezescontractthenclaimsnextboundedworker.T11staticpreviewmilestonereadinessadded;T12/T26fullgatespreserved.Noownedhelperprocessorunresolvedrun.",
+    "reason": "No new work/check at71%five-hour/35%weekly. Shared preview runtime d5391e68 is accepted348unit/input/types/build+8actualChrome/1originaltrusted-tabfixme; source includes clock contractad058de0. Clock worker2a38ff5a validated14native/8groups/types, clean/idle and reviewed, but unmerged. Save docs checkpoint then yield; next capacity window normally integrate exact tip and run covering combined checks. All branches/worktrees/profiles remain; no owned process or unresolved run observed. No credits/reset/model action.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T01:36Z",
@@ -1264,11 +1277,19 @@
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "task": "T08",
-      "branch": "codex/pwa-application-audio",
+      "branch": "codex/pwa-playback-clock",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "63fd5c52",
-      "commit": "4d9602444d1d6cc2279f4bae902985031f2644ab",
-      "status": "validated,clean,idle;integrationnext"
+      "baseCommit": "ad058de0",
+      "commit": "2a38ff5ac8536fdc212c083a78cfd56b2d54d912",
+      "status": "validated, reviewed, clean, idle; unmerged",
+      "ownedPaths": [
+        "pwa/src/audio/transport/playback-clock.ts",
+        "pwa/src/audio/transport/playback-clock.test.ts",
+        "pwa/src/audio/transport/fixtures/generate-clock-native.py",
+        "pwa/src/audio/transport/fixtures/native-clock.json",
+        "pwa/src/audio/transport/CLOCK_WORKLOG.md",
+        "pwa/src/audio/transport/index.ts"
+      ]
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
