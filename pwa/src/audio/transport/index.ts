@@ -19,3 +19,6 @@ export { PcmSinkError, PCM_SINK_LIMITS } from './sink-contracts';
 export type { AudioPcmQueueSink, PcmQueueSinkOptions, PcmSinkClock, PcmSinkPcm, PcmSinkReading, PcmSinkRun, PcmSinkErrorCode } from './sink-contracts';
 export { PlaybackIntentKernel } from './playback-intent';
 export type { PlaybackIntentKernelApi, PlaybackIntentPhase, PlaybackIntentWindow, PlaybackIntentGuard, PlaybackIntentSnapshot } from './intent-contracts';
+export { PlaybackTransport } from './playback-transport';
+export { PLAYBACK_TRANSPORT_LIMITS } from './transport-contracts';
+export type { AudioPlaybackTransport, PlaybackTransportOptions, PlaybackTransportState } from './transport-contracts';
