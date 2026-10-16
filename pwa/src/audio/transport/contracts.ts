@@ -21,6 +21,9 @@ export interface PreviewReceipt {
   readonly nonSilent:boolean;
 }
 export interface PreviewOwnerOptions {
+  /** Borrow the shared owner; mutually exclusive with isolated createContext. */
+  readonly contextOwner?:ApplicationAudioContextOwner;
+  /** Isolated/test ownership: this preview closes the returned context on release. */
   readonly createContext?:()=>AudioContext;
   readonly render?:(options:StaticRenderOptions)=>Int16Array|null|Promise<Int16Array|null>;
   readonly onReceipt?:(receipt:PreviewReceipt)=>void;
@@ -36,6 +39,38 @@ export interface AudioPreviewOwner {
   play(requestId:string,request:PreviewRequest):Promise<void>;
   /** Invalidate pending work before retiring the current preview with a24ms fade. */
   stop():void;
-  /** Permanently stop, disconnect, remove lifecycle listeners and close the context. */
+  /** Permanently stop/disconnect/remove listeners; close isolated context, retain borrowed context. */
+  release():Promise<void>;
+}
+
+
+export type ApplicationAudioPhase = 'idle'|'ready'|'blocked'|'suspended'|'closed'|'released';
+export type AudioContextInvalidationReason = 'lifecycle'|'suspended'|'closed'|'released';
+export interface ApplicationAudioState {
+  readonly epoch:number;
+  readonly phase:ApplicationAudioPhase;
+  readonly sampleRate:number|null;
+  /** Explicit gesture succeeded in this foreground epoch and the context is running. */
+  readonly canRender:boolean;
+}
+export interface ApplicationAudioContextOptions {
+  readonly createContext?:()=>AudioContext;
+  readonly document?:Document;
+  readonly window?:Window;
+}
+/** One lazy actual-rate context shared by preview, stream and future capture borrowers.
+ * Lifecycle/suspension invalidates permission before observers; foreground return never
+ * grants permission. Borrower release disconnects only itself. Only this owner closes
+ * the shared context, once and permanently. No replacement after closed/released.
+ */
+export interface ApplicationAudioContextOwner {
+  getSnapshot():ApplicationAudioState;
+  /** Lazy creation only; never resumes or grants render permission. Throws after release. */
+  getContext():AudioContext;
+  /** Invoke from an explicit gesture; calls resume synchronously, then settles within1500ms.
+   * A stale epoch, hidden/background page, rejection or nonrunning clock cannot grant permission.
+   */
+  resumeFromGesture():Promise<AudioContext>;
+  subscribeInvalidation(listener:(reason:AudioContextInvalidationReason)=>void):()=>void;
   release():Promise<void>;
 }
