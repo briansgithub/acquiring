@@ -1,0 +1,279 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "sourceSha256": "dd6bf51f4fccd089bb01c429ce2d69c2b9261599a201231afd565c2983b3bff6",
+  "clockSegmentSha256": "1091b0dd3bd7940061b341500bcf2fbb859bb21eae5a58ed91c926f74db745d2",
+  "audibleBeatSha256": "562a46c47dc1d9c62c5595b8df0b9e5feb1ad96f5bab9b3e0b4b5626418c2c1c",
+  "adapter": "Unchanged native model/ClockSegment/audibleBeat with fixture head/start/renderer bindings; frameCount is browser finite-schedule metadata, not native expected logic.",
+  "cases": [
+    {
+      "label": "empty-default",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 1,
+      "playedFrame": 0,
+      "sinkStarted": true,
+      "segments": [],
+      "expectedBeat": 1.0
+    },
+    {
+      "label": "empty-seek",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 3.25,
+      "playedFrame": 0,
+      "sinkStarted": true,
+      "segments": [],
+      "expectedBeat": 3.25
+    },
+    {
+      "label": "primed-head-zero",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 1,
+      "playedFrame": 0,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 0,
+          "frameCount": 12000,
+          "startBeat": 1,
+          "beatsPerFrame": 0.002
+        }
+      ],
+      "expectedBeat": 1.0
+    },
+    {
+      "label": "interior-played-head",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 1,
+      "playedFrame": 128,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 0,
+          "frameCount": 12000,
+          "startBeat": 1,
+          "beatsPerFrame": 0.002
+        }
+      ],
+      "expectedBeat": 1.256
+    },
+    {
+      "label": "head-before-segment-origin",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 2.5,
+      "playedFrame": 0,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 500,
+          "frameCount": 12000,
+          "startBeat": 2.5,
+          "beatsPerFrame": 0.002
+        }
+      ],
+      "expectedBeat": 2.5
+    },
+    {
+      "label": "exact-loop-wrap",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 1,
+      "playedFrame": 2000,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 0,
+          "frameCount": 12000,
+          "startBeat": 1,
+          "beatsPerFrame": 0.002
+        }
+      ],
+      "expectedBeat": 1.0
+    },
+    {
+      "label": "multiple-loop-wraps",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 1,
+      "playedFrame": 9500,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 0,
+          "frameCount": 12000,
+          "startBeat": 1,
+          "beatsPerFrame": 0.002
+        }
+      ],
+      "expectedBeat": 4.0
+    },
+    {
+      "label": "zero-slope",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 2.25,
+      "playedFrame": 1000,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 0,
+          "frameCount": 12000,
+          "startBeat": 2.25,
+          "beatsPerFrame": 0
+        }
+      ],
+      "expectedBeat": 2.25
+    },
+    {
+      "label": "tempo-before-boundary",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 1,
+      "playedFrame": 999,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 0,
+          "frameCount": 1000,
+          "startBeat": 1,
+          "beatsPerFrame": 0.002
+        },
+        {
+          "startFrame": 1000,
+          "frameCount": 2000,
+          "startBeat": 3,
+          "beatsPerFrame": 0.001
+        }
+      ],
+      "expectedBeat": 2.998
+    },
+    {
+      "label": "tempo-at-boundary",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 1,
+      "playedFrame": 1000,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 0,
+          "frameCount": 1000,
+          "startBeat": 1,
+          "beatsPerFrame": 0.002
+        },
+        {
+          "startFrame": 1000,
+          "frameCount": 2000,
+          "startBeat": 3,
+          "beatsPerFrame": 0.001
+        }
+      ],
+      "expectedBeat": 3.0
+    },
+    {
+      "label": "tempo-after-boundary",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 1,
+      "playedFrame": 1250,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 0,
+          "frameCount": 1000,
+          "startBeat": 1,
+          "beatsPerFrame": 0.002
+        },
+        {
+          "startFrame": 1000,
+          "frameCount": 2000,
+          "startBeat": 3,
+          "beatsPerFrame": 0.001
+        }
+      ],
+      "expectedBeat": 3.25
+    },
+    {
+      "label": "once-at-end-with-padding",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": "once",
+      "anchorBeat": 1,
+      "playedFrame": 2000,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 0,
+          "frameCount": 3000,
+          "startBeat": 1,
+          "beatsPerFrame": 0.002
+        }
+      ],
+      "expectedBeat": 5.0
+    },
+    {
+      "label": "once-past-end-with-empty-key",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": "",
+      "anchorBeat": 1,
+      "playedFrame": 2300,
+      "sinkStarted": true,
+      "segments": [
+        {
+          "startFrame": 0,
+          "frameCount": 3000,
+          "startBeat": 1,
+          "beatsPerFrame": 0.002
+        }
+      ],
+      "expectedBeat": 5.0
+    },
+    {
+      "label": "unstarted-seek-to-end",
+      "sampleRate": 1000,
+      "startBeat": 1,
+      "endBeat": 5,
+      "completionKey": null,
+      "anchorBeat": 5,
+      "playedFrame": 0,
+      "sinkStarted": false,
+      "segments": [
+        {
+          "startFrame": 256,
+          "frameCount": 12000,
+          "startBeat": 5,
+          "beatsPerFrame": 0.002
+        }
+      ],
+      "expectedBeat": 5.0
+    }
+  ]
+}

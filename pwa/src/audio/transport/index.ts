@@ -5,3 +5,7 @@ export type {
 
 export { ApplicationAudioContext, getApplicationAudioContextOwner } from './application-audio-context';
 export type { ApplicationAudioContextOwner, ApplicationAudioContextOptions, ApplicationAudioState, ApplicationAudioPhase, AudioContextInvalidationReason } from './contracts';
+
+export { createPlaybackClock, appendPlaybackClock, readPlaybackClock, prunePlaybackClock, playbackFrameAtTime, playbackClockApi } from './playback-clock';
+export { PLAYBACK_CLOCK_LIMITS } from './contracts';
+export type { PlaybackClockApi, PlaybackClockQueue, PlaybackClockReading, PlaybackClockSegment } from './contracts';
