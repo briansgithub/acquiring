@@ -4,7 +4,7 @@ const snapshot=(page:Page)=>page.evaluate(()=>window.audioPreviewProof.snapshot(
 const open=async(page:Page,query='')=>{await page.goto('http://127.0.0.1:5173/tests/browser/audio-preview.html'+query);await expect(page.getByRole('heading',{name:'Preview acceptance fixture'})).toBeVisible();};
 test.afterEach(async({page},info)=>{
   const evidence=await snapshot(page).catch(()=>null);
-  if(evidence){await mkdir('.artifacts/pwa-port/audio-preview',{recursive:true});await writeFile('.artifacts/pwa-port/audio-preview/'+info.title.replace(/[^a-z0-9]+/gi,'-')+'.json',JSON.stringify(evidence,null,2));}
+  if(evidence){await mkdir(info.outputDir,{recursive:true});await writeFile(info.outputPath('proof.json'),JSON.stringify(evidence,null,2));}
   await page.evaluate(()=>window.audioPreviewProof?.release()).catch(()=>{});
 });
 for(const rate of [44100,48000])test('real preview render clock,PCM output and natural completion at'+rate,async({page})=>{

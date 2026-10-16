@@ -487,12 +487,12 @@
       ],
       "acceptance": "Seek/config/loop/cancellation races, silent scrub and explicit-resume cases",
       "status": "in_progress",
-      "owner": "coordinator (runtime model unknown); preview implementation worker idle",
+      "owner": "coordinator; shared-context implementation worker idle, clock proposal complete",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "8e4ebeb9e48f424173026333fc15634adb70459c",
-      "slice": "Static preview component accepted; shared stream transport remains open",
-      "nextAction": "Continue independent stream transport intent/revision/sink/audio-clock slice after freezing single-context ownership. Current PreviewOwner is not wired into App;future stream/capture must reuse one application output context rather than introduce duplicate owners. Trusted tab blur/hidden andphysicaldevice behavior remain open;actual pagehide/new-document behavior is evidenced. Owner approved focused audio lifecycle;separate Settings-scroll approval is still pending.",
+      "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
+      "slice": "Shared static-preview runtime accepted; next pure clock then streaming transport",
+      "nextAction": "Reuse accepted ApplicationAudioContext singleton/borrowed PreviewOwner. Root freezes tiny pure clock-segment contract from reviewed Sol/high proposal,then records clean sibling/new narrow branch and bounded helper/native-head-fixture slice. Full streaming worker/sink/intent/revision/load/play/pause/silent scrub/seek/config/drained completion remains open. T11 may develop against explicit static-preview-runtime milestone;T12/T26 still require fullT08. App audio/mic/device/Safari/trusted-tab/BFCache acceptance remains open.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -518,6 +518,16 @@
           "command": "node node_modules/typescript/bin/tsc --noEmit (from pwa through run-control)",
           "revision": "63fd5c52 shared application context contract",
           "result": "PASS combined strict types,window7-context-contract-types-20261015. No runtime implementation implied."
+        },
+        {
+          "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-context-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-context-vitest.config.mjs (worker pwa)",
+          "revision": "4d9602444d1d6cc2279f4bae902985031f2644ab",
+          "result": "PASS scoped stricttypes and50ownedtests(16application,25originalpreview,9borrowing/cleanup). Guards application-context-types-20261015-57/application-context-unit-20261015-58. Root source+scope reviewed6paths;frozencontractunchanged. Worker recorded initial scoped-config/type issues and one close-rejection payload correction inWORKLOG. Rootactualcombined/browseracceptancepending."
+        },
+        {
+          "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check; node node_modules/typescript/bin/tsc --noEmit; node node_modules/@playwright/test/cli.js test audio-context.spec.ts audio-preview.spec.ts --workers=1 --output .artifacts/pwa-port/audio-context/browser-first (from pwa through run-control)",
+          "revision": "5f8a1cbf6178e87aed2753d95c70de643ca19f13 plus named root browser fixtures/output-only proof preservation change committed next",
+          "result": "PASS348unit+1input-contract/strict types/production build(window7-context-combined-check-20261015). Output-onlyafterEachpathchange followedbystrict typesPASS(window7-context-browser-final-types-20261015). ActualChrome8PASS13.8s,1originaltrusted-tabfixme/skipped(window7-context-browser-first-20261015). Noassertionrelaxed;newper-testproof.jsonunderuniquebrowser-first,priorignoredsnapshotsunchanged. Shell4cbe15e19ddeunchangedbecausecomponentnotAppwired. Noownedprocess/unresolvedguardrun aftercompletion;physical/Safari/Appstream/BFCacheunrun."
         }
       ],
       "progress": [
@@ -533,7 +543,10 @@
         "2026-10-16T01:42Z coordinator pre-edit claim:timeline-builder.ts/test and new fixtures/generate-timeline-native.py/native-timeline.json only. Existing317unit/input/types/build passfb3f23b1. One Sol/high worker READONLY shared-context/transport proposal,excluded these files. Freeze pure adapter signature from existing ExtractedSection/MelodyNote/PlaybackTimeline;no new global types/dependencies. Native buildPlaybackTimeline lines900-end and normalizePlaybackBeat are authority. No fullT08acceptance until realstream/lifecycle checks.",
         "Timeline native capture22cases/85events PASS first run. First focused4group test:3PASS,parity case found uppercase primitive rest string True was sounding in TS but skipped by frozen native JsonPrimitive.booleanOrNull. Cycle1narrow fix case-insensitive primitive rest flags in builder only;native expectations unchanged. Same semantics may affect existing music flag helpers;record a separately claimed focused T03follow-up after timeline accepted rather than edit shared music under this slice. No source meaning inferred from wrong output.",
         "Pure section/melody timeline adapter accepted22native timelines/85events/4tests/combined types. Original melody beat key lookup versus normalized zero chord beat,full sounding inversions versus written simple root,stable consumed IDs/clipping/rest/numeric primitive behavior retained. Native producer uses real unchanged theory/models and Kotlin JSON;portable fixture48692bytes. Stream/shared context remains open. Separate T03case-insensitive flag parity follow-up is recorded,not silently relabeled passed.",
-        "2026-10-16T01:46Z root freezes application context contract in existing contracts.ts before implementation. Selected smaller slice from Sol/high proposal:application owner+preview borrowing first;stream protocol/sink next after checkpoint. Primary timeline adapter checkpoint and clean evidencec82473a3sibling preserved. Root separately owns music boolean parity and browser harness;no duplicateworker."
+        "2026-10-16T01:46Z root freezes application context contract in existing contracts.ts before implementation. Selected smaller slice from Sol/high proposal:application owner+preview borrowing first;stream protocol/sink next after checkpoint. Primary timeline adapter checkpoint and clean evidencec82473a3sibling preserved. Root separately owns music boolean parity and browser harness;no duplicateworker.",
+        "2026-10-16T01:59Z preintegration:primarybe204b08clean;worker4d960244clean/idle,sixownedcontext/previewpaths,50faketests/scopedtypesPASS. Rootreviewedcontext/previewsource andfinalclose-resolverfix. Live45%five-hour/30%weekly;oneboundedcombined/browseracceptanceslice. Preservefrozen63fdcontract,timeline04941/musicbe204,everybranch/worktree/profile. Rootwilldirtyonlytasks/HANDOFFbeforemerge;stagedempty;workerdidnottouchdocs.",
+        "Actualcombined5f8a1cbfplus3browserfixturesPASS348unit/1input/strict types/build(window7-context-combined-check-20261015),shell4cbe15e19ddeunchanged. Prebrowseroutputaudit:oldpreviewafterEachwouldoverwriteearlierignoredJSON,sorootclaimsoutput-onlyafterEachpathchangeinold+newfixtures,usingPlaywrighttestInfo.outputPath(proof.json)undereachuniquerun.Noassertion/productchange;nativemetadataandoldproofsretained.Stricttypesthenactualbrowserchecks.",
+        "2026-10-16T02:02Z context/preview runtimeaccepted348unit/input/types/buildand8actualChrome+1explicittrustedtabgap. Static-preview-runtime milestonepermitsT11metadata/chordpreviewdevelopmentwithoutwaitingforfullstreamingT08;T12/T26remainfullgated. This isdependencysequencingonly,notfullT08/T11acceptance. Sol/highclockproposalreviewed14nativeheadcases+browsergapextensions,notimplemented. Nextfreezecontracts/claimbeforeworkerreuse."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -552,7 +565,7 @@
         ],
         "scope": "Pure frozen buildPlaybackTimeline section+supplied melody adapter; reuse data getKeyAtBeat and music getMidiNote/getChordNotes/resolveChordRoot.simpleModePitch, preserve native clipping/order/IDs/zero-chord-beat/rest semantics. Browser-domain event/end/metadata bounds explicit. No App, note decoder, end resolver, stream sink or contracts edits in this slice.",
         "nextAction": "Capture bounded independent cases with unchanged frozen native builder and existing pure theory/JSON model sources, implement adapter, compare complete timeline outputs, types and input immutability. Product timeline rejects excessive resources; native renderer remains unchanged. Record receipts and commit named paths.",
-        "status": "validated; four tests and combined strict types pass, checkpoint next"
+        "status": "validated and committed04941eea;no pending timeline adapter changes"
       },
       "contextAssignment": {
         "owner": "preview_owner",
@@ -571,18 +584,32 @@
         ],
         "scope": "Shared lazy actual-rate application context,epoch/foreground permission,bounded synchronous gesture resume,permanent close,observer-safe invalidation;adapt PreviewOwner default/shared borrower release without changing isolated createContext behavior. No streaming worker yet. Exclude root timeline/fixtures,contracts,App/browser harness/dependencies/task state/routing.",
         "nextAction": "After frozen contract checkpoint and live allowance check,reuse clean evidencec82473a3sibling on new narrow codex/pwa-application-audio from exact root contract tip,preserving all prior branches. Implement/test small context behavior,then preview borrowing,checkpoint named paths before root browser integration.",
-        "status": "implementation authorized after recorded clean sibling inspection"
+        "status": "normally integrated5f8a1cbf;actual combined andChrome acceptancePASS;branch/tree preserved",
+        "commit": "4d9602444d1d6cc2279f4bae902985031f2644ab"
       },
       "browserAssignment": {
         "owner": "coordinator",
         "ownedPaths": [
           "pwa/tests/browser/audio-context.html",
           "pwa/tests/browser/audio-context-harness.ts",
-          "pwa/tests/browser/audio-context.spec.ts"
+          "pwa/tests/browser/audio-context.spec.ts",
+          "pwa/tests/browser/audio-preview.spec.ts"
         ],
-        "status": "test-only candidates ignored; install after worker implementation merge",
-        "scope": "ActualChrome44100/48000sharedcontext/twoPreviewOwnerborrowers;borrowerreleasekeepsotherusable;appreleaseclosesonce/permanent;actualsuspensioninvalidatespermission;genuinepagehide/newdocumentnoimplicitstart. No actualstreamsink/App/Safari/device/BFCache/tabvisibilityclaim.",
+        "status": "PASS8actualChrome13.8s,1originaltrusted-tabfixme;allnewproofsunderuniqueper-testoutput",
+        "scope": "ActualChrome44100/48000sharedcontext/twoPreviewOwnerborrowers;borrowerreleasekeepsotherusable;appreleaseclosesonce/permanent;actualsuspensioninvalidatespermission;genuinepagehide/newdocumentnoimplicitstart. No actualstreamsink/App/Safari/device/BFCache/tabvisibilityclaim. Existing preview afterEach output changes only to per-test outputPath so each unique run retains JSON proof without overwriting prior ignored snapshots.",
         "nextAction": "Review exact worker checkpoint and persist integration intent,normalmerge,copy three prewritten candidates,run coveringtypes/unit/input/build and audio-context plus unchanged audio-preview browser regressions with unique ignored output. Retain failed receipts;max2fixcycles per failure."
+      },
+      "clockProposalAssignment": {
+        "owner": "preview_owner gpt-6.1-sol/high",
+        "status": "complete;root freezing bounded pure clock contract before any worker edit/branch",
+        "scope": "Small pure clock-segment mapping API for native played-head/loop/once-only/tempo behavior plus explicit browser gap/lead extensions. Fullstreamsink/worker remains deferred until its own frozen contract. Root performs currentbrowserintegration;oneworkeronly."
+      },
+      "milestones": {
+        "static-preview-runtime": {
+          "status": "complete",
+          "revision": "5f8a1cbf6178e87aed2753d95c70de643ca19f13 plus named root browser fixtures checkpointed next",
+          "evidence": "NativePCM/realtimegraph/clock/ended/cancellation actualChrome44100/48000;singlelazyapplicationcontext,twoindependentborrowers,childreleasekeepsotherusable,applicationreleaseclosesonce/permanently,actualsuspendpermission/newgesture,trustedpagehide/newdocumentcleanup. Combined348unit/input/types/buildPASS;8ChromePASS13.8s. Components not yetwiredintoApp. Excludesstreamtransport,physicalhearing,Safari,realtrustedtabvisibility andBFCache;wholeT08in_progress."
+        }
       }
     },
     {
@@ -743,10 +770,15 @@
       "worktree": null,
       "baseCommit": null,
       "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "nextAction": "Ready for bounded SongInfo/Chords work using explicit completedT08static-preview-runtime milestone andcompleteT02/T03/T04/T06. Freeze catalog section-reader/route/state interfaces before Luna/medium presentation;reuse real native theory/notation/shared PreviewOwner and actual render receipts. Full streaming Playback remainsT12;no absentdevice/runtime check may be marked passed.",
       "validation": [],
-      "progress": [],
-      "blocker": null
+      "progress": [
+        "2026-10-16T02:02Z dependency refinement:T11needsstaticpreview,notthefullstreamingcommandengine. AcceptedT08static-preview-runtime(348combined+8actualChrome)unblocksboundedT11development;wholeT08/T12/T26acceptanceunchanged. NoT11implementationorUIclaimyet."
+      ],
+      "blocker": null,
+      "dependencyGates": {
+        "T08": "static-preview-runtime"
+      }
     },
     {
       "id": "T12",
@@ -1189,15 +1221,15 @@
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
     "date": "2026-10-15",
-    "sourceCommit": "63fd5c52",
+    "sourceCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
     "usageObserved": {
-      "fiveHourUsedPercent": 30,
-      "weeklyUsedPercent": 28
+      "fiveHourUsedPercent": 49,
+      "weeklyUsedPercent": 31
     },
     "fiveHourResetUnix": 1792132396,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "T03newnativeflags112cases/131focusedtests/typesPASS,narrowcheckpointnext;timeline04941eeaaccepted,evidencefb3f23b1combined317PASS. SoleSol/highcontextworkeractivefrom63fd5c52;sourcesindisjointsibling;rootownscontextbrowsercandidates/integration. No duplicateworker,unchangedfixtures/catalogsnotrepeated.",
+    "reason": "Sharedapplicationcontext/staticpreviewaccepted348unit/input/types/build+8actualChrome13.8s/1originaltrustedtabfixme. Timeline22native/flags112nativeaccepted. ComponentsnotAppwired. Pureclockproposalcomplete;rootfreezescontractthenclaimsnextboundedworker.T11staticpreviewmilestonereadinessadded;T12/T26fullgatespreserved.Noownedhelperprocessorunresolvedrun.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T01:36Z",
@@ -1207,7 +1239,8 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Recorded reset passed; live counters permit integration, no credit purchase or redemption."
     },
-    "activeWorker": {
+    "activeWorker": null,
+    "completedWorker": {
       "agent": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
@@ -1215,32 +1248,8 @@
       "branch": "codex/pwa-application-audio",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "63fd5c52",
-      "ownedPaths": [
-        "pwa/src/audio/transport/application-audio-context.ts",
-        "pwa/src/audio/transport/application-audio-context.test.ts",
-        "pwa/src/audio/transport/preview-owner.ts",
-        "pwa/src/audio/transport/preview-owner.test.ts",
-        "pwa/src/audio/transport/index.ts",
-        "pwa/src/audio/transport/WORKLOG.md"
-      ]
-    },
-    "completedWorker": {
-      "agent": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "task": "T14",
-      "branch": "codex/pwa-evidence",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "96274a3d",
-      "ownedPaths": [
-        "pwa/src/domain/learning/aural-evidence.ts",
-        "pwa/src/domain/learning/aural-evidence.test.ts",
-        "pwa/src/domain/learning/fixtures/generate-evidence-native.py",
-        "pwa/src/domain/learning/fixtures/native-evidence.json",
-        "pwa/src/domain/learning/WORKLOG.md"
-      ],
-      "commit": "c82473a3703d3778c7343d5fa483eabb34a0bd80",
-      "status": "integrated atfb3f23b1;combined checks PASS;branch/tree preserved"
+      "commit": "4d9602444d1d6cc2279f4bae902985031f2644ab",
+      "status": "validated,clean,idle;integrationnext"
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
