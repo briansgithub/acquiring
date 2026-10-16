@@ -292,4 +292,12 @@ describe('bounded PCM queue sink', () => {
     expect(Object.isFrozen(run)).toBe(true); expect(Object.isFrozen(state.sink.read())).toBe(true);
   });
 
+  it('reconciles permission changed by old.stop without an invalidation callback during begin', () => {
+    const state = setup(), run = state.sink.begin(0,timeline);
+    state.sink.enqueue(run,pcm(1,80));
+    state.hooks.stop = () => state.deny();
+    expect(() => state.sink.begin(1,timeline)).toThrowError(expect.objectContaining({ code: 'BLOCKED' }));
+    expect(state.sink.read().phase).toBe('idle');
+    expect(state.nodes[0]).toMatchObject({ stopped: true, disconnected: true });
+  });
 });

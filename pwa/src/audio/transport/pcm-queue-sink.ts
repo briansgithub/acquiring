@@ -75,7 +75,7 @@ export class PcmQueueSink implements AudioPcmQueueSink {
     const old = this.current;
     this.current = next; this.revision = revision; this.mutation++;
     this.retire(old);
-    this.active(next);
+    this.permission(next);
     return token;
   }
 
