@@ -41,3 +41,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-16T12:18:50Z samepreview_owner gpt-6.1-sol/high assignedpurePlaybackIntentKernel onlyfromfrozen8eacfd2e oncodex/pwa-playback-intent inexistingpreservedsibling. No fullowner/pump/App;rootownscontracts/integration/disjointT11Letters. Live55%/58%,stopnewoperations70%. Rootruntimeunknown/unchanged.
 
 2026-10-16T12:26:48Z allowance checkpoint: preview_owner gpt-6.1-sol/high completed pure kernel22525d9c,12 focused tests/scoped types PASS. Root normally merged0c29da31; primary combined checks deliberately deferred at70% five-hour/60% weekly. Worker clean/idle; no new assignment. Coordinator runtime unknown/unchanged. Resume existing primary acceptance after reset1792169161; no duplicate worker or credit/reset action.
+
+2026-10-16T16:56:18.013984+00:00 same preview_owner gpt-6.1-sol/high assigned bounded async PlaybackTransport from frozen23bdd83f on codex/pwa-stream-owner in existing preserved sibling. Root runtime unknown/unchanged owns disjoint browser fixtures/contracts/integration. One worker maximum; live5%/63%, stop new operations at70% either window.

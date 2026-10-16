@@ -495,7 +495,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
       "slice": "Kernel accepted; bounded full streaming owner contract ready",
-      "nextAction": "Checkpoint validated owner contract, then dated pre-branch claim before same Sol/high worker implementation. Coordinator prepares disjoint browser fixtures; no App/dependency changes.",
+      "nextAction": "Same Sol/high worker bounded async owner implementation under frozen23bdd83f; coordinator prepares independent browser candidates. Worker fakes/types and source review precede normal integration/combined/browser acceptance. No App playback route yet.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -632,7 +632,9 @@
         "2026-10-16T12:25:10.848885+00:00 pre-integration:root68bb1924clean/stagedempty, sibling22525d9cclean/idle,bothguardslastclear,nopersistentworkerprocess. Exact4filechangefullyreviewed. Live68%/60%;normalmergeallowednow,nonewoperation/checkafter70. Preserveallpreviousbranches/profiles;nofulltransportclaim.",
         "2026-10-16T12:26:48Z allowance cutoff: live70% five-hour/60% weekly. Exact normal merge0c29da31 includes reviewed22525d9c (worker12groups/typesPASS); root started NO combined unit/build check after threshold. Primary owns only final documentation edits; sibling22525 clean/idle, both guards have no recovery-required runs, no relevant helper/server/test process observed. Preserve all branches/worktrees/profiles. Next reset 2026-10-16T16:46:01+00:00.",
         "2026-10-16T16:51:44.987830+00:00 resumed after applicable reset. Live0% five-hour/62% weekly, reset1792187464/1792653278. Primarya2d76758 clean, both workers idle, root guard clear and no relevant process observed. No duplicate worker or credit/reset/model action. Saved kernel combined acceptance is next.",
-        "2026-10-16T16:53:58.094748+00:00 kernel primary acceptance171 units/types/build passed; saved earlier integration is accepted. Root freezes separate async owner contract; no new worker yet. Prior native/catalog/browser proofs unchanged."
+        "2026-10-16T16:53:58.094748+00:00 kernel primary acceptance171 units/types/build passed; saved earlier integration is accepted. Root freezes separate async owner contract; no new worker yet. Prior native/catalog/browser proofs unchanged.",
+        "2026-10-16T16:56:18.013984+00:00 pre-branch: root23bdd83f clean, sibling22525 clean/idle, prior guards clear and no active helper at entry. Contract strict types and kernel171unit/build accepted. Same Sol/high owner worker; root disjoint browser paths. Preserve all branches/worktrees/ignored profiles. Live5%/63%, no new operation at70% either window.",
+        "2026-10-16T16:59:05.878292+00:00 coordinator prepared3ignored browser candidates: real moduleworker+sink at44100/48000, silent scrub/seek/zero-tempo/config, suspension/newgesture, once-only render-end versus selected drain, borrowerrelease/reuse and trusted pagehide/newdocument. Candidates untested; no App/static/native/catalog source changed."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -841,6 +843,41 @@
         "scope": "Freeze bounded async playback owner contract around accepted kernel/context/worker/sink; immediate native-like intent, explicit gesture, selected played head, one coalesced control/config/heldPCM/10ms timer, final drained completion and lifecycle. No App/PCM/theory/catalog/dependency changes.",
         "nextAction": "Strict types and checkpoint before same Sol/high worker assignment on new narrow branch in existing preserved sibling. Worker implementation/acceptance must be interruptible; no partial public API silently dropping controls.",
         "status": "Frozen transport-contracts.ts prepared; combined strict types PASS before assignment."
+      },
+      "ownerAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-stream-owner",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "23bdd83ff42c849f6a59322f6106e1d510cddf2e",
+        "ownedPaths": [
+          "pwa/src/audio/transport/playback-transport.ts",
+          "pwa/src/audio/transport/playback-transport.test.ts",
+          "pwa/src/audio/transport/TRANSPORT_WORKLOG.md",
+          "pwa/src/audio/transport/index.ts"
+        ],
+        "scope": "PlaybackTransport implements frozen AudioPlaybackTransport. Accepted kernel/context/worker/sink orchestration, immediate intent, explicit gesture, bounded/coalesced control/config/one-heldPCM/one10ms timer, selected played beat/final drain and lifecycle. No shared contracts/old components/DSP/App/catalog/dependency/task edits.",
+        "status": "dated pre-branch intent; same existing Sol/high worker only",
+        "nextAction": "Under own guard reuse clean22525 sibling on new absent codex/pwa-stream-owner from exact frozen base. Preserve all previous branches/profiles. Implement in small recoverable receipts; focused fakes/types, then validated named checkpoint, or explicit unvalidated partial at cutoff. No new operation/check at70% either window; checkpoint by80%."
+      },
+      "ownerBrowserAssignment": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "23bdd83ff42c849f6a59322f6106e1d510cddf2e",
+        "ownedPaths": [
+          "pwa/tests/browser/audio-transport.html",
+          "pwa/tests/browser/audio-transport-harness.ts",
+          "pwa/tests/browser/audio-transport.spec.ts"
+        ],
+        "scope": "Prepare disjoint actual Chrome44100/48000 composed worker/sink/intent controls, render-ended-before-drain, silent scrub/seek/config/zeroBPM/suspend/newgesture/borrowed-context retention. Trusted navigation only where supported; no physical hearing/Safari/trusted-tab claim. Do not run until reviewed validated owner integration.",
+        "status": "Three ignored candidates prepared, UNTESTED; no source copy/build/browser acceptance yet.",
+        "candidateDirectory": ".artifacts/pwa-port/transport-browser",
+        "candidateSha256": {
+          "audio-transport.html": "7eb3e35088e24855ef1048a9df877f456060de8a66898abd370d3ae44b5b9dcb",
+          "audio-transport-harness.ts": "893bcf7255ec1ccdc60fd8fa8310c28b4c46ff4f76c78799705dbe20252b9540",
+          "audio-transport.spec.ts": "4aa60f0145e166b6302f0e2d1691c00462f76006bddaa2c0d0a09cd98caf246f"
+        },
+        "nextAction": "After validated worker tip and normal integration, copy exact candidates to assigned browser paths under guard; strict types/build then2realChrome cases with unique output. No browser check before source review/acceptance."
       }
     },
     {
@@ -1618,7 +1655,7 @@
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
     "date": "2026-10-16T16:51:44.987830+00:00",
-    "sourceCommit": "a2d76758",
+    "sourceCommit": "23bdd83ff42c849f6a59322f6106e1d510cddf2e",
     "usageObserved": {
       "fiveHourUsedPercent": 5,
       "weeklyUsedPercent": 63
@@ -1626,7 +1663,7 @@
     "fiveHourResetUnix": 1792187464,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Kernel primary171units/types/build accepted; typed async owner contract is next checkpoint. Existing worker idle; no new assignment before exact frozen base.",
+    "reason": "Bounded async owner assignment after accepted kernel and typed frozen contract. Existing worker/tree reused; no duplicate.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T16:51:44.987830+00:00",
@@ -1636,7 +1673,25 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Prior cutoff reset passed; live counters permit bounded resumption."
     },
-    "activeWorker": null,
+    "activeWorker": {
+      "owner": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "branch": "codex/pwa-stream-owner",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "23bdd83ff42c849f6a59322f6106e1d510cddf2e",
+      "ownedPaths": [
+        "pwa/src/audio/transport/playback-transport.ts",
+        "pwa/src/audio/transport/playback-transport.test.ts",
+        "pwa/src/audio/transport/TRANSPORT_WORKLOG.md",
+        "pwa/src/audio/transport/index.ts"
+      ],
+      "scope": "PlaybackTransport implements frozen AudioPlaybackTransport. Accepted kernel/context/worker/sink orchestration, immediate intent, explicit gesture, bounded/coalesced control/config/one-heldPCM/one10ms timer, selected played beat/final drain and lifecycle. No shared contracts/old components/DSP/App/catalog/dependency/task edits.",
+      "status": "dated pre-branch intent; same existing Sol/high worker only",
+      "nextAction": "Under own guard reuse clean22525 sibling on new absent codex/pwa-stream-owner from exact frozen base. Preserve all previous branches/profiles. Implement in small recoverable receipts; focused fakes/types, then validated named checkpoint, or explicit unvalidated partial at cutoff. No new operation/check at70% either window; checkpoint by80%.",
+      "agent": "preview_owner",
+      "task": "T08"
+    },
     "completedWorker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",

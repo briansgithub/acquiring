@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-16T16:55:33.248612+00:00. Renewed capacity5% five-hour/63% weekly, reset1792187464/1792653278. Kernel22525d9c normally merged0c29da31 is now accepted on primary a2d76758:171 focused units, strict types/build PASS; product shell48feed8a9593 unchanged. Separate transport-contracts.ts strict types PASS, checkpoint next. Same Sol/high worker remains idle in clean sibling22525d9c until exact contract checkpoint and pre-branch claim; root will prepare disjoint browser fixtures. Preserve all prior work. No full async owner/App claim or unchanged native/catalog/browser repetition.
+Updated 2026-10-16T16:56:18.013984+00:00. Kernel primary integration accepted171 units/types/build; contract frozen23bdd83f and strict types PASS. Live5%/63%, reset1792187464/1792653278. Dated pre-branch claim: same preview_owner Sol/high reuses clean22525 sibling on new codex/pwa-stream-owner from exact 23bdd83ff42c849f6a59322f6106e1d510cddf2e, preserving every prior branch/profile. Four owner paths only. Root prepares three disjoint browser candidates; no App/dependency changes. Stop new operations at70% either window, checkpoint by80%; weekly window is currently the tighter bound. Full async owner has no acceptance yet.
 
 ## Authority and completion
 
