@@ -44,3 +44,6 @@ No native fixture recapture/DSP/full build/combined/browser checks run by this w
 Post-retirement follow-up37 strict typesPASS;38 focused fakes52PASS887ms. Commands identical to final23/24 above with unique run IDs pcm-sink-retirement-types-20261016-37 and pcm-sink-retirement-fakes-20261016-38. No failure/fix cycle. Live20%/52%. This supersedes final source/test digests above; contract/index remain unchanged. No browser/combined/DSP checks.
 - pcm-queue-sink.ts SHA256 de5ef1ac20a546a750166e712f979837b31810e9cd5dd690a2bc76bb82cfd712
 - pcm-queue-sink.test.ts SHA256 6b13dbd57f40bc1e6514b8414cd6de078953579ca227ff7492a7a09dce2be3bf
+
+
+Root acceptance2026-10-16: exact61793c29 normalmerge5e3bbc38. window9-sink-combined-unit-20261016:143coveringtransporttestsPASS. window9-sink-combined-build-20261016:combinedstrict types/buildPASS,shell4ec181123f24. window9-sink-browser-first-20261016:2actualChromePASS10.4s,44100defaultoutputtimestamp/48000explicitrenderclock, actualsignedPCM snapshot/nonzeroanalyser/integercontiguousschedule/drain, actualsuspendpermission/newgesture/flush/releaseandnewborrowerwithoutcontextclose. Sources5e3bbc38 plus3namedrootbrowserfixtures;uniqueper-testproof.jsonretained. No native/DSP recapture,Appfullstream/physicalhearing/Safari/trustedvisibility acceptance. WholeT08remainsopen.

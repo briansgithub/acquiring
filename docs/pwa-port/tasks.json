@@ -494,8 +494,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
-      "slice": "Validated bounded sink61793c29 reviewed; normal integration and actual-browser acceptance next",
-      "nextAction": "Normal merge exact61793c29 after current named checkpoint, copy three prepared coordinator browser fixtures, run combined focused transport units/types/build and actual44100/48000 sink test. No full transport/App/Safari/hardware completion claim.",
+      "slice": "Accepted sink plus context/worker/clock; next full streaming transport bounded contract",
+      "nextAction": "Persist accepted sink/browser checkpoint, receive same Sol/high worker read-only minimal transport proposal, freeze bounded root-owned contract before any implementation. Full T08/T12/T26 gates remain unchanged.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -571,6 +571,11 @@
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-sink-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-sink-vitest.config.mjs (worker pwa through sibling guard)",
           "revision": "61793c29d8ddfc54ad7be6b4b9426c94d0952d12",
           "result": "PASS scopedtypes37 and52fakes38/887ms. Resumed required first types15/4fakes16 passed; expanded43/44 had one float assertion only, corrected exact scheduledseconds=integerFrame/rate,51fakes24/types23 passed atae41f181. Root reviewed whole sink; final one-line permission(next) after old retirement plus no-callback regression passed52. No source failure hidden or native/DSP recapture. Root integration/browser pending."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/audio/transport; npm run build; node node_modules/@playwright/test/cli.js test audio-sink.spec.ts --workers=1 --output .artifacts/pwa-port/audio-sink/browser-first (pwa through root guard; Chrome local network)",
+          "revision": "5e3bbc38 normal sink merge plus named3coordinator audio-sink browser fixtures",
+          "result": "PASS firstrootruns:143transportunit/window9-sink-combined-unit-20261016;combinedstrict types/build shell4ec181123f24/window9-sink-combined-build-20261016;2ChromePASS10.4s/window9-sink-browser-first-20261016. Actual44100output-timestamp/48000explicitcontext-render, signedPCM snapshots/nonzero analyser graph/integercontiguous schedules/drain, actualsuspendpermission/explicitnewgesture/flush/permanentrelease/contextretainedandnewborrower. Uniqueper-testproof.json retained. No physicalhearing/Safari/trustedvisibility/wholetransport/App acceptance. No DSP/native recapture."
         }
       ],
       "progress": [
@@ -600,7 +605,8 @@
         "2026-10-16T07:19:16Z pre-branch sink intent: primary56efe22b clean after32native transition cases/3unit/types/build andactual productChrome28.4s. PCM siblingcc525d4e clean/idle, sink proposal completed read-only. Root freezes separate sink-contracts.ts; four worker paths only, excludes all root T11/browser/contracts. Preserve old branches/worktrees/profiles. Root runtime unknown and unchanged; no duplicateworker.",
         "2026-10-16T07:25:25Z allowance checkpoint: root72%five-hour/48%weekly; no new slice/worker/check. Sink4799fba8 saved explicitly UNVALIDATED at worker70% threshold, clean/idle/unmerged. Two narrow type fixes remain unretested; four saved fake groups unrun. Primary source ddcd7d88 accepted contract and product56efe22b unchanged; root only saves recoverable docs. No relevant process or unresolved guard run in either tree. Reset1792150939; preserve all branches/worktrees/profiles.",
         "2026-10-16T11:49:05Z renewed capacity3%five-hour/50%weekly after applicable reset; primary085ec1cd and sink4799fba8 clean, agents idle, guards clear/no relevant process. Resume same Sol/high worker/branch and partial failure history. Root owns disjoint new sink browser fixtures; all other work preserved.",
-        "2026-10-16T11:59:09Z pre-integration: primary085ec1cd owns validated T11 tone changes plus root task docs; staged empty. Sibling61793c29 clean/idle; four-path sink reviewed and52fakes/types pass. Normal merge exact tip then covering/browser. Root only owns prepared three browser candidates. All branches/worktrees/ignored profiles preserved."
+        "2026-10-16T11:59:09Z pre-integration: primary085ec1cd owns validated T11 tone changes plus root task docs; staged empty. Sibling61793c29 clean/idle; four-path sink reviewed and52fakes/types pass. Normal merge exact tip then covering/browser. Root only owns prepared three browser candidates. All branches/worktrees/ignored profiles preserved.",
+        "2026-10-16T12:01:38Z sink normally integrated5e3bbc38;143coveringunit/types/build and2actualChrome10.4s firstpass. New read-only proposal claim saved before same Sol/high worker resumption; no new branch or implementation before root contract. Root runtime unknown/unchanged."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -745,8 +751,8 @@
           "pwa/src/audio/transport/index.ts"
         ],
         "scope": "Five synchronous methods from frozen sink-contracts.ts only. Shared-context borrowed permission/epoch, opaque generation run identity, integer source scheduling/80ms prime/20ms lead/200ms+4096 cap,512source/mapping cap, fixed selected audio clock, pure clock prune/gap/drain, immediate invalidation/cleanup. No timers/resume/worker coordination/full transport/App/DSP/preview/context/catalog/T11/dependency/contracts/task edits.",
-        "status": "validated61793c29 clean/idle/unmerged;52fakes/scopedtypes passed, root complete source review plus follow-up passed",
-        "nextAction": "Root normal merge exact validated tip. Worker idle; preserve4799/ae41/61793 checkpoints and existing branch/tree.",
+        "status": "normally integrated5e3bbc38;143covering transport/types/build and2actualChromePASS",
+        "nextAction": "No pending sink implementation. Reuse accepted synchronous PcmQueueSink in full transport; queueDrained is not transportcompletion. Preserve worker branch and every checkpoint.",
         "commit": "61793c29d8ddfc54ad7be6b4b9426c94d0952d12"
       },
       "sinkBrowserAssignment": {
@@ -757,8 +763,19 @@
           "pwa/tests/browser/audio-sink-harness.ts",
           "pwa/tests/browser/audio-sink.spec.ts"
         ],
-        "status": "intent saved; prepare fixtures independently while existing worker completes sink",
-        "scope": "Actual Chrome44100/48000 integer scheduling/PCM/selected clock/drain, suspend/new gesture/flush/release retaining borrowed context. No physical hearing/Safari/trusted visibility/App stream claim. Test only after reviewed validated sink normal merge."
+        "status": "PASS2actualChrome10.4s,44100output-timestamp/48000context-render",
+        "scope": "Actual Chrome44100/48000 integer scheduling/PCM/selected clock/drain, suspend/new gesture/flush/release retaining borrowed context. No physical hearing/Safari/trusted visibility/App stream claim. Test only after reviewed validated sink normal merge.",
+        "nextAction": "No pending sink browser change; no physicaloutput/Safari/trustedvisibility/Appstream acceptance implied."
+      },
+      "streamTransportProposal": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "status": "read-only bounded proposal intent; existing worker only",
+        "branch": "codex/pwa-pcm-sink",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "61793c29d8ddfc54ad7be6b4b9426c94d0952d12",
+        "scope": "Read only frozen native current transport methods/owner intent/revision/seek/config/silent scrub/completion behavior and accepted worker/context/sink APIs. Propose minimal next bounded coordinator contract and fake/actual-browser acceptance. No source/contract/dependency/task edits or new branch. Save small ignored proposal under own guard before returning. Root owns docs/contracts/integration."
       }
     },
     {
@@ -1493,16 +1510,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-16T11:59:09Z",
-    "sourceCommit": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
+    "date": "2026-10-16T12:01:38Z",
+    "sourceCommit": "5e3bbc38",
     "usageObserved": {
-      "fiveHourUsedPercent": 22,
+      "fiveHourUsedPercent": 25,
       "weeklyUsedPercent": 53
     },
     "fiveHourResetUnix": 1792169161,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Capacity permits exact sink integration; bounded T11 toneUI accepted, sink61793 reviewed/scopedvalidated but not yet integrated or browseraccepted.",
+    "reason": "Sink accepted with actual browser evidence; continue bounded full transport proposal using existing Sol/high worker. Preserve all data/branches/profiles and pending independent Library approval.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T06:42Z",
@@ -1512,7 +1529,18 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Applicable reset passed; live counters permit bounded integration. No credit/reset redemption."
     },
-    "activeWorker": null,
+    "activeWorker": {
+      "owner": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "status": "read-only bounded proposal intent; existing worker only",
+      "branch": "codex/pwa-pcm-sink",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "61793c29d8ddfc54ad7be6b4b9426c94d0952d12",
+      "scope": "Read only frozen native current transport methods/owner intent/revision/seek/config/silent scrub/completion behavior and accepted worker/context/sink APIs. Propose minimal next bounded coordinator contract and fake/actual-browser acceptance. No source/contract/dependency/task edits or new branch. Save small ignored proposal under own guard before returning. Root owns docs/contracts/integration.",
+      "agent": "preview_owner",
+      "task": "T08"
+    },
     "completedWorker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",

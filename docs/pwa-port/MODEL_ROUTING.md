@@ -35,3 +35,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-16T07:25:25Z preview_owner gpt-6.1-sol/high checkpointed UNVALIDATED sink4799fba8 at70%/48%; root observed72%/48%. Worker clean/idle/unmerged; no tests passed for sink, fix07 unretested and4fake groups unrun. Resume same assignment after reset, no duplicate worker/model change. Luna review completed/idle.
 
 2026-10-16T11:49:05Z same preview_owner gpt-6.1-sol/high resumes unvalidated PCM sink4799fba8 on existing codex/pwa-pcm-sink. Root runtime unknown/unchanged owns disjoint browser acceptance. One worker only; live3%/50%.
+
+2026-10-16T12:01:38Z sink61793c29accepted after normalmerge5e3bbc38 androot143unit/types/build/2Chrome. Samepreview_owner gpt-6.1-sol/high now read-only bounded fulltransportproposal on existingtree; no branch/source edits before contract. Rootruntimeunknown/unchanged;maxoneworker.

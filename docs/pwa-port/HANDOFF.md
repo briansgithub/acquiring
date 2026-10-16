@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-16T11:59:09Z. Live22% five-hour/53% weekly, reset1792169161/1792653278. T11 scale+selected-tone controls pass types/build and actual productChrome19.5s/29.2s; checkpoint named source/tests/docs. Sink61793c29d8ddfc54ad7be6b4b9426c94d0952d12 now validated52fakes/scopedtypes and fully reviewed; clean/idle/unmerged in existing codex/pwa-pcm-sink sibling. NEXT normal merge exacttip, copy prepared3audio-sink fixtures, combinedfocusedunit/types/build then actual44100/48000 sinkbrowser. Earlier4799 partial/ae41 preserved. No full transport/App/device claim; pending Library approval unchanged. Coordinator runtime unknown/unchanged, no active worker or duplicatebranch.
+Updated 2026-10-16T12:01:38Z. Sink61793c29 normally merged5e3bbc38;143transportunit/strict types/build(shell4ec181123f24) and2actualChrome10.4s PASS firstrootruns. Chrome44100outputtimestamp/48000rendertime proves queuePCM/clock/drain/suspend/newgesture/borrowerflush/release/sharedreuse; no App/fulltransport/device/Safari claim. T11toneUIfee92b0c accepted productChrome19.5s. Live25%/53%,reset1792169161/1792653278. Next SAME Sol/high preview_owner read-only minimal fulltransport proposal, root freezes contract before implementation; no new branch/duplicateworker. Preserve sink61793/ae41/4799 and all worktrees/profiles; pending Library approval unchanged.
 
 ## Authority and completion
 
