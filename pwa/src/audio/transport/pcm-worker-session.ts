@@ -24,22 +24,34 @@ function timelineSnapshot(input: PlaybackTimeline): PlaybackTimeline {
   const startBeat = input.startBeat ?? 1;
   beat(startBeat); beat(input.endBeat);
   if (input.endBeat - startBeat < 1e-6) fail('Invalid timeline span');
-  if (!Array.isArray(input.events) || input.events.length > STREAM_LIMITS.events) fail('Event limit');
+  const callerEvents = input.events;
+  if (!Array.isArray(callerEvents)) fail('Event limit');
+  const eventCount = callerEvents.length;
+  if (!Number.isInteger(eventCount) || eventCount < 0 || eventCount > STREAM_LIMITS.events) fail('Event limit');
   if (input.completionKey != null && (typeof input.completionKey !== 'string' ||
       input.completionKey.length > LIMITS.completionKeyCharacters)) fail('Completion key limit');
   let previous = -Infinity;
-  const events = Array.from(input.events, event => {
+  const events: PlaybackTimeline['events'][number][] = [];
+  for (let index = 0; index < eventCount; index++) {
+    const event = callerEvents[index];
     if (!event || typeof event !== 'object' || !Number.isSafeInteger(event.id) ||
         !Object.values(PlaybackAudioLayer).includes(event.layer)) fail('Invalid event');
     beat(event.startBeat); beat(event.endBeat);
     if (event.endBeat <= event.startBeat || event.startBeat < previous) fail('Invalid event order');
     previous = event.startBeat;
-    if (!Array.isArray(event.fullMidiNotes) || event.fullMidiNotes.length > STREAM_LIMITS.notesPerEvent) fail('Note limit');
-    const fullMidiNotes = Object.freeze(Array.from(event.fullMidiNotes, note => { nativeInt(note); return note; }));
+    const callerNotes = event.fullMidiNotes;
+    if (!Array.isArray(callerNotes)) fail('Note limit');
+    const noteCount = callerNotes.length;
+    if (!Number.isInteger(noteCount) || noteCount < 0 || noteCount > STREAM_LIMITS.notesPerEvent) fail('Note limit');
+    const fullMidiNotes: number[] = [];
+    for (let noteIndex = 0; noteIndex < noteCount; noteIndex++) {
+      const note = callerNotes[noteIndex]; nativeInt(note); fullMidiNotes.push(note);
+    }
+    Object.freeze(fullMidiNotes);
     if (event.rootMidiNote != null) nativeInt(event.rootMidiNote);
-    return Object.freeze({ id: event.id, startBeat: event.startBeat, endBeat: event.endBeat,
-      layer: event.layer, fullMidiNotes, rootMidiNote: event.rootMidiNote ?? null });
-  });
+    events.push(Object.freeze({ id: event.id, startBeat: event.startBeat, endBeat: event.endBeat,
+      layer: event.layer, fullMidiNotes, rootMidiNote: event.rootMidiNote ?? null }));
+  }
   return Object.freeze({ startBeat, endBeat: input.endBeat, events: Object.freeze(events), completionKey: input.completionKey ?? null });
 }
 

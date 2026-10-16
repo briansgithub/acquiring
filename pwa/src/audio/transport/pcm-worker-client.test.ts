@@ -26,6 +26,42 @@ async function loaded() { const state = setup(); const promise = state.client.ex
 afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 
 describe('single-command PCM client', () => {
+  it('keeps first identity1 after a factory aborts before any post', async () => {
+    const port = new FakePort(), abort = new AbortController();
+    const client = new PcmWorkerClient({ createWorker: () => { abort.abort(); return port; } });
+    await expect(client.execute(load(), 0, { signal: abort.signal })).rejects.toMatchObject({ code: 'ABORTED', fatal: false });
+    expect(port.posted).toHaveLength(0); expect(port.terminated).toBe(0);
+    const pending = client.execute(load(), 0);
+    expect(port.posted[0].requestId).toBe(1);
+    port.reply();
+    expect(await pending).toMatchObject({ ok: true, kind: 'ack', requestId: 1 });
+    client.release();
+  });
+  it('rejects release during caller snapshot without creating an unresolved command', async () => {
+    const factory = vi.fn(() => new FakePort());
+    const client = new PcmWorkerClient({ createWorker: factory });
+    const operation = load();
+    Object.defineProperty(operation, 'config', { get() { client.release(); return load().config; } });
+    await expect(client.execute(operation, 0)).rejects.toMatchObject({ code: 'RELEASED', fatal: true });
+    expect(factory).not.toHaveBeenCalled();
+    await expect(client.execute(load(), 0)).rejects.toMatchObject({ code: 'RELEASED' });
+  });
+  it('retains a nested snapshot command and rejects the outer command BUSY', async () => {
+    const { client, port } = setup();
+    let nested: Promise<unknown> | undefined;
+    const operation = load();
+    Object.defineProperty(operation, 'config', { get() {
+      nested ??= client.execute(load(), 0);
+      return load().config;
+    } });
+    await expect(client.execute(operation, 0)).rejects.toMatchObject({ code: 'BUSY', fatal: false });
+    expect(port.posted).toHaveLength(1); expect(port.posted[0].requestId).toBe(1);
+    port.reply(); expect(await nested).toMatchObject({ ok: true, kind: 'ack', requestId: 1 });
+    const pending = client.execute({ kind: 'render', frameCount: 1 }, 0);
+    expect(port.posted[1].requestId).toBe(2);
+    port.reply(); await pending; client.release();
+  });
+
   it('uses one lazy worker, snapshots arrays/config before posting and rejects BUSY without queue', async () => {
     const port = new FakePort(), factory = vi.fn(() => port);
     const client = new PcmWorkerClient({ createWorker: factory });

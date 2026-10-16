@@ -25,3 +25,15 @@ Runtime semantics: malformed session envelopes use identity0 only when no valid 
 Staged whitespace check25 caught terminal blank lines in newly added files (unstaged diff --check did not inspect untracked files). Removed only terminal blank lines, retained all source behavior; final check rerun under27/28/29 below.
 
 Final normalized source validation: pcm-worker-final-tests-20261016-27 PASS25tests/2files560ms; pcm-worker-final-types-20261016-28 PASS; pcm-worker-final-staged-check-20261016-30 PASS. Commands identical to18/19 above, staged check git diff --cached --check. Source digests above reflect this exact normalized source; worklog-only receipt appended after those checks. Allowance26%/41%. All seven paths staged; unrelated files untouched.
+
+2026-10-16 bounded root review follow-up on clean dfafbd7ce717dd155b9a8eac01d50757970b8085, same codex/pwa-pcm-worker. Root authorized only three corrections: retain unposted identity on factory-triggered abort, recheck release/pending after caller snapshot reentrancy, and ignore caller array iterators using cached bounded index traversal. Own session/client/tests/worklog only; contracts/entry/index and all earlier exclusions untouched. Guard has zero recovery-required runs; live31%/42%. Plan focused regressions plus scoped tests/types, separate commit preserving dfafbd7c.
+
+2026-10-16 reviewed corrections validated unchanged command forms: pcm-worker-review-tests-20261016-39 ran node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-worker-vitest.config.mjs (--cwd pwa), PASS29tests/2files644ms. pcm-worker-review-types-20261016-40 ran node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-worker-tsconfig.json (--cwd pwa), PASS. No test/type failure. One attempted regression-write PowerShell payload failed parsing before any child/mutation; literal Python payload38 succeeded. Review42 confirms only requested identity/reentrancy/index-copy behavior changes.
+
+Follow-up exact tested SHA256:
+- pcm-worker-session.ts a7720013a59e5635d52cf4c4a046c3c785328d0c4c0ca35f463d4e1c3f05c190
+- pcm-worker-session.test.ts 227e2ad5984a72c50b480d0e1be9dfb142e70da3bb4c79270617784f5567c8dc
+- pcm-worker-client.ts b34f22e098616742dc47c23b439b27f126de92bd7db8a4eb0012e165264560b4
+- pcm-worker-client.test.ts d48e88cc59e0c35106117b1a5df0990e025fad81d71c07464870f276db6b685e
+
+Request IDs are consumed at posting, including uncertain throwing posts (terminal); unposted factory aborts keep the next ID. Caller snapshot getters cannot replace pending state or revive release. Copies never consult caller array iterators and retain cached lengths when element getters grow arrays. No contract/entry/index/DSP/fixture/browser/combined checks changed. Scope remains pure protocol/session/client, no sink/App wiring. Last live34%/42%; next separate validated follow-up commit and idle.

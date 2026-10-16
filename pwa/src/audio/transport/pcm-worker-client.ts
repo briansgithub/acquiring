@@ -31,19 +31,23 @@ export class PcmWorkerClient implements PlaybackWorkerClient {
       Promise.reject<PlaybackWorkerSuccess>(new PlaybackWorkerError(code, message, fatal));
     if (this.released) return reject('RELEASED', 'Client released', true);
     if (this.pending) return reject('BUSY', 'A command is already pending');
-    if (options?.signal?.aborted) return reject('ABORTED', 'Already aborted');
+    const signal = options?.signal;
+    if (signal?.aborted) return reject('ABORTED', 'Already aborted');
     let operation: PlaybackWorkerOperation;
     try {
       if (!validWorkerRevision(revision)) throw new RangeError('Invalid revision');
       operation = snapshotWorkerOperation(input);
     } catch { return reject('INVALID_INPUT', 'Invalid bounded operation'); }
+    // Caller getters may synchronously release or start another command.
+    if (this.released) return reject('RELEASED', 'Client released during snapshot', true);
+    if (this.pending) return reject('BUSY', 'A command started during snapshot');
     if (operation.kind !== 'load' && !this.loaded) return reject('NOT_LOADED', 'Load required');
     if (operation.kind === 'render' ? revision !== this.revision : revision < this.revision)
       return reject('STALE_REVISION', 'Revision does not match applied state');
     if (!Number.isSafeInteger(this.nextId)) { this.release(); return reject('PROTOCOL', 'Request identity exhausted', true); }
-    const request: PlaybackWorkerRequest = Object.freeze({ version: 1, requestId: this.nextId++, revision, operation });
+    const request: PlaybackWorkerRequest = Object.freeze({ version: 1, requestId: this.nextId, revision, operation });
     return new Promise((resolve, rejectPromise) => {
-      const pending: Pending = { request, resolve, reject: rejectPromise, signal: options?.signal };
+      const pending: Pending = { request, resolve, reject: rejectPromise, signal };
       this.pending = pending;
       try {
         if (!this.worker) {
@@ -61,6 +65,8 @@ export class PcmWorkerClient implements PlaybackWorkerClient {
         pending.signal?.addEventListener('abort', pending.abort, { once: true });
         if (pending.signal?.aborted) { this.settle(undefined, new PlaybackWorkerError('ABORTED', 'Aborted before posting', false, request.requestId, revision)); return; }
         pending.timer = setTimeout(() => this.terminate('TIMEOUT', 'Worker deadline exceeded'), LIMITS.timeoutMs);
+        // Only posted identities are consumed. A factory-aborted request never reached the session.
+        this.nextId++;
         this.worker.postMessage(request);
       } catch { this.terminate('WORKER_FAILED', 'Worker creation or posting failed'); }
     });

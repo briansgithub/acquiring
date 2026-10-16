@@ -25,6 +25,27 @@ function reference(renderer: PlaybackPcmRenderer, count: number) {
 }
 
 describe('bounded PCM session', () => {
+  it('never invokes caller iterators and retains cached array bounds during index reads', () => {
+    const iterator = vi.fn(() => { throw new Error('unbounded hostile iterator'); });
+    const notes = [60];
+    Object.defineProperty(notes, Symbol.iterator, { get() { iterator(); throw new Error(); } });
+    const events = [{ ...timeline.events[0], fullMidiNotes: notes }];
+    Object.defineProperty(events, Symbol.iterator, { get() { iterator(); throw new Error(); } });
+    const operation = snapshotWorkerOperation({ kind: 'load', sampleRate: 1000, config, timeline: { ...timeline, events } });
+    expect(iterator).not.toHaveBeenCalled();
+    if (operation.kind !== 'load') throw new Error();
+    expect(operation.timeline.events[0].fullMidiNotes).toEqual([60]);
+    const { send } = setup({ ...timeline, events });
+    expect(success(send({ kind: 'render', frameCount: 1 })).kind).toBe('pcm');
+    expect(iterator).not.toHaveBeenCalled();
+    const growing = [60];
+    Object.defineProperty(growing, 0, { get() { growing.push(64); return 60; } });
+    const snapshot = snapshotWorkerOperation({ kind: 'load', sampleRate: 1000, config,
+      timeline: { ...timeline, events: [{ ...timeline.events[0], fullMidiNotes: growing }] } });
+    if (snapshot.kind !== 'load') throw new Error();
+    expect(snapshot.timeline.events[0].fullMidiNotes).toEqual([60]);
+  });
+
   it('reuses first two unchanged native SINE blocks at1000/48000Hz without recapture', () => {
     expect(native.authority).toBe('801cf7984171d772afc4406ddb5c79c0cb7fd20a');
     for (const fixture of native.cases.filter(c => c.waveform === 'SINE')) {
