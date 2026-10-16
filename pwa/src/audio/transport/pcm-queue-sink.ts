@@ -18,6 +18,7 @@ interface RunState {
   busy: boolean;
   lastRequest: number;
   lastTime: number;
+  outputStarted: boolean;
 }
 const error = (code: ConstructorParameters<typeof PcmSinkError>[0], message: string): never => { throw new PcmSinkError(code, message); };
 const safe = (value: number) => Number.isSafeInteger(value) && value >= 0;
@@ -71,7 +72,7 @@ export class PcmQueueSink implements AudioPcmQueueSink {
     // All validation precedes replacement; retirement owns only the detached old state.
     const token = Object.freeze({ generation: ++this.generation, revision, epoch, sampleRate });
     const next: RunState = { token, context, selected, clock, staged: [], nodes: new Set(),
-      scheduled: false, sealed: false, busy: false, lastRequest: 0, lastTime: time };
+      scheduled: false, sealed: false, busy: false, lastRequest: 0, lastTime: time, outputStarted: false };
     const old = this.current;
     this.current = next; this.revision = revision; this.mutation++;
     this.retire(old);
@@ -218,8 +219,14 @@ export class PcmQueueSink implements AudioPcmQueueSink {
     try {
       const time = this.time(run.context, run.selected, run.token.sampleRate);
       this.active(run);
-      if (time < run.lastTime) return error('CLOCK_FAILED', 'Selected audio clock regressed');
       const frame = playbackFrameAtTime(time, run.token.sampleRate);
+      // Silent startup has no mapped played head; the browser output estimate may settle backward.
+      // Once any scheduled frame is reached, retain strict regression failure for this generation.
+      if (run.selected === 'context-render' || run.outputStarted) {
+        if (time < run.lastTime) return error('CLOCK_FAILED', 'Selected audio clock regressed');
+      }
+      if (run.scheduled && run.clock.segments.length && frame >= run.clock.segments[0].startFrame)
+        run.outputStarted = true;
       run.clock = prunePlaybackClock(run.clock, frame); run.lastTime = time;
       this.permission(run);
       return frame;

@@ -494,8 +494,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
-      "slice": "Kernel accepted; bounded full streaming owner contract ready",
-      "nextAction": "Same Sol/high worker bounded async owner implementation under frozen23bdd83f; coordinator prepares independent browser candidates. Worker fakes/types and source review precede normal integration/combined/browser acceptance. No App playback route yet.",
+      "slice": "Composed streaming transport component accepted; App/device integration remains open",
+      "nextAction": "Resume from accepted composed-stream-runtime; do not reimplement/recapture accepted components. Before T12 consumption, explicitly resolve the existing fullT08 dependency with a justified development milestone or complete remaining acceptance. Independent T11 optional complexity lookup/final covering acceptance remains ready. No new operation until current live usage can be verified below70% in both windows.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -596,6 +596,11 @@
           "command": "node node_modules/typescript/bin/tsc --noEmit (pwa/rootguard)",
           "revision": "a2d76758 plus named transport-contracts.ts",
           "result": "PASS window10-owner-contract-types-20261016; contract only, no full owner implementation/acceptance implied."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/audio/transport src/features/details; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test audio-transport.spec.ts --output=.artifacts/pwa-port/audio-transport/browser-startup-fix1; node node_modules/@playwright/test/cli.js test audio-sink.spec.ts --output=.artifacts/pwa-port/audio-transport/sink-startup-covering (pwa via root run-control)",
+          "revision": "e084ccb601e2e7918e922574c62a7d95345984d6 plus exact named hashes in composed-stream-runtime",
+          "result": "PASS186 transport/details unit checks(13files/2.91s), combined strict types/production build shell ee0b60b5be75, actualChrome composed transport2cases12.7s at44100/48000(default output-timestamp both), existing sink2cases7.2s(timestamp44100/explicitrender48000). Guards window10-owner-startup-unit/build-20261016, window10-owner-browser-startup-fix1-20261016, window10-sink-startup-covering-browser-20261016. Real moduleworker/PCM/analyser/playedhead, silent scrub/seek/zeroBPM/request restoration/positiveconfig, finalrender-before-queue-drain completion, actualsuspend/newgesture, borrowerrelease/contextreuse, trustedpagehide/newdocument. Original2clock failures and rawdiagnostic retained; first sourcefix retest passed unchanged assertions. No App streaming/Safari/physicalhearing/trustedtab/BFCache acceptance."
         }
       ],
       "progress": [
@@ -634,7 +639,11 @@
         "2026-10-16T16:51:44.987830+00:00 resumed after applicable reset. Live0% five-hour/62% weekly, reset1792187464/1792653278. Primarya2d76758 clean, both workers idle, root guard clear and no relevant process observed. No duplicate worker or credit/reset/model action. Saved kernel combined acceptance is next.",
         "2026-10-16T16:53:58.094748+00:00 kernel primary acceptance171 units/types/build passed; saved earlier integration is accepted. Root freezes separate async owner contract; no new worker yet. Prior native/catalog/browser proofs unchanged.",
         "2026-10-16T16:56:18.013984+00:00 pre-branch: root23bdd83f clean, sibling22525 clean/idle, prior guards clear and no active helper at entry. Contract strict types and kernel171unit/build accepted. Same Sol/high owner worker; root disjoint browser paths. Preserve all branches/worktrees/ignored profiles. Live5%/63%, no new operation at70% either window.",
-        "2026-10-16T16:59:05.878292+00:00 coordinator prepared3ignored browser candidates: real moduleworker+sink at44100/48000, silent scrub/seek/zero-tempo/config, suspension/newgesture, once-only render-end versus selected drain, borrowerrelease/reuse and trusted pagehide/newdocument. Candidates untested; no App/static/native/catalog source changed."
+        "2026-10-16T16:59:05.878292+00:00 coordinator prepared3ignored browser candidates: real moduleworker+sink at44100/48000, silent scrub/seek/zero-tempo/config, suspension/newgesture, once-only render-end versus selected drain, borrowerrelease/reuse and trusted pagehide/newdocument. Candidates untested; no App/static/native/catalog source changed.",
+        "2026-10-16T17:08:57.589796+00:00 preintegration: primarye60e39a2 clean, siblingf9330517 clean/idle,0recovery/no node or python processes via Get-Process. CIM inventory unavailable; no ownership ambiguity. Root reviewed pendinggesture config preservation, guarded terminalcatch, ready-before-heldenqueue and regressions. Exact four worker paths; contract unchanged. Live26%/66%weekly; no new operation at70%.",
+        "2026-10-16T17:10:47.582870+00:00 e084ccb6 composed owner185units/strict types/build PASS(shell ee0b60b5be75). First actualChrome2failed before first source, error Selected audio clock regressed; immutable guard window10-owner-browser-first-20261016, proof+traces unique browser-first. No assertion weakened. Bounded diagnostic1: record actual timestamp/currentTime without alteration in fixture, rerun exact2cases unique browser-clock-diagnostic. Same Sol/high read-only cause review; no worker source edits. FullT08/App/device acceptance open.",
+        "2026-10-16T17:12:33.827866+00:00 raw-clock diagnostic recorded both rates:44100 output .000069->.000021 at render .040635;48000 .000029->.000009 at render .04,0sources. Same error, no correction/retest yet. Inference: premature monotonic baseline during silent module startup. WebAudio getOutputTimestamp source https://webaudio.github.io/web-audio-api/#dom-audiocontext-getoutputtimestamp describes outputframe vsrendercurrentTime, zero beforeprocessing; no monotonic guarantee added. Root bounded startup correction intent; no clock blending or active-regression relaxation.",
+        "2026-10-16T17:16:50.841873+00:00 accepted composed owner and narrow silent-start clock correction; worker read-only reviewed4paths/no material findings. Current primary10ownedpaths only; guard0recovery, no relevant node/python process observed afterbrowserexit. All old branches/profiles/failuretraces preserved. Lastlive34%/67%; later usage query produced no response through bounded waits and was cancelled(read-only). No new slice while current quota unavailable; this is temporary scheduling state, no credits/resets/model action."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -697,6 +706,22 @@
           "status": "complete",
           "revision": "d5391e68",
           "evidence": "NativePCM/realtimegraph/clock/ended/cancellation actualChrome44100/48000;singlelazyapplicationcontext,twoindependentborrowers,childreleasekeepsotherusable,applicationreleaseclosesonce/permanently,actualsuspendpermission/newgesture,trustedpagehide/newdocumentcleanup. Combined348unit/input/types/buildPASS;8ChromePASS13.8s. Components not yetwiredintoApp. Excludesstreamtransport,physicalhearing,Safari,realtrustedtabvisibility andBFCache;wholeT08in_progress."
+        },
+        "composed-stream-runtime": {
+          "status": "complete",
+          "revision": "e084ccb601e2e7918e922574c62a7d95345984d6 plus named startup correction/browser tree committed next",
+          "evidence": "PASS186 transport/details unit checks(13files/2.91s), combined strict types/production build shell ee0b60b5be75, actualChrome composed transport2cases12.7s at44100/48000(default output-timestamp both), existing sink2cases7.2s(timestamp44100/explicitrender48000). Guards window10-owner-startup-unit/build-20261016, window10-owner-browser-startup-fix1-20261016, window10-sink-startup-covering-browser-20261016. Real moduleworker/PCM/analyser/playedhead, silent scrub/seek/zeroBPM/request restoration/positiveconfig, finalrender-before-queue-drain completion, actualsuspend/newgesture, borrowerrelease/contextreuse, trustedpagehide/newdocument. Original2clock failures and rawdiagnostic retained; first sourcefix retest passed unchanged assertions. No App streaming/Safari/physicalhearing/trustedtab/BFCache acceptance.",
+          "testedSha256": {
+            "pwa/src/audio/transport/pcm-queue-sink.ts": "bdbe349e34c345ee623e1d7062457a6412180a913b557de36f5582f4dca73b50",
+            "pwa/src/audio/transport/pcm-queue-sink.test.ts": "5d29904fd7f317e224b88f12a85b51f1789690cc3bee2d376791d7e7294934c7",
+            "pwa/src/audio/transport/sink-contracts.ts": "ae0dbf150c11665a95e9d718bb596952c6e18d64c168e1825e671d15c7df2e64",
+            "pwa/src/audio/transport/playback-transport.ts": "cb1b65a757522bacc3b5c855d21dc070ac51aed7bff6d10b0b4fdfd5ad4d3e94",
+            "pwa/src/audio/transport/playback-transport.test.ts": "900e49197a07b116551a7fdfc6bb15c65db0ab85b85f0682c475eeafe71b9ff3",
+            "pwa/tests/browser/audio-transport.html": "7eb3e35088e24855ef1048a9df877f456060de8a66898abd370d3ae44b5b9dcb",
+            "pwa/tests/browser/audio-transport-harness.ts": "6c8410bfa7d98a7d63e7042d4199202415c7f933a95d37ab5177106c917e43ec",
+            "pwa/tests/browser/audio-transport.spec.ts": "4aa60f0145e166b6302f0e2d1691c00462f76006bddaa2c0d0a09cd98caf246f"
+          },
+          "exclusions": "Component acceptance only. T08 remains in_progress; no new downstream dependency gate added. App playback controls and mobile/device acceptance remain separate."
         }
       },
       "clockAssignment": {
@@ -858,8 +883,9 @@
           "pwa/src/audio/transport/index.ts"
         ],
         "scope": "PlaybackTransport implements frozen AudioPlaybackTransport. Accepted kernel/context/worker/sink orchestration, immediate intent, explicit gesture, bounded/coalesced control/config/one-heldPCM/one10ms timer, selected played beat/final drain and lifecycle. No shared contracts/old components/DSP/App/catalog/dependency/task edits.",
-        "status": "dated pre-branch intent; same existing Sol/high worker only",
-        "nextAction": "Under own guard reuse clean22525 sibling on new absent codex/pwa-stream-owner from exact frozen base. Preserve all previous branches/profiles. Implement in small recoverable receipts; focused fakes/types, then validated named checkpoint, or explicit unvalidated partial at cutoff. No new operation/check at70% either window; checkpoint by80%."
+        "status": "Normally merged e084ccb6; combined186units/types/build and2actual composedChrome cases PASS after reviewed startup sink correction. Worker clean/idle.",
+        "nextAction": "No pending async owner implementation. Preserve exact f9330517 branch/tree; no duplicate worker.",
+        "commit": "f9330517354849f49f87a566c83378ce4e1158b4"
       },
       "ownerBrowserAssignment": {
         "owner": "coordinator runtime unknown",
@@ -870,14 +896,32 @@
           "pwa/tests/browser/audio-transport.spec.ts"
         ],
         "scope": "Prepare disjoint actual Chrome44100/48000 composed worker/sink/intent controls, render-ended-before-drain, silent scrub/seek/config/zeroBPM/suspend/newgesture/borrowed-context retention. Trusted navigation only where supported; no physical hearing/Safari/trusted-tab claim. Do not run until reviewed validated owner integration.",
-        "status": "Three ignored candidates prepared, UNTESTED; no source copy/build/browser acceptance yet.",
+        "status": "Accepted exact named source hashes below: strict types/build and2actualChrome composed cases PASS12.7s. Prior failed traces preserved.",
         "candidateDirectory": ".artifacts/pwa-port/transport-browser",
         "candidateSha256": {
           "audio-transport.html": "7eb3e35088e24855ef1048a9df877f456060de8a66898abd370d3ae44b5b9dcb",
           "audio-transport-harness.ts": "893bcf7255ec1ccdc60fd8fa8310c28b4c46ff4f76c78799705dbe20252b9540",
           "audio-transport.spec.ts": "4aa60f0145e166b6302f0e2d1691c00462f76006bddaa2c0d0a09cd98caf246f"
         },
-        "nextAction": "After validated worker tip and normal integration, copy exact candidates to assigned browser paths under guard; strict types/build then2realChrome cases with unique output. No browser check before source review/acceptance."
+        "nextAction": "Do not repeat unchanged successful proof. App consumers/device/Safari remain open.",
+        "testedSha256": {
+          "pwa/tests/browser/audio-transport.html": "7eb3e35088e24855ef1048a9df877f456060de8a66898abd370d3ae44b5b9dcb",
+          "pwa/tests/browser/audio-transport-harness.ts": "6c8410bfa7d98a7d63e7042d4199202415c7f933a95d37ab5177106c917e43ec",
+          "pwa/tests/browser/audio-transport.spec.ts": "4aa60f0145e166b6302f0e2d1691c00462f76006bddaa2c0d0a09cd98caf246f"
+        }
+      },
+      "startupClockCorrection": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "e084ccb601e2e7918e922574c62a7d95345984d6",
+        "ownedPaths": [
+          "pwa/src/audio/transport/sink-contracts.ts",
+          "pwa/src/audio/transport/pcm-queue-sink.ts",
+          "pwa/src/audio/transport/pcm-queue-sink.test.ts",
+          "pwa/src/audio/transport/TRANSPORT_WORKLOG.md"
+        ],
+        "scope": "One bounded startup correction1: selected output clock has no mapped played head before first scheduled frame. Permit valid startup regressions only until that frame is first reached, retaining anchor. Keep selected clock fixed, no extrapolation/clamping/switching; nonfinite/negative/throws always fail, strict regression failure once mapped playback has advanced. Render clock remains strict. Tests reproduce actual early raw readings and assert active regression still fails.",
+        "status": "PASS186coveringunits/strict types/build,2actual composedChrome+2existing sinkChrome. Same Sol/high read-only review found no material issue.",
+        "nextAction": "No further clock diagnosis pending. Preserve strict post-start regression and all failed/passed receipts."
       }
     },
     {
@@ -1048,7 +1092,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "ec3876da",
       "slice": "Offline Song Info/Chords/static previews and native-ranked transitions accepted",
-      "nextAction": "Remaining T11: expanded native Info overview/progression/key/tempo/meter/melody/complexity, Chords scale/selected-tone controls and additional source links. Native top8 transition ranking/root-only toggle now implemented and accepted. Full T08 stream transport and T12 Playback remain separate; pending Library Settings-scroll approval unchanged.",
+      "nextAction": "Optional native complexity score lookup and final covering acceptance remain. Expanded overview/progression/key/tempo/meter/melody/source links, scale/selected-tone previews, native ranked transitions and Roman+Letters display are accepted at68bb1924 and prior recorded receipts. Do not repeat their implementation/native datasets. Pending Library Settings-scroll owner question remains separate.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/detail-query.test.ts src/features/details/reader.test.ts src/storage/catalog/library-queries.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test song-details-reader.spec.ts --workers=1 --output .artifacts/pwa-port/song-details/reader-first (from pwa through run-control)",
@@ -1654,16 +1698,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-16T16:51:44.987830+00:00",
-    "sourceCommit": "23bdd83ff42c849f6a59322f6106e1d510cddf2e",
+    "date": "2026-10-16T17:16:50.841873+00:00",
+    "sourceCommit": "e084ccb601e2e7918e922574c62a7d95345984d6",
     "usageObserved": {
-      "fiveHourUsedPercent": 5,
-      "weeklyUsedPercent": 63
+      "fiveHourUsedPercent": 34,
+      "weeklyUsedPercent": 67
     },
     "fiveHourResetUnix": 1792187464,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Bounded async owner assignment after accepted kernel and typed frozen contract. Existing worker/tree reused; no duplicate.",
+    "reason": "Composed stream component accepted; checkpoint before further work because live quota fetch became unavailable. No threshold/reset inferred.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T16:51:44.987830+00:00",
@@ -1673,7 +1717,8 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Prior cutoff reset passed; live counters permit bounded resumption."
     },
-    "activeWorker": {
+    "activeWorker": null,
+    "completedWorker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
@@ -1687,42 +1732,26 @@
         "pwa/src/audio/transport/index.ts"
       ],
       "scope": "PlaybackTransport implements frozen AudioPlaybackTransport. Accepted kernel/context/worker/sink orchestration, immediate intent, explicit gesture, bounded/coalesced control/config/one-heldPCM/one10ms timer, selected played beat/final drain and lifecycle. No shared contracts/old components/DSP/App/catalog/dependency/task edits.",
-      "status": "dated pre-branch intent; same existing Sol/high worker only",
-      "nextAction": "Under own guard reuse clean22525 sibling on new absent codex/pwa-stream-owner from exact frozen base. Preserve all previous branches/profiles. Implement in small recoverable receipts; focused fakes/types, then validated named checkpoint, or explicit unvalidated partial at cutoff. No new operation/check at70% either window; checkpoint by80%.",
-      "agent": "preview_owner",
-      "task": "T08"
-    },
-    "completedWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "branch": "codex/pwa-playback-intent",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "8eacfd2e04cacbc6636135e4485168e3120dabeb",
-      "ownedPaths": [
-        "pwa/src/audio/transport/playback-intent.ts",
-        "pwa/src/audio/transport/playback-intent.test.ts",
-        "pwa/src/audio/transport/INTENT_WORKLOG.md",
-        "pwa/src/audio/transport/index.ts"
-      ],
-      "scope": "PurePlaybackIntentKernel implementing frozenintent-contracts.ts only. Immediatenativelikeintent/revision/scrub/seek/load/reset/zeroBPM/lifecycle/guardedonceend+drain;playreadyreconciliation;validatedfrozennonaliasedsnapshots/reentrancy. No timers/audio/worker/context/sink/clock/fullowner/App/dependency/contracts/task changes.",
-      "status": "Normally merged at 0c29da31. Worker 12 tests/scoped types pass; primary combined acceptance PENDING at allowance cutoff.",
-      "nextAction": "After reset and live capacity below70% in both windows, run focused primary transport+details units, then strict types/build through run-control. Do not reimplement or repeat native/browser/catalog proofs.",
-      "commit": "22525d9c961696e6741a8c9e14b1eee2439d6bdc",
+      "status": "Normally merged e084ccb6; combined186units/types/build and2actual composedChrome cases PASS after reviewed startup sink correction. Worker clean/idle.",
+      "nextAction": "No pending async owner implementation. Preserve exact f9330517 branch/tree; no duplicate worker.",
+      "commit": "f9330517354849f49f87a566c83378ce4e1158b4",
       "agent": "preview_owner",
       "task": "T08"
     },
     "lastAcceptedProductCommit": "68bb1924",
     "integrationAwaitingPrimaryAcceptance": {
-      "commit": "0c29da312588a89e2f26beb4a632249e1e2c4666",
-      "workerCommit": "22525d9c961696e6741a8c9e14b1eee2439d6bdc",
+      "workerCommit": "f9330517354849f49f87a566c83378ce4e1158b4",
+      "status": "PASS186units/strict types/build +2composedChrome +2sinkChrome with named startup correction source. No pending owner integration check.",
       "checks": [
         "node node_modules/vitest/vitest.mjs run src/audio/transport src/features/details",
-        "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build"
+        "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build",
+        "node node_modules/@playwright/test/cli.js test audio-transport.spec.ts --output=.artifacts/pwa-port/audio-transport/browser-first"
       ],
       "cwd": "pwa",
-      "status": "PASS171 units/strict types/build after applicable reset, window10 guards recorded."
-    }
+      "commit": "e084ccb601e2e7918e922574c62a7d95345984d6"
+    },
+    "usageAvailability": "Last successful live observation34%/67%; subsequent query unresponsive/cancelled. Verify live before next slice.",
+    "nextAction": "Resume from accepted composed-stream-runtime; do not reimplement/recapture accepted components. Before T12 consumption, explicitly resolve the existing fullT08 dependency with a justified development milestone or complete remaining acceptance. Independent T11 optional complexity lookup/final covering acceptance remains ready. No new operation until current live usage can be verified below70% in both windows."
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
 }

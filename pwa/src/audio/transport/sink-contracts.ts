@@ -46,8 +46,11 @@ export interface AudioPcmQueueSink {
    * Initial priming only; underrun gaps hold beat. Allocation/start uncertainty flushes the run.
    */
   enqueue(run:PcmSinkRun,pcm:PcmSinkPcm,final?:boolean):void;
-  /** Floor only selected audio time*rate via pure clock. Output0 holds head; invalid/regressing
-   * observations flush CLOCK_FAILED. Prune consumed mappings independently of ended cleanup.
+  /** Floor only selected audio time*rate via pure clock. Output0 holds head. Before the first
+   * scheduled frame is reached, valid output-timestamp startup regressions retain the anchor.
+   * After that frame is reached (and always for context-render), regressions flush CLOCK_FAILED.
+   * Invalid/throwing observations always fail; clock selection never changes.
+   * Prune consumed mappings independently of ended cleanup.
    * An active run with invalid owner permission/epoch is flushed BLOCKED; idle/released reads are inert.
    */
   read():PcmSinkReading;

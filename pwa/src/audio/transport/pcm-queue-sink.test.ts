@@ -65,6 +65,17 @@ describe('bounded PCM queue sink', () => {
     expect(() => sink.read()).toThrow();
     expect(sink.read().phase).toBe('idle');
   });
+  it('retains the anchor across real startup output estimates, then rejects mapped regression', () => {
+    const {sink,clock}=setup(true,44100),run=sink.begin(0,timeline);
+    clock.outputTime=.000069;expect(sink.read()).toMatchObject({phase:'priming',beat:1});
+    clock.currentTime=.040635;clock.outputTime=.000021;
+    expect(sink.read()).toMatchObject({phase:'priming',beat:1});
+    sink.enqueue(run,pcm(1,80,1,44100),true);
+    clock.outputTime=0;expect(sink.read()).toMatchObject({phase:'scheduled',beat:1,queueDrained:false});
+    clock.outputTime=.061;expect(sink.read().beat).toBeGreaterThan(1);
+    clock.outputTime=.0605;expect(()=>sink.read()).toThrowError(expect.objectContaining({code:'CLOCK_FAILED'}));
+    expect(sink.read().phase).toBe('idle');
+  });
   it('requires exact run identity, rejects invalid replacement and preserves revisions across flush', () => {
     const { sink } = setup(), run = sink.begin(2,timeline);
     expect(() => sink.begin(1,timeline)).toThrow();
