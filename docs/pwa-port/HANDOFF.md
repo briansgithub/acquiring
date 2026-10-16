@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-16T01:36Z (2026-10-15 local). Coordinator runtime model unknown. Primary codex/pwa-foundation79732fc6 and reviewed evidence sibling codex/pwa-evidencec82473a3 are clean, worker idle, no relevant helper/server/test process or unresolved primary guard run. Applicable reset passed:live1%five-hour/24%weekly,new reset1792132396/1792653278. Resume exact saved integration:recorded intent,normal merge c82473a3703d3778c7343d5fa483eabb34a0bd80,then actual combined npm run check before further delegation. Preserve all prior branches/worktrees/ignored data. Current task claim and this paragraph override older boundary milestones below.
+Updated2026-10-16T01:39Z(2026-10-15local). Primary codex/pwa-foundationfb3f23b1normally integrates evidencec82473a3 and passes317unit/1input-contract/strict types/build first run;guard window7-evidence-combined-check-20261015. Worker sibling codex/pwa-evidencec82473a3clean/preserved. Applicable live window began1%five-hour/24%weekly,reset1792132396/1792653278;old boundary superseded. One Sol/high worker receives read-only T08shared application context/stream transport API proposal only,with no source edit/branch untilrootfreezecontract. Coordinator runtime unknown;root alone owns contracts/task state/integration. Current claim/top paragraph override historical milestones below.
 
 ## Authority and completion
 
@@ -72,3 +72,7 @@ Continue download -> find -> play -> favorite -> restart offline. Do not let the
 2026-10-15T19:34Z allowance boundary:root live72%/23% started no new slice/worker/expensive check. Evidence worker c82473a3 completed60nativecases/80steps+8unitgroups/scopedtypes before boundary,clean/idle. Coordinator review complete;merge/combined validation deliberately deferred. Primary acf139d4 source preserved with docs-only update;both guards have no unresolved runs andno owned helper/server/test process observed. Next action/reset above;automation stays active.
 
 2026-10-16T01:36Z integration intent:primary79732fc6clean;evidencec82473a3clean/idle,reviewed five-path change;live1%/24% after applicable reset. Exact normal merge then combined checks,no fixture/catalog/browser repetition. All unrelated/recovery work preserved;no new worker until integration acceptance.
+
+2026-10-16T01:39Z evidencefb3f23b1accepted317unit/1input/types/build;producer/fixtures not recaptured,App shell4cbe15e19ddeunchanged. Root records one Sol/high read-only T08proposal before further contracts/branch;fullT14stillopen. All prior branches/worktrees/ignored data preserved.
+
+2026-10-16T01:44Z pure timeline adapter accepted22native timelines/85events/4tests/types,one bounded rest-string parity fix;native expectations unchanged. Shared-context proposal received;next freeze only application owner+preview borrowing first,then stream worker/sink. Root separate T03native boolean flag edge discovered and must receive its own narrow claim/check before correction.

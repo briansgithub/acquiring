@@ -479,6 +479,11 @@
           "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check; node node_modules/@playwright/test/cli.js test audio-preview.spec.ts --workers=1 --output .artifacts/pwa-port/audio-preview/browser-final (from pwa)",
           "revision": "8e4ebeb9 plus named final browser/config/test-organization tree committed next",
           "result": "Normal configured check PASS309unit+1input/strict types/production build (window6-preview-final-config-check-20261015). Final actual Chrome4passed23.2s,1explicitfixme(skipped trusted-tab gate),window6-preview-browser-final-20261015. No productsource change since passes. No physical output/Safari/App audio/BFCache claim."
+        },
+        {
+          "command": "python pwa/src/audio/transport/fixtures/generate-timeline-native.py; node node_modules/vitest/vitest.mjs run src/audio/transport/timeline-builder.test.ts; node node_modules/typescript/bin/tsc --noEmit (node commands from pwa)",
+          "revision": "fb3f23b1 plus the four named timeline adapter/fixture paths committed next",
+          "result": "PASS22native timelines/85events from unchanged frozen builder+real theory/JSON models (no TS/stubs),4unit groups and combined strict types. Guards window7-timeline-native-20261015/window7-timeline-parity-fix1-20261015/window7-timeline-types-20261015. First mismatch uppercase rest string True fixed in one narrow cycle;native expectations unchanged. Resource/end bounds explicit;no output/App/device acceptance implied."
         }
       ],
       "progress": [
@@ -489,9 +494,31 @@
         "Combined first run8timeouts under32worker startup;cycle1cap2workers passes296/297,only unchanged monolithic234scenario DSP test still53s vs existing30s cap. No assertion mismatch/source regression observed. Cycle2narrow test organization only:parameterize the same13presets into13cases,each retains all18transpose/arpeggio/balance combinations,88200frames and identical assertions/tolerance/30s per-case timeout. No DSP/fixture/product change;one retry remains this cycle,then ask before any expansion if failure persists. Full check with2workers follows,not a timeout increase.",
         "Owner answered Approve the focused lifecycle investigation to the explicit real-navigation pagehide question on2026-10-15. Earlier auto-review rejected that fixture expansion under AGENTS two-cycle rule before any source mutation. This direct new owner approval authorizes the recorded pagehide fixture;original trusted-tab assertion remains an explicit unproven gate,not a pass. Approval scope is audio lifecycle only and does not authorize the separate pending Library Settings-scroll investigation.",
         "Actual audio browser3cases pass unchanged;trusted tab blur/hidden gate emitted no events in either headless or offscreen headed automation (first correction). Natural completion was correctly rejected as lifecycle evidence. Preserve that exact test as explicit fixme/unproven for a real window/device gate,not passed. Separate next fixture uses genuine same-origin navigation pagehide and stores snapshot after owner handler,then proves fresh document silent until new gesture and permanent release. No synthetic lifecycle event substitution/no production source change. Failed traces remain in browser-first/browser-headed-cycle1.",
-        "Static preview component actual-browser evidence established4cases across first/pagehide runs;product App still does not expose previews/transport. Test-specific trusted tab visibility remains explicitly unproven and retained asfixme;pagehide is genuine trusted navigation evidence,not BFCache/speaker/device proof. Bound default Vitest worker count to2 in existing config so ordinary npm check reproduces the covering concurrency setting;same234DSP scenarios/30s per-preset gate retained. Final full configured check follows before checkpoint;T08in_progress."
+        "Static preview component actual-browser evidence established4cases across first/pagehide runs;product App still does not expose previews/transport. Test-specific trusted tab visibility remains explicitly unproven and retained asfixme;pagehide is genuine trusted navigation evidence,not BFCache/speaker/device proof. Bound default Vitest worker count to2 in existing config so ordinary npm check reproduces the covering concurrency setting;same234DSP scenarios/30s per-preset gate retained. Final full configured check follows before checkpoint;T08in_progress.",
+        "2026-10-16T01:39Z pre-proposal:primaryfb3f23b1clean and combined317unit/input/types/build PASS;evidence siblingc82473a3clean/idle. Sole Sol/high worker receives read-only T08shared-context/stream API proposal;no branch/edit authority untilrootcontract/claim. Root may build disjoint pure section-to-timeline adapter in named files after its own persisted claim. Preserve previews and all prior trees;one worker maximum.",
+        "2026-10-16T01:42Z coordinator pre-edit claim:timeline-builder.ts/test and new fixtures/generate-timeline-native.py/native-timeline.json only. Existing317unit/input/types/build passfb3f23b1. One Sol/high worker READONLY shared-context/transport proposal,excluded these files. Freeze pure adapter signature from existing ExtractedSection/MelodyNote/PlaybackTimeline;no new global types/dependencies. Native buildPlaybackTimeline lines900-end and normalizePlaybackBeat are authority. No fullT08acceptance until realstream/lifecycle checks.",
+        "Timeline native capture22cases/85events PASS first run. First focused4group test:3PASS,parity case found uppercase primitive rest string True was sounding in TS but skipped by frozen native JsonPrimitive.booleanOrNull. Cycle1narrow fix case-insensitive primitive rest flags in builder only;native expectations unchanged. Same semantics may affect existing music flag helpers;record a separately claimed focused T03follow-up after timeline accepted rather than edit shared music under this slice. No source meaning inferred from wrong output.",
+        "Pure section/melody timeline adapter accepted22native timelines/85events/4tests/combined types. Original melody beat key lookup versus normalized zero chord beat,full sounding inversions versus written simple root,stable consumed IDs/clipping/rest/numeric primitive behavior retained. Native producer uses real unchanged theory/models and Kotlin JSON;portable fixture48692bytes. Stream/shared context remains open. Separate T03case-insensitive flag parity follow-up is recorded,not silently relabeled passed."
       ],
-      "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture."
+      "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
+      "proposalAssignment": {
+        "owner": "preview_owner gpt-6.1-sol/high",
+        "status": "read-only proposal requested; no source edits or new branch yet",
+        "scope": "Shared application AudioContext ownership and bounded streaming transport API using existing PlaybackPcmRenderer. Native immediate intent/revision/load/play/pause/lifecycle/silent scrub/seek/reset/config/drained completion. Minimal root-owned contract proposal and native/browser acceptance anchors only. No library scroll investigation, dependency edits or implementation before frozen contract."
+      },
+      "coordinatorSlice": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "fb3f23b15a5bfe27fa473a7afcaf800441d0fdec",
+        "ownedPaths": [
+          "pwa/src/audio/transport/timeline-builder.ts",
+          "pwa/src/audio/transport/timeline-builder.test.ts",
+          "pwa/src/audio/transport/fixtures/generate-timeline-native.py",
+          "pwa/src/audio/transport/fixtures/native-timeline.json"
+        ],
+        "scope": "Pure frozen buildPlaybackTimeline section+supplied melody adapter; reuse data getKeyAtBeat and music getMidiNote/getChordNotes/resolveChordRoot.simpleModePitch, preserve native clipping/order/IDs/zero-chord-beat/rest semantics. Browser-domain event/end/metadata bounds explicit. No App, note decoder, end resolver, stream sink or contracts edits in this slice.",
+        "nextAction": "Capture bounded independent cases with unchanged frozen native builder and existing pure theory/JSON model sources, implement adapter, compare complete timeline outputs, types and input immutability. Product timeline rejects excessive resources; native renderer remains unchanged. Record receipts and commit named paths.",
+        "status": "validated; four tests and combined strict types pass, checkpoint next"
+      }
     },
     {
       "id": "T09",
@@ -714,12 +741,12 @@
       ],
       "acceptance": "Deterministic Android cases; supported/independent/transfer rules; corrupt-state recovery",
       "status": "in_progress",
-      "owner": "coordinator; completed evidence worker idle",
+      "owner": "coordinator; evidence worker idle",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "79732fc6c3bf6f442ee1033de2f3c99b0507c6b5",
-      "slice": "Integrate reviewed pure evidence checkpoint and validate actual combined revision",
-      "nextAction": "Normally merge exact c82473a3703d3778c7343d5fa483eabb34a0bd80, preserving worker branch/tree and all prior work. Run npm run check from pwa through run-control on the actual combined revision. Inspect receipt/process/Git before retry after any interruption. No fixture recapture or unchanged browser/catalog rerun; then checkpoint acceptance. Full T14 remains in_progress.",
+      "baseCommit": "fb3f23b15a5bfe27fa473a7afcaf800441d0fdec",
+      "slice": "Pure assessment and evidence reducers integrated and validated; generator/scheduler/session repair open",
+      "nextAction": "Reuse validated pitch-assessment and evidence reducers. Remaining T14 work is deterministic generator/target selection/unlock/scheduler and saved-session decoding/repair;freeze a narrow contract before delegation. Do not repeat119assessment or60evidence fixture capture. T14 remains in_progress;no actual capture/UI acceptance.",
       "validation": [
         {
           "command": "python pwa/src/domain/learning/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/domain/learning/pitch-assessment.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (node commands from pwa)",
@@ -730,6 +757,11 @@
           "command": "python pwa/src/domain/learning/fixtures/generate-evidence-native.py; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t14-evidence-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t14-evidence-vitest.config.mjs (node commands from worker pwa)",
           "revision": "c82473a3703d3778c7343d5fa483eabb34a0bd80 on codex/pwa-evidence; not yet integrated",
           "result": "Native60typed Kotlin cases/80steps, scoped strict types and8unit groups PASS first actual runs. Guards evidence-native-capture-20261015-31/evidence-types-20261015-35/evidence-unit-20261015-36. Frozen inputs unchanged; opaque corpus snapshots and richer metadata retained, canonical signed64-bit decimal seeds exact. Coordinator reviewed all reducer/producer/tests and five-file commit scope; unchanged frozen contract hash. Combined primary checks deferred at live72%five-hour/23%weekly; no integrated acceptance claimed."
+        },
+        {
+          "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check (from pwa through run-control)",
+          "revision": "fb3f23b15a5bfe27fa473a7afcaf800441d0fdec",
+          "result": "PASS317unit+1input-contract/strict types/production build. Guard window7-evidence-combined-check-20261015. Native60case/80step reducer now integrated with existing119assessment and audio/domain/data code. Build shell4cbe15e19dde unchanged because these components are not wired into App. No browser/device/account check rerun or implied."
         }
       ],
       "progress": [
@@ -737,7 +769,8 @@
         "Pure Aural pitch assessment complete119native cases/1907frames exact full outputs,6tests/strict types PASS first run. Preserves original-order error priority,held/no-signal technical uncertainty,cadence/coverage/stability/inlier/gap/sequence/octave semantics;input arrays untouched,results immutable,bounded browser-domain safety extensions explicit. Portable298320byte fixture is intentional source-derived data,not a cache. Session/evidence/curriculum/scheduler/repair and capture ownership remain open;T14in_progress.",
         "2026-10-15 pre-branch:primary4d826c33clean;previewb98849f5 siblingclean/idle andnormallyintegrated. Root reviewed Sol/high read-only evidence contract proposal. Freeze readonly native fields/explicitnow/canonical decimal-string signedLong seeds/opaqueJson corpus andgeneric begin preserving extras. Atlast49%five-hour/19%weekly;oneworker maximum. Preserve root assessment00a2d681andall prior branches/worktrees. No new audio/Library lifecycle investigation delegated.",
         "2026-10-15T19:34Z:worker c82473a3703d3778c7343d5fa483eabb34a0bd80 clean/idle; only five authorized learning paths changed. Native sequencing and uncertainty/familiarity/assistance/mic-kind evidence gates preserved. Root review requested opaque JSON alias isolation; snapshot fix and legal-later-mutation case pass. Worker scoped checks passed before boundary; root stopped new work at72%/23%, deferring normal merge/combined checks to next capacity window. No owned process or unresolved guard run observed in either tree. All branches/worktrees/ignored profiles preserved.",
-        "2026-10-16T01:36Z integration intent:primary79732fc6clean,worker c82473a3clean/idle and reviewed five-file scope,no owned helper/server/test process or unresolved primary guard run. Live1%five-hour/24%weekly;old reset passed,new1792132396/1792653278. Normal merge exact evidence tip,then actual combined check. No worker spawned and no source reimplementation;preserve Android801cf798 and every branch/worktree/profile."
+        "2026-10-16T01:36Z integration intent:primary79732fc6clean,worker c82473a3clean/idle and reviewed five-file scope,no owned helper/server/test process or unresolved primary guard run. Live1%five-hour/24%weekly;old reset passed,new1792132396/1792653278. Normal merge exact evidence tip,then actual combined check. No worker spawned and no source reimplementation;preserve Android801cf798 and every branch/worktree/profile.",
+        "2026-10-16T01:39Z normal evidence mergefb3f23b1accepted on actual combined revision:317unit/1input/types/build PASS first run. Worker branchc82473a3clean preserved. No producer/browser/catalog recapture needed. Full T14 generator/scheduler/session repair remains open."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1091,7 +1124,7 @@
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
     "date": "2026-10-15",
-    "sourceCommit": "79732fc6c3bf6f442ee1033de2f3c99b0507c6b5",
+    "sourceCommit": "fb3f23b15a5bfe27fa473a7afcaf800441d0fdec",
     "usageObserved": {
       "fiveHourUsedPercent": 1,
       "weeklyUsedPercent": 24
@@ -1099,7 +1132,7 @@
     "fiveHourResetUnix": 1792132396,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "New applicable five-hour window live1%/24% permits saved integration. Exact evidence worker c82473a3 reviewed/clean/idle. Intent before normal merge;combined validation follows;no duplicate worker or credit/model/reset action.",
+    "reason": "Evidence c82473a3normally integratedfb3f23b1and combined317unit/input/types/build PASS. Sole Sol/high worker begins read-only T08shared-context/stream API proposal, no source edits/branch. Root owns contracts/integration;no duplicate worker.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T01:36Z",
@@ -1109,7 +1142,13 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Recorded reset passed; live counters permit integration, no credit purchase or redemption."
     },
-    "activeWorker": null,
+    "activeWorker": {
+      "agent": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "task": "T08",
+      "phase": "read-only API/native acceptance proposal; no edit/branch claim yet"
+    },
     "completedWorker": {
       "agent": "preview_owner",
       "model": "gpt-6.1-sol",
@@ -1126,7 +1165,7 @@
         "pwa/src/domain/learning/WORKLOG.md"
       ],
       "commit": "c82473a3703d3778c7343d5fa483eabb34a0bd80",
-      "status": "validated, clean, idle; not integrated"
+      "status": "integrated atfb3f23b1;combined checks PASS;branch/tree preserved"
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
