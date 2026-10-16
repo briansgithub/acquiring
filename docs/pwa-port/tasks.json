@@ -1387,13 +1387,31 @@
         "2026-10-15 pre-branch:primary4d826c33clean;previewb98849f5 siblingclean/idle andnormallyintegrated. Root reviewed Sol/high read-only evidence contract proposal. Freeze readonly native fields/explicitnow/canonical decimal-string signedLong seeds/opaqueJson corpus andgeneric begin preserving extras. Atlast49%five-hour/19%weekly;oneworker maximum. Preserve root assessment00a2d681andall prior branches/worktrees. No new audio/Library lifecycle investigation delegated.",
         "2026-10-15T19:34Z:worker c82473a3703d3778c7343d5fa483eabb34a0bd80 clean/idle; only five authorized learning paths changed. Native sequencing and uncertainty/familiarity/assistance/mic-kind evidence gates preserved. Root review requested opaque JSON alias isolation; snapshot fix and legal-later-mutation case pass. Worker scoped checks passed before boundary; root stopped new work at72%/23%, deferring normal merge/combined checks to next capacity window. No owned process or unresolved guard run observed in either tree. All branches/worktrees/ignored profiles preserved.",
         "2026-10-16T01:36Z integration intent:primary79732fc6clean,worker c82473a3clean/idle and reviewed five-file scope,no owned helper/server/test process or unresolved primary guard run. Live1%five-hour/24%weekly;old reset passed,new1792132396/1792653278. Normal merge exact evidence tip,then actual combined check. No worker spawned and no source reimplementation;preserve Android801cf798 and every branch/worktree/profile.",
-        "2026-10-16T01:39Z normal evidence mergefb3f23b1accepted on actual combined revision:317unit/1input/types/build PASS first run. Worker branchc82473a3clean preserved. No producer/browser/catalog recapture needed. Full T14 generator/scheduler/session repair remains open."
+        "2026-10-16T01:39Z normal evidence mergefb3f23b1accepted on actual combined revision:317unit/1input/types/build PASS first run. Worker branchc82473a3clean preserved. No producer/browser/catalog recapture needed. Full T14 generator/scheduler/session repair remains open.",
+        "2026-10-16T17:54:27.412784+00:00 primary5cf90c24 T11complete/clean; existing Sol/high worker/tree f9330517 clean/idle, no branchchange. Root persists one bounded read-only T14generator-contract proposal. Lastlive48%/69%, no source/dependency changes; no duplicateworker or fixturecapture.",
+        "2026-10-16T17:56:09.596140+00:00 weeklyboundary70%/fivehour49%; Sol/high firstcheck already70%, stopped without nativeinvestigation. Ignored no-findings receipt digest d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8 preserved in existing sibling; workeridle/no source/branch changes. RootT11completed5cf90c24. No work/check/newassignment afterboundary; checkpoint only."
       ],
       "blocker": null,
       "proposalAssignment": {
         "owner": "preview_owner gpt-6.1-sol/high",
         "status": "complete; coordinator freezes agreed contract before worker edits",
         "scope": "Native normalization/beginExercise/evaluate/record evidence reducer only;exclude generation/target selection/session storage;read native types/tests and propose minimal compatible coordinator-owned local contract."
+      },
+      "generatorProposal": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-stream-owner",
+        "baseCommit": "f9330517354849f49f87a566c83378ce4e1158b4",
+        "status": "DEFERRED at70%weekly on workerfirstusagecheck. No native source investigation/check began; ignored no-findings receipt saved, workeridle.",
+        "ownedPaths": [
+          ".artifacts/pwa-port/t14-generator-proposal-window11.md"
+        ],
+        "scope": "Locate frozen native deterministic generator/target selection entry point and propose one smallest pure-port contract with exact semantics, dependencies and next fixture cases. Reuse accepted assessment/evidence/nativecases. Do not port entire generator/scheduler/sessionrepair or regenerate datasets.",
+        "nextAction": "Await applicable weeklycapacity, then resume same bounded read-only native generator proposal; no source assignment/contract yet. No newworker beforefreshusage bothbelow70%.",
+        "receiptPath": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-proposal-window11.md",
+        "receiptSha256": "d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8"
       }
     },
     {
@@ -1740,16 +1758,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-16T17:53:16.516758+00:00",
-    "sourceCommit": "8ee74c0960c64cdf328055bd7b9522295f8c0263",
+    "date": "2026-10-16T17:56:09.596140+00:00",
+    "sourceCommit": "5cf90c2442a23d22d3df70263ef2aeaf40a0d273",
     "usageObserved": {
-      "fiveHourUsedPercent": 46,
-      "weeklyUsedPercent": 69
+      "fiveHourUsedPercent": 49,
+      "weeklyUsedPercent": 70
     },
     "fiveHourResetUnix": 1792187464,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "T11complete after22units/types/build andfinal4actualproductChrome; coherent recoverable checkpoint. No newdependency/releasegate.",
+    "reason": "Weekly70% no-new-work threshold. T11complete5cf90c24; next read-onlyT14proposal deferred before investigation. All workersidle.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T16:51:44.987830+00:00",
@@ -1780,7 +1798,7 @@
       "agent": "preview_owner",
       "task": "T08"
     },
-    "lastAcceptedProductCommit": "68bb1924",
+    "lastAcceptedProductCommit": "5cf90c2442a23d22d3df70263ef2aeaf40a0d273",
     "integrationAwaitingPrimaryAcceptance": {
       "workerCommit": "f9330517354849f49f87a566c83378ce4e1158b4",
       "status": "PASS186units/strict types/build +2composedChrome +2sinkChrome with named startup correction source. No pending owner integration check.",
@@ -1792,8 +1810,8 @@
       "cwd": "pwa",
       "commit": "e084ccb601e2e7918e922574c62a7d95345984d6"
     },
-    "usageAvailability": "Live counters responding:46%/69%; verify again before any nextslice.",
-    "nextAction": "After fresh usagecheck below70%bothwindows, select bounded readyT14generator/target/unlock/sessionrepair orT15Auralcatalogquery slice and freeze contract before workerassignment. Do not repeat accepted T11/audio/catalog proofs. At70%weekly startnothing and wait for1792653278 (2026-10-22T07:14:38Z); fivehourreset alone is insufficient.",
+    "usageAvailability": "Live weekly70% cutoff applies; no newwork. Current fivehour49% does not overrideweekly.",
+    "nextAction": "Stayquiet before applicableweeklyreset1792653278=2026-10-22T07:14:38Z unless fresh livewindows materiallychange. Nextfivehourreset1792187464 alone does not restorecapacity. At resumption inspectGit/guards/processes/liveusage; bothwindows mustbelow70%, then same bounded T14read-onlyproposal, rootcontractbeforeimplementation. Neverrepeat completedT11/audio/catalogproofs.",
     "latestAcceptedProductTree": {
       "baseCommit": "8ee74c0960c64cdf328055bd7b9522295f8c0263",
       "shell": "43e5a745cf9f",
@@ -1810,6 +1828,24 @@
         "pwa/src/features/details/overview.ts": "3d7fadba4586b6d9fe97da1bbe24624f91c2866643151b7c9b9aa5d8dec04dec",
         "pwa/src/features/details/overview.test.ts": "a05222dc93f5aab9179099ad8057107c9b085ab9af5e396196aa81885f6d99e6"
       }
+    },
+    "deferredWorker": {
+      "owner": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "branch": "codex/pwa-stream-owner",
+      "baseCommit": "f9330517354849f49f87a566c83378ce4e1158b4",
+      "status": "DEFERRED at70%weekly on workerfirstusagecheck. No native source investigation/check began; ignored no-findings receipt saved, workeridle.",
+      "ownedPaths": [
+        ".artifacts/pwa-port/t14-generator-proposal-window11.md"
+      ],
+      "scope": "Locate frozen native deterministic generator/target selection entry point and propose one smallest pure-port contract with exact semantics, dependencies and next fixture cases. Reuse accepted assessment/evidence/nativecases. Do not port entire generator/scheduler/sessionrepair or regenerate datasets.",
+      "nextAction": "Await applicable weeklycapacity, then resume same bounded read-only native generator proposal; no source assignment/contract yet. No newworker beforefreshusage bothbelow70%.",
+      "receiptPath": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-proposal-window11.md",
+      "receiptSha256": "d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8",
+      "agent": "preview_owner",
+      "task": "T14"
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
