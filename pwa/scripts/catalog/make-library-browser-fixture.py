@@ -2,7 +2,7 @@
 import argparse,gzip,hashlib,importlib.util,json,sqlite3,uuid
 from contextlib import closing
 from pathlib import Path
-parser=argparse.ArgumentParser();parser.add_argument('--variant',choices=['old','new'],default='old');parser.add_argument('--details',action='store_true');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--variant',choices=['old','new'],default='old');parser.add_argument('--details',action='store_true');parser.add_argument('--song-screen',action='store_true');args=parser.parse_args()
 root=Path.cwd()/'.artifacts/pwa-port/browser-library'/str(uuid.uuid4());source=root/'source';source.mkdir(parents=True);path=source/'catalog.db'
 with closing(sqlite3.connect(path)) as db:
     db.executescript("""
@@ -22,9 +22,10 @@ with closing(sqlite3.connect(path)) as db:
           ('null-title','Ordering',None,b'fixture'),('empty-title','Ordering','',b'fixture'),
           ('a-order','Ordering','Alpha',b'fixture'),('z-order','Ordering','Zulu',b'fixture'),
           ('case-artist','artist a','ArtistTitle',b'fixture')]
-    if args.details:
-        payload=json.dumps({'10':{'sectionName':'Chorus','sectionIndex':1,'chords':[]},'2':{'sectionName':'Verse','sectionIndex':0,'chords':[]}}).encode('utf-8')
-        rows.extend([('detail-gzip','Detail Artist','Detail_Gzip',gzip.compress(payload,mtime=0)),('detail-raw',None,'Detail Raw',payload),('detail-broken',None,'Detail Broken',b'{broken'),('detail-oversize',None,'Detail Oversize',b'Z'*(8*1024*1024+1))])
+    if args.details or args.song_screen:
+        payload=json.dumps({'10':{'sectionName':'Chorus','sectionIndex':1,'chords':[{'root':4,'type':5,'beat':1,'duration':2}]},'2':{'sectionName':'Verse','sectionIndex':0,'chords':[{'root':1,'type':5,'beat':1,'duration':1},{'root':5,'type':7,'beat':2,'duration':1}],'metadata':{'tempos':[{'bpm':90}],'keys':[{'tonic':'C','scale':'major','beat':1}]}}}).encode('utf-8')
+        rows.extend([('detail-gzip','Detail Artist','Detail_Gzip',gzip.compress(payload,mtime=0)),('detail-raw',None,'Detail Raw',payload),('detail-broken',None,'Detail Broken',b'{broken')])
+        if args.details:rows.append(('detail-oversize',None,'Detail Oversize',b'Z'*(8*1024*1024+1)))
     for slug,artist,title,blob in rows:
         db.execute('INSERT INTO songs VALUES(?,?,?,?,?,?)',(slug,artist,'Updated Search' if args.variant=='new' and slug=='a-alpha' else title,'https://example.test','complete',blob))
     for slug,artist,title in db.execute('SELECT slug,artist,title FROM songs WHERE dataBlob IS NOT NULL').fetchall():

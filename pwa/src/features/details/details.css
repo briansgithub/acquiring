@@ -1,0 +1,16 @@
+.song-details { min-width: 0; }
+.song-details dl { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,2fr); gap: .75rem; }
+.song-details dt { color: #CAC4D0; }
+.song-details dd { margin: 0; overflow-wrap: anywhere; }
+.song-section { display: grid; gap: .5rem; margin-top: 1rem; }
+.song-section select { width: 100%; min-width: 0; min-height: 44px; background: #242424; color: inherit; border-radius: .5rem; padding: .5rem; }
+.song-tabs { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1rem; }
+.song-tabs .action[aria-pressed="true"] { color: #1C1B1F; background: #A8C7FA; }
+.song-letters { display: flex; align-items: center; gap: .5rem; min-height: 44px; }
+.song-letters input { width: 24px; height: 24px; margin: 10px; }
+.song-chords { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,9rem),1fr)); gap: .75rem; margin-top: 1rem; }
+.song-chord { min-width: 0; min-height: 88px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .75rem; padding: 1rem .5rem; border: 1px solid #A8C7FA; border-radius: .75rem; background: #242424; color: inherit; }
+.song-chord span { font-size: 1.35rem; }
+.song-chord small { overflow-wrap: anywhere; max-width: 100%; }
+.song-preview { min-height: 2rem; margin-top: 1rem; }
+.song-details a.action { display: inline-flex; align-items: center; max-width: 100%; text-decoration: none; overflow-wrap: anywhere; }

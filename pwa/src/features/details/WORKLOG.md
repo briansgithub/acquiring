@@ -13,3 +13,24 @@ Validation, first actual runs:
 - `node node_modules/@playwright/test/cli.js test song-details-reader.spec.ts --workers=1 --output .artifacts/pwa-port/song-details/reader-first`: actual Chrome 1 passed in34.0s (case23.5s), window8-details-reader-browser-first-20261016. New opt-in real SQLite fixture, exact case-sensitive slug, gzip/raw section order, missing/corrupt/oversized payload, close/reopen then offline lookup, and all10 user stores/outbox unchanged. Proof attachment retained under that unique ignored output.
 
 Tested source: fb879a5c plus the named reader/catalog/fixture/harness paths committed with this receipt. Existing Library assertions and successful full-data/native/audio-browser proofs were not rerun or weakened. Desktop development test-entry proof does not establish production cold startup for this new reader, physical devices, Safari or a working song screen. Whole T11 remains in progress; next add route/controller/presentation and shared static previews, then transition ranking/source links.
+
+
+## First product screen
+
+Coordinator owns SongDetailController, SongScreen/CSS, App route and separate product browser fixture. Song Info now opens exact offline rows with canonical section order, native display names/key/tempo/chord counts, source URL (HTTP/S only), Roman and letter chord cards and native450ms simultaneous static previews. Reuses measured RomanNumeral and shared PreviewOwner; section/tab changes stop output, route cleanup releases only its borrower. Section/tab/letter selection is transient per raw slug; full reload starts Info. Chords display32 at a time, bounded4096 inputs. Missing/download/busy/corrupt states and retry are explicit. No favorites, full Playback or transition-ranking claim.
+
+Controller releases catalog ownership after lookup and guards late open/payload responses by revision and abort. Actual product reopening exposed the asynchronous release of a departing same-page reader: availability-only BUSY retries now wait50/100/200/300/350ms (at most1s), cancel on dispose, never queue behind or steal another tab's Web Lock; persistent competing ownership still becomes an error. This changes only the new song controller, not Library or its pending Settings-scroll investigation.
+
+Checks:
+
+- window8-song-ui-unit-20261016: `node node_modules/vitest/vitest.mjs run src/features/details src/storage/catalog/detail-query.test.ts src/app/routes.test.ts` —13 passed.
+- window8-song-ui-build-20261016: `npm run build` — strict types/build PASS, shellcf86d3b11e16.
+- window8-song-ui-browser-first-20261016: reader fixture PASS23.1s; two new product cases stopped during catalog verification at default5s, before song assertions. product-first error contexts/traces retained.
+- window8-song-ui-browser-retry1-20261016: oversized8MiB+1 payload separated into dedicated reader-only fixture; product-only setup still exceeded5s. product-retry1 retained.
+- window8-song-ui-browser-retry2-20261016: new fixture setup has an explicit25s verification deadline and overall60s case deadline (no5s performance promise). Development StrictMode/direct-link/download/return PASS15.0s. Product passed metadata/PCM clock, then wrong exact implicit-label lookup timed out; product-retry2 retained.
+- window8-song-ui-selector-retest-20261016: accessible combobox lookup fixed; section/stop/letters/Back passed, then immediate reopen exposed BUSY ownership race. product-selector-retest retained.
+- window8-song-handoff-unit/build-20261016: five controller groups and strict types/build PASS after bounded availability retry (shell323ddcc2aba8).
+- window8-song-ui-handoff-retest-20261016: `node node_modules/@playwright/test/cli.js test song-details.spec.ts --grep "product Song" --workers=1 --output .artifacts/pwa-port/song-details/product-handoff-retest` — actual Chrome PASS18.7s,28.2s overall. Nonzero native PCM/running clock/natural end, explicit section-change stop, letters/Roman, Back/reopen preferences, one retained shared AudioContext, installed cold offline page reload,320px/200%text and no horizontal overflow. Unique audio-proof attachment and song-narrow.png retained. Root viewed full-page screenshot; sticky header appears at the scrolled document offset in that capture. Luna/medium bounded read-only review found no material defects.
+- window8-worker-song-integrated-unit/build-20261016: final combined49 tests, strict types and production build PASS on aca52d64 plus named product/browser paths; shellee66d988f229 includes the separate18.74kB PCM worker. No source change after checks.
+
+Whole T11 remains in progress. Next native overview expansion (progression/key/tempo/meter/melody/complexity), Chords scale/tone controls and transition ranking/source links. Product preview evidence does not prove physical hearing/Safari/trusted-tab/BFCache/device behavior. No unchanged full catalog/native/DSP proof recapture.
