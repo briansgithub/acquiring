@@ -494,8 +494,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
-      "slice": "Frozen pureintent8eacfd2e;oneboundedSol/high kernelworker",
-      "nextAction": "Workerpurekernel fromfrozen8eacfd2e onnewnarrowbranchinexistingcleanpreservedsibling. RootseparateT11Lettersvisual/selectionparity slice, then reviewnormalmergecoveringtests ifcapacitypermits. Fullasyncowner/Appremainsnextslice.",
+      "slice": "Pure intent kernel merged; primary combined checks deferred at70% allowance cutoff",
+      "nextAction": "Wait for reset1792169161 (2026-10-16T16:46:01Z) and verify live capacity. Inspect Git, agents, processes and guards. On existing primary0c29da31 run node node_modules/vitest/vitest.mjs run src/audio/transport src/features/details, then npm run build from pwa under guard. No native fixture/browser/full catalog recapture. After acceptance, freeze a separate full async transport adapter contract using the saved proposal; pure kernel alone is not fullT08.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -581,6 +581,11 @@
           "command": "node node_modules/typescript/bin/tsc --noEmit (rootguard/pwa)",
           "revision": "8eacfd2e04cacbc6636135e4485168e3120dabeb",
           "result": "PASS window9-intent-contract-types-20261016; frozen75linepureintentcontract only, no fullowner/pump acceptance."
+        },
+        {
+          "command": "tsc --project ../.artifacts/pwa-port/t08-intent-tsconfig.json; vitest run --config ../.artifacts/pwa-port/t08-intent-vitest.config.mjs (workerpwa/rootinstalledbinaries/siblingguard)",
+          "revision": "22525d9c961696e6741a8c9e14b1eee2439d6bdc",
+          "result": "PASS finaltypes09/12groups10(271ms),stagedcheck16;initialtype06onlyunusedtestimportremoved08,onefixcycle;runtimegroupspassedfirst. Rootreviewwhole167linesource/151linetests,no materialissue. Sourcehash3418eb81f8e97beae699cdadf1448cb0678fca7870660fd935ebf72f85aaee04;frozencontractunchanged. Purekernelonly;primarycombinedacceptancepending."
         }
       ],
       "progress": [
@@ -613,7 +618,9 @@
         "2026-10-16T11:59:09Z pre-integration: primary085ec1cd owns validated T11 tone changes plus root task docs; staged empty. Sibling61793c29 clean/idle; four-path sink reviewed and52fakes/types pass. Normal merge exact tip then covering/browser. Root only owns prepared three browser candidates. All branches/worktrees/ignored profiles preserved.",
         "2026-10-16T12:01:38Z sink normally integrated5e3bbc38;143coveringunit/types/build and2actualChrome10.4s firstpass. New read-only proposal claim saved before same Sol/high worker resumption; no new branch or implementation before root contract. Root runtime unknown/unchanged.",
         "2026-10-16T12:09:33.611920+00:00 fulltransportproposal reviewed against native419-510/617/721-810. Separate publiccommandrevision from internalaudio generation; config keeps publicrevision. Sameworker read-only minimal purekernel contract refinement requested. Root Info UI browser1existingcasePASS/newcasewrongexpectedA7vsnativeAm7; cycle1testlabelonly, trace retained. No source behavior changes.",
-        "2026-10-16T12:18:50Z prebranchclaim:root8eacfd2eclean,siblingsink61793clean/idle,bothguards[],newbranchcodex/pwa-playback-intentabsent. Live55%/58%;sameSol/highworkeronly,rootruntimeunknown/unchanged. Preservealloldbranches/worktrees/ignoredprofiles. IntentAPIstrict typesPASS."
+        "2026-10-16T12:18:50Z prebranchclaim:root8eacfd2eclean,siblingsink61793clean/idle,bothguards[],newbranchcodex/pwa-playback-intentabsent. Live55%/58%;sameSol/highworkeronly,rootruntimeunknown/unchanged. Preservealloldbranches/worktrees/ignoredprofiles. IntentAPIstrict typesPASS.",
+        "2026-10-16T12:25:10.848885+00:00 pre-integration:root68bb1924clean/stagedempty, sibling22525d9cclean/idle,bothguardslastclear,nopersistentworkerprocess. Exact4filechangefullyreviewed. Live68%/60%;normalmergeallowednow,nonewoperation/checkafter70. Preserveallpreviousbranches/profiles;nofulltransportclaim.",
+        "2026-10-16T12:26:48Z allowance cutoff: live70% five-hour/60% weekly. Exact normal merge0c29da31 includes reviewed22525d9c (worker12groups/typesPASS); root started NO combined unit/build check after threshold. Primary owns only final documentation edits; sibling22525 clean/idle, both guards have no recovery-required runs, no relevant helper/server/test process observed. Preserve all branches/worktrees/profiles. Next reset 2026-10-16T16:46:01+00:00."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -809,8 +816,9 @@
           "pwa/src/audio/transport/index.ts"
         ],
         "scope": "PurePlaybackIntentKernel implementing frozenintent-contracts.ts only. Immediatenativelikeintent/revision/scrub/seek/load/reset/zeroBPM/lifecycle/guardedonceend+drain;playreadyreconciliation;validatedfrozennonaliasedsnapshots/reentrancy. No timers/audio/worker/context/sink/clock/fullowner/App/dependency/contracts/task changes.",
-        "status": "prebranchintent, sameexistingSol/high worker only",
-        "nextAction": "Verifyclean61793sink/guard/noactiveworker. Underownruncontrolcreate new narrowbranchfromexact8eacfd2e (branchabsentverified),preserving61793/ae41/4799andallpriorbranches/profiles. Small guardedpurekernel source/tests/receipts; firstfocusedtypes/unit then validatedcommit. No newop/checkat70%eitherwindow;checkpointby80,partialexplicitlyunvalidatedifcutoff."
+        "status": "Normally merged at 0c29da31. Worker 12 tests/scoped types pass; primary combined acceptance PENDING at allowance cutoff.",
+        "nextAction": "After reset and live capacity below70% in both windows, run focused primary transport+details units, then strict types/build through run-control. Do not reimplement or repeat native/browser/catalog proofs.",
+        "commit": "22525d9c961696e6741a8c9e14b1eee2439d6bdc"
       }
     },
     {
@@ -1131,8 +1139,8 @@
           "pwa/scripts/catalog/make-library-browser-fixture.py"
         ],
         "scope": "Native InfoTab overview length/beats/bars/melody counts, original metadata changes, beat-sorted progression using key-at-beat and preview, source numericID/YouTube. Existing canonical section picker suffices. Explicit bounded metadata/notes/chords; malformed input visible error. Complexity score needs separate optional read contract and remains open. No Library approval expansion, catalogRPC/shared contract/dependency/audio changes.",
-        "status": "validated source projection/presentation,16focusedunit/final4incremental/types/build and actualproduct+InfoChrome; readycheckpoint",
-        "nextAction": "No pending expanded Info/source implementation. T11remaining: optional native complexity score lookup, native Letters adds letter text while retaining Roman/selected chord, and final combined acceptance. No Library approval expansion."
+        "status": "Accepted at1c245724:16focused units/final4incremental, strict types/build and actual Info Chrome14.2s.",
+        "nextAction": "Info/source behavior accepted. Remaining T11: optional native complexity score lookup and final covering acceptance."
       },
       "lettersSlice": {
         "owner": "coordinator runtime unknown",
@@ -1143,8 +1151,8 @@
           "pwa/tests/browser/song-details.spec.ts"
         ],
         "scope": "Native ChordsTab Letter switch adds letter text beneath Roman, preserves selected chord/tones/currentpreview and pagination. Section/tab changes retain existingstop/reset. No UIroute/sharedaudio/contract/dependency/Libraryscroll changes.",
-        "status": "PASS strict types/build and actualChrome15.7s/24.0s,firstchecks;readycheckpoint",
-        "nextAction": "No pendingLettersparity. RemainingT11optionalnativecomplexityscorelookup/finalcoveringacceptance, pendingseparateLibrarygateunchanged."
+        "status": "Accepted at68bb1924:strict types/build and actual product Chrome15.7s; no failure.",
+        "nextAction": "No pending Letters work. Preserve Roman+letter text, selected chord/tones/preview and pagination on letter toggle."
       }
     },
     {
@@ -1587,16 +1595,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-16T12:22:32Z",
-    "sourceCommit": "8eacfd2e04cacbc6636135e4485168e3120dabeb",
+    "date": "2026-10-16T12:26:48Z",
+    "sourceCommit": "0c29da312588a89e2f26beb4a632249e1e2c4666",
     "usageObserved": {
-      "fiveHourUsedPercent": 60,
-      "weeklyUsedPercent": 59
+      "fiveHourUsedPercent": 70,
+      "weeklyUsedPercent": 60
     },
     "fiveHourResetUnix": 1792169161,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Accepted Letters/product checkpoint; same Sol/high kernelworker activeinexisting sibling. No new root product slice before kernel result/capacity review; at70 startnonewoperation,80checkpoint.",
+    "reason": "Allowance cutoff: start no new work/check/worker. Product68bb1924 and sink53d8db45 are accepted. Pure kernel22525d9c is normally merged0c29da31 with worker12groups/types passed; primary combined acceptance is explicitly pending. Both worktrees preserved, guards clear, no relevant process. Wait applicable reset and live capacity; no credit/reset/model actions.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T06:42Z",
@@ -1606,7 +1614,8 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Applicable reset passed; live counters permit bounded integration. No credit/reset redemption."
     },
-    "activeWorker": {
+    "activeWorker": null,
+    "completedWorker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
@@ -1620,30 +1629,22 @@
         "pwa/src/audio/transport/index.ts"
       ],
       "scope": "PurePlaybackIntentKernel implementing frozenintent-contracts.ts only. Immediatenativelikeintent/revision/scrub/seek/load/reset/zeroBPM/lifecycle/guardedonceend+drain;playreadyreconciliation;validatedfrozennonaliasedsnapshots/reentrancy. No timers/audio/worker/context/sink/clock/fullowner/App/dependency/contracts/task changes.",
-      "status": "prebranchintent, sameexistingSol/high worker only",
-      "nextAction": "Verifyclean61793sink/guard/noactiveworker. Underownruncontrolcreate new narrowbranchfromexact8eacfd2e (branchabsentverified),preserving61793/ae41/4799andallpriorbranches/profiles. Small guardedpurekernel source/tests/receipts; firstfocusedtypes/unit then validatedcommit. No newop/checkat70%eitherwindow;checkpointby80,partialexplicitlyunvalidatedifcutoff.",
+      "status": "Normally merged at 0c29da31. Worker 12 tests/scoped types pass; primary combined acceptance PENDING at allowance cutoff.",
+      "nextAction": "After reset and live capacity below70% in both windows, run focused primary transport+details units, then strict types/build through run-control. Do not reimplement or repeat native/browser/catalog proofs.",
+      "commit": "22525d9c961696e6741a8c9e14b1eee2439d6bdc",
       "agent": "preview_owner",
       "task": "T08"
     },
-    "completedWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "branch": "codex/pwa-pcm-sink",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
-      "ownedPaths": [
-        "pwa/src/audio/transport/pcm-queue-sink.ts",
-        "pwa/src/audio/transport/pcm-queue-sink.test.ts",
-        "pwa/src/audio/transport/SINK_WORKLOG.md",
-        "pwa/src/audio/transport/index.ts"
+    "lastAcceptedProductCommit": "68bb1924",
+    "integrationAwaitingPrimaryAcceptance": {
+      "commit": "0c29da312588a89e2f26beb4a632249e1e2c4666",
+      "workerCommit": "22525d9c961696e6741a8c9e14b1eee2439d6bdc",
+      "checks": [
+        "node node_modules/vitest/vitest.mjs run src/audio/transport src/features/details",
+        "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build"
       ],
-      "scope": "Five synchronous methods from frozen sink-contracts.ts only. Shared-context borrowed permission/epoch, opaque generation run identity, integer source scheduling/80ms prime/20ms lead/200ms+4096 cap,512source/mapping cap, fixed selected audio clock, pure clock prune/gap/drain, immediate invalidation/cleanup. No timers/resume/worker coordination/full transport/App/DSP/preview/context/catalog/T11/dependency/contracts/task edits.",
-      "status": "validated61793c29 clean/idle/unmerged;52fakes/scopedtypes passed, root complete source review plus follow-up passed",
-      "nextAction": "Root normal merge exact validated tip. Worker idle; preserve4799/ae41/61793 checkpoints and existing branch/tree.",
-      "commit": "61793c29d8ddfc54ad7be6b4b9426c94d0952d12",
-      "agent": "preview_owner",
-      "task": "T08"
+      "cwd": "pwa",
+      "status": "NOT RUN after cutoff; no combined acceptance implied"
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."

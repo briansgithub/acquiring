@@ -39,3 +39,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-16T12:01:38Z sink61793c29accepted after normalmerge5e3bbc38 androot143unit/types/build/2Chrome. Samepreview_owner gpt-6.1-sol/high now read-only bounded fulltransportproposal on existingtree; no branch/source edits before contract. Rootruntimeunknown/unchanged;maxoneworker.
 
 2026-10-16T12:18:50Z samepreview_owner gpt-6.1-sol/high assignedpurePlaybackIntentKernel onlyfromfrozen8eacfd2e oncodex/pwa-playback-intent inexistingpreservedsibling. No fullowner/pump/App;rootownscontracts/integration/disjointT11Letters. Live55%/58%,stopnewoperations70%. Rootruntimeunknown/unchanged.
+
+2026-10-16T12:26:48Z allowance checkpoint: preview_owner gpt-6.1-sol/high completed pure kernel22525d9c,12 focused tests/scoped types PASS. Root normally merged0c29da31; primary combined checks deliberately deferred at70% five-hour/60% weekly. Worker clean/idle; no new assignment. Coordinator runtime unknown/unchanged. Resume existing primary acceptance after reset1792169161; no duplicate worker or credit/reset action.
