@@ -33,3 +33,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-16T07:20:37Z preview_owner gpt-6.1-sol/high assigned only bounded synchronous PCM queue sink from root-frozen ddcd7d88; four task-listed transport paths on new codex/pwa-pcm-sink in preserved sibling. Last61%/46%; no new operation70%, checkpoint80%. No other worker active; coordinator runtime unknown/unchanged.
 
 2026-10-16T07:25:25Z preview_owner gpt-6.1-sol/high checkpointed UNVALIDATED sink4799fba8 at70%/48%; root observed72%/48%. Worker clean/idle/unmerged; no tests passed for sink, fix07 unretested and4fake groups unrun. Resume same assignment after reset, no duplicate worker/model change. Luna review completed/idle.
+
+2026-10-16T11:49:05Z same preview_owner gpt-6.1-sol/high resumes unvalidated PCM sink4799fba8 on existing codex/pwa-pcm-sink. Root runtime unknown/unchanged owns disjoint browser acceptance. One worker only; live3%/50%.

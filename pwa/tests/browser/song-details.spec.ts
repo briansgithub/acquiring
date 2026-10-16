@@ -47,6 +47,8 @@ test('product Song Info/Chords reads offline, previews on actual audio clock, pr
   await expect(page.getByText('90 BPM',{exact:true})).toBeVisible();
   await expect(page.getByRole('link',{name:'Open original source'})).toHaveAttribute('href','https://example.test/');
   await page.getByRole('button',{name:'Chords',exact:true}).click();
+  await expect(page.getByText('Scale: C, D, E, F, G, A, B',{exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Chord tones',exact:true})).toHaveCount(0);
   await expect(page.getByText('I → V7 ×1',{exact:true})).toBeVisible();
   await page.getByRole('checkbox',{name:'Root only transitions'}).check();await expect(page.getByText('1 → 5 ×1',{exact:true})).toBeVisible();
   await page.getByRole('checkbox',{name:'Root only transitions'}).uncheck();
@@ -57,8 +59,14 @@ test('product Song Info/Chords reads offline, previews on actual audio clock, pr
   });
   await expect.poll(async()=>(await audio()).items[0]?.endedAt??0).toBeGreaterThan(0);
   const first=await audio();expect(first.count).toBe(1);expect(first.items[0]!.peak).toBeGreaterThan(.001);expect(first.items[0]!.endedAt!).toBeGreaterThan(first.items[0]!.scheduled);
+  await expect(page.getByRole('button',{name:'Preview I',exact:true})).toHaveAttribute('aria-pressed','true');
+  await expect(page.getByRole('region',{name:'Chord tones',exact:true}).getByRole('button')).toHaveCount(3);
+  await page.getByRole('button',{name:'Preview chord tone 3\u0302',exact:true}).click();
+  await expect.poll(async()=>(await audio()).items[1]?.endedAt??0).toBeGreaterThan(0);
+  expect((await audio()).items[1]!.peak).toBeGreaterThan(.001);expect((await audio()).count).toBe(1);
   await page.getByRole('button',{name:'Preview I',exact:true}).click();await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');
-  await expect.poll(async()=>(await audio()).items[1]?.stops??0).toBeGreaterThan(0);
+  await expect.poll(async()=>(await audio()).items[2]?.stops??0).toBeGreaterThan(0);
+  await expect(page.getByRole('region',{name:'Chord tones',exact:true})).toHaveCount(0);
   await expect(page.getByRole('button',{name:'Preview IV',exact:true})).toBeVisible();
   await page.getByRole('checkbox',{name:'Letter names'}).check();await expect(page.getByRole('button',{name:'Preview F',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('searchbox',{name:'Search songs',exact:true})).toHaveValue('Detail_Gzip');

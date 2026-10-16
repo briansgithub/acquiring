@@ -494,8 +494,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
-      "slice": "Accepted clock/PCM worker/static runtime; sink partial saved at allowance cutoff",
-      "nextAction": "Wait for reset1792150939 (2026-10-16T11:42:19Z), then verify live counters below70% in both windows. Inspect clean existing codex/pwa-pcm-sink4799fba8, source/test/SINK_WORKLOG and guards/processes; resume SAME Sol/high worker/branch, do not duplicate or integrate as validated. First retest saved narrow type fixes, then run four saved fake groups and complete missing bounded acceptance. Root review/normal merge/combined checks/actual sink browser proof only after worker acceptance.",
+      "slice": "Validated bounded sink61793c29 reviewed; normal integration and actual-browser acceptance next",
+      "nextAction": "Normal merge exact61793c29 after current named checkpoint, copy three prepared coordinator browser fixtures, run combined focused transport units/types/build and actual44100/48000 sink test. No full transport/App/Safari/hardware completion claim.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -566,6 +566,11 @@
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-sink-tsconfig.json (worker pwa through sibling run-control)",
           "revision": "4799fba8108caa42af0a7ecbfdce578714ec6cdb UNVALIDATED partial; fixes saved after failed check",
           "result": "FAILED2types at pcm-sink-types-20261016-06: fake invalidation callback reason signature and optional AudioTimestamp.contextTime. Narrow fix07 saved, UNRETESTED when70%/48% reached. Four initial fake groups saved but NONE RUN; about8additional acceptance groups still missing. No root sink/browser/build acceptance; not integrated. Worker clean/idle, four assigned paths only, both guards clear and no relevant persistent process observed. Preserve SINK_WORKLOG exact next commands/hashes."
+        },
+        {
+          "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-sink-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-sink-vitest.config.mjs (worker pwa through sibling guard)",
+          "revision": "61793c29d8ddfc54ad7be6b4b9426c94d0952d12",
+          "result": "PASS scopedtypes37 and52fakes38/887ms. Resumed required first types15/4fakes16 passed; expanded43/44 had one float assertion only, corrected exact scheduledseconds=integerFrame/rate,51fakes24/types23 passed atae41f181. Root reviewed whole sink; final one-line permission(next) after old retirement plus no-callback regression passed52. No source failure hidden or native/DSP recapture. Root integration/browser pending."
         }
       ],
       "progress": [
@@ -593,7 +598,9 @@
         "2026-10-16T07:07:01Z PCM integration intent: primary19bdc764 has ONLY owned T11 product source/tests/docs dirty and staged empty, no active browser process. Worker cc525d4e clean/idle after29tests/types; originaldfafbd7c preserved. Root reviewed7file scope and follow-up input/identity/cancellation regressions. Normal merge then root dedicated-worker browser proof; one Luna/medium read-only T11 review active with no edits. Preserve all worktrees and ignored evidence.",
         "2026-10-16T07:10:35Z PCM worker accepted after normal merge aca52d64:49 covering unit/types/build and1 real module-worker Chrome passed. Source review corrected three bounded identity/getter/iterator edges in preserved cc525d4e. Full sink/transport remains open; no unchanged DSP/native/catalog/browser recapture.",
         "2026-10-16T07:19:16Z pre-branch sink intent: primary56efe22b clean after32native transition cases/3unit/types/build andactual productChrome28.4s. PCM siblingcc525d4e clean/idle, sink proposal completed read-only. Root freezes separate sink-contracts.ts; four worker paths only, excludes all root T11/browser/contracts. Preserve old branches/worktrees/profiles. Root runtime unknown and unchanged; no duplicateworker.",
-        "2026-10-16T07:25:25Z allowance checkpoint: root72%five-hour/48%weekly; no new slice/worker/check. Sink4799fba8 saved explicitly UNVALIDATED at worker70% threshold, clean/idle/unmerged. Two narrow type fixes remain unretested; four saved fake groups unrun. Primary source ddcd7d88 accepted contract and product56efe22b unchanged; root only saves recoverable docs. No relevant process or unresolved guard run in either tree. Reset1792150939; preserve all branches/worktrees/profiles."
+        "2026-10-16T07:25:25Z allowance checkpoint: root72%five-hour/48%weekly; no new slice/worker/check. Sink4799fba8 saved explicitly UNVALIDATED at worker70% threshold, clean/idle/unmerged. Two narrow type fixes remain unretested; four saved fake groups unrun. Primary source ddcd7d88 accepted contract and product56efe22b unchanged; root only saves recoverable docs. No relevant process or unresolved guard run in either tree. Reset1792150939; preserve all branches/worktrees/profiles.",
+        "2026-10-16T11:49:05Z renewed capacity3%five-hour/50%weekly after applicable reset; primary085ec1cd and sink4799fba8 clean, agents idle, guards clear/no relevant process. Resume same Sol/high worker/branch and partial failure history. Root owns disjoint new sink browser fixtures; all other work preserved.",
+        "2026-10-16T11:59:09Z pre-integration: primary085ec1cd owns validated T11 tone changes plus root task docs; staged empty. Sibling61793c29 clean/idle; four-path sink reviewed and52fakes/types pass. Normal merge exact tip then covering/browser. Root only owns prepared three browser candidates. All branches/worktrees/ignored profiles preserved."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -738,9 +745,20 @@
           "pwa/src/audio/transport/index.ts"
         ],
         "scope": "Five synchronous methods from frozen sink-contracts.ts only. Shared-context borrowed permission/epoch, opaque generation run identity, integer source scheduling/80ms prime/20ms lead/200ms+4096 cap,512source/mapping cap, fixed selected audio clock, pure clock prune/gap/drain, immediate invalidation/cleanup. No timers/resume/worker coordination/full transport/App/DSP/preview/context/catalog/T11/dependency/contracts/task edits.",
-        "status": "UNVALIDATED PARTIAL4799fba8, clean/idle/unmerged; two type errors fixed but unretested, four fake groups unrun",
-        "nextAction": "Resume existing branch from4799fba8 after capacity reset. Read SINK_WORKLOG: scoped types06 failed callback reason and optional timestamp.contextTime; fix07 saved, first retest pending. Then focused fake config, complete missing queue/frame/cap/stale/permission/gap/failure/late-callback/reentrancy/release groups. No fake/browser/build acceptance exists. Do not mark complete/integrate until reviewed and validated.",
-        "commit": "4799fba8108caa42af0a7ecbfdce578714ec6cdb"
+        "status": "validated61793c29 clean/idle/unmerged;52fakes/scopedtypes passed, root complete source review plus follow-up passed",
+        "nextAction": "Root normal merge exact validated tip. Worker idle; preserve4799/ae41/61793 checkpoints and existing branch/tree.",
+        "commit": "61793c29d8ddfc54ad7be6b4b9426c94d0952d12"
+      },
+      "sinkBrowserAssignment": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "085ec1cd01a431bd7a44178b5460bd1280d024cd",
+        "ownedPaths": [
+          "pwa/tests/browser/audio-sink.html",
+          "pwa/tests/browser/audio-sink-harness.ts",
+          "pwa/tests/browser/audio-sink.spec.ts"
+        ],
+        "status": "intent saved; prepare fixtures independently while existing worker completes sink",
+        "scope": "Actual Chrome44100/48000 integer scheduling/PCM/selected clock/drain, suspend/new gesture/flush/release retaining borrowed context. No physical hearing/Safari/trusted visibility/App stream claim. Test only after reviewed validated sink normal merge."
       }
     },
     {
@@ -927,6 +945,11 @@
           "command": "python pwa/src/features/details/fixtures/generate-transitions-native.py; node node_modules/vitest/vitest.mjs run src/features/details/transitions.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test song-details.spec.ts --grep \"product Song\" --workers=1 --output .artifacts/pwa-port/song-details/transitions-first (node commands from pwa through run-control)",
           "revision": "2db57cd4 plus7named transition source/test/fixture/UI/worklog paths committed with receipt",
           "result": "PASS first runs:32independent unchanged frozen Kotlin cases/78ranked rows,3unit groups,combined strict types/production build shellc22bddfd8f22,actual Chrome1PASS18.4s/28.4s overall. Native original sequence/filter/rest-case/rawroot/firstBeat0/count/DoubleNaN-Infinity/UTF16tie semantics retained; top8 text/root-only toggle in product. Guards window8-transitions-native-first/parity-first/build-first/browser-first-20261016. No native expectation changes or repeated old fixture capture."
+        },
+        {
+          "command": "npm run build; node node_modules/@playwright/test/cli.js test song-details.spec.ts --grep \"product Song\" --workers=1 --output .artifacts/pwa-port/song-details/tones-label-retest (pwa through root run-control, browser with local networking)",
+          "revision": "085ec1cd plus named SongScreen/CSS/product browser paths",
+          "result": "PASS strict types/build shelld79b4ac4def4 (window9-song-tones-build-first-20261016); actual Chrome1PASS19.5s/29.2s overall (window9-song-tones-browser-label-retest-20261016). ScaleCmajor, selectedtone3-hat 450ms actualPCM/naturalend/contextreuse, sectioncleanup, unchanged transitions/letters/Back/offline320px200% nooverflow. Narrow screenshot viewed. First sandbox browser server could not bind/serve loopback; stopped verified owned child with durable failed receipt and no leftover server. First localnet test reached controls then mismatched expected3 vs native3-hat; one test-only locator correction, failed trace retained. No product/timeout/assertion weakening/native recapture. Physical hearing/Safari absent."
         }
       ],
       "progress": [
@@ -939,7 +962,9 @@
         "Corrected combobox selector passed section change, preview-stop, Roman/letter and Back checks. New distinct T11 reopen failure: immediate click on remembered Library row overlaps termination of its initializing reader; SongScreen displays BUSY. Retained product-selector-retest snapshot/trace. Cycle1 narrow ownership correction stays within new SongDetailController: cancellation-aware bounded availability retries on BUSY during open only, never steal lock or retry data errors. Actual competing tab remains error after bounded delay. Unit-test retry/cancellation; then types/build and unfinished product case only. No change to Library sources or pending Settings-scroll assertion.",
         "2026-10-16T07:06:26Z product Song Info/Chords browser PASS18.7s/28.2s overall at window8-song-ui-handoff-retest-20261016 after one bounded new BUSY-handoff fix. Setup and selector issues retained honestly in unique output. UI screenshot awaits visual review. One Luna/medium read-only source/screenshot review now; Sol/high PCM worker cc525d4e clean/idle, not integrated yet. Root handles receipts/integration; no concurrent edits.",
         "2026-10-16T07:09:27Z first product song route accepted; initial installer setup failures corrected by separate oversized fixture and explicit25s bounded setup deadline (no5s performance claim), correct accessible selector, and bounded1s availability retries for departing same-page reader. Existing Library source/assertions untouched. T11 remains in_progress for remaining metadata/transition/source behavior.",
-        "2026-10-16T07:17:52Z native transition ranking/top8/root-only UI accepted first runs32native/78rows/3groups/types/build/1actualChrome. New portable fixture48747bytes from unchanged complete ChordTransitions.kt +real theory/models; nonfinite firstBeat serialized explicitly by native name. Source from/to references deliberately retain native first representatives, never mutated. No transport/Library changes."
+        "2026-10-16T07:17:52Z native transition ranking/top8/root-only UI accepted first runs32native/78rows/3groups/types/build/1actualChrome. New portable fixture48747bytes from unchanged complete ChordTransitions.kt +real theory/models; nonfinite firstBeat serialized explicitly by native name. Source from/to references deliberately retain native first representatives, never mutated. No transport/Library changes.",
+        "2026-10-16T11:52:04.529689+00:00 root bounded scale/selected-tone presentation claim, disjoint from existing Sol/high sink worker and prepared browser fixtures. Native SongInfoChords.kt405-470 authority; existing theory/notation remain unchanged.",
+        "2026-10-16T11:59:09Z bounded native scale and selected chord-tone controls accepted after covering actual product proof; no new dependency or shared audio changes."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1013,6 +1038,19 @@
         "scope": "Direct unchanged ChordTransitions.kt ranking/identity port, native-only bounded fixtures and top8 text/root-only toggle in Chords view. Preserve input sequence, filtered rest/case flags, first target beat0 normalization, count/Double/String tie ordering. No transport/preview/Library changes.",
         "nextAction": "Capture new independent native transition cases once, compare complete outputs, wire native top8/root-only toggle, focused unit/types/build and only affected product browser case. At70% no new operation; checkpoint partials if necessary.",
         "status": "validated first runs;32native cases/78ranked rows,3unit groups/types/build/actual product browser"
+      },
+      "toneSlice": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "085ec1cd01a431bd7a44178b5460bd1280d024cd",
+        "ownedPaths": [
+          "pwa/src/features/details/SongScreen.tsx",
+          "pwa/src/features/details/details.css",
+          "pwa/src/features/details/WORKLOG.md",
+          "pwa/tests/browser/song-details.spec.ts"
+        ],
+        "scope": "Bounded native ChordsTab scale spelling and selected chord-tone buttons using already validated theory/ScaleDegree/PreviewOwner.450ms single MIDI tone, no transpose; selection resets on section/tab. No metadata expansion, Library scroll investigation, shared audio/contracts/dependencies changes.",
+        "nextAction": "No pending scale/tone implementation. Expanded Info/source parity remains; retain existing Library approval gate.",
+        "status": "PASS types/build and actual product Chrome; coherent checkpoint ready"
       }
     },
     {
@@ -1455,16 +1493,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-16",
+    "date": "2026-10-16T11:59:09Z",
     "sourceCommit": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
     "usageObserved": {
-      "fiveHourUsedPercent": 72,
-      "weeklyUsedPercent": 48
+      "fiveHourUsedPercent": 22,
+      "weeklyUsedPercent": 53
     },
-    "fiveHourResetUnix": 1792150939,
+    "fiveHourResetUnix": 1792169161,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Stop new work at usage threshold. Offline product Song Info/Chords/previews/native transitions and PCM worker accepted/committed; sink4799fba8 is unvalidated partial, clean/idle/unmerged. Type fix07 unretested; four fake groups unrun; complete missing acceptance next window. Both worktrees clean, guards clear, no relevant process. Wait applicable reset then live capacity; no credit/reset/model actions.",
+    "reason": "Capacity permits exact sink integration; bounded T11 toneUI accepted, sink61793 reviewed/scopedvalidated but not yet integrated or browseraccepted.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T06:42Z",
@@ -1476,21 +1514,24 @@
     },
     "activeWorker": null,
     "completedWorker": {
-      "agent": "preview_owner",
+      "owner": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
-      "task": "T08",
       "branch": "codex/pwa-pcm-sink",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
-      "commit": "4799fba8108caa42af0a7ecbfdce578714ec6cdb",
-      "status": "UNVALIDATED PARTIAL; clean/idle/unmerged; type fix unretested and4fake groups unrun",
       "ownedPaths": [
         "pwa/src/audio/transport/pcm-queue-sink.ts",
         "pwa/src/audio/transport/pcm-queue-sink.test.ts",
         "pwa/src/audio/transport/SINK_WORKLOG.md",
         "pwa/src/audio/transport/index.ts"
-      ]
+      ],
+      "scope": "Five synchronous methods from frozen sink-contracts.ts only. Shared-context borrowed permission/epoch, opaque generation run identity, integer source scheduling/80ms prime/20ms lead/200ms+4096 cap,512source/mapping cap, fixed selected audio clock, pure clock prune/gap/drain, immediate invalidation/cleanup. No timers/resume/worker coordination/full transport/App/DSP/preview/context/catalog/T11/dependency/contracts/task edits.",
+      "status": "validated61793c29 clean/idle/unmerged;52fakes/scopedtypes passed, root complete source review plus follow-up passed",
+      "nextAction": "Root normal merge exact validated tip. Worker idle; preserve4799/ae41/61793 checkpoints and existing branch/tree.",
+      "commit": "61793c29d8ddfc54ad7be6b4b9426c94d0952d12",
+      "agent": "preview_owner",
+      "task": "T08"
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
