@@ -703,6 +703,14 @@
         "scope": "Actual dedicated module worker typed acknowledgments and256/257/4096-frame transfer exactness versus unchanged256-step main reference through config/seek; immediate posted abort permanent termination. No AudioContext/sink/App stream/output acceptance.",
         "status": "PASS actual Chrome1case790ms/7.7s overall; unique browser-first proof retained",
         "nextAction": "Copy candidates after merge; types/build, focused tests and actual Chrome under unique ignored output."
+      },
+      "sinkProposalAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "status": "read-only proposal; no edits/branch/check authority",
+        "baseCommit": "2db57cd4775d71f6ba81f59ed16e107c492dc4d1",
+        "scope": "Bounded AudioBufferSourceNode PCM queue sink only using accepted shared application context and pure clock. Permission/revision/integer frames/lead/caps/drain/cancel/lifecycle. Separate from whole transport/App. Save minimal proposed root-frozen interface and fake/actual-browser acceptance; no repeated native audit."
       }
     },
     {
@@ -872,8 +880,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "ec3876da",
-      "slice": "First product offline Song Info/Chords and shared static previews accepted",
-      "nextAction": "Expand native Info overview (progression/key/tempo/meter/melody/complexity), Chords scale/tone controls, transition ranking and source links in bounded slices. Existing offline product route/section picker/Roman and letter chord cards/static450ms previews are accepted; retain user-state/source snapshot identity and cleanup. Full transport remains T08/T12, favorites/recents remain separate. Pending Library Settings-scroll approval unchanged.",
+      "slice": "Offline Song Info/Chords/static previews and native-ranked transitions accepted",
+      "nextAction": "Remaining T11: expanded native Info overview/progression/key/tempo/meter/melody/complexity, Chords scale/selected-tone controls and additional source links. Native top8 transition ranking/root-only toggle now implemented and accepted. Full T08 stream transport and T12 Playback remain separate; pending Library Settings-scroll approval unchanged.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/detail-query.test.ts src/features/details/reader.test.ts src/storage/catalog/library-queries.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test song-details-reader.spec.ts --workers=1 --output .artifacts/pwa-port/song-details/reader-first (from pwa through run-control)",
@@ -884,6 +892,11 @@
           "command": "node node_modules/vitest/vitest.mjs run src/features/details src/storage/catalog/detail-query.test.ts src/app/routes.test.ts; focused controller test; npm run build; Playwright song-details.spec.ts with unique product-* outputs (exact commands/receipts in details/WORKLOG.md)",
           "revision": "aca52d64 plus named coordinator SongScreen/controller/CSS/App/fixture/tests committed with this receipt",
           "result": "PASS13 initial focused unit tests;5 controller groups after bounded BUSY fix; final combined49unit/strict types/build(window8-worker-song-integrated-unit/build-20261016),shell ee66d988f229. Actual product Chrome1PASS18.7s/28.2overall(window8-song-ui-handoff-retest-20261016): offline Song Info/Chords, native450ms PCM/nonzero/running clock/end, section-change stop, Roman/letter labels, Back/reopen view state/shared context, cold offline page reload,320px/200%text no horizontal overflow. Development StrictMode/direct-link/download-return1PASS15.0s(window8-song-ui-browser-retry2-20261016 before additive BUSY retry). Luna/medium read-only review no material findings; root inspected full-page screenshot. All failed fixture/setup/selector/BUSY attempts and traces retained, not passed. No physical/Safari/trustedtab/BFCache/fullT11 claim."
+        },
+        {
+          "command": "python pwa/src/features/details/fixtures/generate-transitions-native.py; node node_modules/vitest/vitest.mjs run src/features/details/transitions.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test song-details.spec.ts --grep \"product Song\" --workers=1 --output .artifacts/pwa-port/song-details/transitions-first (node commands from pwa through run-control)",
+          "revision": "2db57cd4 plus7named transition source/test/fixture/UI/worklog paths committed with receipt",
+          "result": "PASS first runs:32independent unchanged frozen Kotlin cases/78ranked rows,3unit groups,combined strict types/production build shellc22bddfd8f22,actual Chrome1PASS18.4s/28.4s overall. Native original sequence/filter/rest-case/rawroot/firstBeat0/count/DoubleNaN-Infinity/UTF16tie semantics retained; top8 text/root-only toggle in product. Guards window8-transitions-native-first/parity-first/build-first/browser-first-20261016. No native expectation changes or repeated old fixture capture."
         }
       ],
       "progress": [
@@ -895,7 +908,8 @@
         "Cycle2 setup retest: installer gate now PASS and development StrictMode/direct-link/download/return case PASS15.0s. Product case passed overview/source/native chord/real PCM+clock checks, then a separate locator failure timed out selecting Section: accessibility snapshot exposes combobox named Section, whereas getByLabel exact matches implicit label text including option children. First bounded correction for this distinct failure uses getByRole(combobox,name Section,exact true); control/value assertions unchanged, no product change. Retain product-retry2 trace and do not count partial case as passed.",
         "Corrected combobox selector passed section change, preview-stop, Roman/letter and Back checks. New distinct T11 reopen failure: immediate click on remembered Library row overlaps termination of its initializing reader; SongScreen displays BUSY. Retained product-selector-retest snapshot/trace. Cycle1 narrow ownership correction stays within new SongDetailController: cancellation-aware bounded availability retries on BUSY during open only, never steal lock or retry data errors. Actual competing tab remains error after bounded delay. Unit-test retry/cancellation; then types/build and unfinished product case only. No change to Library sources or pending Settings-scroll assertion.",
         "2026-10-16T07:06:26Z product Song Info/Chords browser PASS18.7s/28.2s overall at window8-song-ui-handoff-retest-20261016 after one bounded new BUSY-handoff fix. Setup and selector issues retained honestly in unique output. UI screenshot awaits visual review. One Luna/medium read-only source/screenshot review now; Sol/high PCM worker cc525d4e clean/idle, not integrated yet. Root handles receipts/integration; no concurrent edits.",
-        "2026-10-16T07:09:27Z first product song route accepted; initial installer setup failures corrected by separate oversized fixture and explicit25s bounded setup deadline (no5s performance claim), correct accessible selector, and bounded1s availability retries for departing same-page reader. Existing Library source/assertions untouched. T11 remains in_progress for remaining metadata/transition/source behavior."
+        "2026-10-16T07:09:27Z first product song route accepted; initial installer setup failures corrected by separate oversized fixture and explicit25s bounded setup deadline (no5s performance claim), correct accessible selector, and bounded1s availability retries for departing same-page reader. Existing Library source/assertions untouched. T11 remains in_progress for remaining metadata/transition/source behavior.",
+        "2026-10-16T07:17:52Z native transition ranking/top8/root-only UI accepted first runs32native/78rows/3groups/types/build/1actualChrome. New portable fixture48747bytes from unchanged complete ChordTransitions.kt +real theory/models; nonfinite firstBeat serialized explicitly by native name. Source from/to references deliberately retain native first representatives, never mutated. No transport/Library changes."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -953,6 +967,22 @@
           "revision": "acb92eccf24314236d452a374a368683d7826ad2",
           "evidence": "Exact offline song reader, canonical section picker, native display/key/tempo/chord counts/source link, Roman/letter chord cards,450ms shared previews with PCM/clock/end/section-stop; Back/reopen state and same context; installed cold offline page reload;320px/200%text no horizontal overflow.29worker+20coveringunit/types/build passed combined, product Chrome passed18.7s; separate dev StrictMode/direct/download-return15s. Native overview expansion/scale/tone controls/transition ranking/extra source links and fullT11 remain open."
         }
+      },
+      "transitionSlice": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "2db57cd4775d71f6ba81f59ed16e107c492dc4d1",
+        "ownedPaths": [
+          "pwa/src/features/details/transitions.ts",
+          "pwa/src/features/details/transitions.test.ts",
+          "pwa/src/features/details/fixtures/generate-transitions-native.py",
+          "pwa/src/features/details/fixtures/native-transitions.json",
+          "pwa/src/features/details/SongScreen.tsx",
+          "pwa/src/features/details/WORKLOG.md",
+          "pwa/tests/browser/song-details.spec.ts"
+        ],
+        "scope": "Direct unchanged ChordTransitions.kt ranking/identity port, native-only bounded fixtures and top8 text/root-only toggle in Chords view. Preserve input sequence, filtered rest/case flags, first target beat0 normalization, count/Double/String tie ordering. No transport/preview/Library changes.",
+        "nextAction": "Capture new independent native transition cases once, compare complete outputs, wire native top8/root-only toggle, focused unit/types/build and only affected product browser case. At70% no new operation; checkpoint partials if necessary.",
+        "status": "validated first runs;32native cases/78ranked rows,3unit groups/types/build/actual product browser"
       }
     },
     {
@@ -1404,7 +1434,7 @@
     "fiveHourResetUnix": 1792150939,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Clock/PCM worker accepted and first product Song Info/Chords committed. Final3worker browser fixtures and task receipts form this checkpoint. All workers idle; preserve every branch/tree/profile. Next bounded sink API proposal below70% usage; fullT08/T11 remain open.",
+    "reason": "Native transition ranking and product toggle accepted; sole Sol/high sink read-only proposal completed, root prepares separate frozen sink contract before further worker edits.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T06:42Z",

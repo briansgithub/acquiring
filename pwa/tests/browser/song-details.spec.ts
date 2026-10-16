@@ -46,7 +46,11 @@ test('product Song Info/Chords reads offline, previews on actual audio clock, pr
   await install(page);
   await expect(page.getByText('90 BPM',{exact:true})).toBeVisible();
   await expect(page.getByRole('link',{name:'Open original source'})).toHaveAttribute('href','https://example.test/');
-  await page.getByRole('button',{name:'Chords',exact:true}).click();await page.getByRole('button',{name:'Preview I',exact:true}).click();
+  await page.getByRole('button',{name:'Chords',exact:true}).click();
+  await expect(page.getByText('I → V7 ×1',{exact:true})).toBeVisible();
+  await page.getByRole('checkbox',{name:'Root only transitions'}).check();await expect(page.getByText('1 → 5 ×1',{exact:true})).toBeVisible();
+  await page.getByRole('checkbox',{name:'Root only transitions'}).uncheck();
+  await page.getByRole('button',{name:'Preview I',exact:true}).click();
   const audio=()=>page.evaluate(()=>{
     const proof=(window as unknown as {songAudioProof:{contexts:AudioContext[];items:{peak:number;scheduled:number;endedAt:number|null;stops:number}[]}}).songAudioProof;
     return {count:proof.contexts.length,state:proof.contexts[0]?.state,time:proof.contexts[0]?.currentTime,items:proof.items};

@@ -1,3 +1,4 @@
+import {chordTransitions} from './transitions';
 import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
 import type {JsonObject} from '../../contracts';
 import {PreviewOwner,type PreviewState} from '../../audio/transport';
@@ -18,6 +19,7 @@ export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:(
   const [view,setView]=useState<SongView>(()=>remembered.get(slug)??{sectionId:null,tab:'info',letters:false});
   const [visible,setVisible]=useState(32),[selected,setSelected]=useState<string|null>(null),[preview,setPreview]=useState<PreviewState>({phase:'idle',revision:0,requestId:null});
   const previewOwner=useRef<PreviewOwner|null>(null);
+  const [rootOnlyTransitions,setRootOnlyTransitions]=useState(false);
   useEffect(()=>{
     if(controller.closed){setController(new SongDetailController(slug));return;}
     void controller.start();
@@ -40,7 +42,8 @@ export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:(
       const key=getParsedKey(section);return {key,chords:getUniqueDisplayChords(section.chords,key),error:null};
     }catch{return {key:{tonic:'C',scale:'major'},chords:[],error:'These chords could not be displayed.'};}
   },[section]);
-  function change(patch:Partial<SongView>){previewOwner.current?.stop();setSelected(null);setVisible(32);setView(old=>{const next={...old,...patch};remembered.set(slug,next);return next;});}
+  const transitions=useMemo(()=>{try{return section?chordTransitions(section,rootOnlyTransitions):[];}catch{return[];}},[section,rootOnlyTransitions]);
+  function change(patch:Partial<SongView>){previewOwner.current?.stop();setSelected(null);setVisible(32);if(patch.sectionId!==undefined)setRootOnlyTransitions(false);setView(old=>{const next={...old,...patch};remembered.set(slug,next);return next;});}
   function play(chord:JsonObject,label:string){
     if(!analysis)return;
     const notes=interpret(chord,analysis.key).midi.filter(note=>note>0);
@@ -87,6 +90,10 @@ export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:(
             <p role="status">{preview.phase==='playing'?'Playing '+selected:preview.phase==='preparing'?'Preparing chord…':preview.phase==='blocked'?'Tap a chord to enable audio.':preview.phase==='error'?'Chord preview is unavailable.':''}</p>
             {['playing','preparing'].includes(preview.phase)&&<button className="action" onClick={()=>previewOwner.current?.stop()}>Stop preview</button>}
           </div>
+          {transitions.length>0&&<section aria-label="Chord transitions"><h3>Transitions</h3>
+            <label className="song-letters"><input type="checkbox" checked={rootOnlyTransitions} onChange={event=>setRootOnlyTransitions(event.target.checked)}/>Root only transitions</label>
+            {transitions.slice(0,8).map(row=><p key={row.id}>{row.id} ×{row.count}</p>)}
+          </section>}
         </section>}
       </>}
       <section className="panel"><h2>Source</h2><p>{details.song.slug}</p>

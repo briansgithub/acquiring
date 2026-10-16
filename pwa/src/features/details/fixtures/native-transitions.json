@@ -1,0 +1,2361 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "adapter": "Unchanged complete ChordTransitions.kt and real native theory/models. JSON-only inputs/outputs; nonfinite firstBeat encoded by native name. No TypeScript.",
+  "sourceSha256": {
+    "MusicTheory": "46af5e1e502ba2e1e67e3cba4d2d227cea1061454fd7f5285b2a033925de98ca",
+    "HooktheoryModels": "24ce7329ba97a77c0048d35eb66707a1f5a33bb1bcdc14f44572d888fc55771f",
+    "SpelledInterval": "ddcc1cf8692f077c4d3b72137ce6cf4c61abe21f474c39eadccbc1fc470dbda3",
+    "RelativeIonianContext": "2c5afe3f9e45684a6d5e483001a463b60cd20e7465d6d7179e0171c8d30fe1ed",
+    "AudioPitchAdapter": "54d2a1b314064ce690eac55788c3807c327610723a262f06ca12644396199a68",
+    "ChordInterpreter": "646b65b99ba39c8e2fa78c44f6e80525590f472ccceadb69f855ceb7f144f61d",
+    "ChordLetterFormat": "55e63e3afca04ee0cee6d1fd1ac191d661f40197f79e9b2c693c1c260f1e000b",
+    "ChordVoicing": "082ab84c561844c03055914d66277c355ba6b2e559fdd6c1ad30f2b29cd6fbd3",
+    "ChordTransitions": "f30b92e213cfb83617554465c17018550035e908bb046fea784bcd50c22cf7b6"
+  },
+  "cases": [
+    {
+      "label": "empty",
+      "rootOnly": false,
+      "section": {
+        "chords": [],
+        "metadata": null
+      },
+      "expected": []
+    },
+    {
+      "label": "empty",
+      "rootOnly": true,
+      "section": {
+        "chords": [],
+        "metadata": null
+      },
+      "expected": []
+    },
+    {
+      "label": "single",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": []
+    },
+    {
+      "label": "single",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": []
+    },
+    {
+      "label": "self-only",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": []
+    },
+    {
+      "label": "self-only",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": []
+    },
+    {
+      "label": "repeated-counts",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 2,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 3,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 5,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 6,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "I → V",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 2,
+            "type": 5
+          },
+          "count": 2,
+          "firstBeat": 2.0
+        },
+        {
+          "id": "V → I",
+          "from": {
+            "root": 5,
+            "beat": 2,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 3,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 3.0
+        },
+        {
+          "id": "V → IV",
+          "from": {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 5,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 5.0
+        },
+        {
+          "id": "IV → I",
+          "from": {
+            "root": 4,
+            "beat": 5,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 6,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 6.0
+        }
+      ]
+    },
+    {
+      "label": "repeated-counts",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 2,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 3,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 5,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 6,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "1 → 5",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 2,
+            "type": 5
+          },
+          "count": 2,
+          "firstBeat": 2.0
+        },
+        {
+          "id": "5 → 1",
+          "from": {
+            "root": 5,
+            "beat": 2,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 3,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 3.0
+        },
+        {
+          "id": "5 → 4",
+          "from": {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 5,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 5.0
+        },
+        {
+          "id": "4 → 1",
+          "from": {
+            "root": 4,
+            "beat": 5,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 6,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 6.0
+        }
+      ]
+    },
+    {
+      "label": "rest-skip-connects",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "isRest": true
+          },
+          {
+            "root": 3,
+            "beat": 1,
+            "type": 5,
+            "rest": "TRUE"
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "rest": " true "
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "I → V",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "IV → I",
+          "from": {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "rest": " true "
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "V → IV",
+          "from": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "rest": " true "
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "rest-skip-connects",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "isRest": true
+          },
+          {
+            "root": 3,
+            "beat": 1,
+            "type": 5,
+            "rest": "TRUE"
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "rest": " true "
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "1 → 5",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "4 → 1",
+          "from": {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "rest": " true "
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "5 → 4",
+          "from": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "rest": " true "
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "same-root-quality",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "quality": "minor"
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "inversion": 1
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "useMaj7": true
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "I → I6",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "quality": "minor"
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "inversion": 1
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "I → V",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "useMaj7": true
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "I6 → I",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "inversion": 1
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "useMaj7": true
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "same-root-quality",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "quality": "minor"
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "inversion": 1
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "useMaj7": true
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "1 → 5",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5,
+            "useMaj7": true
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "lexical-ties",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 6,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "I → IV",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "I → V",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "I → vi",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 6,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "IV → I",
+          "from": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "V → I",
+          "from": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "lexical-ties",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 6,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "1 → 4",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "1 → 5",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "1 → 6",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 6,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "4 → 1",
+          "from": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "5 → 1",
+          "from": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "input-order-not-beat-sort",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 9,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 3,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 2,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "I → V",
+          "from": {
+            "root": 1,
+            "beat": 9,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          },
+          "count": 2,
+          "firstBeat": 4.0
+        },
+        {
+          "id": "V → IV",
+          "from": {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "IV → I",
+          "from": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 3,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 3.0
+        }
+      ]
+    },
+    {
+      "label": "input-order-not-beat-sort",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 9,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 3,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 2,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "1 → 5",
+          "from": {
+            "root": 1,
+            "beat": 9,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          },
+          "count": 2,
+          "firstBeat": 4.0
+        },
+        {
+          "id": "5 → 4",
+          "from": {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "4 → 1",
+          "from": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 3,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 3.0
+        }
+      ]
+    },
+    {
+      "label": "first-target-zero",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 8,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 0,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 9,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "I → V",
+          "from": {
+            "root": 1,
+            "beat": 8,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 0,
+            "type": 5
+          },
+          "count": 2,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "V → I",
+          "from": {
+            "root": 5,
+            "beat": 0,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 9,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 9.0
+        }
+      ]
+    },
+    {
+      "label": "first-target-zero",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 8,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 0,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 9,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 4,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "1 → 5",
+          "from": {
+            "root": 1,
+            "beat": 8,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 0,
+            "type": 5
+          },
+          "count": 2,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "5 → 1",
+          "from": {
+            "root": 5,
+            "beat": 0,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 9,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 9.0
+        }
+      ]
+    },
+    {
+      "label": "primitive-target-beats",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 2,
+            "beat": "3e0",
+            "type": 5
+          },
+          {
+            "root": 3,
+            "beat": "-1.5",
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": null,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": true,
+            "type": 5
+          },
+          {
+            "root": 6,
+            "beat": [],
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "ii → iii",
+          "from": {
+            "root": 2,
+            "beat": "3e0",
+            "type": 5
+          },
+          "to": {
+            "root": 3,
+            "beat": "-1.5",
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": -1.5
+        },
+        {
+          "id": "IV → V",
+          "from": {
+            "root": 4,
+            "beat": null,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": true,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "V → vi",
+          "from": {
+            "root": 5,
+            "beat": true,
+            "type": 5
+          },
+          "to": {
+            "root": 6,
+            "beat": [],
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "iii → IV",
+          "from": {
+            "root": 3,
+            "beat": "-1.5",
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": null,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "I → ii",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 2,
+            "beat": "3e0",
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 3.0
+        }
+      ]
+    },
+    {
+      "label": "primitive-target-beats",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 2,
+            "beat": "3e0",
+            "type": 5
+          },
+          {
+            "root": 3,
+            "beat": "-1.5",
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": null,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": true,
+            "type": 5
+          },
+          {
+            "root": 6,
+            "beat": [],
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "2 → 3",
+          "from": {
+            "root": 2,
+            "beat": "3e0",
+            "type": 5
+          },
+          "to": {
+            "root": 3,
+            "beat": "-1.5",
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": -1.5
+        },
+        {
+          "id": "3 → 4",
+          "from": {
+            "root": 3,
+            "beat": "-1.5",
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": null,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "4 → 5",
+          "from": {
+            "root": 4,
+            "beat": null,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": true,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "5 → 6",
+          "from": {
+            "root": 5,
+            "beat": true,
+            "type": 5
+          },
+          "to": {
+            "root": 6,
+            "beat": [],
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "1 → 2",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 2,
+            "beat": "3e0",
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 3.0
+        }
+      ]
+    },
+    {
+      "label": "nonfinite-double-order",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 2,
+            "beat": "NaN",
+            "type": 5
+          },
+          {
+            "root": 3,
+            "beat": "Infinity",
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": "-Infinity",
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 4,
+            "type": 5
+          },
+          {
+            "root": 2,
+            "beat": 2,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "I → ii",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 2,
+            "beat": "NaN",
+            "type": 5
+          },
+          "count": 2,
+          "firstBeat": "NaN"
+        },
+        {
+          "id": "iii → IV",
+          "from": {
+            "root": 3,
+            "beat": "Infinity",
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": "-Infinity",
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": "-Infinity"
+        },
+        {
+          "id": "IV → I",
+          "from": {
+            "root": 4,
+            "beat": "-Infinity",
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 4,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 4.0
+        },
+        {
+          "id": "ii → iii",
+          "from": {
+            "root": 2,
+            "beat": "NaN",
+            "type": 5
+          },
+          "to": {
+            "root": 3,
+            "beat": "Infinity",
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": "Infinity"
+        }
+      ]
+    },
+    {
+      "label": "nonfinite-double-order",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 2,
+            "beat": "NaN",
+            "type": 5
+          },
+          {
+            "root": 3,
+            "beat": "Infinity",
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": "-Infinity",
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 4,
+            "type": 5
+          },
+          {
+            "root": 2,
+            "beat": 2,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "1 → 2",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 2,
+            "beat": "NaN",
+            "type": 5
+          },
+          "count": 2,
+          "firstBeat": "NaN"
+        },
+        {
+          "id": "3 → 4",
+          "from": {
+            "root": 3,
+            "beat": "Infinity",
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": "-Infinity",
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": "-Infinity"
+        },
+        {
+          "id": "4 → 1",
+          "from": {
+            "root": 4,
+            "beat": "-Infinity",
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 4,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 4.0
+        },
+        {
+          "id": "2 → 3",
+          "from": {
+            "root": 2,
+            "beat": "NaN",
+            "type": 5
+          },
+          "to": {
+            "root": 3,
+            "beat": "Infinity",
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": "Infinity"
+        }
+      ]
+    },
+    {
+      "label": "invalid-root-and-letter",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {},
+          {
+            "root": 0,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": "1",
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": "1.0",
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 0,
+            "beat": 1,
+            "type": 5,
+            "_letterRootName": "C",
+            "_letterQuality": "major"
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "I → V",
+          "from": {
+            "root": "1",
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "invalid-root-and-letter",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {},
+          {
+            "root": 0,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": "1",
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": "1.0",
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 0,
+            "beat": 1,
+            "type": 5,
+            "_letterRootName": "C",
+            "_letterQuality": "major"
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "1 → 5",
+          "from": {
+            "root": "1",
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "applied-borrowed",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "applied": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "borrowed": "minor"
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5,
+            "inversion": 1
+          },
+          {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "applied": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "V/ii → iv(min)",
+          "from": {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "applied": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "borrowed": "minor"
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "V6 → V/ii",
+          "from": {
+            "root": 5,
+            "beat": 1,
+            "type": 5,
+            "inversion": 1
+          },
+          "to": {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "applied": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "iv(min) → V6",
+          "from": {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "borrowed": "minor"
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5,
+            "inversion": 1
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "applied-borrowed",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "applied": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "borrowed": "minor"
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5,
+            "inversion": 1
+          },
+          {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "applied": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "2 → 4",
+          "from": {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "applied": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "borrowed": "minor"
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "4 → 5",
+          "from": {
+            "root": 4,
+            "beat": 1,
+            "type": 5,
+            "borrowed": "minor"
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5,
+            "inversion": 1
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "5 → 2",
+          "from": {
+            "root": 5,
+            "beat": 1,
+            "type": 5,
+            "inversion": 1
+          },
+          "to": {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "applied": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "array-borrowed",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "borrowed": [
+              1,
+              3,
+              4,
+              6,
+              8,
+              9,
+              11
+            ]
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "I → ♯ii°(bor)",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "borrowed": [
+              1,
+              3,
+              4,
+              6,
+              8,
+              9,
+              11
+            ]
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "V → I",
+          "from": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "♯ii°(bor) → V",
+          "from": {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "borrowed": [
+              1,
+              3,
+              4,
+              6,
+              8,
+              9,
+              11
+            ]
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "array-borrowed",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "borrowed": [
+              1,
+              3,
+              4,
+              6,
+              8,
+              9,
+              11
+            ]
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "1 → 2",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "borrowed": [
+              1,
+              3,
+              4,
+              6,
+              8,
+              9,
+              11
+            ]
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "2 → 5",
+          "from": {
+            "root": 2,
+            "beat": 1,
+            "type": 5,
+            "borrowed": [
+              1,
+              3,
+              4,
+              6,
+              8,
+              9,
+              11
+            ]
+          },
+          "to": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "5 → 1",
+          "from": {
+            "root": 5,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "base-key-not-event-key",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 3,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 4,
+            "type": 5
+          }
+        ],
+        "metadata": {
+          "keys": [
+            {
+              "tonic": "Ab",
+              "scale": "minor",
+              "beat": 1
+            },
+            {
+              "tonic": "D",
+              "scale": "major",
+              "beat": 2
+            }
+          ]
+        }
+      },
+      "expected": [
+        {
+          "id": "i → v",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 3,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 3.0
+        },
+        {
+          "id": "v → i",
+          "from": {
+            "root": 5,
+            "beat": 3,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 4,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 4.0
+        }
+      ]
+    },
+    {
+      "label": "base-key-not-event-key",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 3,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 4,
+            "type": 5
+          }
+        ],
+        "metadata": {
+          "keys": [
+            {
+              "tonic": "Ab",
+              "scale": "minor",
+              "beat": 1
+            },
+            {
+              "tonic": "D",
+              "scale": "major",
+              "beat": 2
+            }
+          ]
+        }
+      },
+      "expected": [
+        {
+          "id": "1 → 5",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 5,
+            "beat": 3,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 3.0
+        },
+        {
+          "id": "5 → 1",
+          "from": {
+            "root": 5,
+            "beat": 3,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 4,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 4.0
+        }
+      ]
+    },
+    {
+      "label": "rest-and-self-bridge",
+      "rootOnly": false,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5,
+            "rest": "True"
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "I → IV",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "IV → I",
+          "from": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    },
+    {
+      "label": "rest-and-self-bridge",
+      "rootOnly": true,
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 5,
+            "beat": 1,
+            "type": 5,
+            "rest": "True"
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          }
+        ],
+        "metadata": null
+      },
+      "expected": [
+        {
+          "id": "1 → 4",
+          "from": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        },
+        {
+          "id": "4 → 1",
+          "from": {
+            "root": 4,
+            "beat": 1,
+            "type": 5
+          },
+          "to": {
+            "root": 1,
+            "beat": 1,
+            "type": 5
+          },
+          "count": 1,
+          "firstBeat": 1.0
+        }
+      ]
+    }
+  ]
+}

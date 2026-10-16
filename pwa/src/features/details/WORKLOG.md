@@ -34,3 +34,14 @@ Checks:
 - window8-worker-song-integrated-unit/build-20261016: final combined49 tests, strict types and production build PASS on aca52d64 plus named product/browser paths; shellee66d988f229 includes the separate18.74kB PCM worker. No source change after checks.
 
 Whole T11 remains in progress. Next native overview expansion (progression/key/tempo/meter/melody/complexity), Chords scale/tone controls and transition ranking/source links. Product preview evidence does not prove physical hearing/Safari/trusted-tab/BFCache/device behavior. No unchanged full catalog/native/DSP proof recapture.
+
+
+## Native transition ranking
+
+Direct complete ChordTransitions.kt port at frozen801cf798. Preserve input sequence (do not sort by beat), filter native rest/blank/em-dash/Rest symbols, group full Roman identity or raw Int root identity, skip self identities, retain first observed representative objects/target beat (zero becomes1), rank descending count then native Double ascending (NaN last) then UTF16 String order. Chords view shows native top8 text and root-only toggle.4096chord cap is an explicit browser bound. Input objects are not mutated; from/to deliberately remain native first representative references.
+
+All first runs passed: window8-transitions-native-first-20261016 captured32cases/78ranked rows from unchanged complete Kotlin algorithm and real theory/models using existing cached tooling (no TypeScript/stubs/old recapture); window8-transitions-parity-first-20261016 passed3groups; window8-transitions-build-first-20261016 passed combined types/build(shellc22bddfd8f22); window8-transitions-browser-first-20261016 passed actual product Chrome18.4s/28.4s overall, including new ranking/root-only assertions and existing affected offline/audio/section/navigation flow. Unique transitions-first proof/screenshot retained.
+
+Commands: `python pwa/src/features/details/fixtures/generate-transitions-native.py`; `node node_modules/vitest/vitest.mjs run src/features/details/transitions.test.ts`; `node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build`; `node node_modules/@playwright/test/cli.js test song-details.spec.ts --grep "product Song" --workers=1 --output .artifacts/pwa-port/song-details/transitions-first` (node frompwa). Tested2db57cd4 plus named transition source/fixture/UI tree. No source changes after checks. Remaining T11 overview/scale/tone/extra-source behavior is open.
+
+Native sourceSHA256 f30b92e213cfb83617554465c17018550035e908bb046fea784bcd50c22cf7b6; fixtureSHA256 e2cb996909dff9fc9cb2b2a144f548d16dcdc368a8459e4e059a3d92c09931b1.
