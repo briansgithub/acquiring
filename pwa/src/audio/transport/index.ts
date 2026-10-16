@@ -17,3 +17,5 @@ export type { PlaybackWorkerOperation, PlaybackWorkerRequest, PlaybackWorkerPosi
 export { PcmQueueSink } from './pcm-queue-sink';
 export { PcmSinkError, PCM_SINK_LIMITS } from './sink-contracts';
 export type { AudioPcmQueueSink, PcmQueueSinkOptions, PcmSinkClock, PcmSinkPcm, PcmSinkReading, PcmSinkRun, PcmSinkErrorCode } from './sink-contracts';
+export { PlaybackIntentKernel } from './playback-intent';
+export type { PlaybackIntentKernelApi, PlaybackIntentPhase, PlaybackIntentWindow, PlaybackIntentGuard, PlaybackIntentSnapshot } from './intent-contracts';
