@@ -48,7 +48,7 @@ export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:(
   const scale=useMemo(()=>analysis?generateScaleLabels(analysis.key.tonic,Object.hasOwn(SCALE_INTERVALS,analysis.key.scale)?SCALE_INTERVALS[analysis.key.scale]:SCALE_INTERVALS.major):[],[analysis]);
   const tones=useMemo(()=>selectedChord&&analysis?interpret(selectedChord,analysis.key):null,[selectedChord,analysis]);
   const transitions=useMemo(()=>{try{return section?chordTransitions(section,rootOnlyTransitions):[];}catch{return[];}},[section,rootOnlyTransitions]);
-  function change(patch:Partial<SongView>){previewOwner.current?.stop();setSelected(null);setSelectedChord(null);setVisible(32);if(patch.sectionId!==undefined)setRootOnlyTransitions(false);setView(old=>{const next={...old,...patch};remembered.set(slug,next);return next;});}
+  function change(patch:Partial<SongView>){if(patch.sectionId!==undefined||patch.tab!==undefined){previewOwner.current?.stop();setSelected(null);setSelectedChord(null);setVisible(32);}if(patch.sectionId!==undefined)setRootOnlyTransitions(false);setView(old=>{const next={...old,...patch};remembered.set(slug,next);return next;});}
   function playInKey(chord:JsonObject,key:KeyInfo,label:string){
     const notes=interpret(chord,key).midi.filter(note=>note>0);
     setSelected(label);
@@ -105,7 +105,8 @@ export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:(
             {analysis.chords.slice(0,visible).map((chord,index)=>{
               const value=interpret(chord,analysis.key),label=view.letters?value.letter:value.roman;
               return <button className="song-chord" key={index} aria-label={'Preview '+label} aria-pressed={selectedChord===chord} onClick={()=>play(chord,label)}>
-                {view.letters?<span>{value.letter}</span>:<RomanNumeral display={romanNumeralDisplayFromChord(value.roman,chord.borrowed)} fontSizePx={30} maxWidthPx={130} maxHeightPx={70}/>}
+                <RomanNumeral display={romanNumeralDisplayFromChord(value.roman,chord.borrowed)} fontSizePx={30} maxWidthPx={130} maxHeightPx={70}/>
+                {view.letters&&<span>{value.letter}</span>}
                 <small>{value.toneLabels.join(' · ')}</small>
               </button>;
             })}

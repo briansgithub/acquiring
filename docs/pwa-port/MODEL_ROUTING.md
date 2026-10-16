@@ -37,3 +37,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-16T11:49:05Z same preview_owner gpt-6.1-sol/high resumes unvalidated PCM sink4799fba8 on existing codex/pwa-pcm-sink. Root runtime unknown/unchanged owns disjoint browser acceptance. One worker only; live3%/50%.
 
 2026-10-16T12:01:38Z sink61793c29accepted after normalmerge5e3bbc38 androot143unit/types/build/2Chrome. Samepreview_owner gpt-6.1-sol/high now read-only bounded fulltransportproposal on existingtree; no branch/source edits before contract. Rootruntimeunknown/unchanged;maxoneworker.
+
+2026-10-16T12:18:50Z samepreview_owner gpt-6.1-sol/high assignedpurePlaybackIntentKernel onlyfromfrozen8eacfd2e oncodex/pwa-playback-intent inexistingpreservedsibling. No fullowner/pump/App;rootownscontracts/integration/disjointT11Letters. Live55%/58%,stopnewoperations70%. Rootruntimeunknown/unchanged.

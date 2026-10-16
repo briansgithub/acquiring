@@ -68,7 +68,13 @@ test('product Song Info/Chords reads offline, previews on actual audio clock, pr
   await expect.poll(async()=>(await audio()).items[2]?.stops??0).toBeGreaterThan(0);
   await expect(page.getByRole('region',{name:'Chord tones',exact:true})).toHaveCount(0);
   await expect(page.getByRole('button',{name:'Preview IV',exact:true})).toBeVisible();
-  await page.getByRole('checkbox',{name:'Letter names'}).check();await expect(page.getByRole('button',{name:'Preview F',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Preview IV',exact:true}).click();
+  await page.getByRole('checkbox',{name:'Letter names'}).check();
+  const letterChord=page.getByRole('button',{name:'Preview F',exact:true});
+  await expect(letterChord).toHaveAttribute('aria-pressed','true');
+  await expect(letterChord.getByRole('img',{name:'IV',exact:true})).toBeVisible();await expect(letterChord.getByText('F',{exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Chord tones',exact:true}).getByRole('button')).toHaveCount(3);
+  expect((await audio()).items[3]!.stops).toBe(0);
   await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('searchbox',{name:'Search songs',exact:true})).toHaveValue('Detail_Gzip');
   await page.locator('[data-song-slug="detail-gzip"]').click();await expect(page.getByRole('combobox',{name:'Section',exact:true})).toHaveValue('10');
   await expect(page.getByRole('button',{name:'Preview F',exact:true})).toBeVisible();await page.getByRole('button',{name:'Preview F',exact:true}).click();
