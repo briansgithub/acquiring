@@ -495,7 +495,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
       "slice": "Pure clock, shared static runtime and actual PCM module worker accepted; streaming sink next",
-      "nextAction": "Typecheck/checkpoint frozen sink-contracts.ts, persist exact commit, inspect live allowance before assigning one Sol/high worker. Root will own dedicated sink browser fixtures; sink component is not full transport/App acceptance. T11 product source56efe22b and PCM workeraca52d64 already accepted.",
+      "nextAction": "Observe sole Sol/high bounded sink implementation. Worker must stop starting new operations at70% shared usage and checkpoint by80%; root actual-browser sink acceptance remains later. Preserve exact branch/source/receipts after interruption, no duplicate worker.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -556,6 +556,11 @@
           "command": "node node_modules/vitest/vitest.mjs run src/audio/transport/pcm-worker-client.test.ts src/audio/transport/pcm-worker-session.test.ts src/audio/transport/playback-clock.test.ts src/features/details src/storage/catalog/detail-query.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test pcm-worker.spec.ts --workers=1 --output .artifacts/pwa-port/pcm-worker/browser-first (from pwa through run-control)",
           "revision": "aca52d64 plus named T11 product and3PCM browser fixtures; product checkpoint acb92ecc",
           "result": "PASS first root runs:49 focused unit (29worker/8clock/9detail/3query), combined strict types/production build shell ee66d988f229, includes18.74kB pcm-worker-BGWGMLis.js. Actual dedicated module-worker Chrome1PASS790ms/7.7s overall:256/257/4096-frame native-call batches byte exact against unchanged256-step reference through tempo/transpose/seek; typed load acknowledgments; two actual workers each terminated once; posted abort ABORTED then permanent RELEASED. Guards window8-worker-song-integrated-unit/build-20261016 and window8-pcm-worker-browser-first-20261016. No sink/App streaming/device/Safari/fullT08 claim. Native fixtures unchanged."
+        },
+        {
+          "command": "node node_modules/typescript/bin/tsc --noEmit (from pwa through run-control)",
+          "revision": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
+          "result": "PASS combined strict types window8-sink-contract-types-20261016 for frozen sink-contracts.ts. No sink runtime implementation/acceptance implied."
         }
       ],
       "progress": [
@@ -719,7 +724,7 @@
         "thinking": "high",
         "branch": "codex/pwa-pcm-sink",
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-        "baseCommit": "exact root sink-contract checkpoint to be supplied after commit",
+        "baseCommit": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
         "ownedPaths": [
           "pwa/src/audio/transport/pcm-queue-sink.ts",
           "pwa/src/audio/transport/pcm-queue-sink.test.ts",
@@ -727,7 +732,7 @@
           "pwa/src/audio/transport/index.ts"
         ],
         "scope": "Five synchronous methods from frozen sink-contracts.ts only. Shared-context borrowed permission/epoch, opaque generation run identity, integer source scheduling/80ms prime/20ms lead/200ms+4096 cap,512source/mapping cap, fixed selected audio clock, pure clock prune/gap/drain, immediate invalidation/cleanup. No timers/resume/worker coordination/full transport/App/DSP/preview/context/catalog/T11/dependency/contracts/task edits.",
-        "status": "claim frozen; awaiting root contract types/commit and live allowance before worker dispatch",
+        "status": "assigned exact frozen contract; sole Sol/high worker implements bounded sink",
         "nextAction": "Reuse clean preserved cc525d4e sibling on new codex/pwa-pcm-sink from exact contract commit. Implement small guarded source/fakes receipts; check live before every new check, stop starting operations70%, checkpoint by80%. Root owns actual-browser acceptance and integration."
       }
     },
@@ -1444,15 +1449,15 @@
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
     "date": "2026-10-16",
-    "sourceCommit": "56efe22b28d638d2500d64c76d84b24840580d23",
+    "sourceCommit": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
     "usageObserved": {
-      "fiveHourUsedPercent": 47,
-      "weeklyUsedPercent": 44
+      "fiveHourUsedPercent": 64,
+      "weeklyUsedPercent": 47
     },
     "fiveHourResetUnix": 1792150939,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Transition ranking accepted/committed56efe22b; sink proposal completed. Freeze bounded root contract before any worker edits.",
+    "reason": "Accepted song/transition source and frozen sink contract saved. Sole Sol/high bounded sink worker active, latest live64%/47%; root starts no duplicate or unrelated large slice. Worker checks live before operations and checkpoints untested partials explicitly at cutoff. Full sink root acceptance remains unrun.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T06:42Z",
@@ -1462,7 +1467,22 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Applicable reset passed; live counters permit bounded integration. No credit/reset redemption."
     },
-    "activeWorker": null,
+    "activeWorker": {
+      "agent": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "task": "T08",
+      "branch": "codex/pwa-pcm-sink",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "ddcd7d887ed9d90c0dc5e6d3f415e106256ce160",
+      "ownedPaths": [
+        "pwa/src/audio/transport/pcm-queue-sink.ts",
+        "pwa/src/audio/transport/pcm-queue-sink.test.ts",
+        "pwa/src/audio/transport/SINK_WORKLOG.md",
+        "pwa/src/audio/transport/index.ts"
+      ],
+      "status": "bounded sink implementation; root browser acceptance pending"
+    },
     "completedWorker": {
       "agent": "preview_owner",
       "model": "gpt-6.1-sol",
