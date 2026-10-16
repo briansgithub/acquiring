@@ -565,7 +565,8 @@
         "2026-10-16T02:05Z prebranchintent:primaryd5391e68cleanafter348combinedand8actualChrome;applicationworker4d960244clean/idle. Clockproposalacceptedfivepurefunctions/14nativeheadcases. Rootfreezesboundedclocktypesand512segment/65536frame/rate1000..384000limitsbeforeoneSol/highworkeredit. Source/fixturepathsdisjoint;allolderbranches/profilespreserved. Lastlive54%five-hour/32%weekly;checkagainbeforedispatch.",
         "2026-10-16T02:12:34Z: allowance boundary reached71%/35%. Clock worker2a38ff5a is validated/reviewed/clean/idle; root starts no new slice, worker or expensive check. Preserve exact branch and all ignored data; defer normal merge and covering combined checks to next window. No relevant helper/server/test process or recoveryRequired guard run observed in either primary or sibling. Shared preview runtime remains accepted atd5391e68; full stream/App audio is open.",
         "2026-10-16T06:42Z integration intent: primary b67fbce7 and clock sibling 2a38ff5a are clean, staged empty; sole Sol/high worker completed/idle, no relevant process or recoveryRequired guard run in either tree. Live usage 0% five-hour/37% weekly after reset, new reset1792150939. Exact normal merge plus covering clock/types/build follows. Preserve all branches, worktrees and ignored evidence; no fixture/catalog/browser repetition or coordinator model change.",
-        "2026-10-16T06:44Z clock2a38ff5a normally integrated atbcc31359;8 groups/combined strict types/production build passed first runs. Worker clean/idle on preserved clock branch before one bounded read-only rendering-worker protocol proposal. Root records acceptance and freezes contracts only after proposal review. No source outside six clock paths changed; shell remains4cbe15e19dde."
+        "2026-10-16T06:44Z clock2a38ff5a normally integrated atbcc31359;8 groups/combined strict types/production build passed first runs. Worker clean/idle on preserved clock branch before one bounded read-only rendering-worker protocol proposal. Root records acceptance and freezes contracts only after proposal review. No source outside six clock paths changed; shell remains4cbe15e19dde.",
+        "2026-10-16T06:53Z worker pre-branch intent: primary ec3876da has coordinator-owned T11 reader/docs changes, staged empty; clock sibling2a38ff5a clean/idle. Root freezes separate worker-contracts.ts; only seven worker transport paths authorized on future codex/pwa-pcm-worker from exact contract checkpoint. Sol/high proposal reviewed; T11/catalog excluded. Preserve all branches/worktrees; no duplicateworker. Coordinator runtime unknown and unchanged."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -652,9 +653,29 @@
       },
       "workerProtocolProposal": {
         "owner": "preview_owner gpt-6.1-sol/high",
-        "status": "read-only proposal active; no edit/branch/test authority",
+        "status": "reviewed; bounded worker contract frozen before implementation",
         "baseCommit": "bcc3135949671f4128ec145f43f87f0c9b5b3196",
         "scope": "Minimal typed bounded protocol, session/message handler and client using unchanged PlaybackPcmRenderer. Revision/request identity, timeout, cancellation, stale acknowledgement and transfer ownership. No sink, owner, App, dependencies or fixture recapture."
+      },
+      "workerAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-pcm-worker",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "root worker-contract checkpoint to be supplied after commit",
+        "ownedPaths": [
+          "pwa/src/audio/transport/pcm-worker-session.ts",
+          "pwa/src/audio/transport/pcm-worker-session.test.ts",
+          "pwa/src/audio/transport/pcm-worker-client.ts",
+          "pwa/src/audio/transport/pcm-worker-client.test.ts",
+          "pwa/src/audio/transport/pcm-worker.ts",
+          "pwa/src/audio/transport/WORKER_WORKLOG.md",
+          "pwa/src/audio/transport/index.ts"
+        ],
+        "scope": "Implement frozen worker-contracts.ts using unchanged native PlaybackPcmRenderer. One in-flight command; revision/ID checks; exact256-frame render calls; <=4096-frame transfer; terminal timeout/abort/uncertain failure. No sink/owner/context/preview/clock/timeline/DSP/App/catalog/dependency/contract/task edits.",
+        "status": "claim frozen; await exact root contract commit before branch reuse",
+        "nextAction": "Reuse clean clock2a38ff5a sibling on new named branch from exact contract commit, preserving all earlier branches. Save small guarded receipts, run scoped types and focused session/client/handler tests; native fixtures reused, no recapture/full DSP/browser checks."
       }
     },
     {
@@ -809,13 +830,13 @@
         "pwa/src/features/details/"
       ],
       "acceptance": "Canonical metadata, block previews, transition ranking and route preservation",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Ready for bounded SongInfo/Chords work using explicit completedT08static-preview-runtime milestone andcompleteT02/T03/T04/T06. Freeze catalog section-reader/route/state interfaces before Luna/medium presentation;reuse real native theory/notation/shared PreviewOwner and actual render receipts. Full streaming Playback remainsT12;no absentdevice/runtime check may be marked passed.",
+      "status": "in_progress",
+      "owner": "coordinator runtime unknown",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
+      "baseCommit": "ec3876da",
+      "slice": "Bounded exact-slug offline song payload reader and decoded section boundary",
+      "nextAction": "Add exact native SongDao slug lookup to existing catalog owner with compressed byte limits and source snapshot identity. Decode with bounded gzip/raw UTF-8 using existing native parseSections/section ordering. Validate unit input/resource/immutability boundaries and a new actual worker fixture; do not repeat full catalog proofs or touch Library scroll gate. UI follows in its own slice.",
       "validation": [],
       "progress": [
         "2026-10-16T02:02Z dependency refinement:T11needsstaticpreview,notthefullstreamingcommandengine. AcceptedT08static-preview-runtime(348combined+8actualChrome)unblocksboundedT11development;wholeT08/T12/T26acceptanceunchanged. NoT11implementationorUIclaimyet."
@@ -823,6 +844,27 @@
       "blocker": null,
       "dependencyGates": {
         "T08": "static-preview-runtime"
+      },
+      "coordinatorSlice": {
+        "ownedPaths": [
+          "pwa/src/storage/catalog/detail-query.ts",
+          "pwa/src/storage/catalog/detail-query.test.ts",
+          "pwa/src/storage/catalog/client.ts",
+          "pwa/src/storage/catalog/protocol.ts",
+          "pwa/src/storage/catalog/catalog-worker.ts",
+          "pwa/src/features/details/reader.ts",
+          "pwa/src/features/details/reader.test.ts",
+          "pwa/src/features/details/WORKLOG.md",
+          "pwa/tests/browser/song-details-reader.spec.ts",
+          "pwa/tests/browser/catalog-worker-harness.ts",
+          "pwa/scripts/catalog/make-library-browser-fixture.py"
+        ],
+        "excludedPaths": [
+          "pwa/src/audio/transport/",
+          "pwa/src/features/library/",
+          "pwa/tests/browser/library.spec.ts"
+        ],
+        "scope": "One exact-slug snapshot-tagged read, non-destructive readonly DB handle closure, no full payload paging, no public arbitrary SQL. Decode caps explicit browser resource boundary. No App/UI/preview wiring yet."
       }
     },
     {
@@ -1274,7 +1316,7 @@
     "fiveHourResetUnix": 1792132396,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Pure clock normally integrated and covering checks passed. One read-only protocol proposal active; preserve all worktrees and native/browser/catalog evidence. No pending reset blocks this live window.",
+    "reason": "Clock integrated/accepted. Sole Sol/high worker read-only audio protocol proposal; coordinator disjoint T11 bounded reader intent recorded before source edits.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T06:42Z",

@@ -94,3 +94,7 @@ Continue download -> find -> play -> favorite -> restart offline. Do not let the
 2026-10-16T06:42Z integration intent: primary b67fbce7 and clock2a38ff5a sibling clean; worker idle, guards clear and no relevant process. Live0%/37% after reset1792132396; new five-hour reset1792150939. Normally merge exact2a38ff5a, then covering clock tests and combined types/build. Preserve all worktrees/profiles; do not repeat successful native/browser/catalog evidence.
 
 2026-10-16T06:44Z clock accepted atbcc31359:8 unit groups, combined strict types and production build passed first runs. Pure clock branch/tree preserved. One Sol/high read-only module-worker protocol proposal only; root freezes contracts before edits. Full streaming/App/device acceptance remains open.
+
+2026-10-16T06:50Z coordinator T11 claim: primary ec3876da clean. Bounded exact-slug catalog payload RPC plus capped gzip/raw decoder, native section order and focused worker fixture only; no Library scroll/App/audio changes. Sole Sol/high worker read-only transport proposal has disjoint paths. Task claim lists source/tests; freeze worker contract sequentially before dispatch.
+
+2026-10-16T06:53Z worker pre-branch claim: root ec3876da with owned T11 reader/docs changes, staged empty; clock2a38ff5a sibling clean. Freeze worker-contracts.ts, types/checkpoint, then one Sol/high worker may reuse sibling as codex/pwa-pcm-worker from exact supplied root commit. Seven transport-only paths, excluding root catalog/details work; all prior branches preserved.
