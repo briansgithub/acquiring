@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-16T12:26:48Z. ALLOWANCE CUTOFF: live70% five-hour/60% weekly; start no new work, worker or check. Reset1792169161 (2026-10-16T16:46:01Z)/1792653278. Primary codex/pwa-foundation source0c29da31 normally merges reviewed pure kernel22525d9c: worker12 focused groups and scoped types pass, but PRIMARY COMBINED CHECKS ARE NOT RUN and are next after reset. Accepted product68bb1924 includes expanded Info, scale/tone previews and native Letters behavior; latest accepted product build48feed8a9593/Chrome15.7s. Sink53d8db45 passed143 transport tests/types/build and2 actual Chrome cases. Sibling codex/pwa-playback-intent22525d9c is clean/idle; both guards clear, no relevant process observed. Preserve all branches/worktrees/profiles. No duplicate worker, credits, reset redemption or coordinator model change.
+Updated 2026-10-16T16:55:33.248612+00:00. Renewed capacity5% five-hour/63% weekly, reset1792187464/1792653278. Kernel22525d9c normally merged0c29da31 is now accepted on primary a2d76758:171 focused units, strict types/build PASS; product shell48feed8a9593 unchanged. Separate transport-contracts.ts strict types PASS, checkpoint next. Same Sol/high worker remains idle in clean sibling22525d9c until exact contract checkpoint and pre-branch claim; root will prepare disjoint browser fixtures. Preserve all prior work. No full async owner/App claim or unchanged native/catalog/browser repetition.
 
 ## Authority and completion
 

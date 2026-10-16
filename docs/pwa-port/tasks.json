@@ -494,8 +494,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
-      "slice": "Pure intent kernel merged; primary combined checks deferred at70% allowance cutoff",
-      "nextAction": "Wait for reset1792169161 (2026-10-16T16:46:01Z) and verify live capacity. Inspect Git, agents, processes and guards. On existing primary0c29da31 run node node_modules/vitest/vitest.mjs run src/audio/transport src/features/details, then npm run build from pwa under guard. No native fixture/browser/full catalog recapture. After acceptance, freeze a separate full async transport adapter contract using the saved proposal; pure kernel alone is not fullT08.",
+      "slice": "Kernel accepted; bounded full streaming owner contract ready",
+      "nextAction": "Checkpoint validated owner contract, then dated pre-branch claim before same Sol/high worker implementation. Coordinator prepares disjoint browser fixtures; no App/dependency changes.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -586,6 +586,16 @@
           "command": "tsc --project ../.artifacts/pwa-port/t08-intent-tsconfig.json; vitest run --config ../.artifacts/pwa-port/t08-intent-vitest.config.mjs (workerpwa/rootinstalledbinaries/siblingguard)",
           "revision": "22525d9c961696e6741a8c9e14b1eee2439d6bdc",
           "result": "PASS finaltypes09/12groups10(271ms),stagedcheck16;initialtype06onlyunusedtestimportremoved08,onefixcycle;runtimegroupspassedfirst. Rootreviewwhole167linesource/151linetests,no materialissue. Sourcehash3418eb81f8e97beae699cdadf1448cb0678fca7870660fd935ebf72f85aaee04;frozencontractunchanged. Purekernelonly;primarycombinedacceptancepending."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/audio/transport src/features/details; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (pwa/rootguard)",
+          "revision": "a2d76758 includes kernel normal merge0c29da31",
+          "result": "PASS first primary checks after reset:171 focused units/window10-intent-combined-unit-20261016;strict types/build/window10-intent-combined-build-20261016. Product shell48feed8a9593 unchanged. No unchanged browser/native/catalog proofs repeated. Pure kernel only; full async owner/App acceptance open."
+        },
+        {
+          "command": "node node_modules/typescript/bin/tsc --noEmit (pwa/rootguard)",
+          "revision": "a2d76758 plus named transport-contracts.ts",
+          "result": "PASS window10-owner-contract-types-20261016; contract only, no full owner implementation/acceptance implied."
         }
       ],
       "progress": [
@@ -620,7 +630,9 @@
         "2026-10-16T12:09:33.611920+00:00 fulltransportproposal reviewed against native419-510/617/721-810. Separate publiccommandrevision from internalaudio generation; config keeps publicrevision. Sameworker read-only minimal purekernel contract refinement requested. Root Info UI browser1existingcasePASS/newcasewrongexpectedA7vsnativeAm7; cycle1testlabelonly, trace retained. No source behavior changes.",
         "2026-10-16T12:18:50Z prebranchclaim:root8eacfd2eclean,siblingsink61793clean/idle,bothguards[],newbranchcodex/pwa-playback-intentabsent. Live55%/58%;sameSol/highworkeronly,rootruntimeunknown/unchanged. Preservealloldbranches/worktrees/ignoredprofiles. IntentAPIstrict typesPASS.",
         "2026-10-16T12:25:10.848885+00:00 pre-integration:root68bb1924clean/stagedempty, sibling22525d9cclean/idle,bothguardslastclear,nopersistentworkerprocess. Exact4filechangefullyreviewed. Live68%/60%;normalmergeallowednow,nonewoperation/checkafter70. Preserveallpreviousbranches/profiles;nofulltransportclaim.",
-        "2026-10-16T12:26:48Z allowance cutoff: live70% five-hour/60% weekly. Exact normal merge0c29da31 includes reviewed22525d9c (worker12groups/typesPASS); root started NO combined unit/build check after threshold. Primary owns only final documentation edits; sibling22525 clean/idle, both guards have no recovery-required runs, no relevant helper/server/test process observed. Preserve all branches/worktrees/profiles. Next reset 2026-10-16T16:46:01+00:00."
+        "2026-10-16T12:26:48Z allowance cutoff: live70% five-hour/60% weekly. Exact normal merge0c29da31 includes reviewed22525d9c (worker12groups/typesPASS); root started NO combined unit/build check after threshold. Primary owns only final documentation edits; sibling22525 clean/idle, both guards have no recovery-required runs, no relevant helper/server/test process observed. Preserve all branches/worktrees/profiles. Next reset 2026-10-16T16:46:01+00:00.",
+        "2026-10-16T16:51:44.987830+00:00 resumed after applicable reset. Live0% five-hour/62% weekly, reset1792187464/1792653278. Primarya2d76758 clean, both workers idle, root guard clear and no relevant process observed. No duplicate worker or credit/reset/model action. Saved kernel combined acceptance is next.",
+        "2026-10-16T16:53:58.094748+00:00 kernel primary acceptance171 units/types/build passed; saved earlier integration is accepted. Root freezes separate async owner contract; no new worker yet. Prior native/catalog/browser proofs unchanged."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -816,9 +828,19 @@
           "pwa/src/audio/transport/index.ts"
         ],
         "scope": "PurePlaybackIntentKernel implementing frozenintent-contracts.ts only. Immediatenativelikeintent/revision/scrub/seek/load/reset/zeroBPM/lifecycle/guardedonceend+drain;playreadyreconciliation;validatedfrozennonaliasedsnapshots/reentrancy. No timers/audio/worker/context/sink/clock/fullowner/App/dependency/contracts/task changes.",
-        "status": "Normally merged at 0c29da31. Worker 12 tests/scoped types pass; primary combined acceptance PENDING at allowance cutoff.",
-        "nextAction": "After reset and live capacity below70% in both windows, run focused primary transport+details units, then strict types/build through run-control. Do not reimplement or repeat native/browser/catalog proofs.",
+        "status": "Accepted primary integration0c29da31:171 covering units/strict types/build passed on a2d76758.",
+        "nextAction": "No pending kernel implementation. Reuse it in separate async owner; public command revision must remain distinct from audio generation/epoch.",
         "commit": "22525d9c961696e6741a8c9e14b1eee2439d6bdc"
+      },
+      "ownerContractIntent": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "a2d76758",
+        "ownedPaths": [
+          "pwa/src/audio/transport/transport-contracts.ts"
+        ],
+        "scope": "Freeze bounded async playback owner contract around accepted kernel/context/worker/sink; immediate native-like intent, explicit gesture, selected played head, one coalesced control/config/heldPCM/10ms timer, final drained completion and lifecycle. No App/PCM/theory/catalog/dependency changes.",
+        "nextAction": "Strict types and checkpoint before same Sol/high worker assignment on new narrow branch in existing preserved sibling. Worker implementation/acceptance must be interruptible; no partial public API silently dropping controls.",
+        "status": "Frozen transport-contracts.ts prepared; combined strict types PASS before assignment."
       }
     },
     {
@@ -1595,24 +1617,24 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-16T12:26:48Z",
-    "sourceCommit": "0c29da312588a89e2f26beb4a632249e1e2c4666",
+    "date": "2026-10-16T16:51:44.987830+00:00",
+    "sourceCommit": "a2d76758",
     "usageObserved": {
-      "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 60
+      "fiveHourUsedPercent": 5,
+      "weeklyUsedPercent": 63
     },
-    "fiveHourResetUnix": 1792169161,
+    "fiveHourResetUnix": 1792187464,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Allowance cutoff: start no new work/check/worker. Product68bb1924 and sink53d8db45 are accepted. Pure kernel22525d9c is normally merged0c29da31 with worker12groups/types passed; primary combined acceptance is explicitly pending. Both worktrees preserved, guards clear, no relevant process. Wait applicable reset and live capacity; no credit/reset/model actions.",
+    "reason": "Kernel primary171units/types/build accepted; typed async owner contract is next checkpoint. Existing worker idle; no new assignment before exact frozen base.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
-      "date": "2026-10-16T06:42Z",
+      "date": "2026-10-16T16:51:44.987830+00:00",
       "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 37,
-      "fiveHourResetUnix": 1792150939,
+      "weeklyUsedPercent": 62,
+      "fiveHourResetUnix": 1792187464,
       "weeklyResetUnix": 1792653278,
-      "reason": "Applicable reset passed; live counters permit bounded integration. No credit/reset redemption."
+      "reason": "Prior cutoff reset passed; live counters permit bounded resumption."
     },
     "activeWorker": null,
     "completedWorker": {
@@ -1644,7 +1666,7 @@
         "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build"
       ],
       "cwd": "pwa",
-      "status": "NOT RUN after cutoff; no combined acceptance implied"
+      "status": "PASS171 units/strict types/build after applicable reset, window10 guards recorded."
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
