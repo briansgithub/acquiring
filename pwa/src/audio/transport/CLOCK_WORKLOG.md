@@ -1,0 +1,26 @@
+# Pure playback clock checkpoint
+
+2026-10-15 intent: explicit gpt-6.1-sol/high route, codex/pwa-playback-clock from root-frozen ad058de0 after clean4d960244 sibling/index/guard/process inspection (0 recovery-required). Own only playback-clock.ts/.test.ts, separate fixtures/generate-clock-native.py/native-clock.json, this new CLOCK_WORKLOG.md and index.ts. Implement five frozen pure integer-frame clock functions, independent immutable snapshots, finite lead/gap hold, native loop/once math, explicit queue drainage, bounded/prunable512segments. Capture14unchanged native audibleBeat head cases using fixture bindings, noDSP/Androidsink/TS expected generation. Exclude context/preview/timeline/DSP/streamsink/App/contracts/tasks/deps and old fixtures. Explicit browser extensions/safety tests remain separate from native math. Check live before each large check; initial57%five-hour/32%weekly, no new check/work at70%, checkpoint/yield at80%. Preserve all ignored artifacts/profiles/processes/old branches; no install/symlink/publication/cleanup.
+
+
+2026-10-15 implementation checkpoint: Exported create/append/read/prunePlaybackClock, playbackFrameAtTime and typed playbackClockApi. Integer-frame selected-clock math matches native modulo/once-clamp mapping. Immutable independent queue/segment/reading snapshots; anchor held before lead, preceding endpoint held across finite gaps and after tail; tempo changes use the segment active at the observation. Queue drainage requires previous PCM scheduling and reaching its saved tail, independently of musical end/transport completion. Pruning removes only consumed mappings, saves endpoint anchor and lastEndFrame even when empty, rejects older observations, and permits future nonoverlapping append. Bounded512segments/65536frames,1000..384000rates,finite bounded beat window/slope and safe frame arithmetic; overflow/cap rejects instead of evicting unplayed mappings. Time conversion floors one selected nonnegative finite audio time without wall-clock blending/extrapolation.
+
+Independent fixture producer copies frozen801cf798 PlaybackEngine native model declarations/ClockSegment/audibleBeat body unchanged with fixture renderer/timeline/head/started bindings. No DSP, Android sink, RNG or TS expected-output computation. Java file/stdout/stderr encoding explicitly UTF-8; output decoded UTF-8. Native frameCount is absent from native math and explicitly retained as browser finite-schedule metadata only. Portable fixtures/native-clock.json is6772bytes/14cases, intentional reproducible source evidence; compiler/extracted Kotlin/classes remain ignored and no dependency was installed.
+
+All bounded validation passed on first actual runs under pwa/scripts/run-control/run_control.py --repo H:/Desktop/Acquiring/Acquiring-pwa-data-compat run --owner playback-clock-owner --task T08-playback-clock:
+- clock-native-20261015-68 -- python pwa/src/audio/transport/fixtures/generate-clock-native.py; exit0,14native head cases. Cached JVM compiler emitted only its known deprecated Unsafe warning.
+- clock-types-20261015-70 --cwd pwa -- node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-clock-tsconfig.json; exit0.
+- clock-unit-20261015-71 --cwd pwa -- node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-clock-vitest.config.mjs; exit0,8groups including14native parity cases plus separate browser lead/gaps/terminal padding/prune/drain/independent immutability/caps/time conversion/safety tests.
+Last live before types67%five-hour/34%weekly; immediate live before unit68%/34%. No more check/fixture expansion after this checkpoint. Scoped ignored configs name only owned clock files/index and reuse primary installed dependencies; no install/source symlink.
+
+Limits/next action: Pure scheduled-PCM clock math only. queueDrained is not source-ended/current-revision/completion-key/renderer-finished evidence and makes no physical speaker/hearing claim. Caller must choose a single actual audio clock and guard transport completion separately. No streamsink/worker/transport/App/context/preview/timeline/DSP/capture implementation or modifications; frozen contracts/tasks/deps unchanged. Root has independently reviewed helper and native producer; root owns normal integration/combined validation when usage allows. Preserve all branches/worktrees/ignored artifacts; no push/publication/cleanup.
+
+Native sourceSha256: dd6bf51f4fccd089bb01c429ce2d69c2b9261599a201231afd565c2983b3bff6
+Native clockSegmentSha256: 1091b0dd3bd7940061b341500bcf2fbb859bb21eae5a58ed91c926f74db745d2
+Native audibleBeatSha256: 562a46c47dc1d9c62c5595b8df0b9e5feb1ad96f5bab9b3e0b4b5626418c2c1c
+SHA256 playback-clock.ts: b750ca1860a6dd1ee408785db23c5005d18efcb95eae43185f050384df30f833
+SHA256 playback-clock.test.ts: 4d29aa9dfd3a9727d2367df92b53accb93f2e5ed9acb31a60bb786d2f1e7bb69
+SHA256 fixtures/generate-clock-native.py: 4889c9598d9e9dbae5e4fd3dce310c154300de433652745d51fe63dc6fd1cf84
+SHA256 fixtures/native-clock.json: 8b8cd1685729bf3132c91569b53323d4d5a8955549f039640e1ce5ed96504540
+SHA256 contracts.ts: 84456114c8fe37df44c54f73f07972bba8233029c80f8dbf42b6391ec5807c01
+SHA256 index.ts: af8cfdb6767d8d7389e04c3cb7ee2e0a8f5755883721191f87f7d265c55c48bf
