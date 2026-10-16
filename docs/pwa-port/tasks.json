@@ -483,16 +483,19 @@
         "pwa/vite.config.ts",
         "pwa/tests/browser/audio-context.html",
         "pwa/tests/browser/audio-context-harness.ts",
-        "pwa/tests/browser/audio-context.spec.ts"
+        "pwa/tests/browser/audio-context.spec.ts",
+        "pwa/tests/browser/pcm-worker.html",
+        "pwa/tests/browser/pcm-worker-harness.ts",
+        "pwa/tests/browser/pcm-worker.spec.ts"
       ],
       "acceptance": "Seek/config/loop/cancellation races, silent scrub and explicit-resume cases",
       "status": "in_progress",
-      "owner": "coordinator; one Sol/high worker read-only protocol proposal",
+      "owner": "coordinator integration; Sol/high PCM worker completed/idle",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
-      "slice": "Pure clock accepted; next bounded rendering-worker protocol",
-      "nextAction": "Review sole Sol/high worker read-only proposal for bounded PCM module-worker protocol/session/client, then root freezes shared contract before any implementation. One in-flight render, <=4096-frame batch assembled from unchanged 256-frame native calls. Full sink/transport/App remains later; T11 is independently ready.",
+      "slice": "Pure clock, shared static runtime and actual PCM module worker accepted; streaming sink next",
+      "nextAction": "Freeze a bounded streaming source-node sink API using existing shared application context, PCM worker and clock helpers. Then transport immediate intent/revision/play/pause/lifecycle/scrub/seek/config/drained completion. Components alone are not full T08. No native fixture/browser/catalog repetition without relevant changes.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -548,6 +551,11 @@
           "command": "node node_modules/typescript/bin/tsc --noEmit (from pwa through run-control)",
           "revision": "fb879a5c frozen worker contract (plus separately owned uncommitted T11 reader source)",
           "result": "PASS combined strict types window8-worker-contract-types-20261016; contract has no T11 dependency and stands alone. No worker runtime acceptance implied."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/audio/transport/pcm-worker-client.test.ts src/audio/transport/pcm-worker-session.test.ts src/audio/transport/playback-clock.test.ts src/features/details src/storage/catalog/detail-query.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test pcm-worker.spec.ts --workers=1 --output .artifacts/pwa-port/pcm-worker/browser-first (from pwa through run-control)",
+          "revision": "aca52d64 plus named T11 product and3PCM browser fixtures; product checkpoint acb92ecc",
+          "result": "PASS first root runs:49 focused unit (29worker/8clock/9detail/3query), combined strict types/production build shell ee66d988f229, includes18.74kB pcm-worker-BGWGMLis.js. Actual dedicated module-worker Chrome1PASS790ms/7.7s overall:256/257/4096-frame native-call batches byte exact against unchanged256-step reference through tempo/transpose/seek; typed load acknowledgments; two actual workers each terminated once; posted abort ABORTED then permanent RELEASED. Guards window8-worker-song-integrated-unit/build-20261016 and window8-pcm-worker-browser-first-20261016. No sink/App streaming/device/Safari/fullT08 claim. Native fixtures unchanged."
         }
       ],
       "progress": [
@@ -571,7 +579,9 @@
         "2026-10-16T02:12:34Z: allowance boundary reached71%/35%. Clock worker2a38ff5a is validated/reviewed/clean/idle; root starts no new slice, worker or expensive check. Preserve exact branch and all ignored data; defer normal merge and covering combined checks to next window. No relevant helper/server/test process or recoveryRequired guard run observed in either primary or sibling. Shared preview runtime remains accepted atd5391e68; full stream/App audio is open.",
         "2026-10-16T06:42Z integration intent: primary b67fbce7 and clock sibling 2a38ff5a are clean, staged empty; sole Sol/high worker completed/idle, no relevant process or recoveryRequired guard run in either tree. Live usage 0% five-hour/37% weekly after reset, new reset1792150939. Exact normal merge plus covering clock/types/build follows. Preserve all branches, worktrees and ignored evidence; no fixture/catalog/browser repetition or coordinator model change.",
         "2026-10-16T06:44Z clock2a38ff5a normally integrated atbcc31359;8 groups/combined strict types/production build passed first runs. Worker clean/idle on preserved clock branch before one bounded read-only rendering-worker protocol proposal. Root records acceptance and freezes contracts only after proposal review. No source outside six clock paths changed; shell remains4cbe15e19dde.",
-        "2026-10-16 pre-branch worker pre-branch intent: primary ec3876da has coordinator-owned T11 reader/docs changes, staged empty; clock sibling2a38ff5a clean/idle. Root freezes separate worker-contracts.ts; only seven worker transport paths authorized on future codex/pwa-pcm-worker from exact contract checkpoint. Sol/high proposal reviewed; T11/catalog excluded. Preserve all branches/worktrees; no duplicateworker. Coordinator runtime unknown and unchanged."
+        "2026-10-16 pre-branch worker pre-branch intent: primary ec3876da has coordinator-owned T11 reader/docs changes, staged empty; clock sibling2a38ff5a clean/idle. Root freezes separate worker-contracts.ts; only seven worker transport paths authorized on future codex/pwa-pcm-worker from exact contract checkpoint. Sol/high proposal reviewed; T11/catalog excluded. Preserve all branches/worktrees; no duplicateworker. Coordinator runtime unknown and unchanged.",
+        "2026-10-16T07:07:01Z PCM integration intent: primary19bdc764 has ONLY owned T11 product source/tests/docs dirty and staged empty, no active browser process. Worker cc525d4e clean/idle after29tests/types; originaldfafbd7c preserved. Root reviewed7file scope and follow-up input/identity/cancellation regressions. Normal merge then root dedicated-worker browser proof; one Luna/medium read-only T11 review active with no edits. Preserve all worktrees and ignored evidence.",
+        "2026-10-16T07:10:35Z PCM worker accepted after normal merge aca52d64:49 covering unit/types/build and1 real module-worker Chrome passed. Source review corrected three bounded identity/getter/iterator edges in preserved cc525d4e. Full sink/transport remains open; no unchanged DSP/native/catalog/browser recapture."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -679,8 +689,20 @@
           "pwa/src/audio/transport/index.ts"
         ],
         "scope": "Implement frozen worker-contracts.ts using unchanged native PlaybackPcmRenderer. One in-flight command; revision/ID checks; exact256-frame render calls; <=4096-frame transfer; terminal timeout/abort/uncertain failure. No sink/owner/context/preview/clock/timeline/DSP/App/catalog/dependency/contract/task edits.",
-        "status": "assigned one Sol/high worker; root contract types passed",
-        "nextAction": "Reuse clean clock2a38ff5a sibling on new named branch from exact contract commit, preserving all earlier branches. Save small guarded receipts, run scoped types and focused session/client/handler tests; native fixtures reused, no recapture/full DSP/browser checks."
+        "status": "normally integrated aca52d64; root49 covering unit/types/build and actual module-worker Chrome accepted",
+        "nextAction": "No pending PCM worker implementation. Reuse PcmWorkerClient; posted abort is terminal and requires a fresh client/session. Preserve cc525d4e branch/tree and dfafbd7c initial checkpoint.",
+        "commit": "cc525d4e3eb2d6b25f49701a6863811e8da3b1ac"
+      },
+      "workerBrowserAssignment": {
+        "owner": "coordinator",
+        "ownedPaths": [
+          "pwa/tests/browser/pcm-worker.html",
+          "pwa/tests/browser/pcm-worker-harness.ts",
+          "pwa/tests/browser/pcm-worker.spec.ts"
+        ],
+        "scope": "Actual dedicated module worker typed acknowledgments and256/257/4096-frame transfer exactness versus unchanged256-step main reference through config/seek; immediate posted abort permanent termination. No AudioContext/sink/App stream/output acceptance.",
+        "status": "PASS actual Chrome1case790ms/7.7s overall; unique browser-first proof retained",
+        "nextAction": "Copy candidates after merge; types/build, focused tests and actual Chrome under unique ignored output."
       }
     },
     {
@@ -840,7 +862,9 @@
         "pwa/src/storage/catalog/catalog-worker.ts",
         "pwa/tests/browser/song-details-reader.spec.ts",
         "pwa/tests/browser/catalog-worker-harness.ts",
-        "pwa/scripts/catalog/make-library-browser-fixture.py"
+        "pwa/scripts/catalog/make-library-browser-fixture.py",
+        "pwa/src/app/App.tsx",
+        "pwa/tests/browser/song-details.spec.ts"
       ],
       "acceptance": "Canonical metadata, block previews, transition ranking and route preservation",
       "status": "in_progress",
@@ -848,18 +872,30 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "ec3876da",
-      "slice": "Bounded offline song detail reader accepted; Song Info UI next",
-      "nextAction": "Integrate reader into a bounded Song Info/Chords route/controller. Freeze view/state inputs before later Luna presentation; reuse existing theory/notation and shared PreviewOwner. Keep missing/download/busy/corrupt states explicit. Transition ranking/source links and actual App preview/navigation acceptance remain open. Separate Library Settings-scroll investigation still awaits owner answer.",
+      "slice": "First product offline Song Info/Chords and shared static previews accepted",
+      "nextAction": "Expand native Info overview (progression/key/tempo/meter/melody/complexity), Chords scale/tone controls, transition ranking and source links in bounded slices. Existing offline product route/section picker/Roman and letter chord cards/static450ms previews are accepted; retain user-state/source snapshot identity and cleanup. Full transport remains T08/T12, favorites/recents remain separate. Pending Library Settings-scroll approval unchanged.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/detail-query.test.ts src/features/details/reader.test.ts src/storage/catalog/library-queries.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test song-details-reader.spec.ts --workers=1 --output .artifacts/pwa-port/song-details/reader-first (from pwa through run-control)",
           "revision": "fb879a5c plus named T11 reader/catalog/fixture/harness paths committed with receipt",
           "result": "PASS first runs:9 focused unit cases, combined strict types/production build (shell572df7170fc2), actual Chrome1passed34.0s. Guards window8-details-reader-unit-20261016/window8-details-reader-build-20261016/window8-details-reader-browser-first-20261016. Exact raw slug/native gzip+raw repair/order; blob/decode resource limits; missing/corrupt payload; reopen then offline read; all10 user stores/outbox preserved. Unique retained reader-first proof attachment. No App song UI/device/Safari/new full catalog scan claimed."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/details src/storage/catalog/detail-query.test.ts src/app/routes.test.ts; focused controller test; npm run build; Playwright song-details.spec.ts with unique product-* outputs (exact commands/receipts in details/WORKLOG.md)",
+          "revision": "aca52d64 plus named coordinator SongScreen/controller/CSS/App/fixture/tests committed with this receipt",
+          "result": "PASS13 initial focused unit tests;5 controller groups after bounded BUSY fix; final combined49unit/strict types/build(window8-worker-song-integrated-unit/build-20261016),shell ee66d988f229. Actual product Chrome1PASS18.7s/28.2overall(window8-song-ui-handoff-retest-20261016): offline Song Info/Chords, native450ms PCM/nonzero/running clock/end, section-change stop, Roman/letter labels, Back/reopen view state/shared context, cold offline page reload,320px/200%text no horizontal overflow. Development StrictMode/direct-link/download-return1PASS15.0s(window8-song-ui-browser-retry2-20261016 before additive BUSY retry). Luna/medium read-only review no material findings; root inspected full-page screenshot. All failed fixture/setup/selector/BUSY attempts and traces retained, not passed. No physical/Safari/trustedtab/BFCache/fullT11 claim."
         }
       ],
       "progress": [
         "2026-10-16T02:02Z dependency refinement:T11needsstaticpreview,notthefullstreamingcommandengine. AcceptedT08static-preview-runtime(348combined+8actualChrome)unblocksboundedT11development;wholeT08/T12/T26acceptanceunchanged. NoT11implementationorUIclaimyet.",
-        "2026-10-16T06:52:30Z bounded reader accepted first runs:9 unit, combined types/build and1 actual Chrome. Native exact lookup and existing T02 decoder/order reused, resource limits explicit; no user/catalog writes. Next controller/song route/static previews. Sole Sol/high audio worker has disjoint ownership."
+        "2026-10-16T06:52:30Z bounded reader accepted first runs:9 unit, combined types/build and1 actual Chrome. Native exact lookup and existing T02 decoder/order reused, resource limits explicit; no user/catalog writes. Next controller/song route/static previews. Sole Sol/high audio worker has disjoint ownership.",
+        "2026-10-16T06:54:43Z pre-edit UI claim: primary19bdc764 clean; reader accepted9unit/types/build/1Chrome. Root owns listed SongScreen/controller/App/fixture/browser paths; sole Sol/high worker owns transport-only PCM worker. Native SongInfoChords/SongDetailView and AudioEngine450ms simultaneous defaults inspected. No duplicateworker or Library scope expansion.",
+        "First product browser run window8-song-ui-browser-first-20261016: reader case PASS23.1s; both new product cases stopped at the default5s installer expectation while progress was100% and installation still active, before SongScreen assertions. Retained product-first error-context.md and trace.zip. Cycle1 bounded fixture correction: keep oversized8MiB+1 payload in the dedicated reader fixture, add song-screen fixture option excluding only that unrelated oversized test blob; product screen still uses actual validated40,609+row SQLite data. Keep every behavioral assertion and default timeout unchanged. No Library investigation expansion.",
+        "Cycle1 product retry still expired during Finishing verification at5s, before any song assertion (product-retry1 traces retained). Native activation performs full schema/payload verification again; the independent reader setup took23s. Cycle2 adjusts ONLY these new tests: installer setup assertion deadline25s and overall case60s, keeping exact success predicate and every product assertion. This is a bounded setup wait, not a claimed5s performance acceptance. No existing test timeout/product behavior changed. If same setup failure persists after this retest, ask owner before expansion under AGENTS.md.",
+        "Cycle2 setup retest: installer gate now PASS and development StrictMode/direct-link/download/return case PASS15.0s. Product case passed overview/source/native chord/real PCM+clock checks, then a separate locator failure timed out selecting Section: accessibility snapshot exposes combobox named Section, whereas getByLabel exact matches implicit label text including option children. First bounded correction for this distinct failure uses getByRole(combobox,name Section,exact true); control/value assertions unchanged, no product change. Retain product-retry2 trace and do not count partial case as passed.",
+        "Corrected combobox selector passed section change, preview-stop, Roman/letter and Back checks. New distinct T11 reopen failure: immediate click on remembered Library row overlaps termination of its initializing reader; SongScreen displays BUSY. Retained product-selector-retest snapshot/trace. Cycle1 narrow ownership correction stays within new SongDetailController: cancellation-aware bounded availability retries on BUSY during open only, never steal lock or retry data errors. Actual competing tab remains error after bounded delay. Unit-test retry/cancellation; then types/build and unfinished product case only. No change to Library sources or pending Settings-scroll assertion.",
+        "2026-10-16T07:06:26Z product Song Info/Chords browser PASS18.7s/28.2s overall at window8-song-ui-handoff-retest-20261016 after one bounded new BUSY-handoff fix. Setup and selector issues retained honestly in unique output. UI screenshot awaits visual review. One Luna/medium read-only source/screenshot review now; Sol/high PCM worker cc525d4e clean/idle, not integrated yet. Root handles receipts/integration; no concurrent edits.",
+        "2026-10-16T07:09:27Z first product song route accepted; initial installer setup failures corrected by separate oversized fixture and explicit25s bounded setup deadline (no5s performance claim), correct accessible selector, and bounded1s availability retries for departing same-page reader. Existing Library source/assertions untouched. T11 remains in_progress for remaining metadata/transition/source behavior."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -886,6 +922,37 @@
         ],
         "scope": "One exact-slug snapshot-tagged read, non-destructive readonly DB handle closure, no full payload paging, no public arbitrary SQL. Decode caps explicit browser resource boundary. No App/UI/preview wiring yet.",
         "status": "validated first runs; commit named paths with this receipt"
+      },
+      "coordinatorUiSlice": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "19bdc76448db72333c7e021a72c958af08b7be26",
+        "ownedPaths": [
+          "pwa/src/features/details/controller.ts",
+          "pwa/src/features/details/controller.test.ts",
+          "pwa/src/features/details/SongScreen.tsx",
+          "pwa/src/features/details/details.css",
+          "pwa/src/features/details/WORKLOG.md",
+          "pwa/src/app/App.tsx",
+          "pwa/tests/browser/song-details.spec.ts",
+          "pwa/scripts/catalog/make-library-browser-fixture.py"
+        ],
+        "scope": "Product song route, exact source snapshot section selection, Info/Chords views, native display/theory/notation reuse,450ms simultaneous static chord previews through shared PreviewOwner with stop on section/tab/route departure. Bounded32-at-a-time chord presentation; missing/download/busy/error/retry. No playback transport, transitions, favorites or Library scroll changes.",
+        "nextAction": "Implement controller cancellation/final reader termination and React StrictMode remount ownership; wire bounded view and product route, then focused controller tests/types/build and actual Chrome product offline/read/preview/navigation/narrow checks with unique output. Preserve pending Library assertion unchanged.",
+        "status": "validated and committed acb92eccf24314236d452a374a368683d7826ad2"
+      },
+      "uiReview": {
+        "owner": "song_ui_review",
+        "model": "gpt-6-luna",
+        "thinking": "medium",
+        "scope": "Read-only bounded review of coordinator SongScreen/controller/App/CSS/new browser assertions and retained narrow screenshot. No edits, browser/tests/branch changes or Library scope expansion. Identify only material defects with exact lines.",
+        "status": "Luna/medium read-only review complete; no material findings. Narrow full-page capture includes sticky header at scrolled document offset; root inspected, no horizontal overflow assertion failed."
+      },
+      "milestones": {
+        "offline-song-chords": {
+          "status": "complete",
+          "revision": "acb92eccf24314236d452a374a368683d7826ad2",
+          "evidence": "Exact offline song reader, canonical section picker, native display/key/tempo/chord counts/source link, Roman/letter chord cards,450ms shared previews with PCM/clock/end/section-stop; Back/reopen state and same context; installed cold offline page reload;320px/200%text no horizontal overflow.29worker+20coveringunit/types/build passed combined, product Chrome passed18.7s; separate dev StrictMode/direct/download-return15s. Native overview expansion/scale/tone controls/transition ranking/extra source links and fullT11 remain open."
+        }
       }
     },
     {
@@ -1329,15 +1396,15 @@
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
     "date": "2026-10-16",
-    "sourceCommit": "bcc3135949671f4128ec145f43f87f0c9b5b3196",
+    "sourceCommit": "acb92eccf24314236d452a374a368683d7826ad2",
     "usageObserved": {
-      "fiveHourUsedPercent": 12,
-      "weeklyUsedPercent": 38
+      "fiveHourUsedPercent": 47,
+      "weeklyUsedPercent": 44
     },
     "fiveHourResetUnix": 1792150939,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Clock integrated/accepted; bounded T11 reader validated. One Sol/high PCM worker active with frozen fb879a5c base. Preserve independent root and worker changes; checkpoint reader now.",
+    "reason": "Clock/PCM worker accepted and first product Song Info/Chords committed. Final3worker browser fixtures and task receipts form this checkpoint. All workers idle; preserve every branch/tree/profile. Next bounded sink API proposal below70% usage; fullT08/T11 remain open.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T06:42Z",
@@ -1347,14 +1414,17 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Applicable reset passed; live counters permit bounded integration. No credit/reset redemption."
     },
-    "activeWorker": {
+    "activeWorker": null,
+    "completedWorker": {
       "agent": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "task": "T08",
       "branch": "codex/pwa-pcm-worker",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "fb879a5cf99a2c062348a6a8148a61451b47adb4",
+      "baseCommit": "fb879a5c",
+      "commit": "cc525d4e3eb2d6b25f49701a6863811e8da3b1ac",
+      "status": "normally integrated aca52d64; covering root unit/types/build/actual module-worker acceptance passed; clean/idle",
       "ownedPaths": [
         "pwa/src/audio/transport/pcm-worker-session.ts",
         "pwa/src/audio/transport/pcm-worker-session.test.ts",
@@ -1362,26 +1432,6 @@
         "pwa/src/audio/transport/pcm-worker-client.test.ts",
         "pwa/src/audio/transport/pcm-worker.ts",
         "pwa/src/audio/transport/WORKER_WORKLOG.md",
-        "pwa/src/audio/transport/index.ts"
-      ],
-      "status": "implementing bounded PCM worker"
-    },
-    "completedWorker": {
-      "agent": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "task": "T08",
-      "branch": "codex/pwa-playback-clock",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "ad058de0",
-      "commit": "2a38ff5ac8536fdc212c083a78cfd56b2d54d912",
-      "status": "normally integrated; covering primary acceptance passed",
-      "ownedPaths": [
-        "pwa/src/audio/transport/playback-clock.ts",
-        "pwa/src/audio/transport/playback-clock.test.ts",
-        "pwa/src/audio/transport/fixtures/generate-clock-native.py",
-        "pwa/src/audio/transport/fixtures/native-clock.json",
-        "pwa/src/audio/transport/CLOCK_WORKLOG.md",
         "pwa/src/audio/transport/index.ts"
       ]
     }
