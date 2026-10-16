@@ -606,7 +606,8 @@
         "2026-10-16T07:25:25Z allowance checkpoint: root72%five-hour/48%weekly; no new slice/worker/check. Sink4799fba8 saved explicitly UNVALIDATED at worker70% threshold, clean/idle/unmerged. Two narrow type fixes remain unretested; four saved fake groups unrun. Primary source ddcd7d88 accepted contract and product56efe22b unchanged; root only saves recoverable docs. No relevant process or unresolved guard run in either tree. Reset1792150939; preserve all branches/worktrees/profiles.",
         "2026-10-16T11:49:05Z renewed capacity3%five-hour/50%weekly after applicable reset; primary085ec1cd and sink4799fba8 clean, agents idle, guards clear/no relevant process. Resume same Sol/high worker/branch and partial failure history. Root owns disjoint new sink browser fixtures; all other work preserved.",
         "2026-10-16T11:59:09Z pre-integration: primary085ec1cd owns validated T11 tone changes plus root task docs; staged empty. Sibling61793c29 clean/idle; four-path sink reviewed and52fakes/types pass. Normal merge exact tip then covering/browser. Root only owns prepared three browser candidates. All branches/worktrees/ignored profiles preserved.",
-        "2026-10-16T12:01:38Z sink normally integrated5e3bbc38;143coveringunit/types/build and2actualChrome10.4s firstpass. New read-only proposal claim saved before same Sol/high worker resumption; no new branch or implementation before root contract. Root runtime unknown/unchanged."
+        "2026-10-16T12:01:38Z sink normally integrated5e3bbc38;143coveringunit/types/build and2actualChrome10.4s firstpass. New read-only proposal claim saved before same Sol/high worker resumption; no new branch or implementation before root contract. Root runtime unknown/unchanged.",
+        "2026-10-16T12:09:33.611920+00:00 fulltransportproposal reviewed against native419-510/617/721-810. Separate publiccommandrevision from internalaudio generation; config keeps publicrevision. Sameworker read-only minimal purekernel contract refinement requested. Root Info UI browser1existingcasePASS/newcasewrongexpectedA7vsnativeAm7; cycle1testlabelonly, trace retained. No source behavior changes."
       ],
       "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
       "proposalAssignment": {
@@ -771,11 +772,21 @@
         "owner": "preview_owner",
         "model": "gpt-6.1-sol",
         "thinking": "high",
-        "status": "read-only bounded proposal intent; existing worker only",
+        "status": "complete: exact pureintent interface reviewed, root contract freeze next; worker idle",
         "branch": "codex/pwa-pcm-sink",
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "baseCommit": "61793c29d8ddfc54ad7be6b4b9426c94d0952d12",
-        "scope": "Read only frozen native current transport methods/owner intent/revision/seek/config/silent scrub/completion behavior and accepted worker/context/sink APIs. Propose minimal next bounded coordinator contract and fake/actual-browser acceptance. No source/contract/dependency/task edits or new branch. Save small ignored proposal under own guard before returning. Root owns docs/contracts/integration."
+        "scope": "Read only frozen native current transport methods/owner intent/revision/seek/config/silent scrub/completion behavior and accepted worker/context/sink APIs. Propose minimal next bounded coordinator contract and fake/actual-browser acceptance. No source/contract/dependency/task edits or new branch. Save small ignored proposal under own guard before returning. Root owns docs/contracts/integration.",
+        "nextAction": "Same Sol/high read-only exact pure intent kernel API draft, max100lines. No implementation/source/branch changes. Root contract freeze required before assigned implementation."
+      },
+      "kernelIntent": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "53d8db45",
+        "ownedPaths": [
+          "pwa/src/audio/transport/intent-contracts.ts"
+        ],
+        "scope": "Freeze pure PlaybackIntentKernelApi only from reviewed native-like proposal. No full owner/asyncpump/App. Immediateintent/status browserchoice, exactpublicrevision separatefromaudiogeneration/epoch; configtemponeverbumpspublicrevision. Endanddrainproofguardedonce. Worker implementation only after validated contract commit.",
+        "nextAction": "Write bounded readonly contract, strict types, checkpoint then pre-branch claim and same Sol/high worker purekernelonly."
       }
     },
     {
@@ -967,6 +978,11 @@
           "command": "npm run build; node node_modules/@playwright/test/cli.js test song-details.spec.ts --grep \"product Song\" --workers=1 --output .artifacts/pwa-port/song-details/tones-label-retest (pwa through root run-control, browser with local networking)",
           "revision": "085ec1cd plus named SongScreen/CSS/product browser paths",
           "result": "PASS strict types/build shelld79b4ac4def4 (window9-song-tones-build-first-20261016); actual Chrome1PASS19.5s/29.2s overall (window9-song-tones-browser-label-retest-20261016). ScaleCmajor, selectedtone3-hat 450ms actualPCM/naturalend/contextreuse, sectioncleanup, unchanged transitions/letters/Back/offline320px200% nooverflow. Narrow screenshot viewed. First sandbox browser server could not bind/serve loopback; stopped verified owned child with durable failed receipt and no leftover server. First localnet test reached controls then mismatched expected3 vs native3-hat; one test-only locator correction, failed trace retained. No product/timeout/assertion weakening/native recapture. Physical hearing/Safari absent."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/details; npm run build; node node_modules/@playwright/test/cli.js test song-details.spec.ts --grep \"expanded Info\" --workers=1 --output .artifacts/pwa-port/song-details/info-final (root guard/pwa;browserlocalnet)",
+          "revision": "53d8db45 plus namedInfoadapter/UI/CSS/fixture/browserpaths",
+          "result": "PASS16focusedunit/window9-info-unit-format-layout-20261016;final4incrementalOverviewtests includingnullYouTube/window9-info-unit-null-source-20261016;strict types/buildshell2f9df2062210/window9-info-final-build-20261016;actualChromeInfo14.2s/23.8soverall/window9-info-final-browser-20261016. Actualmetadata/key/tempo/meter/melodycounts, keyboardAm7key-at-beatpreview/nonzeroPCM/clock/contextreuse,sourceID/encodedYouTube/nullsource,sectionreset,320px200%label-valuenonoverlap. Full andcroppedOverview screenshots viewed. ExistingChordsproductPASS20.1s/info-first afternewadapter beforeonlyInfoformat/null/layoutrefinements;no unchanged fullDSP/catalog repetition. Firsttypefailedtestarrayuniononly; onecontextannotationfixpassed. NewInfofirstcasewrongexpectedA7vsnativeAm7;oneexpectationfixonly, tracepreserved. PassedInfo14.1s thenmanualvisualoverlapfound;CSSstacking/newnonoverlapassertionpassed. IndependentJBRFormatter5edgevalues caughtJS.toFixedhalf-rounding difference;IntlEnglishdecimal matchesall5,guardwindow9-info-native-format-probe-20261016. Projectiontests source-matched, not claimed fullnativegeneratedcorpus. WholeT11open."
         }
       ],
       "progress": [
@@ -981,7 +997,9 @@
         "2026-10-16T07:09:27Z first product song route accepted; initial installer setup failures corrected by separate oversized fixture and explicit25s bounded setup deadline (no5s performance claim), correct accessible selector, and bounded1s availability retries for departing same-page reader. Existing Library source/assertions untouched. T11 remains in_progress for remaining metadata/transition/source behavior.",
         "2026-10-16T07:17:52Z native transition ranking/top8/root-only UI accepted first runs32native/78rows/3groups/types/build/1actualChrome. New portable fixture48747bytes from unchanged complete ChordTransitions.kt +real theory/models; nonfinite firstBeat serialized explicitly by native name. Source from/to references deliberately retain native first representatives, never mutated. No transport/Library changes.",
         "2026-10-16T11:52:04.529689+00:00 root bounded scale/selected-tone presentation claim, disjoint from existing Sol/high sink worker and prepared browser fixtures. Native SongInfoChords.kt405-470 authority; existing theory/notation remain unchanged.",
-        "2026-10-16T11:59:09Z bounded native scale and selected chord-tone controls accepted after covering actual product proof; no new dependency or shared audio changes."
+        "2026-10-16T11:59:09Z bounded native scale and selected chord-tone controls accepted after covering actual product proof; no new dependency or shared audio changes.",
+        "2026-10-16T12:03:02.539058+00:00 bounded expanded Info/source claim saved; native SongInfoChords.kt129-319 inspected. Root disjoint from Sol/high readonly transport proposal. Whole T11 stillopen, complexity score excluded until its own read contract.",
+        "2026-10-16T12:16:31Z expandedInfo accepted with source-matched overview/progression/key-at-beat previews/changes/source links and explicitcaps512metadata/65536notes/4096chords;progression32at-time. NativezeroBPMdurationIntMAXretained;nonfiniteBPMdisplayUnknownbrowserextension. NullYouTubeabsent,IDsURL-encoded. Remainingcomplexity/Lettersvisualselectionparity recorded; no fullT11 claim."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1068,6 +1086,22 @@
         "scope": "Bounded native ChordsTab scale spelling and selected chord-tone buttons using already validated theory/ScaleDegree/PreviewOwner.450ms single MIDI tone, no transpose; selection resets on section/tab. No metadata expansion, Library scroll investigation, shared audio/contracts/dependencies changes.",
         "nextAction": "No pending scale/tone implementation. Expanded Info/source parity remains; retain existing Library approval gate.",
         "status": "PASS types/build and actual product Chrome; coherent checkpoint ready"
+      },
+      "infoSlice": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "53d8db45",
+        "ownedPaths": [
+          "pwa/src/features/details/overview.ts",
+          "pwa/src/features/details/overview.test.ts",
+          "pwa/src/features/details/SongScreen.tsx",
+          "pwa/src/features/details/details.css",
+          "pwa/src/features/details/WORKLOG.md",
+          "pwa/tests/browser/song-details.spec.ts",
+          "pwa/scripts/catalog/make-library-browser-fixture.py"
+        ],
+        "scope": "Native InfoTab overview length/beats/bars/melody counts, original metadata changes, beat-sorted progression using key-at-beat and preview, source numericID/YouTube. Existing canonical section picker suffices. Explicit bounded metadata/notes/chords; malformed input visible error. Complexity score needs separate optional read contract and remains open. No Library approval expansion, catalogRPC/shared contract/dependency/audio changes.",
+        "status": "validated source projection/presentation,16focusedunit/final4incremental/types/build and actualproduct+InfoChrome; readycheckpoint",
+        "nextAction": "No pending expanded Info/source implementation. T11remaining: optional native complexity score lookup, native Letters adds letter text while retaining Roman/selected chord, and final combined acceptance. No Library approval expansion."
       }
     },
     {
@@ -1510,16 +1544,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-16T12:01:38Z",
+    "date": "2026-10-16T12:16:31Z",
     "sourceCommit": "5e3bbc38",
     "usageObserved": {
-      "fiveHourUsedPercent": 25,
-      "weeklyUsedPercent": 53
+      "fiveHourUsedPercent": 51,
+      "weeklyUsedPercent": 57
     },
     "fiveHourResetUnix": 1792169161,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Sink accepted with actual browser evidence; continue bounded full transport proposal using existing Sol/high worker. Preserve all data/branches/profiles and pending independent Library approval.",
+    "reason": "Accepted expanded Info and sink; freeze pure transport intent contract then one bounded Sol/high worker if livecapacity permits. No fullT08/T11 completion claim.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T06:42Z",
@@ -1529,18 +1563,7 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Applicable reset passed; live counters permit bounded integration. No credit/reset redemption."
     },
-    "activeWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "status": "read-only bounded proposal intent; existing worker only",
-      "branch": "codex/pwa-pcm-sink",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "61793c29d8ddfc54ad7be6b4b9426c94d0952d12",
-      "scope": "Read only frozen native current transport methods/owner intent/revision/seek/config/silent scrub/completion behavior and accepted worker/context/sink APIs. Propose minimal next bounded coordinator contract and fake/actual-browser acceptance. No source/contract/dependency/task edits or new branch. Save small ignored proposal under own guard before returning. Root owns docs/contracts/integration.",
-      "agent": "preview_owner",
-      "task": "T08"
-    },
+    "activeWorker": null,
     "completedWorker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",

@@ -44,7 +44,7 @@ test('product Song Info/Chords reads offline, previews on actual audio clock, pr
     };
   });
   await install(page);
-  await expect(page.getByText('90 BPM',{exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Overview',exact:true}).getByText('90 BPM',{exact:true})).toBeVisible();
   await expect(page.getByRole('link',{name:'Open original source'})).toHaveAttribute('href','https://example.test/');
   await page.getByRole('button',{name:'Chords',exact:true}).click();
   await expect(page.getByText('Scale: C, D, E, F, G, A, B',{exact:true})).toBeVisible();
@@ -88,4 +88,44 @@ test('development StrictMode song readers remount and missing direct links offer
   await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('searchbox',{name:'Search songs',exact:true})).toBeVisible();
   await page.goto('http://127.0.0.1:5173/songs/missing-song');await expect(page.getByRole('heading',{name:'Song unavailable',exact:true})).toBeVisible();
+});
+
+
+test('expanded Info preserves native metadata, key-at-beat previews and source links at narrow text size',async({page},testInfo)=>{
+  await page.addInitScript(()=>{
+    const proof:{peak:number;ended:number;contexts:number}={peak:0,ended:0,contexts:0};
+    (window as unknown as {infoAudioProof:typeof proof}).infoAudioProof=proof;
+    const Native=window.AudioContext;
+    window.AudioContext=class extends Native {
+      constructor(options?:AudioContextOptions){super(options);proof.contexts++;}
+      createBufferSource(){const source=super.createBufferSource(),start=source.start.bind(source),context=this;
+        source.start=(when=0,offset=0,duration?:number)=>{for(const sample of source.buffer?.getChannelData(0)??[])proof.peak=Math.max(proof.peak,Math.abs(sample));
+          source.addEventListener('ended',()=>{proof.ended=context.currentTime;});
+          if(duration===undefined)start(when,offset);else start(when,offset,duration);
+        };return source;}
+    };
+  });
+  await install(page);
+  const overview=page.getByRole('region',{name:'Overview',exact:true});
+  for(const value of ['4','0:05','8 · 2 bars','2 sounded / 3 total'])await expect(overview.getByText(value,{exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Key changes'}).getByText('D Minor',{exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Tempo changes'}).getByText('120 BPM',{exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Meter changes'}).getByText('3 beats / measure',{exact:true})).toBeVisible();
+  await expect(page.getByText('Hooktheory ID: 12345',{exact:true})).toBeVisible();
+  await expect(page.getByRole('link',{name:'YouTube',exact:true})).toHaveAttribute('href','https://www.youtube.com/watch?v=fixture%26part%3D2');
+  const play=page.getByRole('button',{name:'Play Am7 at beat 2',exact:true});await play.focus();await play.press('Enter');
+  const audio=()=>page.evaluate(()=>(window as unknown as {infoAudioProof:{peak:number;ended:number;contexts:number}}).infoAudioProof);
+  await expect.poll(async()=>(await audio()).ended).toBeGreaterThan(0);expect((await audio()).peak).toBeGreaterThan(.001);expect((await audio()).contexts).toBe(1);
+  await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');
+  await expect(overview.getByText('None — chords only',{exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Key changes'})).toHaveCount(0);await expect(page.getByRole('link',{name:'YouTube',exact:true})).toHaveCount(0);
+  await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('2');
+  await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  expect(await page.locator('.song-info-row dt').evaluateAll(labels=>labels.every(label=>{
+    const a=label.getBoundingClientRect(),b=label.nextElementSibling!.getBoundingClientRect();
+    return a.bottom<=b.top+.5||a.right<=b.left+.5;
+  }))).toBe(true);
+  await overview.screenshot({path:testInfo.outputPath('overview-narrow.png')});
+  const path=testInfo.outputPath('info-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});
 });

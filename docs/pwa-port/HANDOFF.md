@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-16T12:01:38Z. Sink61793c29 normally merged5e3bbc38;143transportunit/strict types/build(shell4ec181123f24) and2actualChrome10.4s PASS firstrootruns. Chrome44100outputtimestamp/48000rendertime proves queuePCM/clock/drain/suspend/newgesture/borrowerflush/release/sharedreuse; no App/fulltransport/device/Safari claim. T11toneUIfee92b0c accepted productChrome19.5s. Live25%/53%,reset1792169161/1792653278. Next SAME Sol/high preview_owner read-only minimal fulltransport proposal, root freezes contract before implementation; no new branch/duplicateworker. Preserve sink61793/ae41/4799 and all worktrees/profiles; pending Library approval unchanged.
+Updated 2026-10-16T12:16:31Z. ExpandedInfo source/presentation accepted:16focusedunit/final4incremental/strict types/buildshell2f9df2062210 andactualInfoChrome14.2s/23.8soverall;source53d8db45plusnamedInfo paths pendingcheckpoint. Includesmetadata/progression/key-at-beatpreview/source/nullID and320px200%nonoverlap aftervisualfix. T11stillopenforcomplexityscore/LettersretainsRoman+selection/finalacceptance. Sink53d8db45 accepted143unit/types/build/2Chrome. Live51%/57%,reset1792169161/1792653278. SameSol/highworkerreadonlypureintentproposalcomplete/idle. NEXT rootfreezeintent-contracts.ts/types/commit,then datedprebranchclaim before sameworkerpurekernel implementation. Fullasyncadapter/AppT08stillopen;Libraryapprovalunchanged. Preserveallworktrees/profiles.
 
 ## Authority and completion
 

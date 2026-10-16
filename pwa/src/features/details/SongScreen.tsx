@@ -1,8 +1,9 @@
 import {chordTransitions} from './transitions';
+import {formatBeat,songOverview} from './overview';
 import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
-import type {JsonObject} from '../../contracts';
+import type {JsonObject,KeyInfo} from '../../contracts';
 import {PreviewOwner,type PreviewState} from '../../audio/transport';
-import {displayArtist,displayTitle,getBpm,getParsedKey,safeSectionName,safeSongInfo} from '../../domain/data';
+import {displayArtist,displayTitle,getParsedKey,safeSectionName,safeSongInfo} from '../../domain/data';
 import {generateScaleLabels,getUniqueDisplayChords,interpret,SCALE_INTERVALS} from '../../domain/music';
 import {RomanNumeral,ScaleDegree} from '../../ui/notation/Notation';
 import {romanNumeralDisplayFromChord} from '../../ui/notation/roman-numeral';
@@ -43,16 +44,17 @@ export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:(
       const key=getParsedKey(section);return {key,chords:getUniqueDisplayChords(section.chords,key),error:null};
     }catch{return {key:{tonic:'C',scale:'major'},chords:[],error:'These chords could not be displayed.'};}
   },[section]);
+  const info=useMemo(()=>{try{return section&&analysis?{value:songOverview(section,analysis.chords.length),error:null}:null;}catch(error){return {value:null,error:error instanceof Error?error.message:'Song information is unavailable.'};}},[section,analysis]);
   const scale=useMemo(()=>analysis?generateScaleLabels(analysis.key.tonic,Object.hasOwn(SCALE_INTERVALS,analysis.key.scale)?SCALE_INTERVALS[analysis.key.scale]:SCALE_INTERVALS.major):[],[analysis]);
   const tones=useMemo(()=>selectedChord&&analysis?interpret(selectedChord,analysis.key):null,[selectedChord,analysis]);
   const transitions=useMemo(()=>{try{return section?chordTransitions(section,rootOnlyTransitions):[];}catch{return[];}},[section,rootOnlyTransitions]);
   function change(patch:Partial<SongView>){previewOwner.current?.stop();setSelected(null);setSelectedChord(null);setVisible(32);if(patch.sectionId!==undefined)setRootOnlyTransitions(false);setView(old=>{const next={...old,...patch};remembered.set(slug,next);return next;});}
-  function play(chord:JsonObject,label:string){
-    if(!analysis)return;
-    const notes=interpret(chord,analysis.key).midi.filter(note=>note>0);
-    setSelected(label);setSelectedChord(chord);
-    void previewOwner.current?.play('song:'+slug+':'+entry?.[0]+':'+label,{freqs:notes.map(note=>440*2**((note-69)/12)),durationMs:450,arpeggiate:false});
+  function playInKey(chord:JsonObject,key:KeyInfo,label:string){
+    const notes=interpret(chord,key).midi.filter(note=>note>0);
+    setSelected(label);
+    if(notes.length)void previewOwner.current?.play('song:'+slug+':'+entry?.[0]+':'+label,{freqs:notes.map(note=>440*2**((note-69)/12)),durationMs:450,arpeggiate:false});
   }
+  function play(chord:JsonObject,label:string){if(analysis){setSelectedChord(chord);playInKey(chord,analysis.key,label);}}
   function playTone(midi:number,label:string){
     setSelected('tone '+label);
     void previewOwner.current?.play('song:'+slug+':tone:'+label,{freqs:[440*2**((midi-69)/12)],durationMs:450,arpeggiate:false});
@@ -76,11 +78,21 @@ export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:(
           <button className="action" aria-pressed={view.tab==='info'} onClick={()=>change({tab:'info'})}>Info</button>
           <button className="action" aria-pressed={view.tab==='chords'} onClick={()=>change({tab:'chords'})}>Chords</button>
         </nav>
-        {view.tab==='info'?<section className="panel"><h2>Overview</h2><dl>
-          <dt>Key</dt><dd>{analysis.key.tonic} {analysis.key.scale.replaceAll('_',' ')}</dd>
-          <dt>Tempo</dt><dd>{Number.isFinite(getBpm(section))?Math.round(getBpm(section))+' BPM':'Unknown'}</dd>
-          <dt>Chords</dt><dd>{section.chords.length} ({analysis.chords.length} unique)</dd>
-        </dl></section>:<section className="panel"><h2>Chords</h2>
+        {view.tab==='info'?<>
+          <section className="panel" aria-label="Overview"><h2>Overview</h2>
+            {info?.error?<p role="alert">{info.error}</p>:<dl>{info?.value?.rows.map(row=><div className="song-info-row" key={row.label}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>}
+          </section>
+          {info?.value&&<>
+            {info.value.progression.length>0&&<section className="panel" aria-label="Progression"><h2>Progression</h2><div className="song-progression">
+              {info.value.progression.slice(0,visible).map((row,index)=>{const value=interpret(row.chord,row.key);return <button className="song-pill" key={index} aria-label={'Play '+value.letter+' at beat '+formatBeat(row.beat)} onClick={()=>playInKey(row.chord,row.key,value.letter)}>
+                <RomanNumeral display={romanNumeralDisplayFromChord(value.roman,row.chord.borrowed)} fontSizePx={22} maxWidthPx={100} maxHeightPx={52}/><small>{value.letter||'Rest'}</small>
+              </button>;})}
+            </div>{visible<info.value.progression.length&&<button className="action" onClick={()=>setVisible(count=>count+32)}>Show more progression</button>}</section>}
+            {info.value.changes.map(group=><section className="panel" aria-label={group.title} key={group.title}><h2>{group.title}</h2><dl>
+              {group.rows.map((row,index)=><div className="song-info-row" key={index}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}
+            </dl></section>)}
+          </>}
+        </>:<section className="panel"><h2>Chords</h2>
           <p>Scale: {scale.join(', ')}</p>
           <label className="song-letters"><input type="checkbox" checked={view.letters} onChange={event=>change({letters:event.target.checked})}/>Letter names</label>
           <p>Key: {analysis.key.tonic} {analysis.key.scale}</p>
@@ -99,17 +111,20 @@ export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:(
             })}
           </div>}
           {visible<analysis.chords.length&&<button className="action" onClick={()=>setVisible(count=>count+32)}>Show more chords</button>}
-          <div className="song-preview" data-preview-phase={preview.phase}>
-            <p role="status">{preview.phase==='playing'?'Playing '+selected:preview.phase==='preparing'?'Preparing chord…':preview.phase==='blocked'?'Tap a chord to enable audio.':preview.phase==='error'?'Chord preview is unavailable.':''}</p>
-            {['playing','preparing'].includes(preview.phase)&&<button className="action" onClick={()=>previewOwner.current?.stop()}>Stop preview</button>}
-          </div>
+
           {transitions.length>0&&<section aria-label="Chord transitions"><h3>Transitions</h3>
             <label className="song-letters"><input type="checkbox" checked={rootOnlyTransitions} onChange={event=>setRootOnlyTransitions(event.target.checked)}/>Root only transitions</label>
             {transitions.slice(0,8).map(row=><p key={row.id}>{row.id} ×{row.count}</p>)}
           </section>}
         </section>}
+          <div className="song-preview" data-preview-phase={preview.phase}>
+            <p role="status">{preview.phase==='playing'?'Playing '+selected:preview.phase==='preparing'?'Preparing chord…':preview.phase==='blocked'?'Tap a chord to enable audio.':preview.phase==='error'?'Chord preview is unavailable.':''}</p>
+            {['playing','preparing'].includes(preview.phase)&&<button className="action" onClick={()=>previewOwner.current?.stop()}>Stop preview</button>}
+          </div>
       </>}
-      <section className="panel"><h2>Source</h2><p>{details.song.slug}</p>
+      <section className="panel"><h2>Source</h2>
+        {info?.value?.numericId&&<p>Hooktheory ID: {info.value.numericId}</p>}<p>{details.song.slug}</p>
+        {info?.value?.youtubeUrl&&<a className="action" href={info.value.youtubeUrl} target="_blank" rel="noopener noreferrer">YouTube</a>}
         {sourceUrl(details.song.url)&&<a className="action" href={sourceUrl(details.song.url)!} target="_blank" rel="noopener noreferrer">Open original source</a>}
       </section>
     </>}
