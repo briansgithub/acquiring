@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T21:23:09.482330+00:00",
+  "updated": "2026-10-17T21:23:17.791187+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1777,6 +1777,27 @@
         ],
         "scope": "Pure envelope/progress decode+repair projection only, nativeAuralSession10..25/80..123/139/150..153 andrealtypedJSONserializer. Preserve current/return/raw explicitly unvalidated/deferred; no encoder/autowrite/storage/audio/class/sessionstate machine. CanonicalexactLongoutputs; rejectunsafe numericLong input, no Androidusermigrationrequired.",
         "status": "Frozen pure repair projection; strictcombinedtypes PASS/window14-session-contract-types-20261017 before worker source assignment."
+      },
+      "sessionEnvelopeAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-session-envelope",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "0d4f5299c0b5e26a59b9bc555965cccdd36abed9",
+        "priorBranch": "codex/pwa-aural-scheduler",
+        "priorTip": "22af4635e27195de47f0247a062758b70ba24753",
+        "ownedPaths": [
+          "pwa/src/domain/learning/session-envelope.ts",
+          "pwa/src/domain/learning/session-envelope.test.ts",
+          "pwa/src/domain/learning/fixtures/generate-session-envelope-native.py",
+          "pwa/src/domain/learning/fixtures/native-session-envelope.json",
+          "pwa/src/domain/learning/SESSION_WORKLOG.md",
+          "pwa/src/domain/learning/index.ts"
+        ],
+        "scope": "Pure repair projection frozen session-contracts; <=16NEW nativecases using actualKotlin2.2.10 serializationcompilerplugin. No current/return validation or activation: opaque/rawpreserveexplicitdeferred, no encoder/autowrite. ExactLongstringoutput/unsafe numericreject; fieldfailureisolation/nativeordering/bounds. Reuseacceptednormalizer unchanged; no acceptedfixture recapture orstorage/audio/UI/fullsessionclass.",
+        "status": "Dated claim before branchreuse; primarycontracttypesPASS/sourceclean, sibling22af4635clean/idle; preserveoldrefs/evidence. SoleSol/high only, rootruntimeunknownunchanged.",
+        "nextAction": "Underown guard inspectcompileplugin availability, pinandcapture<=16nativefieldprojections checkpoint; then decoder/repair/tests/scopedtypes checkpoint. Snapshotintent beforeeachsmallstep; atfivehour70nonew/80yield andweekly90checkpoint eachstep/100stop. Rootownscontract/tasks/integration."
       }
     },
     {

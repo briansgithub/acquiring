@@ -69,3 +69,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-17T17:45:30.506367+00:00 Samepreview_owner gpt-6.1-sol/high completed scheduler22af4635/oraclefa836ee1, firstnative24/29focused/scopedtypes; rootnormallyintegratedandaccepted143combined/strict types. Workeridle, no newassignment, runtimeunknownunchanged;weekly93checkpointcontinue100/fivehour70/80.
 
 2026-10-17T17:46:09.974418+00:00 Samepreview_owner Sol/high READONLY saved-sessionrepair seam proposal onexistingclean22af4635 afterscheduleraccepted143checks/types. Max80lineignoredproposal, no nativecapture/source/storage/branchwork. Rootruntimeunknownunchanged;last64%fivehour/93%weekly, no newstep70/80yield, weekly100override.
+
+2026-10-17T21:23:17.791187+00:00 Prebranch: primary0d4f5299c0b5e26a59b9bc555965cccdd36abed9 clean/frozen sessioncontract/typesPASS, sibling22af4635clean/idle. Reuseexistingtree onnewcodex/pwa-session-envelope, preserve schedulerbranch/allrefs/ignoredproofs. OneSol/highonly/rootunknownunchanged. Freshwindows0/0 supersedeoldpendingforecast; fivehour70/80 andweekly100override unchanged.
