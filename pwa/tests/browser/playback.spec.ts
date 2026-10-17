@@ -6,7 +6,7 @@ import {expect,test,type Page} from '@playwright/test';
 import type {CatalogManifest} from '../../src/storage/catalog/manifest';
 let fixture:{directory:string;manifest:CatalogManifest;hash:string};
 test.setTimeout(60_000);
-test.beforeAll(async()=>{fixture=JSON.parse(execFileSync('python',['scripts/catalog/make-library-browser-fixture.py','--song-screen','--playback-errors'],{encoding:'utf8'}));fixture.hash=createHash('sha256').update(await readFile(resolve(fixture.directory,'manifest.json'))).digest('hex');});
+test.beforeAll(async()=>{fixture=JSON.parse(execFileSync('python',['scripts/catalog/make-library-browser-fixture.py','--song-screen','--playback-errors','--playback-major'],{encoding:'utf8'}));fixture.hash=createHash('sha256').update(await readFile(resolve(fixture.directory,'manifest.json'))).digest('hex');});
 test.beforeEach(async({context})=>{
   await context.route('**/catalog-sources.json',route=>route.fulfill({status:200,json:{schemaVersion:'acquiring-pwa-catalog-sources-1',catalogs:[{kind:'songs',manifestUrl:new URL('/playback-product/manifest.json',route.request().url()).href,manifestSha256:fixture.hash}]}}));
   await context.route('**/playback-product/**',async route=>{
@@ -17,7 +17,7 @@ test.beforeEach(async({context})=>{
 });
 async function instrument(page:Page){
   await page.addInitScript(()=>{
-    type Item={peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>};
+    type Item={peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>;pcmHash:number};
     const proof:{contexts:AudioContext[];items:Item[]}={contexts:[],items:[]};
     (window as unknown as {playbackProof:typeof proof}).playbackProof=proof;
     const Native=window.AudioContext;
@@ -25,9 +25,10 @@ async function instrument(page:Page){
       constructor(options?:AudioContextOptions){super(options);proof.contexts.push(this);}
       createBufferSource(){
         const source=super.createBufferSource(),start=source.start.bind(source),stop=source.stop.bind(source),context=this;
-        const item:Item={peak:0,scheduled:0,endedAt:null,stops:0,frames:0,hz:0,homeEnergy:{}};
+        const item:Item={peak:0,scheduled:0,endedAt:null,stops:0,frames:0,hz:0,homeEnergy:{},pcmHash:0};
         source.start=(when=0,offset=0,duration?:number)=>{
           const data=source.buffer?.getChannelData(0);if(data){item.frames=data.length;let crossings=0;for(let i=0;i<data.length;i++){item.peak=Math.max(item.peak,Math.abs(data[i]));if(i>0&&data[i-1]<=0&&data[i]>0)crossings++;}item.hz=crossings*context.sampleRate/Math.max(1,data.length-1);}
+          if(data){let hash=2166136261;const bits=new Uint32Array(data.buffer,data.byteOffset,data.length);for(const word of bits)hash=Math.imul(hash^word,16777619);item.pcmHash=hash>>>0;}
           if(data&&Math.abs(data.length/context.sampleRate-.45)<.0001){
             // Measure actual mixed PCM, independent of the requested notes or UI labels.
             const first=Math.floor(context.sampleRate*.08),last=Math.min(data.length,Math.floor(context.sampleRate*.35));
@@ -42,7 +43,7 @@ async function instrument(page:Page){
   });
 }
 async function audio(page:Page){return page.evaluate(()=>{
-  const p=(window as unknown as {playbackProof:{contexts:AudioContext[];items:{peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>}[]}}).playbackProof;
+  const p=(window as unknown as {playbackProof:{contexts:AudioContext[];items:{peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>;pcmHash:number}[]}}).playbackProof;
   return {contexts:p.contexts.map(context=>({rate:context.sampleRate,state:context.state,time:context.currentTime})),items:p.items};
 });}
 async function installAndOpen(page:Page){
@@ -195,4 +196,54 @@ test('musical home references follow the sounding key and preview a minor triad 
   await page.getByRole('button',{name:'Reset',exact:true}).click();await expect.poll(async()=>(await audio(page)).items[3].stops).toBeGreaterThan(0);
   await expect(band.getByLabel('Source key',{exact:true})).toHaveText('C Major');
   const path=testInfo.outputPath('home-proof.json');await mkdir(resolve(path,'..'),{recursive:true});await writeFile(path,JSON.stringify(await audio(page),null,2));
+});
+
+test('Lock in Major fixes the section context across modulation while preserving written chord and Home audio',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  const band=page.getByRole('region',{name:'At this beat',exact:true}),lock=band.getByRole('checkbox',{name:'Lock in Major',exact:true});
+  await expect(lock).not.toBeChecked();expect((await audio(page)).contexts).toHaveLength(0);
+  await page.getByRole('combobox',{name:'Instrument',exact:true}).selectOption('SINE');
+  const melody=band.getByRole('group',{name:'Melody cards',exact:true}).getByRole('button'),chord=band.getByRole('button',{name:'Play current chord I',exact:true});
+  await melody.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(1);
+  await chord.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(2);
+  const before=await audio(page);await lock.check();expect((await audio(page)).items).toHaveLength(2);await expect(band.getByLabel('Display key',{exact:true})).toHaveText('Display: C Major');
+  await melody.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(3);
+  let proof=await audio(page);expect(proof.items[2].pcmHash).toBe(before.items[0].pcmHash);expect(proof.items[2].frames).toBe(before.items[0].frames);
+  await chord.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(4);proof=await audio(page);
+  expect(proof.items[3].pcmHash).toBe(before.items[1].pcmHash);expect(proof.items[3].frames).toBe(before.items[1].frames);
+  const position=page.getByRole('slider',{name:'Position',exact:true});await position.focus();await position.press('Home');for(let i=0;i<100;i++)await position.press('ArrowRight');await expect(position).toHaveValue('2');
+  await expect(band.getByLabel('Source key',{exact:true})).toHaveText('Song: D Minor');await expect(band.getByLabel('Display key',{exact:true})).toHaveText('Display: C Major');
+  await expect(band.getByRole('button',{name:'Play current chord vi7',exact:true})).toBeVisible();
+  const tones=band.getByRole('group',{name:'Chord tones',exact:true}).getByRole('button'),toneLabel=await tones.nth(1).getAttribute('aria-label');
+  await tones.nth(1).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(5);const lockedTone=(await audio(page)).items[4].hz;
+  await lock.uncheck();await expect(band.getByRole('button',{name:'Play current chord v7',exact:true})).toBeVisible();expect(await tones.nth(1).getAttribute('aria-label')).toBe(toneLabel);
+  await tones.nth(1).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(6);const sourceTone=(await audio(page)).items[5].hz;
+  expect(sourceTone/lockedTone).toBeGreaterThan(1.95);expect(sourceTone/lockedTone).toBeLessThan(2.05);
+  await lock.check();await page.getByRole('checkbox',{name:'Root only',exact:true}).check();
+  await band.getByRole('button',{name:'Play current root 6̂',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(7);proof=await audio(page);expect(proof.items[6].hz).toBeGreaterThan(210);expect(proof.items[6].hz).toBeLessThan(230);
+  await band.getByRole('button',{name:'Play scale degree 1',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(8);proof=await audio(page);expect(proof.items[7].hz).toBeGreaterThan(285);expect(proof.items[7].hz).toBeLessThan(305);
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');expect(proof.contexts).toHaveLength(1);
+  await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');await expect(lock).toBeChecked();await expect.poll(async()=>(await audio(page)).items[7].stops).toBeGreaterThan(0);
+  await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await lock.evaluate(element=>{const r=element.closest('label')!.getBoundingClientRect();return r.width>=44&&r.height>=44;})).toBe(true);
+  const path=testInfo.outputPath('major-lock-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});await writeFile(testInfo.outputPath('major-lock-proof.json'),JSON.stringify(await audio(page),null,2));
+});
+
+test('Major lock keeps root taps in the source register and reanchors only when changing section',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Back',exact:true}).click();await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Playback_Context');
+  await page.locator('[data-song-slug="playback-context"]').click();await page.getByRole('button',{name:'Play song',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await page.getByRole('combobox',{name:'Instrument',exact:true}).selectOption('SINE');await page.getByRole('checkbox',{name:'Root only',exact:true}).check();
+  const band=page.getByRole('region',{name:'At this beat',exact:true}),lock=band.getByRole('checkbox',{name:'Lock in Major',exact:true});
+  await lock.check();await expect(band.getByLabel('Display key',{exact:true})).toHaveText('Display: D Major');
+  const position=page.getByRole('slider',{name:'Position',exact:true});await position.focus();await position.press('Home');for(let i=0;i<100;i++)await position.press('ArrowRight');await expect(position).toHaveValue('2');
+  await expect(band.getByLabel('Source key',{exact:true})).toHaveText('Song: C Minor');await expect(band.getByLabel('Display key',{exact:true})).toHaveText('Display: D Major');
+  await band.getByRole('button',{name:'Play current root ♭7̂',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(1);
+  let proof=await audio(page);expect(proof.items[0].hz).toBeGreaterThan(125);expect(proof.items[0].hz).toBeLessThan(140);
+  await lock.uncheck();await band.getByRole('button',{name:'Play current root 1̂',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(2);proof=await audio(page);expect(proof.items[1].pcmHash).toBe(proof.items[0].pcmHash);
+  await lock.check();await band.getByRole('button',{name:'Play scale degree 1',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(3);proof=await audio(page);expect(proof.items[2].hz).toBeGreaterThan(250);expect(proof.items[2].hz).toBeLessThan(275);
+  await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');await expect(lock).toBeChecked();await expect(band.getByLabel('Display key',{exact:true})).toHaveText('Display: Ab Major');await expect.poll(async()=>(await audio(page)).items[2].stops).toBeGreaterThan(0);
+  const path=testInfo.outputPath('major-root-proof.json');await mkdir(resolve(path,'..'),{recursive:true});await writeFile(path,JSON.stringify(await audio(page),null,2));
 });

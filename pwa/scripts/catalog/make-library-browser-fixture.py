@@ -2,7 +2,7 @@
 import argparse,gzip,hashlib,importlib.util,json,sqlite3,uuid
 from contextlib import closing
 from pathlib import Path
-parser=argparse.ArgumentParser();parser.add_argument('--variant',choices=['old','new'],default='old');parser.add_argument('--details',action='store_true');parser.add_argument('--song-screen',action='store_true');parser.add_argument('--playback-errors',action='store_true');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--variant',choices=['old','new'],default='old');parser.add_argument('--details',action='store_true');parser.add_argument('--song-screen',action='store_true');parser.add_argument('--playback-errors',action='store_true');parser.add_argument('--playback-major',action='store_true');args=parser.parse_args()
 root=Path.cwd()/'.artifacts/pwa-port/browser-library'/str(uuid.uuid4());source=root/'source';source.mkdir(parents=True);path=source/'catalog.db'
 with closing(sqlite3.connect(path)) as db:
     db.executescript("""
@@ -33,6 +33,9 @@ with closing(sqlite3.connect(path)) as db:
         for slug,first,last in [('playback-bad-first',bad,good),('playback-bad-last',good,bad)]:
             payload=json.dumps({'2':dict(first,sectionIndex=0),'10':dict(last,sectionIndex=1)}).encode('utf-8')
             rows.append((slug,'Playback fixture',slug,payload))
+    if args.playback_major:
+        context={'2':{'sectionName':'Modulation','sectionIndex':0,'chords':[{'root':1,'type':5,'beat':1,'duration':1},{'root':1,'type':5,'beat':2,'duration':1}],'metadata':{'keys':[{'tonic':'D','scale':'major','beat':1},{'tonic':'C','scale':'minor','beat':2}]}},'10':{'sectionName':'New key','sectionIndex':1,'chords':[{'root':1,'type':5,'beat':1,'duration':2}],'metadata':{'keys':[{'tonic':'Ab','scale':'major','beat':1}]}}}
+        rows.append(('playback-context','Playback fixture','Playback_Context',json.dumps(context).encode('utf-8')))
     for slug,artist,title,blob in rows:
         db.execute('INSERT INTO songs VALUES(?,?,?,?,?,?)',(slug,artist,'Updated Search' if args.variant=='new' and slug=='a-alpha' else title,'https://example.test','complete',blob))
     for slug,artist,title in db.execute('SELECT slug,artist,title FROM songs WHERE dataBlob IS NOT NULL').fetchall():

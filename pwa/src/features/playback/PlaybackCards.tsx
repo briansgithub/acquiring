@@ -2,7 +2,7 @@ import {useEffect,useMemo,useRef,useState} from 'react';
 import type {ExtractedSection} from '../../contracts';
 import {getKeys,keyAtBeat} from '../../domain/data';
 import {doubleOrUndefined} from '../../domain/data/primitives';
-import {canonicalScaleName,getChordNotes,getDegreeLabelFromSpelling,getMidiNote,interpret,resolveScaleDegreePitch} from '../../domain/music';
+import {canonicalScaleName,getChordNotes,getDegreeLabelFromSpelling,getMidiNote,getRelativeIonianRomanSymbol,interpret,ionianContextDegreeLabel,ionianContextPreviewAudioNote,relativeIonianKey,resolveChordRoot,resolveScaleDegreePitch} from '../../domain/music';
 import {nativeBooleanOrNull} from '../../domain/music/native-json';
 import {PreviewOwner,type PreviewState} from '../../audio/transport';
 import {RomanNumeral,ScaleDegree} from '../../ui/notation/Notation';
@@ -21,6 +21,8 @@ function cardDuration(duration:number,bpm:number):number|null {
  */
 export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{section:ExtractedSection;beat:number;baseBpm:number;settings:PlaybackSettings;stopPreview:{current:(()=>void)|null}}){
   const model=useMemo(()=>{const prepared=preparePlaybackSection(section);return {index:new PlaybackActiveEventIndex(section,prepared.melody),keys:getKeys(section)};},[section]);
+  const [majorLocked,setMajorLocked]=useState(false);
+  const ionianKey=useMemo(()=>relativeIonianKey(keyAtBeat(model.keys,1)),[model]);
   const owner=useRef<PreviewOwner|null>(null);
   const [preview,setPreview]=useState<PreviewState>({phase:'idle',revision:0,requestId:null});
   useEffect(()=>{
@@ -39,6 +41,15 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
     return pitch?{pitch,label:getDegreeLabelFromSpelling(pitch,sourceKey)}:null;
   },[note,model]);
   const home=useMemo(()=>{const theoryKey={...key,scale:canonicalScaleName(key.scale)};return {note:getMidiNote('1',0,theoryKey),chord:getChordNotes({root:1,type:5},theoryKey)};},[key]);
+  const chordRoman=chord&&interpretation?(majorLocked?getRelativeIonianRomanSymbol(chord,key,ionianKey):interpretation.roman):'';
+  const spelledRoot=useMemo(()=>chord?resolveChordRoot(chord,key)?.pitch:null,[chord,key]);
+  const rootLabel=root?(majorLocked?ionianContextDegreeLabel(root.current.pitch,ionianKey):root.currentDegreeLabel):'';
+  // Native root-only tap uses its source register; the normalized target is for later singing.
+  const rootMidi=root?.currentIntervalPitch.toAudioNoteNumber()??null;
+  const melodyLabel=melody?(majorLocked?ionianContextDegreeLabel(melody.pitch,ionianKey):melody.label):'';
+  // Native melody tap shares the raw pitch callback; display context only relabels this card.
+  const melodyMidi=melody?.pitch.toAudioNoteNumber()??null;
+  function toneMidi(midi:number){return majorLocked?ionianContextPreviewAudioNote(midi,ionianKey,3,spelledRoot??undefined)??midi:midi;}
   const duration=chord?cardDuration(doubleOrUndefined(chord.duration)??1,baseBpm):null;
   function play(id:string,notes:readonly number[],durationMs=450){
     // Exact-frequency preview API bypasses global transpose; apply it once at this boundary.
@@ -47,29 +58,32 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
   }
   const scale=key.scale.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,first=>first.toLocaleUpperCase());
   return <section className="panel playback-cards" aria-label="At this beat" data-card-preview-phase={preview.phase}>
-    <h2>At this beat</h2><p aria-label="Source key">{key.tonic} {scale}</p>
+    <h2>At this beat</h2>
+    <label className="playback-check"><input type="checkbox" checked={majorLocked} onChange={event=>setMajorLocked(event.target.checked)}/>Lock in Major</label>
+    {majorLocked&&<p aria-label="Display key">Display: {ionianKey.tonic} Major</p>}
+    <p aria-label="Source key">{majorLocked?'Song: ':null}{key.tonic} {scale}</p>
     <div role="group" aria-label="Home references" className="playback-home-references">
       <button className="playback-card" aria-label="Play scale degree 1" onClick={()=>play('home-note',[home.note])}><ScaleDegree label={'1\u0302'} fontSizePx={28} maxWidthPx={66} maxHeightPx={60}/><span>Home note</span></button>
       <button className="playback-card" aria-label="Play home chord" onClick={()=>play('home-chord',home.chord)}><RomanNumeral display={romanNumeralDisplayFromChord('I',null)} fontSizePx={28} maxWidthPx={66} maxHeightPx={60}/><span>Home chord</span></button>
     </div>
     {settings.rootOnly?<div role="group" aria-label="Root cards">
-      <h3>Current root</h3>{root?<button className="playback-card" aria-label={'Play current root '+root.currentDegreeLabel} onClick={()=>play('root',[root.currentIntervalPitch.toAudioNoteNumber()])}>
-        <ScaleDegree label={root.currentDegreeLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>
+      <h3>Current root</h3>{root?<button className="playback-card" aria-label={'Play current root '+rootLabel} onClick={()=>play('root',[rootMidi!])}>
+        <ScaleDegree label={rootLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>
       </button>:<p>No sounding root</p>}
     </div>:<>
       <div role="group" aria-label="Chord cards"><h3>Current chord</h3>
-        {chord&&interpretation?<button className="playback-card" aria-label={'Play current chord '+interpretation.roman} disabled={duration===null||interpretation.midi.length===0} onClick={()=>{if(duration!==null)play('chord',interpretation.midi,duration);}}>
-          <RomanNumeral display={romanNumeralDisplayFromChord(interpretation.roman,chord.borrowed)} fontSizePx={32} maxWidthPx={160} maxHeightPx={80}/>
+        {chord&&interpretation?<button className="playback-card" aria-label={'Play current chord '+chordRoman} disabled={duration===null||interpretation.midi.length===0} onClick={()=>{if(duration!==null)play('chord',interpretation.midi,duration);}}>
+          <RomanNumeral display={romanNumeralDisplayFromChord(chordRoman,chord.borrowed)} fontSizePx={32} maxWidthPx={160} maxHeightPx={80}/>
           <span>{interpretation.letter}</span>
         </button>:<p>No sounding chord</p>}
       </div>
       <div role="group" aria-label="Chord tones"><h3>Chord tones</h3><div className="playback-tone-cards">
-        {interpretation&&interpretation.rootMidi!==null?interpretation.midi.map((midi,index)=><button key={index} className="playback-card" aria-label={'Play chord tone '+interpretation.toneLabels[index]} onClick={()=>play('tone:'+index,[midi])}>
+        {interpretation&&interpretation.rootMidi!==null?interpretation.midi.map((midi,index)=><button key={index} className="playback-card" aria-label={'Play chord tone '+interpretation.toneLabels[index]} onClick={()=>play('tone:'+index,[toneMidi(midi)])}>
           <ScaleDegree label={interpretation.toneLabels[index]??''} fontSizePx={30} maxWidthPx={66} maxHeightPx={60}/>
         </button>):null}
       </div></div>
-      <div role="group" aria-label="Melody cards"><h3>Current melody</h3>{melody?<button className="playback-card" aria-label={'Play melody '+melody.label} onClick={()=>play('melody',[melody.pitch.toAudioNoteNumber()])}>
-        <ScaleDegree label={melody.label} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>
+      <div role="group" aria-label="Melody cards"><h3>Current melody</h3>{melody?<button className="playback-card" aria-label={'Play melody '+melodyLabel} onClick={()=>play('melody',[melodyMidi!])}>
+        <ScaleDegree label={melodyLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>
       </button>:<p>No sounding melody</p>}</div>
     </>}
     {(preview.phase==='error'||preview.phase==='blocked')&&<p role="alert">{preview.message??'Tap a card to enable its audio.'}</p>}

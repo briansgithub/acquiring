@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T21:23:17.791187+00:00",
+  "updated": "2026-10-17T21:34:15.697050+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1531,6 +1531,45 @@
           "pwa/src/features/playback/playback.css": "aee6e800e07dfeff4ec49d72e41398ad0ce096e736f536038e64c778c48b9739",
           "pwa/src/features/playback/view-contracts.ts": "969322b4dd10c6a5a7372703ad6547673e2490c445a6d8106611b84504d6f1c2",
           "pwa/tests/browser/playback.spec.ts": "41264cfec40079594188becb28757da0c2d0df04b3526620b66a5dcd172f951d"
+        }
+      },
+      "relativeContextAssignment": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "da18e99c036a5757eae85c59b4196b0f07ed10aa",
+        "ownedPaths": [
+          "pwa/src/features/playback/PlaybackCards.tsx",
+          "pwa/src/features/playback/view-contracts.ts",
+          "pwa/tests/browser/playback.spec.ts",
+          "pwa/src/features/playback/WORKLOG.md",
+          "pwa/scripts/catalog/make-library-browser-fixture.py"
+        ],
+        "scope": "Playback Lock in Major checkbox and currentcard presentation/previews only. Fixed relativeIonianKey(sectionkeyAtBeat1) persection, not activekey reanchor. NativePlaybackView441+/528+/561..586/620..640/1525..1548. ChordRoman relabelonly/fullchordaswritten; toneinternal labels unchanged butpreviewfixedIonianregisterwithrootspelling; melody/rootlabels in fixedcontext but taps retainrawsourcepitch; Homefollowsactive sourcekey independently. Reuse acceptedmusic helpers unchanged, no newnativecapture/controller/transport/Library change. Presentationbool survivessectionchanges onmountedpage, globalpreference/routepersistence separateT21/T12future.",
+        "status": "ACCEPTED fixedsectionMajorcontext/currentcardactions. Finalstrict types/build36d31e5e4cec andfocusednativecallbackChrome1PASS32.6s; preceding5affectedChrome1.9m PASS includesnativeDmajor->Cminor rootrawregister andsectionreanchor, first4Chrome1.4m PASS. Root+melodytaps preserveactualsourcePCM; tones normalizefixedregister/internal labels unchanged, fullchordPCMunchanged/Homeactualkey. No failedchecks or oldnativefixture recapture.",
+        "nextAction": "FullT12previous/intervalcards andtimedprevious-current-both preview, visualtimeline, defaults/routepositionmemory remainopen; root/melodyintervalpreviews staywritten/raw regardlessMajorlock per nativecallbacks, singingtargets separateT13. GlobalMajorpreference persistence futureT21.",
+        "nativeReviewCorrection": "First4browserchecksPASS; widerdirectcallbackreview nativePlaybackView1421..1438: rootOnly onPreviewPitch alwaysrawsimpleModePitch, not normalizedsingingtarget. Correct root tap only; addoptional--playback-major tiny context fixture and nativeDmajor->Cminor mode to distinguishC3(raw) fromC4(normalized). Thisiswithinoriginalrelativecontextparity, no failedtest/retest/Libraryruntime investigation.",
+        "nativeCallbackEvidence": "PlaybackView716..717/1488..1497 +PlaybackMelodyRow86/188: melodytap always playSingleNotePreview(rawpitch), unlike normalized singingtarget/timeline andchordtonepreviews. Rootonly1429..1438 same rawregister distinction. Finalassertions comparemelodyPCMhash exactbefore/afterlock; tones still testnativefixedregister.",
+        "validation": [
+          {
+            "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build",
+            "guard": "window14-relative-melody-final-build-20261017",
+            "result": "PASSstrictcombinedtypes andfinalproductionbuild36d31e5e4cec."
+          },
+          {
+            "command": "node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --project chrome --grep \"Major|musical home|current cards|playback reloads\" --output .artifacts/pwa-port/playback-major/final-covering",
+            "guard": "window14-relative-final-browser-20261017",
+            "result": "PASS5Chrome1.9m afterrootcallbackcorrection; subsequentmelodytap-onlycorrection coveredbyfinalfocusedcase. Optionaltinyfixtureflag addsone2sectioncontextsong; priorfixturedataunchangedwithoutflag."
+          },
+          {
+            "command": "node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --project chrome --grep \"Lock in Major\" --output .artifacts/pwa-port/playback-major/native-callback-final",
+            "guard": "window14-relative-native-callback-browser-20261017",
+            "result": "PASS1Chrome32.6s onfinal36d31build. Actual48000Hz/melodyhash527323461exactbefore/after/fullchordhash2070724869exact/tone131.117->262.234Hz/root220.010Hz/Home295.569Hz/onecontext/nonautoplay/sectioncleanup. RootadversarialcontextC3hash2403797317before/afterMajorlock andHomeC4hash527323461."
+          }
+        ],
+        "sha256": {
+          "pwa/src/features/playback/PlaybackCards.tsx": "08d0298e515ba1d42d2bfafa7a1adbc867712abe380c0871bc61df3bb9aa4444",
+          "pwa/src/features/playback/view-contracts.ts": "caa4c74bfb97b3decc30849539730b7ef911e6852baa8824a283f6a58bc88792",
+          "pwa/tests/browser/playback.spec.ts": "80ce5b9b2ca34ad73eb420b145330bd41bb8fe5f63a995c540b79edf3832594d",
+          "pwa/scripts/catalog/make-library-browser-fixture.py": "7e36e51550b07045164b517b2a230c1417045ad8f02a63a74878078866a8d4aa"
         }
       }
     },

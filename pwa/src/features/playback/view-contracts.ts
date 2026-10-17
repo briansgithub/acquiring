@@ -14,7 +14,10 @@
  * missing/download/retry states. No App/router/catalog/audio/sharedcontract/dependency writes.
  * Current-card band now adds sourcekey/chord/tone/melody/root previews via borrowed owner.
  * Musical Home note/chord references follow sounding sourcekey,450ms/currentpreset/transposeonce.
- * Remaining slices: previous/interval cards,visualtimeline/relativekey/singing/favorites/default persistence
+ * Lock in Major fixes a sectioninitial relativeIoniancontext; cardlabels/registers follow native,
+ * rootOnly andmelody taps staysource register (normalizedtarget is futureT13 singing),
+ * fullchord/Home/sourcekey/transport remain sourcebased. Localstate is not globalpersistence.
+ * Remaining slices: previous/interval cards,visualtimeline/singing/favorites/default persistence
  * and routepositionmemory; wholeT12 remains in_progress, device/Safari acceptance remains unrun.
  */
 export interface PlaybackScreenProps {
