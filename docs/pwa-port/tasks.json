@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T21:58:14.591077+00:00",
+  "updated": "2026-10-17T21:59:26.447063+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1635,7 +1635,7 @@
         ],
         "status": "ACCEPTED previous root/melody single-pitch cards; worker4f500086 normallymerged cda3bb07. Root strictcombinedtypes/build6c7d8e82510b and6affectedChrome covered: initial5PASS, previouscase overflow fixedcycle1 thenfocusedPASS, independentactualPCM andgeometry. Rootunison previous remainsvisible, melodywrittenunison/restbarrier hidesprevious; sourcekey/Majorlabels/verticalpositions/rawregister/keyboard/44px/320px200%/sharedcontext/Reset covered. No interval sequence or fullT12/device claim.",
         "scope": "Frozenview-contracts comments: previousroot/melody450msrawsourcepitchcards/nativevisibility/writtenunison/verticalpositions, Majorlabels only/nativeeventsourcekeys. Existing currentcards/owner/lifecycle untouched. No sharedcontract/controllers/browserfixtures/tasks/dependencies/sequenceaudio/intervalbutton/singing/persistence edits.",
-        "nextAction": "No repeat unchanged previous-card checks. Review read-only interval composition proposal; separately freeze audio boundary before implementation. Visualtimeline/defaults/routepositionmemory/globalMajorpreference/singing remainopen.",
+        "nextAction": "Accepted; no unchangedcheckrepeat. Frozen interval-audio-contracts.ts andreviewedproposal are readyfor nextpuremoduleclaim. Timeline/defaults/routepositionmemory/globalMajorpreference/singing remainopen.",
         "workerTip": "4f50008608ce216e9fb4b77ab94150ea7ec507ba",
         "mergeCommit": "cda3bb07170a206e983eb3787d21d6e559b4e7a4",
         "validation": [
@@ -1685,7 +1685,7 @@
         "baseCommit": "4019481528afdbed4a4f524ce0292088e58c6306",
         "status": "COMPLETE read-only64lineproposal reviewed; no tracked edits/capture/checks. Worker40194815 clean/idle, no newassignment.",
         "scope": "At most80lineignoredproposal: compose accepted staticrenderer with accepted PreviewOwner render injection and root interval3step plan, onebuffer/gesture/clock, native450ms previous/current/both, rawpitch/manualtransposeonce/currentpreset, cancellation mutualexclusion/lifecycle. Preserve accepted DSP/owner API; identify smallest interface/tests/browser proof. No source/contract edits or native recapture.",
-        "nextAction": "Inspect only named existing source and submit ignored proposal+SHA, cleanstatus/usage, thenidle. Fivehour70nonew/80yield; weekly100override. Rootfreezeslatercontract.",
+        "nextAction": "Proposal reviewed andcontractfrozen; no reread/reproposal or implementationwithoutdatedclaim/livecapacity. Reuse soleSol/highworker/currentpreservedsibling.",
         "path": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t12-interval-composition-window14.md",
         "sha256": "6f24691c6aed818106e5c48a6e727c70eb53ad4bda2c2e9736a9fa207769f102"
       },
@@ -1694,7 +1694,7 @@
         "ownedPaths": [
           "pwa/src/features/playback/interval-audio-contracts.ts"
         ],
-        "scope": "Types/comments only for next pureintervalrequestbuilder+onebuffer renderer. PreservePreviewOwner/staticDSP/native6plans. No worker/UI/actualaudioassignment yet; previouscardfix1browser inprogress.",
+        "scope": "Types/comments only for next pureintervalrequestbuilder+onebuffer renderer. PreservePreviewOwner/staticDSP/native6plans; primarystrict typesPASS, no runtime/Appimport or workerimplementation yet.",
         "status": "Frozen types/comments only, strictcombinedtypesPASS window14-interval-audio-contract-types-20261017. Notimplemented/assigned/no runtimeclaim.",
         "recovery": "Initialintent command didnotrecord/exit1 duringprior browserguard; editguard wroteuntrackedtypefile thenKeyError beforemetadata. InspectedGit/recordedfailedreceipt/deadPIDs, no recoveryRequired. Unique reconcileintent/edit bothPASS preservedexactfile; stricttypesPASS. No sourceworker/actualaudio started."
       }
@@ -2329,17 +2329,17 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-17T17:49:59.317173+00:00",
-    "sourceCommit": "a3f92cccd1d04eb3039e545b9ff1b3f2083175d1",
+    "date": "2026-10-17T21:59:26.447063+00:00",
+    "sourceCommit": "2a9eb1ceaff97428b734ad18f1b90241023ac6ca",
     "usageObserved": {
-      "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 94
+      "fiveHourUsedPercent": 67,
+      "weeklyUsedPercent": 10
     },
-    "fiveHourResetUnix": 1792275143,
-    "weeklyResetUnix": 1792653278,
+    "fiveHourResetUnix": 1792290016,
+    "weeklyResetUnix": 1792876816,
     "unresolvedRuns": [],
-    "reason": "Window13 accepted currentcards/Home/builtin generator/scheduler; all assigned workers idle, exact receipts/checkpoints retained. Fivehour70 nonew slices; weeklyordinary allowance remains usable below100.",
-    "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
+    "reason": "Window14 accepted nativeMajorcontext, pureintervalplan, pureenveloperepair andpreviouspitchcards. Types-onlyintervalaudio boundary frozen, no implementationassignment. Saving coherent near-boundary checkpoint; no newlarge slice while finishing recovery metadata.",
+    "supersededWindowEvidence": "Thisheartbeat actual2026-10-17T21:20UTC live0/0 andnewresets1792290016/1792876816 superseded oldforecast1792275143/1792653278. No credits/resetactions taken; priorfutureforecast cannotblock ordinaryremainingallowance.",
     "resumeObservation": {
       "date": "2026-10-17T21:22:18.142718+00:00",
       "fiveHourUsedPercent": 0,
@@ -2350,55 +2350,27 @@
     },
     "activeWorker": null,
     "completedWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "branch": "codex/pwa-aural-scheduler",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "9333043f4cf87cccb4bd276ba6b2e9d07662b9e4",
-      "priorBranch": "codex/pwa-aural-generator",
-      "priorTip": "c8a46052f49591139c0e8f76f898c3281285fe89",
-      "ownedPaths": [
-        "pwa/src/domain/learning/aural-scheduler.ts",
-        "pwa/src/domain/learning/aural-scheduler.test.ts",
-        "pwa/src/domain/learning/fixtures/generate-scheduler-native.py",
-        "pwa/src/domain/learning/fixtures/native-scheduler.json",
-        "pwa/src/domain/learning/SCHEDULER_WORKLOG.md",
-        "pwa/src/domain/learning/index.ts"
-      ],
-      "scope": "Pure builtin unlock/target selection only, frozen scheduler-contracts; <=24NEW native cases, unchanged801cf798 helpers/select and pinnedKotlin2.2.10. Reuse accepted evidence/RNG/factory unchanged; exactLongXOR/order/micshuffle/version distinction. No generation/pattern/corpus/session/audio/UI/sharedcontracts/dependencies/oldfixture recapture.",
-      "status": "ACCEPTED builtin scheduler/unlocks22af4635 normallymerged;24NEWnativecases/29focusedworkerchecks/scopedtypes firstPASS, root143combinedchecks/strictcombinedtypes PASS. Pure42cellbuiltinselection only; no fullT14/session/pattern/corpus/audio/UI/deviceclaim.",
-      "nextAction": "T14 pattern/corpus target generation/selection andsaved-sessionrepair remainreadyfor boundedproposal/contract inlatercapacity. Existingworker22af clean/idle. No currenttaskblockingownercredentials; fullT12/T13/T15plusguestfeatures continueindependently.",
-      "mergeCommit": "5508a0a03f090d750c62626394f4504d8e4c90a8",
-      "validation": [
-        {
-          "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback src/features/details src/app/routes.test.ts",
-          "guard": "window13-scheduler-combined-unit-20261017",
-          "result": "PASS143checks/13files firstattempt. Native24 targets andunlock matrices/Longseed/lane/mic/immutableinputs; includes acceptedlearning/playback/details/routes."
-        },
-        {
-          "command": "node node_modules/typescript/bin/tsc --noEmit",
-          "guard": "window13-scheduler-combined-types-20261017",
-          "result": "PASSstrictcombinedtypes firstattempt. Appbuild7674a0134d8c unchanged; purelearningbarrel not imported byApp, no unnecessary browser/buildrecapture."
-        }
-      ],
-      "commit": "22af4635e27195de47f0247a062758b70ba24753",
-      "agent": "preview_owner",
-      "task": "T14"
+      "owner": "song_ui_review",
+      "model": "gpt-6-luna",
+      "thinking": "medium",
+      "branch": "codex/pwa-previous-cards",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
+      "tip": "4f50008608ce216e9fb4b77ab94150ea7ec507ba",
+      "status": "Normallyintegrated/accepted; cleanidle. Sol/high40194815 cleanidle afteraccepted sessionrepair +read-onlyintervalproposal."
     },
-    "lastAcceptedProductCommit": "82f3d20a",
+    "lastAcceptedProductCommit": "2a9eb1ceaff97428b734ad18f1b90241023ac6ca",
     "integrationAwaitingPrimaryAcceptance": null,
-    "usageAvailability": "Ordinary allowed; last 70%fivehour/94%weekly. No weeklyresetwait below100; refresh before newwork.",
-    "nextAction": "Afterlivefivehour<70/ordinarytrue, freeze bounded saved-sessionrepair contract from alreadyreviewedproposal/init; else wait applicablefivehour reset1792275143(2026-10-17T22:12:23Z), verifylive onlaterheartbeat. Preserve pendingLibraryscrollquestion; no duplicateworker.",
+    "usageAvailability": "Ordinary allowed; last67%fivehour/10%weekly. Refreshbeforeanynewwork; fivehour70nonewslice/worker/expensivecheck,80checkpointyield. Weekly100overrideactive, nofutureweeklyresetwait below100.",
+    "nextAction": "Readcurrenthandoff andT12intervalAudioContractIntent, inspectGit/guards/agents/processes/liveusage. If fivehour<70 andordinaryallowed, claim onlypureintervalrequestbuilder+onebuffer renderer onpreservedcleanSol/highsibling fromfrozen2a9eb1ce; rootownscontracts/integration/browser. No duplicateworker/newcapture. At70startnonew,80yield until applicable1792290016. Laterseparatearbitration/UI/real44100+48000Chrome. PendingLibraryscrollquestionunchanged.",
     "latestAcceptedProductTree": {
-      "baseCommit": "82f3d20a",
-      "shell": "7674a0134d8c",
+      "baseCommit": "2a9eb1ceaff97428b734ad18f1b90241023ac6ca",
+      "shell": "6c7d8e82510b",
       "task": "T12",
       "testedSha256": {
-        "pwa/src/features/playback/PlaybackCards.tsx": "cc4cea4e2c60cf7894230316e824f0358e829c672913b900f89ec85e9020d1e7",
-        "pwa/src/features/playback/playback.css": "aee6e800e07dfeff4ec49d72e41398ad0ce096e736f536038e64c778c48b9739",
-        "pwa/src/features/playback/view-contracts.ts": "969322b4dd10c6a5a7372703ad6547673e2490c445a6d8106611b84504d6f1c2",
-        "pwa/tests/browser/playback.spec.ts": "41264cfec40079594188becb28757da0c2d0df04b3526620b66a5dcd172f951d"
+        "pwa/src/features/playback/PlaybackCards.tsx": "0f9f1e2010dcf517239fcb2c105ae8c65b51057818a31eedb3f243eb43bbfd46",
+        "pwa/src/features/playback/playback.css": "f790b96c9ab31d48c5f418babdcc210a2e758e9cb1ec32245afbbe4eb21ac859",
+        "pwa/tests/browser/playback.spec.ts": "cd8904653dd219877ef1e973b05bac3c9b3dfccbd1e1d7d687e27483d1505c41",
+        "pwa/scripts/catalog/make-library-browser-fixture.py": "4f91f67020b75b3e6b66896f41d9a3a018f5a35987b9ea481704e30553217d08"
       }
     },
     "deferredWorker": null,
