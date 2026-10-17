@@ -1,0 +1,5041 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "kotlinVersion": "2.2.10",
+  "compilerVersion": "info: kotlinc-jvm 2.2.10 (JRE 25.0.3+-15898627-b508.16)",
+  "generatorSha256": "fb8a3abde9c293ec0c37c2db69168e7eca80bf1851720a13b62bca0a870dde91",
+  "metadataSha256": "9396afab7460857cbd630028b269602fe1b2e5f8ac9bb6325a72cf38af60c61f",
+  "declarationsSha256": "c74fa1ef02aac9d52d021e1d075cf545756563a521dd08bb95faa9dc7f8bb97a",
+  "sourceSha256": "9cb19ee9f76d3f116d2ac9a3878ee8ba9bc4121a5e558a1eab632336ac55586f",
+  "dependencySha256": {
+    "MusicTheory": "46af5e1e502ba2e1e67e3cba4d2d227cea1061454fd7f5285b2a033925de98ca",
+    "HooktheoryModels": "24ce7329ba97a77c0048d35eb66707a1f5a33bb1bcdc14f44572d888fc55771f",
+    "SpelledInterval": "ddcc1cf8692f077c4d3b72137ce6cf4c61abe21f474c39eadccbc1fc470dbda3",
+    "RelativeIonianContext": "2c5afe3f9e45684a6d5e483001a463b60cd20e7465d6d7179e0171c8d30fe1ed",
+    "AudioPitchAdapter": "54d2a1b314064ce690eac55788c3807c327610723a262f06ca12644396199a68",
+    "ChordInterpreter": "646b65b99ba39c8e2fa78c44f6e80525590f472ccceadb69f855ceb7f144f61d",
+    "ChordLetterFormat": "55e63e3afca04ee0cee6d1fd1ac191d661f40197f79e9b2c693c1c260f1e000b",
+    "ChordVoicing": "082ab84c561844c03055914d66277c355ba6b2e559fdd6c1ad30f2b29cd6fbd3",
+    "Generator": "1d07047d1c43ea3444563a29f48f53797721cb899f3fbc4ade25a817111004fc",
+    "AudioEngine": "6a2ad692cf247abd88d6805c03888e465e4fc2d3344c6f1d7995e790a0861188"
+  },
+  "producerSha256": "3d051a7eb2b33cc7a9c6dae769040bdc85c0a90b65a8a90e1bfe00f156bd2077",
+  "driverSha256": "10f19756bf923be2101c51db978becf771c978dcf218b0d4e7a35b67d766b7a3",
+  "jars": [
+    {
+      "file": "kotlin-compiler-embeddable-2.2.10.jar",
+      "sha256": "79628fd5d64b4692a62f98962baab00e9076a37e2cffd6ace33cd0b7be7d1cdf"
+    },
+    {
+      "file": "kotlin-stdlib-2.2.10.jar",
+      "sha256": "9c67cc79efd6b9215b49d2a4308f5f3433537376c7c88e89bdd6729bd096e61a"
+    },
+    {
+      "file": "kotlin-script-runtime-2.2.10.jar",
+      "sha256": "c304a67dba6a61dde560e6310920bed746307c3854f6675c29ac29114731b6b0"
+    },
+    {
+      "file": "kotlin-daemon-embeddable-2.2.10.jar",
+      "sha256": "b31573d418961fa080760fedcfc90d68ad67a85eafa245c73fe3d551476777ba"
+    },
+    {
+      "file": "kotlinx-coroutines-core-jvm-1.9.0.jar",
+      "sha256": "ad89c2892235e670f222d819cb3d81188143cb19a05b59df9889ae4269f5c70a"
+    },
+    {
+      "file": "annotations-23.0.0.jar",
+      "sha256": "7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05"
+    },
+    {
+      "file": "kotlinx-serialization-json-jvm-1.8.1.jar",
+      "sha256": "8769e5647557e3700919c32d508f5c5dad53c5d8234cd10846354fbcff14aa24"
+    },
+    {
+      "file": "kotlinx-serialization-core-jvm-1.8.1.jar",
+      "sha256": "3565b6d4d789bf70683c45566944287fc1d8dc75c23d98bd87d01059cc76f2b3"
+    }
+  ],
+  "adapter": "Unchanged frozen generator/helpers/metadata/declarations and real native theory; only excluded pattern branch rejects; Long seed text adapter; no TS.",
+  "cases": [
+    {
+      "label": "supported-dominant-return",
+      "seed": "0",
+      "target": {
+        "familyId": "dominant-return",
+        "skillId": "guided",
+        "support": 2,
+        "reason": "native fixture reason"
+      },
+      "expected": {
+        "id": "aural-2ef99fc6",
+        "familyId": "dominant-return",
+        "variantId": "direct",
+        "skillId": "guided",
+        "support": 2,
+        "transfer": false,
+        "seed": "0",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "C",
+        "tempo": 72,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              55,
+              59,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "guided",
+        "microphoneTask": null,
+        "fingerprint": "realization-a4a31ef",
+        "prompt": "Listen for the changing feeling of tension and arrival.",
+        "referenceRequired": false,
+        "guidance": "V \u2192 I. Hear dominant tension return to tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "0",
+          "target": {
+            "familyId": "dominant-return",
+            "skillId": "guided",
+            "support": 2,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "C",
+          "tempo": 72,
+          "instrument": "sine",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-plagal-return",
+      "seed": "-1",
+      "target": {
+        "familyId": "plagal-return",
+        "skillId": "compare",
+        "support": 2,
+        "reason": "native fixture reason"
+      },
+      "expected": {
+        "id": "aural-7d7b682e",
+        "familyId": "plagal-return",
+        "variantId": "direct",
+        "skillId": "compare",
+        "support": 2,
+        "transfer": false,
+        "seed": "-1",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "F",
+        "tempo": 72,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              58,
+              62,
+              65
+            ],
+            "rootMidi": 58,
+            "bassMidi": 58,
+            "degree": "IV",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              53,
+              57,
+              60
+            ],
+            "rootMidi": 53,
+            "bassMidi": 53,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              53,
+              57,
+              60
+            ],
+            "rootMidi": 53,
+            "bassMidi": 53,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "IV",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [
+          {
+            "id": "option-1",
+            "label": "IV \u2192 I",
+            "degrees": [
+              "IV",
+              "I"
+            ]
+          },
+          {
+            "id": "option-2",
+            "label": "IV \u2192 vi",
+            "degrees": [
+              "IV",
+              "vi"
+            ]
+          }
+        ],
+        "answer": {
+          "degrees": [
+            "IV",
+            "I"
+          ],
+          "optionId": "option-1",
+          "targetMidis": []
+        },
+        "responseType": "choice",
+        "microphoneTask": null,
+        "fingerprint": "realization-d739de21",
+        "prompt": "Which relationship matches what you heard?",
+        "referenceRequired": false,
+        "guidance": "IV \u2192 I. Compare a gentler subdominant return with the dominant return.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "-1",
+          "target": {
+            "familyId": "plagal-return",
+            "skillId": "compare",
+            "support": 2,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "F",
+          "tempo": 72,
+          "instrument": "sine",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-predominant-cadence",
+      "seed": "-9223372036854775808",
+      "target": {
+        "familyId": "predominant-cadence",
+        "skillId": "identify",
+        "support": 2,
+        "reason": "native fixture reason"
+      },
+      "expected": {
+        "id": "aural-962af5da",
+        "familyId": "predominant-cadence",
+        "variantId": "supertonic",
+        "skillId": "identify",
+        "support": 2,
+        "transfer": false,
+        "seed": "-9223372036854775808",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "F",
+        "tempo": 66,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              55,
+              58,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "ii",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              53,
+              57,
+              60
+            ],
+            "rootMidi": 53,
+            "bassMidi": 53,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              53,
+              57,
+              60
+            ],
+            "rootMidi": 53,
+            "bassMidi": 53,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "ii",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [
+          {
+            "id": "option-1",
+            "label": "V \u2192 V \u2192 I",
+            "degrees": [
+              "V",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-2",
+            "label": "ii \u2192 V \u2192 I",
+            "degrees": [
+              "ii",
+              "V",
+              "I"
+            ]
+          }
+        ],
+        "answer": {
+          "degrees": [
+            "ii",
+            "V",
+            "I"
+          ],
+          "optionId": "option-2",
+          "targetMidis": []
+        },
+        "responseType": "choice",
+        "microphoneTask": null,
+        "fingerprint": "realization-9da5d59a",
+        "prompt": "Identify the progression you heard.",
+        "referenceRequired": false,
+        "guidance": "ii \u2192 V \u2192 I. Add a predominant before the familiar dominant\u2013tonic fragment.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "-9223372036854775808",
+          "target": {
+            "familyId": "predominant-cadence",
+            "skillId": "identify",
+            "support": 2,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "supertonic",
+          "keyTonic": "F",
+          "tempo": 66,
+          "instrument": "sine",
+          "inversions": [
+            0,
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-deceptive-return",
+      "seed": "9223372036854775807",
+      "target": {
+        "familyId": "deceptive-return",
+        "skillId": "recall",
+        "support": 2,
+        "reason": "native fixture reason"
+      },
+      "expected": {
+        "id": "aural-35c712d4",
+        "familyId": "deceptive-return",
+        "variantId": "direct",
+        "skillId": "recall",
+        "support": 2,
+        "transfer": false,
+        "seed": "9223372036854775807",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "F",
+        "tempo": 72,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              50,
+              53,
+              57
+            ],
+            "rootMidi": 50,
+            "bassMidi": 50,
+            "degree": "vi",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              53,
+              57,
+              60
+            ],
+            "rootMidi": 53,
+            "bassMidi": 53,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V",
+          "vi"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "V",
+            "vi"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-857a1a1",
+        "prompt": "Listen once, then rebuild the progression from memory.",
+        "referenceRequired": false,
+        "guidance": "V \u2192 vi. Hear dominant arrive at relative minor instead of tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "9223372036854775807",
+          "target": {
+            "familyId": "deceptive-return",
+            "skillId": "recall",
+            "support": 2,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "F",
+          "tempo": 72,
+          "instrument": "sine",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-relative-motion",
+      "seed": "9007199254740992",
+      "target": {
+        "familyId": "relative-motion",
+        "skillId": "complete",
+        "support": 2,
+        "reason": "native fixture reason"
+      },
+      "expected": {
+        "id": "aural-5f2f215e",
+        "familyId": "relative-motion",
+        "variantId": "direct",
+        "skillId": "complete",
+        "support": 2,
+        "transfer": false,
+        "seed": "9007199254740992",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "G",
+        "tempo": 66,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              55,
+              59,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              52,
+              55,
+              59
+            ],
+            "rootMidi": 52,
+            "bassMidi": 52,
+            "degree": "vi",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              55,
+              59,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "vi"
+        ],
+        "gapIndex": 1,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "vi"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-758b1b73",
+        "prompt": "Learn the complete model, then restore the missing chord from memory.",
+        "referenceRequired": true,
+        "guidance": "I \u2192 vi. Connect tonic and relative minor, then return through familiar functions.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "9007199254740992",
+          "target": {
+            "familyId": "relative-motion",
+            "skillId": "complete",
+            "support": 2,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "G",
+          "tempo": 66,
+          "instrument": "sine",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-secondary-dominant",
+      "seed": "9007199254740993",
+      "target": {
+        "familyId": "secondary-dominant",
+        "skillId": "audiate",
+        "support": 2,
+        "reason": "native fixture reason"
+      },
+      "expected": {
+        "id": "aural-c0adb2bb",
+        "familyId": "secondary-dominant",
+        "variantId": "direct",
+        "skillId": "audiate",
+        "support": 2,
+        "transfer": false,
+        "seed": "9007199254740993",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "G",
+        "tempo": 66,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "V/V",
+            "functionLabel": "secondary dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              50,
+              54,
+              57
+            ],
+            "rootMidi": 50,
+            "bassMidi": 50,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              55,
+              59,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              55,
+              59,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V/V",
+          "V",
+          "I"
+        ],
+        "gapIndex": 2,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-95129049",
+        "prompt": "Learn the complete model. Internally hear its silent ending before answering.",
+        "referenceRequired": true,
+        "guidance": "V/V \u2192 V \u2192 I. Hear an altered chord intensify the approach to dominant.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "9007199254740993",
+          "target": {
+            "familyId": "secondary-dominant",
+            "skillId": "audiate",
+            "support": 2,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "G",
+          "tempo": 66,
+          "instrument": "sine",
+          "inversions": [
+            0,
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "independent-dominant-return",
+      "seed": "432",
+      "target": {
+        "familyId": "dominant-return",
+        "skillId": "identify",
+        "support": 0,
+        "variantId": "departure"
+      },
+      "expected": {
+        "id": "aural-edf34e55",
+        "familyId": "dominant-return",
+        "variantId": "departure",
+        "skillId": "identify",
+        "support": 0,
+        "transfer": false,
+        "seed": "432",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "F",
+        "tempo": 80,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              48,
+              53,
+              69
+            ],
+            "rootMidi": 41,
+            "bassMidi": 48,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              40,
+              43,
+              60
+            ],
+            "rootMidi": 36,
+            "bassMidi": 40,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              41,
+              45,
+              48
+            ],
+            "rootMidi": 41,
+            "bassMidi": 41,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              41,
+              45,
+              48
+            ],
+            "rootMidi": 41,
+            "bassMidi": 41,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              36,
+              40,
+              43
+            ],
+            "rootMidi": 36,
+            "bassMidi": 36,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              41,
+              45,
+              48
+            ],
+            "rootMidi": 41,
+            "bassMidi": 41,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [
+          {
+            "id": "option-1",
+            "label": "vi \u2192 V \u2192 I",
+            "degrees": [
+              "vi",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-2",
+            "label": "I \u2192 V \u2192 vi",
+            "degrees": [
+              "I",
+              "V",
+              "vi"
+            ]
+          },
+          {
+            "id": "option-3",
+            "label": "I \u2192 V \u2192 I",
+            "degrees": [
+              "I",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-4",
+            "label": "ii \u2192 V \u2192 vi",
+            "degrees": [
+              "ii",
+              "V",
+              "vi"
+            ]
+          }
+        ],
+        "answer": {
+          "degrees": [
+            "I",
+            "V",
+            "I"
+          ],
+          "optionId": "option-3",
+          "targetMidis": []
+        },
+        "responseType": "choice",
+        "microphoneTask": null,
+        "fingerprint": "realization-446e33da",
+        "prompt": "Identify the progression you heard.",
+        "referenceRequired": false,
+        "guidance": "I \u2192 V \u2192 I. Hear dominant tension return to tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "432",
+          "target": {
+            "familyId": "dominant-return",
+            "skillId": "identify",
+            "support": 0,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": "departure",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "departure",
+          "keyTonic": "F",
+          "tempo": 80,
+          "instrument": "sine",
+          "inversions": [
+            2,
+            1,
+            0
+          ],
+          "register": -1,
+          "spreads": [
+            true,
+            true,
+            false
+          ],
+          "contextDegrees": [
+            "I",
+            "V",
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "independent-plagal-return",
+      "seed": "811",
+      "target": {
+        "familyId": "plagal-return",
+        "skillId": "complete",
+        "support": 0,
+        "variantId": "departure"
+      },
+      "expected": {
+        "id": "aural-11eded8a",
+        "familyId": "plagal-return",
+        "variantId": "departure",
+        "skillId": "complete",
+        "support": 0,
+        "transfer": false,
+        "seed": "811",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "E",
+        "tempo": 66,
+        "instrument": "soft",
+        "events": [
+          {
+            "notes": [
+              44,
+              47,
+              64
+            ],
+            "rootMidi": 40,
+            "bassMidi": 44,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              45,
+              49,
+              64
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "IV",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              40,
+              44,
+              59
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "IV",
+          "I"
+        ],
+        "gapIndex": 0,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-cea05c31",
+        "prompt": "Learn the complete model, then restore the missing chord from memory.",
+        "referenceRequired": true,
+        "guidance": "I \u2192 IV \u2192 I. Compare a gentler subdominant return with the dominant return.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "811",
+          "target": {
+            "familyId": "plagal-return",
+            "skillId": "complete",
+            "support": 0,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": "departure",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "departure",
+          "keyTonic": "E",
+          "tempo": 66,
+          "instrument": "soft",
+          "inversions": [
+            1,
+            0,
+            0
+          ],
+          "register": -1,
+          "spreads": [
+            true,
+            true,
+            true
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "independent-predominant-cadence",
+      "seed": "45",
+      "target": {
+        "familyId": "predominant-cadence",
+        "skillId": "compare",
+        "support": 0,
+        "variantId": "departure"
+      },
+      "expected": {
+        "id": "aural-2f18745c",
+        "familyId": "predominant-cadence",
+        "variantId": "departure",
+        "skillId": "compare",
+        "support": 0,
+        "transfer": false,
+        "seed": "45",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "A",
+        "tempo": 80,
+        "instrument": "triangle",
+        "events": [
+          {
+            "notes": [
+              49,
+              52,
+              57
+            ],
+            "rootMidi": 45,
+            "bassMidi": 49,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              47,
+              50,
+              66
+            ],
+            "rootMidi": 47,
+            "bassMidi": 47,
+            "degree": "ii",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              47,
+              52,
+              56
+            ],
+            "rootMidi": 40,
+            "bassMidi": 47,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              45,
+              49,
+              52
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              45,
+              49,
+              52
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "ii",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [
+          {
+            "id": "option-1",
+            "label": "I \u2192 V \u2192 V \u2192 I",
+            "degrees": [
+              "I",
+              "V",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-2",
+            "label": "I \u2192 ii \u2192 V \u2192 I",
+            "degrees": [
+              "I",
+              "ii",
+              "V",
+              "I"
+            ]
+          }
+        ],
+        "answer": {
+          "degrees": [
+            "I",
+            "ii",
+            "V",
+            "I"
+          ],
+          "optionId": "option-2",
+          "targetMidis": []
+        },
+        "responseType": "choice",
+        "microphoneTask": null,
+        "fingerprint": "realization-31aa33fb",
+        "prompt": "Which relationship matches what you heard?",
+        "referenceRequired": false,
+        "guidance": "I \u2192 ii \u2192 V \u2192 I. Add a predominant before the familiar dominant\u2013tonic fragment.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "45",
+          "target": {
+            "familyId": "predominant-cadence",
+            "skillId": "compare",
+            "support": 0,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": "departure",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "departure",
+          "keyTonic": "A",
+          "tempo": 80,
+          "instrument": "triangle",
+          "inversions": [
+            1,
+            0,
+            2,
+            0
+          ],
+          "register": -1,
+          "spreads": [
+            false,
+            true,
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "independent-deceptive-return",
+      "seed": "128",
+      "target": {
+        "familyId": "deceptive-return",
+        "skillId": "audiate",
+        "support": 0,
+        "variantId": "prepared"
+      },
+      "expected": {
+        "id": "aural-ba2d705e",
+        "familyId": "deceptive-return",
+        "variantId": "prepared",
+        "skillId": "audiate",
+        "support": 0,
+        "transfer": false,
+        "seed": "128",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "A",
+        "tempo": 66,
+        "instrument": "triangle",
+        "events": [
+          {
+            "notes": [
+              50,
+              54,
+              71
+            ],
+            "rootMidi": 47,
+            "bassMidi": 50,
+            "degree": "ii",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              44,
+              47,
+              64
+            ],
+            "rootMidi": 40,
+            "bassMidi": 44,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              49,
+              54,
+              57
+            ],
+            "rootMidi": 42,
+            "bassMidi": 49,
+            "degree": "vi",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              45,
+              49,
+              52
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              45,
+              49,
+              52
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "ii",
+          "V",
+          "vi"
+        ],
+        "gapIndex": 2,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "vi"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-62f5b5e4",
+        "prompt": "Learn the complete model. Internally hear its silent ending before answering.",
+        "referenceRequired": true,
+        "guidance": "ii \u2192 V \u2192 vi. Hear dominant arrive at relative minor instead of tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "128",
+          "target": {
+            "familyId": "deceptive-return",
+            "skillId": "audiate",
+            "support": 0,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": "prepared",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "prepared",
+          "keyTonic": "A",
+          "tempo": 66,
+          "instrument": "triangle",
+          "inversions": [
+            1,
+            1,
+            2
+          ],
+          "register": -1,
+          "spreads": [
+            true,
+            true,
+            false
+          ],
+          "contextDegrees": [
+            "I",
+            "V",
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "independent-relative-motion",
+      "seed": "1",
+      "target": {
+        "familyId": "relative-motion",
+        "skillId": "recall",
+        "support": 0,
+        "variantId": "cadence"
+      },
+      "expected": {
+        "id": "aural-be79093f",
+        "familyId": "relative-motion",
+        "variantId": "cadence",
+        "skillId": "recall",
+        "support": 0,
+        "transfer": false,
+        "seed": "1",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "C",
+        "tempo": 88,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              52,
+              57,
+              60
+            ],
+            "rootMidi": 45,
+            "bassMidi": 52,
+            "degree": "vi",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              41,
+              45,
+              62
+            ],
+            "rootMidi": 38,
+            "bassMidi": 41,
+            "degree": "ii",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              43,
+              47,
+              50
+            ],
+            "rootMidi": 43,
+            "bassMidi": 43,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              43,
+              48,
+              64
+            ],
+            "rootMidi": 36,
+            "bassMidi": 43,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              36,
+              40,
+              43
+            ],
+            "rootMidi": 36,
+            "bassMidi": 36,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              43,
+              47,
+              50
+            ],
+            "rootMidi": 43,
+            "bassMidi": 43,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              36,
+              40,
+              43
+            ],
+            "rootMidi": 36,
+            "bassMidi": 36,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "vi",
+          "ii",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "vi",
+            "ii",
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-5cb70e16",
+        "prompt": "Listen once, then rebuild the progression from memory.",
+        "referenceRequired": false,
+        "guidance": "vi \u2192 ii \u2192 V \u2192 I. Connect tonic and relative minor, then return through familiar functions.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "1",
+          "target": {
+            "familyId": "relative-motion",
+            "skillId": "recall",
+            "support": 0,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": "cadence",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "cadence",
+          "keyTonic": "C",
+          "tempo": 88,
+          "instrument": "sine",
+          "inversions": [
+            2,
+            1,
+            0,
+            2
+          ],
+          "register": -1,
+          "spreads": [
+            false,
+            true,
+            false,
+            true
+          ],
+          "contextDegrees": [
+            "I",
+            "V",
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "independent-secondary-dominant",
+      "seed": "4294967297",
+      "target": {
+        "familyId": "secondary-dominant",
+        "skillId": "guided",
+        "support": 0,
+        "variantId": "departure"
+      },
+      "expected": {
+        "id": "aural-7e2cbc17",
+        "familyId": "secondary-dominant",
+        "variantId": "departure",
+        "skillId": "guided",
+        "support": 0,
+        "transfer": false,
+        "seed": "4294967297",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "Gb",
+        "tempo": 66,
+        "instrument": "soft",
+        "events": [
+          {
+            "notes": [
+              42,
+              46,
+              49
+            ],
+            "rootMidi": 42,
+            "bassMidi": 42,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              44,
+              48,
+              51
+            ],
+            "rootMidi": 44,
+            "bassMidi": 44,
+            "degree": "V/V",
+            "functionLabel": "secondary dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              37,
+              41,
+              44
+            ],
+            "rootMidi": 37,
+            "bassMidi": 37,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              42,
+              46,
+              61
+            ],
+            "rootMidi": 42,
+            "bassMidi": 42,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              42,
+              46,
+              49
+            ],
+            "rootMidi": 42,
+            "bassMidi": 42,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "V/V",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "I",
+            "V/V",
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "guided",
+        "microphoneTask": null,
+        "fingerprint": "realization-89a2279e",
+        "prompt": "Listen for the changing feeling of tension and arrival.",
+        "referenceRequired": false,
+        "guidance": "I \u2192 V/V \u2192 V \u2192 I. Hear an altered chord intensify the approach to dominant.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "4294967297",
+          "target": {
+            "familyId": "secondary-dominant",
+            "skillId": "guided",
+            "support": 0,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": "departure",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "departure",
+          "keyTonic": "Gb",
+          "tempo": 66,
+          "instrument": "soft",
+          "inversions": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "register": -1,
+          "spreads": [
+            false,
+            false,
+            false,
+            true
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-transfer-ignored-dominant-return",
+      "seed": "128",
+      "target": {
+        "familyId": "dominant-return",
+        "skillId": "guided",
+        "support": 1,
+        "transfer": true
+      },
+      "expected": {
+        "id": "aural-757ef26e",
+        "familyId": "dominant-return",
+        "variantId": "direct",
+        "skillId": "guided",
+        "support": 1,
+        "transfer": false,
+        "seed": "128",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "A",
+        "tempo": 80,
+        "instrument": "triangle",
+        "events": [
+          {
+            "notes": [
+              52,
+              56,
+              59
+            ],
+            "rootMidi": 52,
+            "bassMidi": 52,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "guided",
+        "microphoneTask": null,
+        "fingerprint": "realization-2ab52509",
+        "prompt": "Listen for the changing feeling of tension and arrival.",
+        "referenceRequired": false,
+        "guidance": "V \u2192 I. Hear dominant tension return to tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "128",
+          "target": {
+            "familyId": "dominant-return",
+            "skillId": "guided",
+            "support": 1,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "A",
+          "tempo": 80,
+          "instrument": "triangle",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-transfer-ignored-plagal-return",
+      "seed": "128",
+      "target": {
+        "familyId": "plagal-return",
+        "skillId": "compare",
+        "support": 1,
+        "transfer": true
+      },
+      "expected": {
+        "id": "aural-505fcf0e",
+        "familyId": "plagal-return",
+        "variantId": "direct",
+        "skillId": "compare",
+        "support": 1,
+        "transfer": false,
+        "seed": "128",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "A",
+        "tempo": 80,
+        "instrument": "triangle",
+        "events": [
+          {
+            "notes": [
+              50,
+              54,
+              57
+            ],
+            "rootMidi": 50,
+            "bassMidi": 50,
+            "degree": "IV",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "IV",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [
+          {
+            "id": "option-1",
+            "label": "IV \u2192 I",
+            "degrees": [
+              "IV",
+              "I"
+            ]
+          },
+          {
+            "id": "option-2",
+            "label": "I \u2192 vi",
+            "degrees": [
+              "I",
+              "vi"
+            ]
+          }
+        ],
+        "answer": {
+          "degrees": [
+            "IV",
+            "I"
+          ],
+          "optionId": "option-1",
+          "targetMidis": []
+        },
+        "responseType": "choice",
+        "microphoneTask": null,
+        "fingerprint": "realization-4e07b1fc",
+        "prompt": "Which relationship matches what you heard?",
+        "referenceRequired": false,
+        "guidance": "IV \u2192 I. Compare a gentler subdominant return with the dominant return.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "128",
+          "target": {
+            "familyId": "plagal-return",
+            "skillId": "compare",
+            "support": 1,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "A",
+          "tempo": 80,
+          "instrument": "triangle",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-transfer-ignored-predominant-cadence",
+      "seed": "128",
+      "target": {
+        "familyId": "predominant-cadence",
+        "skillId": "identify",
+        "support": 1,
+        "transfer": true
+      },
+      "expected": {
+        "id": "aural-3bfb7cd4",
+        "familyId": "predominant-cadence",
+        "variantId": "supertonic",
+        "skillId": "identify",
+        "support": 1,
+        "transfer": false,
+        "seed": "128",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "A",
+        "tempo": 80,
+        "instrument": "triangle",
+        "events": [
+          {
+            "notes": [
+              59,
+              62,
+              66
+            ],
+            "rootMidi": 59,
+            "bassMidi": 59,
+            "degree": "ii",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              52,
+              56,
+              59
+            ],
+            "rootMidi": 52,
+            "bassMidi": 52,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              61,
+              64,
+              69
+            ],
+            "rootMidi": 57,
+            "bassMidi": 61,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "ii",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [
+          {
+            "id": "option-1",
+            "label": "V \u2192 V \u2192 I",
+            "degrees": [
+              "V",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-2",
+            "label": "IV \u2192 V \u2192 I",
+            "degrees": [
+              "IV",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-3",
+            "label": "ii \u2192 V \u2192 I",
+            "degrees": [
+              "ii",
+              "V",
+              "I"
+            ]
+          }
+        ],
+        "answer": {
+          "degrees": [
+            "ii",
+            "V",
+            "I"
+          ],
+          "optionId": "option-3",
+          "targetMidis": []
+        },
+        "responseType": "choice",
+        "microphoneTask": null,
+        "fingerprint": "realization-8d3e9075",
+        "prompt": "Identify the progression you heard.",
+        "referenceRequired": false,
+        "guidance": "ii \u2192 V \u2192 I. Add a predominant before the familiar dominant\u2013tonic fragment.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "128",
+          "target": {
+            "familyId": "predominant-cadence",
+            "skillId": "identify",
+            "support": 1,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "supertonic",
+          "keyTonic": "A",
+          "tempo": 80,
+          "instrument": "triangle",
+          "inversions": [
+            0,
+            0,
+            1
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-transfer-ignored-deceptive-return",
+      "seed": "128",
+      "target": {
+        "familyId": "deceptive-return",
+        "skillId": "recall",
+        "support": 1,
+        "transfer": true
+      },
+      "expected": {
+        "id": "aural-5cbdbb0a",
+        "familyId": "deceptive-return",
+        "variantId": "direct",
+        "skillId": "recall",
+        "support": 1,
+        "transfer": false,
+        "seed": "128",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "A",
+        "tempo": 80,
+        "instrument": "triangle",
+        "events": [
+          {
+            "notes": [
+              52,
+              56,
+              59
+            ],
+            "rootMidi": 52,
+            "bassMidi": 52,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              54,
+              57,
+              61
+            ],
+            "rootMidi": 54,
+            "bassMidi": 54,
+            "degree": "vi",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V",
+          "vi"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "V",
+            "vi"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-7d3f3db9",
+        "prompt": "Listen once, then rebuild the progression from memory.",
+        "referenceRequired": false,
+        "guidance": "V \u2192 vi. Hear dominant arrive at relative minor instead of tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "128",
+          "target": {
+            "familyId": "deceptive-return",
+            "skillId": "recall",
+            "support": 1,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "A",
+          "tempo": 80,
+          "instrument": "triangle",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-transfer-ignored-relative-motion",
+      "seed": "128",
+      "target": {
+        "familyId": "relative-motion",
+        "skillId": "complete",
+        "support": 1,
+        "transfer": true
+      },
+      "expected": {
+        "id": "aural-16748897",
+        "familyId": "relative-motion",
+        "variantId": "direct",
+        "skillId": "complete",
+        "support": 1,
+        "transfer": false,
+        "seed": "128",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "A",
+        "tempo": 80,
+        "instrument": "triangle",
+        "events": [
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              54,
+              57,
+              61
+            ],
+            "rootMidi": 54,
+            "bassMidi": 54,
+            "degree": "vi",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "vi"
+        ],
+        "gapIndex": 1,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "vi"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-fbdc50d5",
+        "prompt": "Learn the complete model, then restore the missing chord from memory.",
+        "referenceRequired": true,
+        "guidance": "I \u2192 vi. Connect tonic and relative minor, then return through familiar functions.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "128",
+          "target": {
+            "familyId": "relative-motion",
+            "skillId": "complete",
+            "support": 1,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "A",
+          "tempo": 80,
+          "instrument": "triangle",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "supported-transfer-ignored-secondary-dominant",
+      "seed": "128",
+      "target": {
+        "familyId": "secondary-dominant",
+        "skillId": "audiate",
+        "support": 1,
+        "transfer": true
+      },
+      "expected": {
+        "id": "aural-e258f1bb",
+        "familyId": "secondary-dominant",
+        "variantId": "direct",
+        "skillId": "audiate",
+        "support": 1,
+        "transfer": false,
+        "seed": "128",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "A",
+        "tempo": 80,
+        "instrument": "triangle",
+        "events": [
+          {
+            "notes": [
+              59,
+              63,
+              66
+            ],
+            "rootMidi": 59,
+            "bassMidi": 59,
+            "degree": "V/V",
+            "functionLabel": "secondary dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              52,
+              56,
+              59
+            ],
+            "rootMidi": 52,
+            "bassMidi": 52,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              61,
+              64,
+              69
+            ],
+            "rootMidi": 57,
+            "bassMidi": 61,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V/V",
+          "V",
+          "I"
+        ],
+        "gapIndex": 2,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-60c107d9",
+        "prompt": "Learn the complete model. Internally hear its silent ending before answering.",
+        "referenceRequired": true,
+        "guidance": "V/V \u2192 V \u2192 I. Hear an altered chord intensify the approach to dominant.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "128",
+          "target": {
+            "familyId": "secondary-dominant",
+            "skillId": "audiate",
+            "support": 1,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "A",
+          "tempo": 80,
+          "instrument": "triangle",
+          "inversions": [
+            0,
+            0,
+            1
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "microphone-root",
+      "seed": "811",
+      "target": {
+        "familyId": "secondary-dominant",
+        "skillId": "reproduce",
+        "support": 0,
+        "transfer": true,
+        "microphoneKind": "root",
+        "variantId": "departure"
+      },
+      "expected": {
+        "id": "aural-f5a65e9d",
+        "familyId": "secondary-dominant",
+        "variantId": "departure",
+        "skillId": "reproduce",
+        "support": 0,
+        "transfer": true,
+        "seed": "811",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "E",
+        "tempo": 96,
+        "instrument": "soft",
+        "events": [
+          {
+            "notes": [
+              44,
+              47,
+              64
+            ],
+            "rootMidi": 40,
+            "bassMidi": 44,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              42,
+              46,
+              61
+            ],
+            "rootMidi": 42,
+            "bassMidi": 42,
+            "degree": "V/V",
+            "functionLabel": "secondary dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              47,
+              51,
+              66
+            ],
+            "rootMidi": 47,
+            "bassMidi": 47,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              44,
+              47,
+              64
+            ],
+            "rootMidi": 40,
+            "bassMidi": 44,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              45,
+              49,
+              52
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "IV",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              47,
+              51,
+              54
+            ],
+            "rootMidi": 47,
+            "bassMidi": 47,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "V/V",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "I",
+            "V/V",
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": [
+            40
+          ]
+        },
+        "responseType": "microphone",
+        "microphoneTask": {
+          "kind": "root",
+          "label": "Sing the chord root of chord 4. Any comfortable octave is accepted.",
+          "eventIndices": [
+            3
+          ],
+          "targetMidis": [
+            40
+          ],
+          "scaleDegree": null
+        },
+        "fingerprint": "realization-74d4888a",
+        "prompt": "Sing the chord root of chord 4. Any comfortable octave is accepted.",
+        "referenceRequired": false,
+        "guidance": "I \u2192 V/V \u2192 V \u2192 I. Hear an altered chord intensify the approach to dominant.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "811",
+          "target": {
+            "familyId": "secondary-dominant",
+            "skillId": "reproduce",
+            "support": 0,
+            "transfer": true,
+            "reason": "",
+            "microphoneKind": "root",
+            "variantId": "departure",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "departure",
+          "keyTonic": "E",
+          "tempo": 96,
+          "instrument": "soft",
+          "inversions": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "register": -1,
+          "spreads": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "contextDegrees": [
+            "I",
+            "IV",
+            "V",
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "microphone-bass",
+      "seed": "811",
+      "target": {
+        "familyId": "secondary-dominant",
+        "skillId": "reproduce",
+        "support": 0,
+        "transfer": true,
+        "microphoneKind": "bass",
+        "variantId": "departure"
+      },
+      "expected": {
+        "id": "aural-5b726c00",
+        "familyId": "secondary-dominant",
+        "variantId": "departure",
+        "skillId": "reproduce",
+        "support": 0,
+        "transfer": true,
+        "seed": "811",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "E",
+        "tempo": 96,
+        "instrument": "soft",
+        "events": [
+          {
+            "notes": [
+              44,
+              47,
+              64
+            ],
+            "rootMidi": 40,
+            "bassMidi": 44,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              42,
+              46,
+              61
+            ],
+            "rootMidi": 42,
+            "bassMidi": 42,
+            "degree": "V/V",
+            "functionLabel": "secondary dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              47,
+              51,
+              66
+            ],
+            "rootMidi": 47,
+            "bassMidi": 47,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              44,
+              47,
+              64
+            ],
+            "rootMidi": 40,
+            "bassMidi": 44,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              45,
+              49,
+              52
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "IV",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              47,
+              51,
+              54
+            ],
+            "rootMidi": 47,
+            "bassMidi": 47,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "V/V",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "I",
+            "V/V",
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": [
+            44
+          ]
+        },
+        "responseType": "microphone",
+        "microphoneTask": {
+          "kind": "bass",
+          "label": "Sing the lowest sounding note (bass) of chord 4. Any comfortable octave is accepted.",
+          "eventIndices": [
+            3
+          ],
+          "targetMidis": [
+            44
+          ],
+          "scaleDegree": null
+        },
+        "fingerprint": "realization-74d4888a",
+        "prompt": "Sing the lowest sounding note (bass) of chord 4. Any comfortable octave is accepted.",
+        "referenceRequired": false,
+        "guidance": "I \u2192 V/V \u2192 V \u2192 I. Hear an altered chord intensify the approach to dominant.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "811",
+          "target": {
+            "familyId": "secondary-dominant",
+            "skillId": "reproduce",
+            "support": 0,
+            "transfer": true,
+            "reason": "",
+            "microphoneKind": "bass",
+            "variantId": "departure",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "departure",
+          "keyTonic": "E",
+          "tempo": 96,
+          "instrument": "soft",
+          "inversions": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "register": -1,
+          "spreads": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "contextDegrees": [
+            "I",
+            "IV",
+            "V",
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "microphone-scaleDegree",
+      "seed": "811",
+      "target": {
+        "familyId": "secondary-dominant",
+        "skillId": "reproduce",
+        "support": 0,
+        "transfer": true,
+        "microphoneKind": "scaleDegree",
+        "variantId": "departure"
+      },
+      "expected": {
+        "id": "aural-5b2f7067",
+        "familyId": "secondary-dominant",
+        "variantId": "departure",
+        "skillId": "reproduce",
+        "support": 0,
+        "transfer": true,
+        "seed": "811",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "E",
+        "tempo": 96,
+        "instrument": "soft",
+        "events": [
+          {
+            "notes": [
+              44,
+              47,
+              64
+            ],
+            "rootMidi": 40,
+            "bassMidi": 44,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              42,
+              46,
+              61
+            ],
+            "rootMidi": 42,
+            "bassMidi": 42,
+            "degree": "V/V",
+            "functionLabel": "secondary dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              47,
+              51,
+              66
+            ],
+            "rootMidi": 47,
+            "bassMidi": 47,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              44,
+              47,
+              64
+            ],
+            "rootMidi": 40,
+            "bassMidi": 44,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              45,
+              49,
+              52
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "IV",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              47,
+              51,
+              54
+            ],
+            "rootMidi": 47,
+            "bassMidi": 47,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "V/V",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "I",
+            "V/V",
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": [
+            56
+          ]
+        },
+        "responseType": "microphone",
+        "microphoneTask": {
+          "kind": "scaleDegree",
+          "label": "Sing scale degree 3 in the established key. Any comfortable octave is accepted.",
+          "eventIndices": [],
+          "targetMidis": [
+            56
+          ],
+          "scaleDegree": 3
+        },
+        "fingerprint": "realization-74d4888a",
+        "prompt": "Sing scale degree 3 in the established key. Any comfortable octave is accepted.",
+        "referenceRequired": false,
+        "guidance": "I \u2192 V/V \u2192 V \u2192 I. Hear an altered chord intensify the approach to dominant.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "811",
+          "target": {
+            "familyId": "secondary-dominant",
+            "skillId": "reproduce",
+            "support": 0,
+            "transfer": true,
+            "reason": "",
+            "microphoneKind": "scaleDegree",
+            "variantId": "departure",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "departure",
+          "keyTonic": "E",
+          "tempo": 96,
+          "instrument": "soft",
+          "inversions": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "register": -1,
+          "spreads": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "contextDegrees": [
+            "I",
+            "IV",
+            "V",
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "microphone-rootSequence",
+      "seed": "811",
+      "target": {
+        "familyId": "secondary-dominant",
+        "skillId": "reproduce",
+        "support": 0,
+        "transfer": true,
+        "microphoneKind": "rootSequence",
+        "variantId": "departure"
+      },
+      "expected": {
+        "id": "aural-20c069c",
+        "familyId": "secondary-dominant",
+        "variantId": "departure",
+        "skillId": "reproduce",
+        "support": 0,
+        "transfer": true,
+        "seed": "811",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "E",
+        "tempo": 96,
+        "instrument": "soft",
+        "events": [
+          {
+            "notes": [
+              44,
+              47,
+              64
+            ],
+            "rootMidi": 40,
+            "bassMidi": 44,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              42,
+              46,
+              61
+            ],
+            "rootMidi": 42,
+            "bassMidi": 42,
+            "degree": "V/V",
+            "functionLabel": "secondary dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              47,
+              51,
+              66
+            ],
+            "rootMidi": 47,
+            "bassMidi": 47,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              44,
+              47,
+              64
+            ],
+            "rootMidi": 40,
+            "bassMidi": 44,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              45,
+              49,
+              52
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "IV",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              47,
+              51,
+              54
+            ],
+            "rootMidi": 47,
+            "bassMidi": 47,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "V/V",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "I",
+            "V/V",
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": [
+            40,
+            42,
+            47,
+            40
+          ]
+        },
+        "responseType": "microphone",
+        "microphoneTask": {
+          "kind": "rootSequence",
+          "label": "Sing the chord roots in order. Any comfortable octave is accepted.",
+          "eventIndices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "targetMidis": [
+            40,
+            42,
+            47,
+            40
+          ],
+          "scaleDegree": null
+        },
+        "fingerprint": "realization-74d4888a",
+        "prompt": "Sing the chord roots in order. Any comfortable octave is accepted.",
+        "referenceRequired": false,
+        "guidance": "I \u2192 V/V \u2192 V \u2192 I. Hear an altered chord intensify the approach to dominant.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "811",
+          "target": {
+            "familyId": "secondary-dominant",
+            "skillId": "reproduce",
+            "support": 0,
+            "transfer": true,
+            "reason": "",
+            "microphoneKind": "rootSequence",
+            "variantId": "departure",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "departure",
+          "keyTonic": "E",
+          "tempo": 96,
+          "instrument": "soft",
+          "inversions": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "register": -1,
+          "spreads": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "contextDegrees": [
+            "I",
+            "IV",
+            "V",
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "automatic-microphone-supported",
+      "seed": "128",
+      "target": {
+        "familyId": "dominant-return",
+        "skillId": "reproduce",
+        "support": 2
+      },
+      "expected": {
+        "id": "aural-b0c92c73",
+        "familyId": "dominant-return",
+        "variantId": "direct",
+        "skillId": "reproduce",
+        "support": 2,
+        "transfer": false,
+        "seed": "128",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "F",
+        "tempo": 66,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              53,
+              57,
+              60
+            ],
+            "rootMidi": 53,
+            "bassMidi": 53,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              53,
+              57,
+              60
+            ],
+            "rootMidi": 53,
+            "bassMidi": 53,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": [
+            53
+          ]
+        },
+        "responseType": "microphone",
+        "microphoneTask": {
+          "kind": "root",
+          "label": "Sing the chord root of chord 2. Any comfortable octave is accepted.",
+          "eventIndices": [
+            1
+          ],
+          "targetMidis": [
+            53
+          ],
+          "scaleDegree": null
+        },
+        "fingerprint": "realization-8a07a0ac",
+        "prompt": "Sing the chord root of chord 2. Any comfortable octave is accepted.",
+        "referenceRequired": false,
+        "guidance": "V \u2192 I. Hear dominant tension return to tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "128",
+          "target": {
+            "familyId": "dominant-return",
+            "skillId": "reproduce",
+            "support": 2,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "F",
+          "tempo": 66,
+          "instrument": "sine",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "automatic-microphone-independent",
+      "seed": "432",
+      "target": {
+        "familyId": "relative-motion",
+        "skillId": "reproduce",
+        "support": 0
+      },
+      "expected": {
+        "id": "aural-9633e153",
+        "familyId": "relative-motion",
+        "variantId": "cadence",
+        "skillId": "reproduce",
+        "support": 0,
+        "transfer": false,
+        "seed": "432",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "F",
+        "tempo": 80,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              45,
+              50,
+              53
+            ],
+            "rootMidi": 38,
+            "bassMidi": 45,
+            "degree": "vi",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              46,
+              50,
+              55
+            ],
+            "rootMidi": 43,
+            "bassMidi": 46,
+            "degree": "ii",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              36,
+              40,
+              43
+            ],
+            "rootMidi": 36,
+            "bassMidi": 36,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              41,
+              45,
+              48
+            ],
+            "rootMidi": 41,
+            "bassMidi": 41,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              41,
+              45,
+              48
+            ],
+            "rootMidi": 41,
+            "bassMidi": 41,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "vi",
+          "ii",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "vi",
+            "ii",
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": [
+            60
+          ]
+        },
+        "responseType": "microphone",
+        "microphoneTask": {
+          "kind": "scaleDegree",
+          "label": "Sing scale degree 5 in the established key. Any comfortable octave is accepted.",
+          "eventIndices": [],
+          "targetMidis": [
+            60
+          ],
+          "scaleDegree": 5
+        },
+        "fingerprint": "realization-c5c23ca0",
+        "prompt": "Sing scale degree 5 in the established key. Any comfortable octave is accepted.",
+        "referenceRequired": false,
+        "guidance": "vi \u2192 ii \u2192 V \u2192 I. Connect tonic and relative minor, then return through familiar functions.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "432",
+          "target": {
+            "familyId": "relative-motion",
+            "skillId": "reproduce",
+            "support": 0,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "cadence",
+          "keyTonic": "F",
+          "tempo": 80,
+          "instrument": "sine",
+          "inversions": [
+            2,
+            1,
+            0,
+            0
+          ],
+          "register": -1,
+          "spreads": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "legacy-sine-alias",
+      "seed": "0",
+      "target": {
+        "familyId": "dominant-return",
+        "skillId": "guided",
+        "instrumentOverride": "SINE"
+      },
+      "expected": {
+        "id": "aural-39d284ff",
+        "familyId": "dominant-return",
+        "variantId": "direct",
+        "skillId": "guided",
+        "support": 2,
+        "transfer": false,
+        "seed": "0",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "C",
+        "tempo": 72,
+        "instrument": "SINE",
+        "events": [
+          {
+            "notes": [
+              55,
+              59,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "guided",
+        "microphoneTask": null,
+        "fingerprint": "realization-a4a31ef",
+        "prompt": "Listen for the changing feeling of tension and arrival.",
+        "referenceRequired": false,
+        "guidance": "V \u2192 I. Hear dominant tension return to tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "0",
+          "target": {
+            "familyId": "dominant-return",
+            "skillId": "guided",
+            "support": 2,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": "SINE",
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "C",
+          "tempo": 72,
+          "instrument": "SINE",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "transfer-context",
+      "seed": "432",
+      "target": {
+        "familyId": "relative-motion",
+        "skillId": "identify",
+        "support": 0,
+        "transfer": true
+      },
+      "expected": {
+        "id": "aural-157d5542",
+        "familyId": "relative-motion",
+        "variantId": "cadence",
+        "skillId": "identify",
+        "support": 0,
+        "transfer": true,
+        "seed": "432",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "F",
+        "tempo": 84,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              45,
+              50,
+              65
+            ],
+            "rootMidi": 38,
+            "bassMidi": 45,
+            "degree": "vi",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              46,
+              50,
+              67
+            ],
+            "rootMidi": 43,
+            "bassMidi": 46,
+            "degree": "ii",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              36,
+              40,
+              55
+            ],
+            "rootMidi": 36,
+            "bassMidi": 36,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              41,
+              45,
+              60
+            ],
+            "rootMidi": 41,
+            "bassMidi": 41,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              41,
+              45,
+              48
+            ],
+            "rootMidi": 41,
+            "bassMidi": 41,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              43,
+              46,
+              50
+            ],
+            "rootMidi": 43,
+            "bassMidi": 43,
+            "degree": "ii",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              36,
+              40,
+              43
+            ],
+            "rootMidi": 36,
+            "bassMidi": 36,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              41,
+              45,
+              48
+            ],
+            "rootMidi": 41,
+            "bassMidi": 41,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "vi",
+          "ii",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [
+          {
+            "id": "option-1",
+            "label": "vi \u2192 ii \u2192 IV \u2192 I",
+            "degrees": [
+              "vi",
+              "ii",
+              "IV",
+              "I"
+            ]
+          },
+          {
+            "id": "option-2",
+            "label": "vi \u2192 ii \u2192 V \u2192 I",
+            "degrees": [
+              "vi",
+              "ii",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-3",
+            "label": "I \u2192 ii \u2192 V \u2192 I",
+            "degrees": [
+              "I",
+              "ii",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-4",
+            "label": "vi \u2192 V \u2192 V \u2192 I",
+            "degrees": [
+              "vi",
+              "V",
+              "V",
+              "I"
+            ]
+          }
+        ],
+        "answer": {
+          "degrees": [
+            "vi",
+            "ii",
+            "V",
+            "I"
+          ],
+          "optionId": "option-2",
+          "targetMidis": []
+        },
+        "responseType": "choice",
+        "microphoneTask": null,
+        "fingerprint": "realization-91676fd5",
+        "prompt": "Identify the progression you heard.",
+        "referenceRequired": false,
+        "guidance": "vi \u2192 ii \u2192 V \u2192 I. Connect tonic and relative minor, then return through familiar functions.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "432",
+          "target": {
+            "familyId": "relative-motion",
+            "skillId": "identify",
+            "support": 0,
+            "transfer": true,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "cadence",
+          "keyTonic": "F",
+          "tempo": 84,
+          "instrument": "sine",
+          "inversions": [
+            2,
+            1,
+            0,
+            0
+          ],
+          "register": -1,
+          "spreads": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "contextDegrees": [
+            "I",
+            "ii",
+            "V",
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "settings-instrument-octave",
+      "seed": "811",
+      "target": {
+        "familyId": "secondary-dominant",
+        "skillId": "complete",
+        "support": 1,
+        "instrumentOverride": "CLARINET",
+        "octaveShift": 1
+      },
+      "expected": {
+        "id": "aural-bf235484",
+        "familyId": "secondary-dominant",
+        "variantId": "direct",
+        "skillId": "complete",
+        "support": 1,
+        "transfer": false,
+        "seed": "811",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "G",
+        "tempo": 80,
+        "instrument": "CLARINET",
+        "events": [
+          {
+            "notes": [
+              69,
+              73,
+              76
+            ],
+            "rootMidi": 69,
+            "bassMidi": 69,
+            "degree": "V/V",
+            "functionLabel": "secondary dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              62,
+              66,
+              69
+            ],
+            "rootMidi": 62,
+            "bassMidi": 62,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              67,
+              71,
+              74
+            ],
+            "rootMidi": 67,
+            "bassMidi": 67,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              67,
+              71,
+              74
+            ],
+            "rootMidi": 67,
+            "bassMidi": 67,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V/V",
+          "V",
+          "I"
+        ],
+        "gapIndex": 1,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "V"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-511d8d6c",
+        "prompt": "Learn the complete model, then restore the missing chord from memory.",
+        "referenceRequired": true,
+        "guidance": "V/V \u2192 V \u2192 I. Hear an altered chord intensify the approach to dominant.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "811",
+          "target": {
+            "familyId": "secondary-dominant",
+            "skillId": "complete",
+            "support": 1,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": "CLARINET",
+            "octaveShift": 1,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "G",
+          "tempo": 80,
+          "instrument": "CLARINET",
+          "inversions": [
+            0,
+            0,
+            0
+          ],
+          "register": 1,
+          "spreads": [
+            false,
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "settings-instrument-base",
+      "seed": "811",
+      "target": {
+        "familyId": "secondary-dominant",
+        "skillId": "complete",
+        "support": 1,
+        "instrumentOverride": "CLARINET"
+      },
+      "expected": {
+        "id": "aural-ba3f184a",
+        "familyId": "secondary-dominant",
+        "variantId": "direct",
+        "skillId": "complete",
+        "support": 1,
+        "transfer": false,
+        "seed": "811",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "G",
+        "tempo": 80,
+        "instrument": "CLARINET",
+        "events": [
+          {
+            "notes": [
+              57,
+              61,
+              64
+            ],
+            "rootMidi": 57,
+            "bassMidi": 57,
+            "degree": "V/V",
+            "functionLabel": "secondary dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              50,
+              54,
+              57
+            ],
+            "rootMidi": 50,
+            "bassMidi": 50,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              55,
+              59,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              55,
+              59,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V/V",
+          "V",
+          "I"
+        ],
+        "gapIndex": 1,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "V"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "sequence",
+        "microphoneTask": null,
+        "fingerprint": "realization-d0fcc1b2",
+        "prompt": "Learn the complete model, then restore the missing chord from memory.",
+        "referenceRequired": true,
+        "guidance": "V/V \u2192 V \u2192 I. Hear an altered chord intensify the approach to dominant.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "811",
+          "target": {
+            "familyId": "secondary-dominant",
+            "skillId": "complete",
+            "support": 1,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": "CLARINET",
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "G",
+          "tempo": 80,
+          "instrument": "CLARINET",
+          "inversions": [
+            0,
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "legacy-soft-alias",
+      "seed": "45",
+      "target": {
+        "familyId": "deceptive-return",
+        "skillId": "identify",
+        "support": 0,
+        "instrumentOverride": "WARM_ORGAN"
+      },
+      "expected": {
+        "id": "aural-aad569ab",
+        "familyId": "deceptive-return",
+        "variantId": "prepared",
+        "skillId": "identify",
+        "support": 0,
+        "transfer": false,
+        "seed": "45",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "A",
+        "tempo": 80,
+        "instrument": "WARM_ORGAN",
+        "events": [
+          {
+            "notes": [
+              50,
+              54,
+              59
+            ],
+            "rootMidi": 47,
+            "bassMidi": 50,
+            "degree": "ii",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              40,
+              44,
+              59
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              49,
+              54,
+              57
+            ],
+            "rootMidi": 42,
+            "bassMidi": 49,
+            "degree": "vi",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              45,
+              49,
+              52
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              40,
+              44,
+              47
+            ],
+            "rootMidi": 40,
+            "bassMidi": 40,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              45,
+              49,
+              52
+            ],
+            "rootMidi": 45,
+            "bassMidi": 45,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "ii",
+          "V",
+          "vi"
+        ],
+        "gapIndex": null,
+        "options": [
+          {
+            "id": "option-1",
+            "label": "V \u2192 V \u2192 vi",
+            "degrees": [
+              "V",
+              "V",
+              "vi"
+            ]
+          },
+          {
+            "id": "option-2",
+            "label": "ii \u2192 V \u2192 vi",
+            "degrees": [
+              "ii",
+              "V",
+              "vi"
+            ]
+          },
+          {
+            "id": "option-3",
+            "label": "ii \u2192 IV \u2192 vi",
+            "degrees": [
+              "ii",
+              "IV",
+              "vi"
+            ]
+          },
+          {
+            "id": "option-4",
+            "label": "ii \u2192 V \u2192 I",
+            "degrees": [
+              "ii",
+              "V",
+              "I"
+            ]
+          }
+        ],
+        "answer": {
+          "degrees": [
+            "ii",
+            "V",
+            "vi"
+          ],
+          "optionId": "option-2",
+          "targetMidis": []
+        },
+        "responseType": "choice",
+        "microphoneTask": null,
+        "fingerprint": "realization-c956af05",
+        "prompt": "Identify the progression you heard.",
+        "referenceRequired": false,
+        "guidance": "ii \u2192 V \u2192 vi. Hear dominant arrive at relative minor instead of tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "45",
+          "target": {
+            "familyId": "deceptive-return",
+            "skillId": "identify",
+            "support": 0,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": "WARM_ORGAN",
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "prepared",
+          "keyTonic": "A",
+          "tempo": 80,
+          "instrument": "WARM_ORGAN",
+          "inversions": [
+            1,
+            0,
+            2
+          ],
+          "register": -1,
+          "spreads": [
+            false,
+            true,
+            false
+          ],
+          "contextDegrees": [
+            "I",
+            "V",
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "legacy-triangle-alias",
+      "seed": "432",
+      "target": {
+        "familyId": "relative-motion",
+        "skillId": "identify",
+        "support": 0,
+        "instrumentOverride": "TRIANGLE"
+      },
+      "expected": {
+        "id": "aural-e619fcd5",
+        "familyId": "relative-motion",
+        "variantId": "cadence",
+        "skillId": "identify",
+        "support": 0,
+        "transfer": false,
+        "seed": "432",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "F",
+        "tempo": 80,
+        "instrument": "TRIANGLE",
+        "events": [
+          {
+            "notes": [
+              45,
+              50,
+              53
+            ],
+            "rootMidi": 38,
+            "bassMidi": 45,
+            "degree": "vi",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              46,
+              50,
+              55
+            ],
+            "rootMidi": 43,
+            "bassMidi": 46,
+            "degree": "ii",
+            "functionLabel": "predominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              36,
+              40,
+              43
+            ],
+            "rootMidi": 36,
+            "bassMidi": 36,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              41,
+              45,
+              48
+            ],
+            "rootMidi": 41,
+            "bassMidi": 41,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              41,
+              45,
+              48
+            ],
+            "rootMidi": 41,
+            "bassMidi": 41,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "vi",
+          "ii",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [
+          {
+            "id": "option-1",
+            "label": "vi \u2192 ii \u2192 V \u2192 I",
+            "degrees": [
+              "vi",
+              "ii",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-2",
+            "label": "vi \u2192 V \u2192 V \u2192 I",
+            "degrees": [
+              "vi",
+              "V",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-3",
+            "label": "I \u2192 ii \u2192 V \u2192 I",
+            "degrees": [
+              "I",
+              "ii",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-4",
+            "label": "I \u2192 vi \u2192 IV \u2192 I",
+            "degrees": [
+              "I",
+              "vi",
+              "IV",
+              "I"
+            ]
+          }
+        ],
+        "answer": {
+          "degrees": [
+            "vi",
+            "ii",
+            "V",
+            "I"
+          ],
+          "optionId": "option-1",
+          "targetMidis": []
+        },
+        "responseType": "choice",
+        "microphoneTask": null,
+        "fingerprint": "realization-60c961b",
+        "prompt": "Identify the progression you heard.",
+        "referenceRequired": false,
+        "guidance": "vi \u2192 ii \u2192 V \u2192 I. Connect tonic and relative minor, then return through familiar functions.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "432",
+          "target": {
+            "familyId": "relative-motion",
+            "skillId": "identify",
+            "support": 0,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": "TRIANGLE",
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "cadence",
+          "keyTonic": "F",
+          "tempo": 80,
+          "instrument": "TRIANGLE",
+          "inversions": [
+            2,
+            1,
+            0,
+            0
+          ],
+          "register": -1,
+          "spreads": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "explicit-variant-supported",
+      "seed": "0",
+      "target": {
+        "familyId": "dominant-return",
+        "skillId": "compare",
+        "support": 2,
+        "variantId": "departure"
+      },
+      "expected": {
+        "id": "aural-cd32ab23",
+        "familyId": "dominant-return",
+        "variantId": "departure",
+        "skillId": "compare",
+        "support": 2,
+        "transfer": false,
+        "seed": "0",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "C",
+        "tempo": 72,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              55,
+              59,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "I",
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [
+          {
+            "id": "option-1",
+            "label": "I \u2192 V \u2192 I",
+            "degrees": [
+              "I",
+              "V",
+              "I"
+            ]
+          },
+          {
+            "id": "option-2",
+            "label": "I \u2192 V \u2192 vi",
+            "degrees": [
+              "I",
+              "V",
+              "vi"
+            ]
+          }
+        ],
+        "answer": {
+          "degrees": [
+            "I",
+            "V",
+            "I"
+          ],
+          "optionId": "option-1",
+          "targetMidis": []
+        },
+        "responseType": "choice",
+        "microphoneTask": null,
+        "fingerprint": "realization-97fea169",
+        "prompt": "Which relationship matches what you heard?",
+        "referenceRequired": false,
+        "guidance": "I \u2192 V \u2192 I. Hear dominant tension return to tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "0",
+          "target": {
+            "familyId": "dominant-return",
+            "skillId": "compare",
+            "support": 2,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": "departure",
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "departure",
+          "keyTonic": "C",
+          "tempo": 72,
+          "instrument": "sine",
+          "inversions": [
+            0,
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    },
+    {
+      "label": "transfer-ignored-at-support2",
+      "seed": "0",
+      "target": {
+        "familyId": "dominant-return",
+        "skillId": "guided",
+        "support": 2,
+        "transfer": true
+      },
+      "expected": {
+        "id": "aural-2ef99fc6",
+        "familyId": "dominant-return",
+        "variantId": "direct",
+        "skillId": "guided",
+        "support": 2,
+        "transfer": false,
+        "seed": "0",
+        "generatorVersion": "android-aural-1",
+        "keyTonic": "C",
+        "tempo": 72,
+        "instrument": "sine",
+        "events": [
+          {
+            "notes": [
+              55,
+              59,
+              62
+            ],
+            "rootMidi": 55,
+            "bassMidi": 55,
+            "degree": "V",
+            "functionLabel": "dominant",
+            "beats": 2.0
+          },
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "context": [
+          {
+            "notes": [
+              48,
+              52,
+              55
+            ],
+            "rootMidi": 48,
+            "bassMidi": 48,
+            "degree": "I",
+            "functionLabel": "tonic",
+            "beats": 2.0
+          }
+        ],
+        "fullDegrees": [
+          "V",
+          "I"
+        ],
+        "gapIndex": null,
+        "options": [],
+        "answer": {
+          "degrees": [
+            "V",
+            "I"
+          ],
+          "optionId": null,
+          "targetMidis": []
+        },
+        "responseType": "guided",
+        "microphoneTask": null,
+        "fingerprint": "realization-a4a31ef",
+        "prompt": "Listen for the changing feeling of tension and arrival.",
+        "referenceRequired": false,
+        "guidance": "V \u2192 I. Hear dominant tension return to tonic.",
+        "provenance": {
+          "generatorVersion": "android-aural-1",
+          "seed": "0",
+          "target": {
+            "familyId": "dominant-return",
+            "skillId": "guided",
+            "support": 2,
+            "transfer": false,
+            "reason": "",
+            "microphoneKind": null,
+            "variantId": null,
+            "instrumentOverride": null,
+            "octaveShift": 0,
+            "pattern": null
+          },
+          "variantId": "direct",
+          "keyTonic": "C",
+          "tempo": 72,
+          "instrument": "sine",
+          "inversions": [
+            0,
+            0
+          ],
+          "register": 0,
+          "spreads": [
+            false,
+            false
+          ],
+          "contextDegrees": [
+            "I"
+          ],
+          "corpus": null,
+          "exampleSettings": null,
+          "fallbackReason": null
+        },
+        "previouslyExposed": false,
+        "exposureRegistered": false
+      }
+    }
+  ]
+}
