@@ -1324,8 +1324,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Pure active-event and chord/melody interval card state before card presentation",
-      "nextAction": "Port cached native event queries+interval/card state, independent Kotlin2.2.10 fixtures andfocusedunits/strict types; checkpoint before separateproductcard integration.",
+      "slice": "First product current chord, tone, melody and root cards",
+      "nextAction": "Implement bounded React band/lifecycle, extend actualChrome cardpreview/key/silentposition/transpose/sectioncleanup/320px200% proof. Preserve old ninecontrol checks byexplicitselectors; rootcombinedtypes/build/browser aftervalidated workerintegration asneeded.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1471,6 +1471,21 @@
           "pwa/src/features/playback/fixtures/generate-event-native.py": "eedc8303c241a071b0467ddba19b62673bbb0ad1abe17c1210a0309ed081fb73",
           "pwa/src/features/playback/fixtures/native-event.json": "c3f11214caee6b3d45c851f15f43f0a39c03b03a62353be7e9674b274a3c605f"
         }
+      },
+      "currentCardsAssignment": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "3cd20c3fa9969fa03dfaf009bb00c0cf04c13ef6",
+        "ownedPaths": [
+          "pwa/src/features/playback/PlaybackCards.tsx",
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/features/playback/playback.css",
+          "pwa/src/features/playback/view-contracts.ts",
+          "pwa/tests/browser/playback.spec.ts",
+          "pwa/src/features/playback/WORKLOG.md"
+        ],
+        "scope": "First product current-chord/tone/current-melody/root card band plus sourcekey readout. Reuse accepted preparePlaybackSection/PlaybackActiveEventIndex/theory/notation/borrowed PreviewOwner; no new context/clock. Native current chord interpretation at activebeat key; root degree at currentchord onset; melody key at note sourcebeat. Chord preview rounds writtenbeats at nativebaseBPM(min40ms/Intsat), independent of tempo/arpeggio; note previews450ms. All exactfreq previews applymanualtransposeONCE andcurrentwaveform, no singing octave beforeT13. New section/unmount/pagehide retiresborrower; previews neverchange streamintent. Sourcekeydisplay only; relativeIonian/previousintervalbuttons/timeline/home/persistence remainfuture. No claimsfullT12/physicaldevices.",
+        "status": "intent before edits; native leafsemantics inspected, pureeventmodel3cd20c3f accepted",
+        "nextAction": "Implement bounded React band/lifecycle, extend actualChrome cardpreview/key/silentposition/transpose/sectioncleanup/320px200% proof. Preserve old ninecontrol checks byexplicitselectors; rootcombinedtypes/build/browser aftervalidated workerintegration asneeded."
       }
     },
     {
@@ -1533,6 +1548,11 @@
           "command": "node node_modules/vitest/vitest.mjs run src/domain/learning; node node_modules/typescript/bin/tsc --noEmit (pwa through run-control)",
           "revision": "8ee76e6910592504faa7d52fcae5c7e3ecd87de2",
           "result": "PASS29learning tests/window12-rng-combined-unit-20261017, combined strict types/window12-rng-combined-types-20261017. Native8seedcases/15focused worker tests/scopedtypes already passed6751b4d9, not recaptured. Private helpers not in product barrel; no browser/App/fullgenerator claim."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback src/features/details src/app/routes.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (pwa rootguard)",
+          "revision": "8b4b49cc609aad0dce46eedbb252ae479a843a3a plus currentcardAssignment tree",
+          "result": "PASS114combinedunitchecks/window13-builtin-card-combined-unit,combinedstrict types/build/window13-current-cards-build. Builtinworker c8a46052first32nativefullobjects/40focusedtests/scopedtypes alreadypassed, not recaptured. IncludesexactsignedLongseeds/extrema/hash/fingerprints/nativealiases/6families/7skills/support/4mics/transfer/override draws/octavelift/provenancereplay/frozenvalues/boundedvalidation/generic evidencebegin. Rootreview no materialfindings. PrivateUI currentcards actualbrowser stillpending; buildshell recordedseparately. No fullT14 scheduler/pattern/corpus/sessionrepair/audio/UI/deviceclaim."
         }
       ],
       "progress": [
@@ -1549,7 +1569,8 @@
         "2026-10-17T11:40:01.081136+00:00 Prebranch: primaryd43567157d8be5028c81b33b33386dc98d459083 clean; siblingf9330517 clean/idle; pureT12model0fab9288 accepted. SameSol/highworker onlycheckpoint1 RNG/hash8nativeanchors; root disjointproductPlaybackUI preparation/contracts/integration. Lastlive25%fivehour/75%weekly underweekly100override.",
         "2026-10-17T11:50:07.443998+00:00 Pre-integration: primary3861627a88ae19222afe1348f13b485dc35b1d65 clean; worker6751b4d9e9ec97d4562be14cbe7c9d5015eadb35 clean, one LunaUI worker active in separate sibling. Root reviewed private RNG156lines/tests111/native producer134 and license pins; 8nativecases/15tests/scopedtypes passed. One fixture-loader-only UTF16 adapter correction, native expected values unchanged. All branches/evidence preserved; no fullT14completion.",
         "2026-10-17T12:05:33.683697+00:00 Checkpoint2claim: primaryde8b8c494db8017533a79dd9dd5c562ac63258d4 clean, existingSol sibling6751b4d9clean/idle; preserveallrefs/ignoredproofs. LunaUI9dbdb2edclean/idle afterproductde8b8c49 28units/types/build+4Chrome andcorrectedactualnarrowimage. SameSol/highonlyboundedbuiltin generator6paths, no parallelrootlearning edits. Last68%five-hour/82%weekly; follow live70/80boundary, sourcecancheckpointunvalidatedifinterrupted.",
-        "2026-10-17T17:13:16.558203+00:00 Window13resume: primary8f3cc2638e83dd48dd4c587d7a920768efc1562d clean; existing6751b4d9sibling ONLY dirtyintentWORKLOG, bothguards0recovery,no ownedprocess, agentsidle. Live0%fivehour/83%weekly ordinarytrue reset1792275143; prior1792254573 passed, weeklyresetnotblocking. SameSol/highclaim6paths unchanged; rootdisjointT12 boundedsource/displayprojection next. Preserveallrefs/artifacts;no newtree/branch/modelaction."
+        "2026-10-17T17:13:16.558203+00:00 Window13resume: primary8f3cc2638e83dd48dd4c587d7a920768efc1562d clean; existing6751b4d9sibling ONLY dirtyintentWORKLOG, bothguards0recovery,no ownedprocess, agentsidle. Live0%fivehour/83%weekly ordinarytrue reset1792275143; prior1792254573 passed, weeklyresetnotblocking. SameSol/highclaim6paths unchanged; rootdisjointT12 boundedsource/displayprojection next. Preserveallrefs/artifacts;no newtree/branch/modelaction.",
+        "2026-10-17T17:24:15.240008+00:00 Pre-integration: root3cd20c3fa9969fa03dfaf009bb00c0cf04c13ef6 withownedcurrentcarddirty paths, worker c8a46052clean/idle, bothguards0recovery; sixlearningpaths only, acceptedRNG unchanged. Source/provenance/nativeoracle reviewed, scalar-onlytargetsnapshot/deepfrozen independent outputs/nativeLongdraws/UTF16identities correct. No pendingapproval rejection; one testwrite timeoutneverexecuted thenexplicitlypermittedsmallerretry passed. Last25%/87%; weekly90checkpointthencontinue100. FullT14open."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1618,8 +1639,8 @@
           "pwa/src/domain/learning/index.ts"
         ],
         "scope": "Checkpoint2 builtin-only factory/generation frozen generator-contracts.d4356715. Reuse accepted private RNG unchanged; actual Kotlin2.2.10/unchanged native generator/theory outputs24..32 new cases maximum; do not recapture RNG/assessment/evidence. Exclude scheduler/pattern/corpus/settingsstorage/sessionrepair/microphone/audio/UI/assessment/evidence/sharedcontracts/dependencies. Snapshot known fields once, canonical exactLong seed, deeplyfrozen independent rich output, native draworder/UTF16fingerprints.",
-        "status": "Resumed existing claim after verified ordinary allowance0%five-hour/83%weekly, applicable priorreset passed. Existing6751branch retains ONLY datedintentWORKLOG; no code/fixtures/tests previouslystarted, no duplicateworker.",
-        "nextAction": "Same Sol/high worker inspects preservedintent/currentguard then resumes builtin-only source/native24..32cases/scopedchecks, small recoverable checkpoints. No prior acceptedfixture recapture. Root owns disjoint nextT12projection/integration.",
+        "status": "ACCEPTED builtinfactory/generator c8a46052 normallymerged; combined114unitchecks/types/buildPASS firstrootchecks.32independentnativeexerciseobjects/40focusedworkerchecks; exactsourcehashes inWORKLOG. FullT14scheduler/pattern/corpus/sessionrepair remainopen.",
+        "nextAction": "After currentcardbrowser acceptance, nextbounded native selectTarget/unlock scheduler proposal/contract; no builtin/RNG/assessment/evidence recapture. Keep rootsharedcontracts andacceptedstorage boundaries.",
         "recoveryReceipt": {
           "path": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-checkpoint2-allowance-window12.md",
           "sha256": "ff35163d570f73efe8a8d98349b9a61b90fa2162d160d9fe119b77f852d10d16",

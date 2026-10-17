@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-17T17:13:16.558203+00:00. Window13 live0%five-hour/83%weekly ordinarytrue; priorfive-hourresetpassed, RESUME existing builtin-generator claim on6751b4d9sibling with ONLY dirtyintentWORKLOG, no codepreviouslystarted. Primary8f3cc2638e83dd48dd4c587d7a920768efc1562dclean,bothguards0recovery/noownedprocess,bothworkersidlebefore sameSol/highdispatch. No acceptedproof repetition. Rootdisjoint nextT12projection/integration; productPlaybackde8b8c49/final4Chrome accepted. Weekly100/fivehour70/80 unchanged; allrefs/artifacts preserved.
+Updated 2026-10-17T17:25:21.793190+00:00. Builtinfactory/generator c8a46052 normallymerged andACCEPTED after114combinedlearning/playback/details/routes units/strict types/build35bce06fad72. Worker32NEWnativefullobjects/40focusedtests firstpassed, RNG unchanged, no fixture recapture. FullT14scheduler/pattern/corpus/sessionrepair open. Rootcurrentcardband/types/buildready, actual5Chrome next; ownedUI/test/css/contract/worklog dirtypreserved, no browseracceptanceyet. Bothworkersidle; primary3cd20c3fplusbuiltinmerge. Last28%five-hour/88%weekly, checkpointat90thencontinue100; fivehour70/80 unchanged. Preserveallrefs/evidence.
 
 ## Authority and completion
 
