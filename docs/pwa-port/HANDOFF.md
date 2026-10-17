@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-17T11:40:01.081136+00:00. Ownerweekly100policy active,fivehour70/80unchanged. T12puremodel0fab9288 accepted14native/6unit/types/build. Generatorcontract frozend43567157d8be5028c81b33b33386dc98d459083 +strict typesPASS. Datedprebranch: sameSol/high preview_owner reusescleanf9330517 sibling on newcodex/pwa-aural-generator fromexactbase; checkpoint1 ONLY privateKotlin2.2.10 RNG/hash8nativeanchors thenidle. RootdisjointPlaybackUI/contracts/integration. Last25%/75%. Preserve all branches/work/oldfixtures; nofullgeneratoruntilrootfollowup.
+Updated 2026-10-17T11:44:15.224142+00:00. Ownerweekly100/fivehour70/80 policy active,last33%/76%. T12puremodel0fab9288 accepted14native/6units/types/build; newprivateSectionPlaybackController PASS12coveringunits/strict types,syncgesture/silentscrub/revisionlifecycleguard/nativeFloatconfig/sectionreplace/permanentrelease. No Appcontrols yet. SoleSol/highworker oncodex/pwa-aural-generator fromd4356715 owns6RNGpaths;8pinnedKotlin2.2.10 nativeanchors captured,tests/types/commitpending. Do not duplicate/integrateuntilvalidatedreviewedtip; preserve allwork.
 
 ## Authority and completion
 

@@ -1325,11 +1325,18 @@
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
           "revision": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c plus exact modelAssignment.testedSha256 tree committednext",
           "result": "PASS firstchecks:14NEWnative cases9123bytes,6units1.79s,strict types/build43e5a745cf9funchanged. Guards window12-playback-model-native/unit/build-20261017. Only Compose remember wrapper replaced with run in fixture; native leaf semantics unchanged,real models/theorycompiled; no existing fixturecapture repeated. RawJSONdefaults/restcase/0beat/default32/contentrelease/fractionalend/Floatclamp40..240 verified. Browser bounds/NaNtempo rejection/frozen snapshots tested. No App/productcontrol/physicalT12acceptance."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node node_modules/typescript/bin/tsc --noEmit (pwa via rootguard)",
+          "revision": "04556ebab017ac558236150b4c18216e171fa10f plus controlsAssignment.testedSha256 tree committednext",
+          "result": "PASS12unit checks961ms/window12-controls-unit-20261017 andstrict types/window12-controls-types-20261017.6controllerfakegroups: lazyfactory/syncgesture/nativeFloatconfig,requested0BPM,full/rootonly/mix/wave/arp,paused/active/end/cancelscrub,revisionguardafterlifecycle,sectionreplacementandindependentfrozenstate,invalidcontrols/permanentidempotentrelease. No context/audio/browser/productclaim; buildnotrerunforunbundledprivateclass."
         }
       ],
       "progress": [
         "2026-10-17T11:35:13.258028+00:00 Explicit development-gate refinement: T08composed-stream-runtime accepted8ee74c09(186units/types/build,2composed+2sinkChrome). It is sufficient for bounded T12puremodel/product development. T08parent remainsin_progress; T26/T27release/device gates unchanged. Firstslice puremodel only, not completedT12. Root disjointfrom soleSol/high read-onlyT14proposal, all priorproofs preserved. Last11%fivehour/73%weekly under ownerweekly100override.",
-        "2026-10-17T11:37:44.976368+00:00 puresectionpreparation accepted; T12in_progress, productcontrols/card/timeline/home/sectionintegration open. Explicit development milestone permits work, fullT08/T26release/device gates retained. Source/fixtures standalone; modelbuilddoesnotchangeproductbundle."
+        "2026-10-17T11:37:44.976368+00:00 puresectionpreparation accepted; T12in_progress, productcontrols/card/timeline/home/sectionintegration open. Explicit development milestone permits work, fullT08/T26release/device gates retained. Source/fixtures standalone; modelbuilddoesnotchangeproductbundle.",
+        "2026-10-17T11:42:07.305289+00:00 Root starts privatePlaybackcontroller on04556ebab017ac558236150b4c18216e171fa10f; nativePlaybackViewtempo0..200/arpeggio8steps/mix0..1,PlaybackMenus transpose-12..12 andInstrumentSessionfallbackCLARINET inspected. One Sol/high RNGworker disjointlearning paths; rootdoesnoteditcontracts/audio. No fullT12claim; weekly100/fivehour70/80.",
+        "2026-10-17T11:44:15.224142+00:00 Privatecontrollerchecks/typesPASSfirstchecks; sourcepatterns reviewed. Only3privatefeaturepaths, no App/audio/contracts/learning changes. SameSol/highworkerRNGnative8anchorsPASSbuttypes/fakes/commitpending; no duplicateworker."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1353,6 +1360,22 @@
           "pwa/src/features/playback/section-model.test.ts": "d79d42f73624c9703b172952e98027a20be710ef0a3c2456e201ec1a259d96d6",
           "pwa/src/features/playback/fixtures/generate-native.py": "b89b4cd6d61c1c081aa6a9c943d660842e093db6dfcf3d3ec33987540e62c0a9",
           "pwa/src/features/playback/fixtures/native-section.json": "98061b76600f0e6bf6bf20d12b6341af63d957c852a4f2f9dc28217fac584e24"
+        }
+      },
+      "controlsAssignment": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "04556ebab017ac558236150b4c18216e171fa10f",
+        "ownedPaths": [
+          "pwa/src/features/playback/controller.ts",
+          "pwa/src/features/playback/controller.test.ts",
+          "pwa/src/features/playback/WORKLOG.md"
+        ],
+        "scope": "Bounded sectionPlayback controller only: lazyborrowed transport creation, nativeFloatconfig defaults/ranges andsilent scrub intent/revision lifecycleguard, section switch/reset/pause/permanentrelease. Reuse accepted puresectionmodel/PlaybackTransport unchanged. No React/App/routes/audio/kernel/learning/dependency edits yet.",
+        "nextAction": "Namedprivatecontrollercheckpoint; next rootclaims productPlayback route/view/browser, reuse acceptedmodel/controller/transport. No fullT12claim.",
+        "status": "PASS12covering playback/model/timeline unitchecks andcombinedstrict types firstchecks; source reviewed. ActualproductUI/browser notimplemented.",
+        "testedSha256": {
+          "pwa/src/features/playback/controller.ts": "82981a06cea89002540ba05445c3bb8543176d17fa2e03479aad46cb8d628957",
+          "pwa/src/features/playback/controller.test.ts": "859165379eb703a85abd1a033d180d8bfa9a4ccaf25b63aa4fdc988b27f243a8"
         }
       }
     },
@@ -1822,16 +1845,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-17T11:40:01.081136+00:00",
-    "sourceCommit": "d43567157d8be5028c81b33b33386dc98d459083",
+    "date": "2026-10-17T11:44:15.224142+00:00",
+    "sourceCommit": "04556ebab017ac558236150b4c18216e171fa10f",
     "usageObserved": {
-      "fiveHourUsedPercent": 25,
-      "weeklyUsedPercent": 75
+      "fiveHourUsedPercent": 33,
+      "weeklyUsedPercent": 76
     },
     "fiveHourResetUnix": 1792254573,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Strict typed frozen generator contract ready; bounded RNG/hash checkpoint1 assigned beforefullgeneration.",
+    "reason": "PrivateT12controller accepted12units/types; soleSol/high RNGcheckpoint1 native8anchorscaptured, workerchecks pending.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T16:51:44.987830+00:00",
@@ -1895,7 +1918,7 @@
       "commit": "e084ccb601e2e7918e922574c62a7d95345984d6"
     },
     "usageAvailability": "Ordinaryusageallowedtrue,last1%/71%; refresh beforelargework.",
-    "nextAction": "Under own guard reuse cleanf9330517 sibling on new absent branch from exact frozenbase; preserve all priorbranches. Save small receipts and validated RNG/helper checkpoint thenidle/report; nophase2withoutrootfollowup. Newweekly100/fivehour70/80 policy applies, no credits/resets.",
+    "nextAction": "Checkpointrootcontroller; root prepares productPlaybackroute/view whileexistingRNGworkerfinishes validation. Do not integrate worker before reviewed validatedtip. Ownerweekly100/fivehour70/80 applies.",
     "latestAcceptedProductTree": {
       "baseCommit": "8ee74c0960c64cdf328055bd7b9522295f8c0263",
       "shell": "43e5a745cf9f",
