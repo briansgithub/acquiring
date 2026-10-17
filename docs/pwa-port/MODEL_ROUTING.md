@@ -49,3 +49,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-16T17:53:16.516758+00:00 song_ui_review gpt-6-luna/medium performed read-only exact native optionalcomplexity/UI review, no edits/branch/tests. Coordinator runtime unknown/unchanged implemented root11ownedpaths and accepted22unit/types/build+4finalproductChrome. Bothworkersidle; no newassignment at69%weekly withoutfreshusage.
 
 2026-10-16T17:56:09.596140+00:00 preview_owner gpt-6.1-sol/high received read-onlyT14generator proposal on existingf9330517tree. Its FIRSTusagecheck was70%weekly, so no nativeinvestigation/check/sourceedit/branch began; saved ignored no-findings receipt thenidle. Rootruntimeunknown/unchanged. Weekly49%fivehour/70%weekly cutoff; no newassignment untilapplicablecapacityreturn.
+
+2026-10-17T11:31:57.366729+00:00 OWNER weeklyoverride to0%remaining supersedes historicalweekly70%cutoff; fivehour70/80unchanged. Reuse samepreview_owner Sol/high for boundedread-onlyT14proposal afterpolicycheckpoint; no newworker/modelchange. Weekly90%checkpointthencontinue,100%/ordinaryexhaustionstop; no credit/resetactions.

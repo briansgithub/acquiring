@@ -1389,7 +1389,8 @@
         "2026-10-16T01:36Z integration intent:primary79732fc6clean,worker c82473a3clean/idle and reviewed five-file scope,no owned helper/server/test process or unresolved primary guard run. Live1%five-hour/24%weekly;old reset passed,new1792132396/1792653278. Normal merge exact evidence tip,then actual combined check. No worker spawned and no source reimplementation;preserve Android801cf798 and every branch/worktree/profile.",
         "2026-10-16T01:39Z normal evidence mergefb3f23b1accepted on actual combined revision:317unit/1input/types/build PASS first run. Worker branchc82473a3clean preserved. No producer/browser/catalog recapture needed. Full T14 generator/scheduler/session repair remains open.",
         "2026-10-16T17:54:27.412784+00:00 primary5cf90c24 T11complete/clean; existing Sol/high worker/tree f9330517 clean/idle, no branchchange. Root persists one bounded read-only T14generator-contract proposal. Lastlive48%/69%, no source/dependency changes; no duplicateworker or fixturecapture.",
-        "2026-10-16T17:56:09.596140+00:00 weeklyboundary70%/fivehour49%; Sol/high firstcheck already70%, stopped without nativeinvestigation. Ignored no-findings receipt digest d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8 preserved in existing sibling; workeridle/no source/branch changes. RootT11completed5cf90c24. No work/check/newassignment afterboundary; checkpoint only."
+        "2026-10-16T17:56:09.596140+00:00 weeklyboundary70%/fivehour49%; Sol/high firstcheck already70%, stopped without nativeinvestigation. Ignored no-findings receipt digest d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8 preserved in existing sibling; workeridle/no source/branch changes. RootT11completed5cf90c24. No work/check/newassignment afterboundary; checkpoint only.",
+        "2026-10-17T11:31:57.366729+00:00 owner overrides weekly70%cutoff with runweeklyto0%remaining. Root4dbef998 clean, siblingf9330517 preserved/idle;guard0recovery. No sourceinvestigation previouslydone. Resume same read-onlyproposal afterpolicycheckpoint, no duplicate."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1404,12 +1405,12 @@
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "branch": "codex/pwa-stream-owner",
         "baseCommit": "f9330517354849f49f87a566c83378ce4e1158b4",
-        "status": "DEFERRED at70%weekly on workerfirstusagecheck. No native source investigation/check began; ignored no-findings receipt saved, workeridle.",
+        "status": "Resume read-only proposal under owner weekly100%override; no source findings yet.",
         "ownedPaths": [
           ".artifacts/pwa-port/t14-generator-proposal-window11.md"
         ],
         "scope": "Locate frozen native deterministic generator/target selection entry point and propose one smallest pure-port contract with exact semantics, dependencies and next fixture cases. Reuse accepted assessment/evidence/nativecases. Do not port entire generator/scheduler/sessionrepair or regenerate datasets.",
-        "nextAction": "Await applicable weeklycapacity, then resume same bounded read-only native generator proposal; no source assignment/contract yet. No newworker beforefreshusage bothbelow70%.",
+        "nextAction": "Same Sol/high worker resumes bounded nativegenerator proposal with one ignored receipt; no branch/source/fixture changes. Root contract beforeimplementation. Fivehour70/80cutoff; weeklyuseuntil0%remaining, checkpointoften/no creditreset actions.",
         "receiptPath": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-proposal-window11.md",
         "receiptSha256": "d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8"
       }
@@ -1758,16 +1759,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-16T17:56:09.596140+00:00",
-    "sourceCommit": "5cf90c2442a23d22d3df70263ef2aeaf40a0d273",
+    "date": "2026-10-17T11:31:57.366729+00:00",
+    "sourceCommit": "4dbef9980ce6707ee93d8dc448721530089a694e",
     "usageObserved": {
-      "fiveHourUsedPercent": 49,
-      "weeklyUsedPercent": 70
+      "fiveHourUsedPercent": 1,
+      "weeklyUsedPercent": 71
     },
-    "fiveHourResetUnix": 1792187464,
+    "fiveHourResetUnix": 1792254573,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Weekly70% no-new-work threshold. T11complete5cf90c24; next read-onlyT14proposal deferred before investigation. All workersidle.",
+    "reason": "Owner explicitly authorizes weekly ordinaryallowance to0%remaining;71%weekly no longerblocks. Fivehour70/80preserved.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T16:51:44.987830+00:00",
@@ -1777,7 +1778,24 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Prior cutoff reset passed; live counters permit bounded resumption."
     },
-    "activeWorker": null,
+    "activeWorker": {
+      "owner": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "branch": "codex/pwa-stream-owner",
+      "baseCommit": "f9330517354849f49f87a566c83378ce4e1158b4",
+      "status": "Existing Sol/high read-only proposal resumes after policy checkpoint; no sourcebranch assignment.",
+      "ownedPaths": [
+        ".artifacts/pwa-port/t14-generator-proposal-window11.md"
+      ],
+      "scope": "Locate frozen native deterministic generator/target selection entry point and propose one smallest pure-port contract with exact semantics, dependencies and next fixture cases. Reuse accepted assessment/evidence/nativecases. Do not port entire generator/scheduler/sessionrepair or regenerate datasets.",
+      "nextAction": "Same Sol/high worker resumes bounded nativegenerator proposal with one ignored receipt; no branch/source/fixture changes. Root contract beforeimplementation. Fivehour70/80cutoff; weeklyuseuntil0%remaining, checkpointoften/no creditreset actions.",
+      "receiptPath": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-proposal-window11.md",
+      "receiptSha256": "d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8",
+      "agent": "preview_owner",
+      "task": "T14"
+    },
     "completedWorker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",
@@ -1810,8 +1828,8 @@
       "cwd": "pwa",
       "commit": "e084ccb601e2e7918e922574c62a7d95345984d6"
     },
-    "usageAvailability": "Live weekly70% cutoff applies; no newwork. Current fivehour49% does not overrideweekly.",
-    "nextAction": "Stayquiet before applicableweeklyreset1792653278=2026-10-22T07:14:38Z unless fresh livewindows materiallychange. Nextfivehourreset1792187464 alone does not restorecapacity. At resumption inspectGit/guards/processes/liveusage; bothwindows mustbelow70%, then same bounded T14read-onlyproposal, rootcontractbeforeimplementation. Neverrepeat completedT11/audio/catalogproofs.",
+    "usageAvailability": "Ordinaryusageallowedtrue,last1%/71%; refresh beforelargework.",
+    "nextAction": "Same Sol/high worker resumes bounded nativegenerator proposal with one ignored receipt; no branch/source/fixture changes. Root contract beforeimplementation. Fivehour70/80cutoff; weeklyuseuntil0%remaining, checkpointoften/no creditreset actions.",
     "latestAcceptedProductTree": {
       "baseCommit": "8ee74c0960c64cdf328055bd7b9522295f8c0263",
       "shell": "43e5a745cf9f",
@@ -1846,7 +1864,24 @@
       "receiptSha256": "d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8",
       "agent": "preview_owner",
       "task": "T14"
+    },
+    "automationPolicyUpdate": {
+      "id": "resume-acquiring-pwa-audit",
+      "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
+      "scope": "Preserve hourlyheartbeat/name/target/status/notificationsprompt; replace old combined70/80cutoff with separate fivehour70/80 andweekly100/ordinaryexhaustion, checkpointweekly90thencontinuing.",
+      "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
     }
   },
-  "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates."
+  "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",
+  "usagePolicy": {
+    "authorizedAt": "2026-10-17T11:31:57.366729+00:00",
+    "authorization": "Owner: run weekly to 0% (after being told71%used exceeds saved70%cutoff). Interpreted as use to0%remaining,100%consumed; no credit/reset action.",
+    "fiveHourNoNewWorkUsedPercent": 70,
+    "fiveHourCheckpointAndYieldUsedPercent": 80,
+    "weeklyNoNewWorkUsedPercent": 100,
+    "weeklyCheckpointIntensifyUsedPercent": 90,
+    "weeklyPolicy": "Continue small recoverable slices until weekly ordinary allowance exhausted. At90% save a checkpoint and then checkpoint every small completed step; do not yield merely for weekly70/80/90%. Stop when weekly100%orordinaryUsageAllowed=false or applicable actualreset stillneeded. Fivehour70/80rulesremain.",
+    "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
+    "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00"
+  }
 }

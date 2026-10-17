@@ -6,9 +6,11 @@ Updated 2026-10-14. Entry point: HANDOFF.md; authority: IMPLEMENTATION_PLAN.md a
 
 The five-hour limit is an account usage window, not five hours of guaranteed continuous runtime or a fixed token allowance. Read live five-hour and weekly usage at run start, each completed slice, before delegation, and before a large operation. Other chats/workers can consume the same allowance. Do not estimate a budget from elapsed time, infer a reset, buy credits, or redeem reset credits.
 
-- Below 70% used in both windows: choose the earliest unblocked ready package and one bounded slice. Default one active agent. Optional user-authorized parallelism is at most coordinator plus one worker with disjoint files and frozen contracts; never assume separate quota.
-- At 70% in either window: start no new slice/worker/expensive check. Save currently gathered findings/edits and bounded in-flight results.
-- At 80%, exhaustion, or an applicable unreached recorded reset: checkpoint recoverable state and yield. If the process is cut off before this, the prewritten intent and incremental files are the recovery basis.
+- Owner override2026-10-17: use weekly ordinary allowance down to0%remaining (100%consumed). This supersedes the earlier weekly70%cutoff and weekly80%yield. No credit purchase/reset redemption is authorized.
+- With five-hour usage below70% and weekly ordinary allowance remaining: choose earliest ready bounded slice. At most coordinator plus one worker, disjoint paths/frozen contracts; both share account quota.
+- At five-hour70% start no new slice/worker/expensive check; save in-flight results. At five-hour80% checkpoint and yield until its applicable reset.
+- At weekly90% save a recovery checkpoint and continue small steps, checkpointing after each. Do not stop just for weekly70/80/90%; continue until weekly100% or ordinaryUsageAllowed=false. At exhaustion stop, retain exact next action, and wait for applicable reset. No automatic model switch, purchase or reset redemption.
+- An abrupt shared-account cutoff can still interrupt any step. Persist intent before every mutation/long check, preserve partial results and reconcile side effects before retrying.
 - Same-chat hourly heartbeat resumes authorized work only after capacity returns. It must inspect task/agent/process state and avoid duplicate work. Host/app availability is required. No tight polling, looped failed model calls, unsupervised model switching, or assumption that the scheduler bypasses limits.
 - The current heartbeat resume-acquiring-pwa-audit is reused for authorized implementation; preserve the user's quiet-on-unchanged notification policy. Notify only on completion, a meaningful failure/blocker, or required human action.
 
