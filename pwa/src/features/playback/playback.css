@@ -1,4 +1,5 @@
 .playback-screen { min-width: 0; }
+.playback-screen h2 { overflow-wrap: anywhere; }
 .playback-screen .panel { min-width: 0; }
 .playback-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
 .playback-actions .action { min-width: 44px; min-height: 44px; }

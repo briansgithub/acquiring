@@ -247,3 +247,33 @@ test('Major lock keeps root taps in the source register and reanchors only when 
   await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');await expect(lock).toBeChecked();await expect(band.getByLabel('Display key',{exact:true})).toHaveText('Display: Ab Major');await expect.poll(async()=>(await audio(page)).items[2].stops).toBeGreaterThan(0);
   const path=testInfo.outputPath('major-root-proof.json');await mkdir(resolve(path,'..'),{recursive:true});await writeFile(path,JSON.stringify(await audio(page),null,2));
 });
+
+test('previous pitch cards preserve event keys, written unison and rest barriers with real audio',async({page},testInfo)=>{
+  test.setTimeout(90_000);await instrument(page);await installAndOpen(page);
+  await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Back',exact:true}).click();await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Playback_Context');
+  await page.locator('[data-song-slug="playback-context"]').click();await page.getByRole('button',{name:'Play song',exact:true}).click();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  const band=page.getByRole('region',{name:'At this beat',exact:true}),melody=band.getByRole('group',{name:'Melody cards',exact:true}),lock=band.getByRole('checkbox',{name:'Lock in Major',exact:true});
+  const position=page.getByRole('slider',{name:'Position',exact:true});
+  async function seek(beat:number){await position.focus();await position.press('Home');for(let i=0;i<10&&Number(await position.inputValue())<beat;i++)await position.press('PageUp');expect(Number(await position.inputValue())).toBeGreaterThanOrEqual(beat);expect(Number(await position.inputValue())).toBeLessThan(beat+1);}
+  await page.getByRole('combobox',{name:'Instrument',exact:true}).selectOption('SINE');
+  await expect(melody.getByRole('button',{name:/Play previous melody/})).toHaveCount(0);await seek(2);await expect(melody.getByRole('button',{name:'Play previous melody 1̂',exact:true})).toBeVisible();await expect(melody.getByRole('button',{name:'Play melody 1̂',exact:true})).toBeVisible();await lock.check();
+  const previous=melody.getByRole('button',{name:'Play previous melody 1̂',exact:true}),current=melody.getByRole('button',{name:'Play melody ♭7̂',exact:true});
+  await expect(previous).toBeVisible();await expect(current).toBeVisible();expect((await previous.boundingBox())!.y).toBeLessThan((await current.boundingBox())!.y);
+  expect((await audio(page)).contexts).toHaveLength(0);await previous.focus();await previous.press('Enter');await expect.poll(async()=>(await audio(page)).items.length).toBe(1);await current.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(2);
+  let proof=await audio(page);expect(proof.items[0].hz).toBeGreaterThan(285);expect(proof.items[0].hz).toBeLessThan(305);expect(proof.items[1].hz).toBeGreaterThan(250);expect(proof.items[1].hz).toBeLessThan(275);
+  await seek(3);const low=melody.getByRole('button',{name:'Play previous melody ♭7̂',exact:true}),high=melody.getByRole('button',{name:'Play melody 4̂',exact:true});
+  await expect(low).toBeVisible();await expect(high).toBeVisible();expect((await high.boundingBox())!.y).toBeLessThan((await low.boundingBox())!.y);
+  await seek(4);await expect(melody.getByRole('button',{name:/Play previous melody/})).toHaveCount(0);await expect(melody.getByRole('button',{name:'Play melody 4̂',exact:true})).toBeVisible();
+  await seek(6);await expect(melody.getByRole('button',{name:/Play previous melody/})).toHaveCount(0);await expect(melody.getByRole('button',{name:'Play melody ♭2̂',exact:true})).toBeVisible();
+  await seek(2);await page.getByRole('checkbox',{name:'Root only',exact:true}).check();await expect(band.getByRole('group',{name:'Melody cards',exact:true})).toHaveCount(0);
+  const roots=band.getByRole('group',{name:'Root cards',exact:true}),previousRoot=roots.getByRole('button',{name:'Play previous root 1̂',exact:true});await expect(previousRoot).toBeVisible();await previousRoot.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(3);
+  proof=await audio(page);expect(proof.items[2].hz).toBeGreaterThan(140);expect(proof.items[2].hz).toBeLessThan(155);
+  await seek(3);await expect(roots.getByRole('button',{name:'Play previous root ♭7̂',exact:true})).toBeVisible();await expect(roots.getByRole('button',{name:'Play current root ♭7̂',exact:true})).toBeVisible();
+  await roots.getByRole('button',{name:'Play previous root ♭7̂',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(4);proof=await audio(page);expect(proof.items[3].hz).toBeGreaterThan(125);expect(proof.items[3].hz).toBeLessThan(140);await page.getByRole('button',{name:'Reset',exact:true}).click();await expect.poll(async()=>(await audio(page)).items[3].stops).toBeGreaterThan(0);
+  await expect(roots.getByRole('button',{name:/Play previous root/})).toHaveCount(0);expect((await audio(page)).contexts).toHaveLength(1);
+  await page.getByRole('checkbox',{name:'Root only',exact:true}).uncheck();await seek(2);await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';scrollTo(0,0);});
+  const geometry=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,overflow:[...document.querySelectorAll('body *')].map(e=>({tag:e.tagName,cls:e.className,r:e.getBoundingClientRect().right})).filter(e=>e.r>innerWidth)}));await mkdir(resolve(testInfo.outputPath('geometry.json'),'..'),{recursive:true});await writeFile(testInfo.outputPath('geometry.json'),JSON.stringify(geometry,null,2));
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await melody.getByRole('button').evaluateAll(elements=>elements.every(element=>{const r=element.getBoundingClientRect();return r.width>=44&&r.height>=44;}))).toBe(true);
+  const path=testInfo.outputPath('previous-cards-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});await writeFile(testInfo.outputPath('previous-card-proof.json'),JSON.stringify(await audio(page),null,2));
+});

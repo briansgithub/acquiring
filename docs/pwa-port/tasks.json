@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T21:45:16.096769+00:00",
+  "updated": "2026-10-17T21:58:14.591077+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1324,8 +1324,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "First product current chord, tone, melody and root cards",
-      "nextAction": "Named validated currentcardcheckpoint atweekly90, continue smallsteps/checkpoint each. Next smallHome reference orprevious/interval/relative context afterownclaim; separateSol schedulerproposal pendingrootfreeze.",
+      "slice": "Previous pitch cards accepted; interval sequence audio is the next bounded slice",
+      "nextAction": "Implement frozen interval-audio-contracts.ts purebuilder/onebuffer renderer under nextlivecapacity, then separatelyarbitrate two stableborrowers/UI/actualChrome bothrates. Proposal reviewed, nativeplan accepted; no duplicateworker. Remaining T12 timeline/defaults/positionmemory and T13 singing separate; Libraryscrollapproval pending.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1385,7 +1385,8 @@
         "2026-10-17T17:15:22.514889+00:00 Root disjointT12cardmodel claim from0ff4b24f00e9cccc863b3c15cf5f0ff690788bec; soleSol/highworkerT14builtin6paths. Activeeventnativeclass and interval functions inspected, reuseacceptedtheory; rawnative rests maskpreviousactive event, root skips priorrests whilemelody restbarrier, enharmonic writtenunison distinct. Oneboundedmodelstep; fullT12unaccepted, no repeatexistingproofs. Weekly83%, checkpointat90thencontinue100/fivehour70/80.",
         "2026-10-17T17:19:46.474121+00:00 Event/cardpuremodel accepted beforeproductpresentation. Nativeidentityretained, timed/keyindexcachedonce, no frame-time sorting. SoleSol/highworkerbuiltin32nativefixturesPASS, tests/types pending atlast9%five-hour/85%weekly. Latestroot14%/86%; weekly90checkpointthencontinue100.",
         "2026-10-17T17:28:34.239741+00:00 Currentcardfirstbrowser:4PASSincl actualpreviewframes32016(667ms)/21600(450ms), SINEtone131.117Hz->262.234Hz exactlyoneoctavetranspose/onecontext/sectionrelease/narrowcards. Existingunsupportedcombinedtestfailed Library->hardnavigation BUSY ownership, error-context/trace preserved browser-first. No storage/Libraryscroll investigation orruntimechange. Firstharnessfix splits initialrecover/unmount andlaterinvalid into independent contexts, sameassertions; noRetry/assertionrelaxation. NativePlaybackViewbeginScrubbing explicitstopPreview foundread-only; wire synchronousborrowedpreviewStop for scrub/Reset andaddproof, preserve streamintent. Covering6Chrome next, atmost2fix/retestcycles per failure.",
-        "2026-10-17T17:32:17.952864+00:00 Firstcurrentcards accepted, checkpointatlive39%fivehour/90%weekly, ordinarytrue. Rootsourceownedpaths only, allpriorproofs/refs preserved; Solread-onlyschedulerproposal no trackedchanges, Lunaidle. Weekly90intensifiedcheckpointbutcontinue100, fivehour70/80unchanged. No nativeexpectedchanges or acceptedcatalogrecapture."
+        "2026-10-17T17:32:17.952864+00:00 Firstcurrentcards accepted, checkpointatlive39%fivehour/90%weekly, ordinarytrue. Rootsourceownedpaths only, allpriorproofs/refs preserved; Solread-onlyschedulerproposal no trackedchanges, Lunaidle. Weekly90intensifiedcheckpointbutcontinue100, fivehour70/80unchanged. No nativeexpectedchanges or acceptedcatalogrecapture.",
+        "2026-10-17T21:58:14.591077+00:00 Previouscards accepted: normalmerge4f500086/cda3bb07, stricttypes/build6c7d8e82510b andinitial5ChromePASS/focusedpreviousfix1PASS. Actual48000Hz written pitches, nativeunison/restbarriers/geometry/keyboard/Reset/onecontext; exactproof under playback-previous/browser-fix1; firstfailuretrace retained browser-first. No fullT12/intervalsequence/device acceptance."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1632,9 +1633,70 @@
           "pwa/src/features/playback/playback.css",
           "pwa/src/features/playback/PREVIOUS_CARDS_WORKLOG.md"
         ],
-        "status": "Datedclaim beforebranchreuse; primarycontract/sourceclean, UI9dbclean/idle, Sol40194815clean/idle andacceptedc545c4af177checks/types. OneLuna/mediumworkeronly; rootunknownunchanged ownsrendererproposal/browser/integration. Last48%fivehour/7%weekly.",
+        "status": "ACCEPTED previous root/melody single-pitch cards; worker4f500086 normallymerged cda3bb07. Root strictcombinedtypes/build6c7d8e82510b and6affectedChrome covered: initial5PASS, previouscase overflow fixedcycle1 thenfocusedPASS, independentactualPCM andgeometry. Rootunison previous remainsvisible, melodywrittenunison/restbarrier hidesprevious; sourcekey/Majorlabels/verticalpositions/rawregister/keyboard/44px/320px200%/sharedcontext/Reset covered. No interval sequence or fullT12/device claim.",
         "scope": "Frozenview-contracts comments: previousroot/melody450msrawsourcepitchcards/nativevisibility/writtenunison/verticalpositions, Majorlabels only/nativeeventsourcekeys. Existing currentcards/owner/lifecycle untouched. No sharedcontract/controllers/browserfixtures/tasks/dependencies/sequenceaudio/intervalbutton/singing/persistence edits.",
-        "nextAction": "Underown guard existingUItree newclaimedbranch fromexactbase, persistintent, add2previouscards/style/worklog only/scopedstrict types+diffcheck/validatedcommit thenidle; rootownsactualbrowserfixture/acceptance. Recheckusagebeforeeachstep;70fivehournonew/80yield,weekly100override."
+        "nextAction": "No repeat unchanged previous-card checks. Review read-only interval composition proposal; separately freeze audio boundary before implementation. Visualtimeline/defaults/routepositionmemory/globalMajorpreference/singing remainopen.",
+        "workerTip": "4f50008608ce216e9fb4b77ab94150ea7ec507ba",
+        "mergeCommit": "cda3bb07170a206e983eb3787d21d6e559b4e7a4",
+        "validation": [
+          {
+            "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build",
+            "guard": "window14-previous-fix1-build-20261017",
+            "result": "PASS strictcombinedtypes andproduction shell6c7d8e82510b. Worker fullprojecttypes limitation was absent inprimary."
+          },
+          {
+            "command": "node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --project chrome --grep 'previous pitch cards|Major|musical home|current cards|playback reloads' --output .artifacts/pwa-port/playback-previous/browser-first",
+            "guard": "window14-previous-browser-first-20261017",
+            "result": "Initial5ChromePASS; previouscase actualPCM/nativecardassertionsPASS thenlongtitleoverflowfailed, trace/errorcontext retained. Only scopedh2 wrapping subsequently changed runtime."
+          },
+          {
+            "command": "node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --project chrome --grep 'previous pitch cards' --output .artifacts/pwa-port/playback-previous/browser-fix1",
+            "guard": "window14-previous-browser-fix1-20261017",
+            "result": "PASS1Chrome29.2s/total39.3s afterfixcycle1. Geometry320/320/nooverflow,44px targets/keyboard/nativepositions/rest+unison/rawpitch/sharedcontext/Reset. Fullpageimage visuallyreviewed; readable with expectedtextwrapping. Actual48000Hz450ms21600frames:295.569,262.234,148.896,131.117Hz. Physicalhearing/Safari/trustedtab notclaimed."
+          }
+        ],
+        "sha256": {
+          "pwa/src/features/playback/PlaybackCards.tsx": "0f9f1e2010dcf517239fcb2c105ae8c65b51057818a31eedb3f243eb43bbfd46",
+          "pwa/src/features/playback/playback.css": "f790b96c9ab31d48c5f418babdcc210a2e758e9cb1ec32245afbbe4eb21ac859",
+          "pwa/tests/browser/playback.spec.ts": "cd8904653dd219877ef1e973b05bac3c9b3dfccbd1e1d7d687e27483d1505c41",
+          "pwa/scripts/catalog/make-library-browser-fixture.py": "4f91f67020b75b3e6b66896f41d9a3a018f5a35987b9ea481704e30553217d08"
+        }
+      },
+      "previousCardBrowserIntent": {
+        "owner": "coordinator runtime unknown",
+        "ownedPaths": [
+          "pwa/tests/browser/playback.spec.ts",
+          "pwa/scripts/catalog/make-library-browser-fixture.py",
+          "pwa/src/features/playback/WORKLOG.md"
+        ],
+        "scope": "Actualpreviousroot/melodycard browseracceptance only: extendoptional--playback-major contextfixturewithD4->C4->G4->sameG4->rest->Eb4 melody andsame-root/rest chord cases; actualPCM/sourcekey/Majorlabels/rawpreview/nativevisibility/topbottom/44px/keyboard/scrub+sectioncleanup. No actualcatalog/runtime/Libraryscroll/newnativecapture.",
+        "status": "ACCEPTED oncombinedbuild6c7d8e82510b; optionaltestfixture only, no productioncatalog/source/nativefixture modifications.",
+        "recoveryPaths": [
+          "pwa/.artifacts/pwa-port/playback-previous/browser-first/playback-previous-pitch-ca-11aaf-st-barriers-with-real-audio-chrome/trace.zip",
+          "pwa/.artifacts/pwa-port/playback-previous/browser-first/playback-previous-pitch-ca-11aaf-st-barriers-with-real-audio-chrome/error-context.md"
+        ]
+      },
+      "intervalCompositionProposal": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-session-envelope",
+        "baseCommit": "4019481528afdbed4a4f524ce0292088e58c6306",
+        "status": "COMPLETE read-only64lineproposal reviewed; no tracked edits/capture/checks. Worker40194815 clean/idle, no newassignment.",
+        "scope": "At most80lineignoredproposal: compose accepted staticrenderer with accepted PreviewOwner render injection and root interval3step plan, onebuffer/gesture/clock, native450ms previous/current/both, rawpitch/manualtransposeonce/currentpreset, cancellation mutualexclusion/lifecycle. Preserve accepted DSP/owner API; identify smallest interface/tests/browser proof. No source/contract edits or native recapture.",
+        "nextAction": "Inspect only named existing source and submit ignored proposal+SHA, cleanstatus/usage, thenidle. Fivehour70nonew/80yield; weekly100override. Rootfreezeslatercontract.",
+        "path": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t12-interval-composition-window14.md",
+        "sha256": "6f24691c6aed818106e5c48a6e727c70eb53ad4bda2c2e9736a9fa207769f102"
+      },
+      "intervalAudioContractIntent": {
+        "owner": "coordinator runtime unknown",
+        "ownedPaths": [
+          "pwa/src/features/playback/interval-audio-contracts.ts"
+        ],
+        "scope": "Types/comments only for next pureintervalrequestbuilder+onebuffer renderer. PreservePreviewOwner/staticDSP/native6plans. No worker/UI/actualaudioassignment yet; previouscardfix1browser inprogress.",
+        "status": "Frozen types/comments only, strictcombinedtypesPASS window14-interval-audio-contract-types-20261017. Notimplemented/assigned/no runtimeclaim.",
+        "recovery": "Initialintent command didnotrecord/exit1 duringprior browserguard; editguard wroteuntrackedtypefile thenKeyError beforemetadata. InspectedGit/recordedfailedreceipt/deadPIDs, no recoveryRequired. Unique reconcileintent/edit bothPASS preservedexactfile; stricttypesPASS. No sourceworker/actualaudio started."
       }
     },
     {

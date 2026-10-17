@@ -35,6 +35,8 @@ with closing(sqlite3.connect(path)) as db:
             rows.append((slug,'Playback fixture',slug,payload))
     if args.playback_major:
         context={'2':{'sectionName':'Modulation','sectionIndex':0,'chords':[{'root':1,'type':5,'beat':1,'duration':1},{'root':1,'type':5,'beat':2,'duration':1}],'metadata':{'keys':[{'tonic':'D','scale':'major','beat':1},{'tonic':'C','scale':'minor','beat':2}]}},'10':{'sectionName':'New key','sectionIndex':1,'chords':[{'root':1,'type':5,'beat':1,'duration':2}],'metadata':{'keys':[{'tonic':'Ab','scale':'major','beat':1}]}}}
+        context['2']['notes']={'melody1':[{'sd':'1','beat':1,'duration':1},{'sd':'1','beat':2,'duration':1},{'sd':'5','beat':3,'duration':1},{'sd':'5','beat':4,'duration':1},{'rest':True,'beat':5,'duration':1},{'sd':'3','beat':6,'duration':1},{'sd':'1','beat':7,'duration':1}]}
+        context['2']['chords'].extend([{'root':1,'type':5,'beat':3,'duration':1},{'isRest':True,'beat':4,'duration':1},{'root':5,'type':5,'beat':5,'duration':1}])
         rows.append(('playback-context','Playback fixture','Playback_Context',json.dumps(context).encode('utf-8')))
     for slug,artist,title,blob in rows:
         db.execute('INSERT INTO songs VALUES(?,?,?,?,?,?)',(slug,artist,'Updated Search' if args.variant=='new' and slug=='a-alpha' else title,'https://example.test','complete',blob))
