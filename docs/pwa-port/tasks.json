@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T21:59:26.447063+00:00",
+  "updated": "2026-10-17T22:26:14.067104+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1697,6 +1697,24 @@
         "scope": "Types/comments only for next pureintervalrequestbuilder+onebuffer renderer. PreservePreviewOwner/staticDSP/native6plans; primarystrict typesPASS, no runtime/Appimport or workerimplementation yet.",
         "status": "Frozen types/comments only, strictcombinedtypesPASS window14-interval-audio-contract-types-20261017. Notimplemented/assigned/no runtimeclaim.",
         "recovery": "Initialintent command didnotrecord/exit1 duringprior browserguard; editguard wroteuntrackedtypefile thenKeyError beforemetadata. InspectedGit/recordedfailedreceipt/deadPIDs, no recoveryRequired. Unique reconcileintent/edit bothPASS preservedexactfile; stricttypesPASS. No sourceworker/actualaudio started."
+      },
+      "intervalAudioAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-interval-preview-audio",
+        "baseCommit": "a34928ad487bf03450688b0d7ce7faa82c014b26",
+        "priorBranch": "codex/pwa-session-envelope",
+        "priorTip": "4019481528afdbed4a4f524ce0292088e58c6306",
+        "ownedPaths": [
+          "pwa/src/features/playback/interval-preview-audio.ts",
+          "pwa/src/features/playback/interval-preview-audio.test.ts",
+          "pwa/src/features/playback/INTERVAL_AUDIO_WORKLOG.md"
+        ],
+        "status": "Datedclaim before branch reuse; primarya34928ad and sibling40194815 clean, workersidle/guards0/no nodepython process. Live69%fivehour/11%weekly. Recheck beforedelegation: >=70 means no worker/source/check start, leave claimunstarted.",
+        "scope": "Pure builder andonebuffer renderer only under frozeninterval-audio-contracts.ts. Firstsmallcheckpoint requestbuilder only ifcapacitylimited; no UI/owners/contracts/deps/exports/acceptedDSP/nativecapture. Read existing64lineproposal onceonlyifneeded; sixnativeplansalreadyaccepted. Unitgetter/immutability/nativewrap/unison/transpose/resourcebounds and exact3staticsegments44100/48000/seededstrings/cancellation; no actualsoundclaim.",
+        "nextAction": "Recheckliveusage; if<70, reuseexistingsoleSol/high underguard/newclaimedbranch exactbase, persistownintent beforeedit. At70 start no newstep/check, save partialhonestly asvalidated orUNVALIDATED andidle;80yield. No duplicateworker/credit/reset/model action. Rootintegration/browser separate."
       }
     },
     {
