@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T17:38:42.086008+00:00",
+  "updated": "2026-10-17T17:45:30.506367+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1617,7 +1617,8 @@
         "2026-10-17T12:05:33.683697+00:00 Checkpoint2claim: primaryde8b8c494db8017533a79dd9dd5c562ac63258d4 clean, existingSol sibling6751b4d9clean/idle; preserveallrefs/ignoredproofs. LunaUI9dbdb2edclean/idle afterproductde8b8c49 28units/types/build+4Chrome andcorrectedactualnarrowimage. SameSol/highonlyboundedbuiltin generator6paths, no parallelrootlearning edits. Last68%five-hour/82%weekly; follow live70/80boundary, sourcecancheckpointunvalidatedifinterrupted.",
         "2026-10-17T17:13:16.558203+00:00 Window13resume: primary8f3cc2638e83dd48dd4c587d7a920768efc1562d clean; existing6751b4d9sibling ONLY dirtyintentWORKLOG, bothguards0recovery,no ownedprocess, agentsidle. Live0%fivehour/83%weekly ordinarytrue reset1792275143; prior1792254573 passed, weeklyresetnotblocking. SameSol/highclaim6paths unchanged; rootdisjointT12 boundedsource/displayprojection next. Preserveallrefs/artifacts;no newtree/branch/modelaction.",
         "2026-10-17T17:24:15.240008+00:00 Pre-integration: root3cd20c3fa9969fa03dfaf009bb00c0cf04c13ef6 withownedcurrentcarddirty paths, worker c8a46052clean/idle, bothguards0recovery; sixlearningpaths only, acceptedRNG unchanged. Source/provenance/nativeoracle reviewed, scalar-onlytargetsnapshot/deepfrozen independent outputs/nativeLongdraws/UTF16identities correct. No pendingapproval rejection; one testwrite timeoutneverexecuted thenexplicitlypermittedsmallerretry passed. Last25%/87%; weekly90checkpointthencontinue100. FullT14open.",
-        "2026-10-17T17:29:34.067093+00:00 SoleSol/high read-only schedulerproposal claim onexistingclean c8a46052, builtinaccepted951e321c/root114checks/types/build. RootownsdisjointcurrentcardUI/cancellationproof pendingbrowser, dirtypaths preserved. No newbranch/tree/sourceassignment. Latest34%five-hour/89%weekly, at90checkpointthencontinue100; no credit/reset/modelaction."
+        "2026-10-17T17:29:34.067093+00:00 SoleSol/high read-only schedulerproposal claim onexistingclean c8a46052, builtinaccepted951e321c/root114checks/types/build. RootownsdisjointcurrentcardUI/cancellationproof pendingbrowser, dirtypaths preserved. No newbranch/tree/sourceassignment. Latest34%five-hour/89%weekly, at90checkpointthencontinue100; no credit/reset/modelaction.",
+        "2026-10-17T17:45:30.506367+00:00 Builtin scheduler ACCEPTED normalmerge5508a0a03f090d750c62626394f4504d8e4c90a8: first24native/29focused/scopedtypes, root143combined/strict typesPASS. Exactnativehelperversion/cap/seedxor/order/ties/masteredreview/micshuffle/support/transfer. Initialrawbyteprovenanceassertion CRLFvsGitLF only, normalizedcomparison+gitdiffPASS, no source/testfailure. Oldfixtures/accepteddependencies unchanged."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1737,8 +1738,21 @@
           "pwa/src/domain/learning/index.ts"
         ],
         "scope": "Pure builtin unlock/target selection only, frozen scheduler-contracts; <=24NEW native cases, unchanged801cf798 helpers/select and pinnedKotlin2.2.10. Reuse accepted evidence/RNG/factory unchanged; exactLongXOR/order/micshuffle/version distinction. No generation/pattern/corpus/session/audio/UI/sharedcontracts/dependencies/oldfixture recapture.",
-        "status": "Claimed before new narrowbranch in existing clean c8a46052 sibling; root alone integrates/tasks/contracts. SoleSol/high worker, Lunaidle.",
-        "nextAction": "Worker refreshusage/guard, persist intent, capture new native fixture checkpoint then source/tests/scopedtypes and clean validated commit. Weekly90+ checkpoint eachsmallstep; fivehour70nonew/80yield; stopweekly100/ordinaryfalse, preserve exactpartials."
+        "status": "ACCEPTED builtin scheduler/unlocks22af4635 normallymerged;24NEWnativecases/29focusedworkerchecks/scopedtypes firstPASS, root143combinedchecks/strictcombinedtypes PASS. Pure42cellbuiltinselection only; no fullT14/session/pattern/corpus/audio/UI/deviceclaim.",
+        "nextAction": "T14 pattern/corpus target generation/selection andsaved-sessionrepair remainreadyfor boundedproposal/contract inlatercapacity. Existingworker22af clean/idle. No currenttaskblockingownercredentials; fullT12/T13/T15plusguestfeatures continueindependently.",
+        "mergeCommit": "5508a0a03f090d750c62626394f4504d8e4c90a8",
+        "validation": [
+          {
+            "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback src/features/details src/app/routes.test.ts",
+            "guard": "window13-scheduler-combined-unit-20261017",
+            "result": "PASS143checks/13files firstattempt. Native24 targets andunlock matrices/Longseed/lane/mic/immutableinputs; includes acceptedlearning/playback/details/routes."
+          },
+          {
+            "command": "node node_modules/typescript/bin/tsc --noEmit",
+            "guard": "window13-scheduler-combined-types-20261017",
+            "result": "PASSstrictcombinedtypes firstattempt. Appbuild7674a0134d8c unchanged; purelearningbarrel not imported byApp, no unnecessary browser/buildrecapture."
+          }
+        ]
       }
     },
     {
