@@ -1336,7 +1336,8 @@
         "2026-10-17T11:35:13.258028+00:00 Explicit development-gate refinement: T08composed-stream-runtime accepted8ee74c09(186units/types/build,2composed+2sinkChrome). It is sufficient for bounded T12puremodel/product development. T08parent remainsin_progress; T26/T27release/device gates unchanged. Firstslice puremodel only, not completedT12. Root disjointfrom soleSol/high read-onlyT14proposal, all priorproofs preserved. Last11%fivehour/73%weekly under ownerweekly100override.",
         "2026-10-17T11:37:44.976368+00:00 puresectionpreparation accepted; T12in_progress, productcontrols/card/timeline/home/sectionintegration open. Explicit development milestone permits work, fullT08/T26release/device gates retained. Source/fixtures standalone; modelbuilddoesnotchangeproductbundle.",
         "2026-10-17T11:42:07.305289+00:00 Root starts privatePlaybackcontroller on04556ebab017ac558236150b4c18216e171fa10f; nativePlaybackViewtempo0..200/arpeggio8steps/mix0..1,PlaybackMenus transpose-12..12 andInstrumentSessionfallbackCLARINET inspected. One Sol/high RNGworker disjointlearning paths; rootdoesnoteditcontracts/audio. No fullT12claim; weekly100/fivehour70/80.",
-        "2026-10-17T11:44:15.224142+00:00 Privatecontrollerchecks/typesPASSfirstchecks; sourcepatterns reviewed. Only3privatefeaturepaths, no App/audio/contracts/learning changes. SameSol/highworkerRNGnative8anchorsPASSbuttypes/fakes/commitpending; no duplicateworker."
+        "2026-10-17T11:44:15.224142+00:00 Privatecontrollerchecks/typesPASSfirstchecks; sourcepatterns reviewed. Only3privatefeaturepaths, no App/audio/contracts/learning changes. SameSol/highworkerRNGnative8anchorsPASSbuttypes/fakes/commitpending; no duplicateworker.",
+        "2026-10-17T11:49:25.269771+00:00 Pre-branch claim: primary21d7bea337cf8c3249690ec91213cd699d268cd8 clean after props/types checkpoint; clean UI sibling e968599b reused on new codex/pwa-playback-ui, old library branch preserved. Sol RNG6751b4d9 clean/idle awaiting root review. One Luna/medium worker only; root disjoint RNG review/integration and App routes/browser. Last46%five-hour/78%weekly; weekly100/five-hour70/80 policy."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1392,8 +1393,22 @@
           "pwa/src/features/playback/WORKLOG.md"
         ],
         "scope": "First productPlayback separate /playback/exactslug route and Play song entry from completedInfo. Borrow existing readonlydetails and lazySectionPlaybackController; basic play/pause/reset/silentpositionscrub/native tempo/transpose/rootonly/13instrument/mix/arpeggio/sectioncontrols, no implicitautoplay. Rootowns route/sharedtypes/browserintegration; later queuedLuna owns onlyview/css/separateworklog. Cards/visualtimeline/home/keycontext/favorites/singing/sessiondefaults/routepositionmemory remainfutureT12/T13/T21.",
-        "status": "freezeprops/preparerootignoredcandidates; no workerdispatch whileRNGworkeractive",
+        "status": "Props frozen21d7bea3; combined strict types PASS window12-ui-props-types-resume-20261017. Original source helper reconciled exit0, premature types/commit attempts never started; no unresolved guard/process.",
         "nextAction": "Strictviewcontracttypes/checkpoint; after RNGworkeridle only, datednewUIbranchclaim andLuna/mediumview. Rootactualbrowser afterreview/integration, nofullT12claim."
+      },
+      "uiAssignment": {
+        "owner": "song_ui_review gpt-6-luna/medium",
+        "branch": "codex/pwa-playback-ui",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
+        "baseCommit": "21d7bea337cf8c3249690ec91213cd699d268cd8",
+        "ownedPaths": [
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/features/playback/playback.css",
+          "pwa/src/features/playback/PLAYBACK_UI_WORKLOG.md"
+        ],
+        "scope": "Implement only frozen view-contracts props/comments using accepted SongDetailController and SectionPlaybackController. No root contracts/routes/App/audio/catalog/dependency/task writes. Root owns actual browser integration; full T12 remains in_progress.",
+        "status": "claimed before new branch; existing clean e968599b library branch preserved",
+        "nextAction": "Worker guard creates new branch from exact base, source/scoped types/named checkpoint; root review/integration/browser follows."
       }
     },
     {
