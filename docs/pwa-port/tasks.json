@@ -494,8 +494,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
-      "slice": "Composed streaming transport component accepted; App/device integration remains open",
-      "nextAction": "Composed-stream-runtime accepted8ee74c09; no component reimplementation/check pending. T11complete through existingstatic-preview gate. FullT08trustedtab/device/App integration remains open. Before T12development explicitly resolve its current fullT08dependency; no newgate added. Independent T14generator/target/unlock/session-repair orT15catalogqueries remain ready.",
+      "slice": "Composed streaming and first App section-playback accepted; trusted-tab/device acceptance open",
+      "nextAction": "Accepted first App section-playback de8b8c49 through T12 actualChrome4cases/final0a8e796d. Do not reimplement accepted components or repeat proofs. FullT08 trustedtab/physical/Safari/BFCache and remaining App exercise/microphone integration stay explicit open; existingT12composed-stream-runtime development gate and T26/T27release gates unchanged.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -722,6 +722,12 @@
             "pwa/tests/browser/audio-transport.spec.ts": "4aa60f0145e166b6302f0e2d1691c00462f76006bddaa2c0d0a09cd98caf246f"
           },
           "exclusions": "Component acceptance only. T08 remains in_progress; no new downstream dependency gate added. App playback controls and mobile/device acceptance remain separate."
+        },
+        "app-section-playback": {
+          "status": "complete",
+          "revision": "de8b8c49 product, final tested0a8e796d",
+          "evidence": "T12 exactcommitted4Chrome59.8s/window12-product-final-browser-covering-20261017;28coveringunits/strict types/build bd096ee7358f, actual48000Hz streaming/oneborrowedcontext/playedhead/silentpointer+keyboard scrub/zeroBPMrequested/native settings/section/error recovery/teardown/offlineaudio/devStrictMode. Actualready320px200% screenshot visually reviewed aftertestharness corrections; earlier failures preserved.",
+          "exclusions": "First bounded section playback only; no physicalhearing/Safari/mobile/trustedtab/BFCache orfullT12cards/timeline/home/keycontext/defaults/positionmemory. No new release/dependency gate."
         }
       },
       "clockAssignment": {
@@ -1319,7 +1325,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
       "slice": "First bounded product playback screen and explicit song entry",
-      "nextAction": "Final4Chrome covering on the exact committed checkpoint after shared install helper readiness correction; no old catalog/native/SongInfo recapture. Then next bounded T12visualtimeline/cards or T14builtin generator, based on fresh allowance. Trustedtab/physical/Safari and pendingLibraryscroll approval unchanged.",
+      "nextAction": "Final4Chrome covering PASSED on0a8e796d(unchanged productde8b8c49). Resume next bounded T12cards/visualtimeline/home/keycontext/defaultpersistence/routepositionmemory after five-hour capacity returns. Do not repeat accepted playback/native/catalog proofs. T14 existing builtin claim is ready; root chooses nextsmallstep after live allowance check.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1347,6 +1353,11 @@
             "pwa/tests/browser/playback.spec.ts": "9124c9b71f62a3686c296f88a1a64b9d3de81be2983e13c7ba3e52722690604e",
             "pwa/scripts/catalog/make-library-browser-fixture.py": "cf3167e14aa05e8af4d6e53c0bcb63c24420c3465c4a2c6ab83494004635bc78"
           }
+        },
+        {
+          "command": "node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --output .artifacts/pwa-port/playback/final-covering (pwa, root run-control window12-product-final-browser-covering-20261017)",
+          "revision": "0a8e796ddc2c24d754635f04658ef9bb8112718c",
+          "result": "PASS4actualChrome59.8s, same product build bd096ee7358f. All exact committed browser assertions include readiness waits/nonvacuous9controls/44px/narrow320px200%/offlineactualaudio;3otherstreaming/recovery/dev cases also passed. Started at69%five-hour, observed existing job through completion after70; no new source/test slice began atboundary. Earlier proof/failure/image directories retained. Product milestone only, no fullT12/physical/Safari/BFCache/trustedtab claim."
         }
       ],
       "progress": [
@@ -1359,7 +1370,8 @@
         "2026-10-17T11:59:55.495456+00:00 Pre-integration: exactLunaUI9dbdb2ed487e5fe67830568b34ff4abbd4c1462a reviewed, root0225beec plus owned optional testfixture flag/browser/task dirty preserved. No conflicting App/view edits, all branches/ignoredprofiles preserved. Initial guarded worker operations used primary metadata with explicit siblingcwd, reconciled successfulreceipts and no root source changes; remaining used correct siblingguard. Oneworkeridle; no further UI sourceassignment.",
         "2026-10-17T12:02:29.261640+00:00 Combined28units/types/build bd096ee7358f PASS; fourChrome58.0s firstbrowser all passed actual48000Hz/93blocks/peak.261566/onecontext. Visual review rejected narrow screenshot: loading-only, controls.every vacuously passed. Firstproof retained; test-only fix waits ready/enabled Position andnonzero controlcount. Cycle1 focused offline/narrow retest to unique output, no productsource/nativeexpectation change. Other3behaviorproofs remainvalid; no geometric acceptance untilactualviewimage checked.",
         "2026-10-17T12:03:25.831119+00:00 Focused ready retest failed only new mistaken nonvacuous count: expected>=10, actual9. Layout has2transportbuttons+4ranges+3selects=9; checkbox excluded fromselector andhas44pxlabel. Correct to exact9, retain readywait/min44px/nooverflow unchanged. No productsource change. Second focused proof correction to unique browser-ready-fix2 output; original screenshot/firstfailuretrace preserved. If another acceptancefailure needs expansion, stop and ask under2-cycle rule.",
-        "2026-10-17T12:04:53.906449+00:00 First bounded Playback productaccepted; fullT12in_progress. UIworker9dbdb2ed clean/idle; Sol6751b4d9 RNGaccepted/idle. Root reviewedactualreadygeometryimage after2testharnesscorrections, no productsourcefailure or furtherexpansion. Allpriorproofs/branches preserved. Latest67%five-hour/82%weekly, weekly100/fivehour70/80 policy active."
+        "2026-10-17T12:04:53.906449+00:00 First bounded Playback productaccepted; fullT12in_progress. UIworker9dbdb2ed clean/idle; Sol6751b4d9 RNGaccepted/idle. Root reviewedactualreadygeometryimage after2testharnesscorrections, no productsourcefailure or furtherexpansion. Allpriorproofs/branches preserved. Latest67%five-hour/82%weekly, weekly100/fivehour70/80 policy active.",
+        "2026-10-17T12:07:51.258571+00:00 Exact committed4Chrome coveringPASS59.8s; productde8b8c49 accepted, primary0a8e796ddc2c24d754635f04658ef9bb8112718c clean. Bothworkersidle; SolonlydirtyintentWORKLOG at6751b4d9, no checkpoint2implementation/checks started after live69->70. Root observed72%five-hour/82%weekly, guard0recovery andno remaining node/python process. Save docscheckpoint, no new slice/check until applicable five-hourreset1792254573(2026-10-17T16:29:33Z), refreshlive. Weekly82not blocker;ownerweekly100override remainsactive. Automation staysACTIVE."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1578,8 +1590,17 @@
           "pwa/src/domain/learning/index.ts"
         ],
         "scope": "Checkpoint2 builtin-only factory/generation frozen generator-contracts.d4356715. Reuse accepted private RNG unchanged; actual Kotlin2.2.10/unchanged native generator/theory outputs24..32 new cases maximum; do not recapture RNG/assessment/evidence. Exclude scheduler/pattern/corpus/settingsstorage/sessionrepair/microphone/audio/UI/assessment/evidence/sharedcontracts/dependencies. Snapshot known fields once, canonical exactLong seed, deeplyfrozen independent rich output, native draworder/UTF16fingerprints.",
-        "status": "Claimed before source edits on existing clean6751branch, no new branch or worker duplicate. UI9dbdb2edidle/productde8b8c49 accepted; finalroot4browsercovering next.",
-        "nextAction": "Refresh liveusage first. Beforefivehour70, begin only one smallstep; save intent/receipts and partial source if cutoff occurs. At70no new check/step,80checkpoint/yield. Weekly100override; no credit/reset/modelchange. If allowance permits finish native24..32cases/focusedunits/scopedtypes/named validatedtip thenidle. Unvalidated recoverycheckpoint must be explicitly labeled, never acceptance."
+        "status": "NOT STARTED/UNVALIDATED checkpoint2: initial69% refreshed70%; only dated intent appended in sibling GENERATOR_WORKLOG.md. No generator/source/fixture/index/test read or implementation. ExistingHEAD6751b4d9, dirtyintentpreserved, guard0recovery; workeridle.",
+        "nextAction": "After applicablefive-hourreset1792254573, refreshusage, inspectsame6751b4d9branch/dirtyintent/guard/process; continue existingclaim, no duplicateworker/newbranch. Read frozencontract/native generate168-231 then nextsmallsource step. No RNG/assessment/evidence fixture recapture.",
+        "recoveryReceipt": {
+          "path": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-checkpoint2-allowance-window12.md",
+          "sha256": "ff35163d570f73efe8a8d98349b9a61b90fa2162d160d9fe119b77f852d10d16",
+          "guardRuns": [
+            "t14-generator-checkpoint2-intent-20261017-01",
+            "t14-generator-checkpoint2-boundary-20261017-02"
+          ],
+          "result": "Both exit0; only intent saved. No source/test milestone or commit claimed."
+        }
       }
     },
     {
@@ -2035,6 +2056,15 @@
     "weeklyCheckpointIntensifyUsedPercent": 90,
     "weeklyPolicy": "Continue small recoverable slices until weekly ordinary allowance exhausted. At90% save a checkpoint and then checkpoint every small completed step; do not yield merely for weekly70/80/90%. Stop when weekly100%orordinaryUsageAllowed=false or applicable actualreset stillneeded. Fivehour70/80rulesremain.",
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
-    "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00"
+    "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
+    "lastObserved": {
+      "at": "2026-10-17T12:07:51.258571+00:00",
+      "fiveHourUsedPercent": 72,
+      "weeklyUsedPercent": 82,
+      "ordinaryUsageAllowed": true,
+      "fiveHourResetsAt": 1792254573,
+      "weeklyResetsAt": 1792653278,
+      "action": "No newwork atfive-hour70; finishalreadyrunningcheck, savedocs/recoverythenyield. Weeklycontinues to100asownerrequested; no credit/reset/modelactions."
+    }
   }
 }
