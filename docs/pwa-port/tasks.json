@@ -1422,7 +1422,8 @@
         "2026-10-16T01:39Z normal evidence mergefb3f23b1accepted on actual combined revision:317unit/1input/types/build PASS first run. Worker branchc82473a3clean preserved. No producer/browser/catalog recapture needed. Full T14 generator/scheduler/session repair remains open.",
         "2026-10-16T17:54:27.412784+00:00 primary5cf90c24 T11complete/clean; existing Sol/high worker/tree f9330517 clean/idle, no branchchange. Root persists one bounded read-only T14generator-contract proposal. Lastlive48%/69%, no source/dependency changes; no duplicateworker or fixturecapture.",
         "2026-10-16T17:56:09.596140+00:00 weeklyboundary70%/fivehour49%; Sol/high firstcheck already70%, stopped without nativeinvestigation. Ignored no-findings receipt digest d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8 preserved in existing sibling; workeridle/no source/branch changes. RootT11completed5cf90c24. No work/check/newassignment afterboundary; checkpoint only.",
-        "2026-10-17T11:31:57.366729+00:00 owner overrides weekly70%cutoff with runweeklyto0%remaining. Root4dbef998 clean, siblingf9330517 preserved/idle;guard0recovery. No sourceinvestigation previouslydone. Resume same read-onlyproposal afterpolicycheckpoint, no duplicate."
+        "2026-10-17T11:31:57.366729+00:00 owner overrides weekly70%cutoff with runweeklyto0%remaining. Root4dbef998 clean, siblingf9330517 preserved/idle;guard0recovery. No sourceinvestigation previouslydone. Resume same read-onlyproposal afterpolicycheckpoint, no duplicate.",
+        "2026-10-17T11:38:43.814275+00:00 read-only72lineproposal reviewed, native AuralCurriculum9-27/149-231 inspected. Root freezes builtin API; exactKotlin2.2.10 RNGdraworder andJVMhash/nestedlistformat seedBigInt mandatory. T12puremodel0fab9288 accepted/disjoint. Worker remainsidle untilcontractcheckpoint/sourceclaim."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1445,6 +1446,15 @@
         "nextAction": "Root freeze bounded builtin generator contract/exactwaveforms, then two named worker checkpoints: Kotlin2.2.10 RNG/hash anchors first,24..32nativebuiltin exercises second. No scheduler/pattern/corpus/session/UI/oldfixturecapture.",
         "receiptPath": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-proposal-window12.md",
         "receiptSha256": "3159fd45cf32f15c24d4f8a7a6a011165de8be97f672818e43c525d686aa9c2f"
+      },
+      "generatorContractIntent": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "0fab9288d922e5b59925ffdf00ef37decf981969",
+        "ownedPaths": [
+          "pwa/src/domain/learning/generator-contracts.ts"
+        ],
+        "scope": "Freeze built-in explicittarget/Longseed rich exercise API only; exactnativeWaveform override union via accepted enum, native aliases onlyfor generated instrument. Family/skill/support/mic/variant/octavevalidation, no pattern/scheduler/corpus/session/UI.",
+        "nextAction": "Strict combined types before named contract checkpoint and dated sameSol/highworker claim. Two checkpoints RNG/hash8nativeanchors first then24..32rich nativeexercises; no oldfixturecapture."
       }
     },
     {
