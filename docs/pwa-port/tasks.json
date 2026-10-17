@@ -1324,8 +1324,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "First bounded product playback screen and explicit song entry",
-      "nextAction": "Final4Chrome covering PASSED on0a8e796d(unchanged productde8b8c49). Resume next bounded T12cards/visualtimeline/home/keycontext/defaultpersistence/routepositionmemory after five-hour capacity returns. Do not repeat accepted playback/native/catalog proofs. T14 existing builtin claim is ready; root chooses nextsmallstep after live allowance check.",
+      "slice": "Pure active-event and chord/melody interval card state before card presentation",
+      "nextAction": "Port cached native event queries+interval/card state, independent Kotlin2.2.10 fixtures andfocusedunits/strict types; checkpoint before separateproductcard integration.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1358,6 +1358,11 @@
           "command": "node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --output .artifacts/pwa-port/playback/final-covering (pwa, root run-control window12-product-final-browser-covering-20261017)",
           "revision": "0a8e796ddc2c24d754635f04658ef9bb8112718c",
           "result": "PASS4actualChrome59.8s, same product build bd096ee7358f. All exact committed browser assertions include readiness waits/nonvacuous9controls/44px/narrow320px200%/offlineactualaudio;3otherstreaming/recovery/dev cases also passed. Started at69%five-hour, observed existing job through completion after70; no new source/test slice began atboundary. Earlier proof/failure/image directories retained. Product milestone only, no fullT12/physical/Safari/BFCache/trustedtab claim."
+        },
+        {
+          "command": "python pwa/src/features/playback/fixtures/generate-event-native.py; node node_modules/vitest/vitest.mjs run src/features/playback; node node_modules/typescript/bin/tsc --noEmit; node node_modules/vitest/vitest.mjs run src/features/playback/event-state.test.ts -t \"bounds raw events\" (rootguard, nodefrompwa)",
+          "revision": "0ff4b24f00e9cccc863b3c15cf5f0ff690788bec plus cardModelAssignment.testedSha256 tree",
+          "result": "PASS14nativecases/61queries97422bytes, pinnedcompiler/runtime2.2.10, unchanged PlaybackIntervalState/PlaybackTiming/rootvisibilityleafs +realtheory. Guards window13-event-native-capture-fix1, event-unit-first(25/2.21s), event-types-retest-fix1, event-boundary-retest-fix1(1changedgroup,16unchangedskipped). Producerfirstcompile driverpublic/internal mismatch fixedprivatehelpers only; firsttypes testunion.call mismatch fixedarrows only. Source/nativeexpectedunchanged, no recaptureoldfixtures. Includesstabletie/overlapfallback/exclusiveends/restmask/rootpreviousskip/melodyrestbarrier/keys/enharmonicwrittenequality/cardmode/verticalpositions. Raw4096event/4096key/finitequery browserextensions tested. Pureprivateunbundledmodel: no App/browser/deviceclaim/buildrerun."
         }
       ],
       "progress": [
@@ -1371,7 +1376,9 @@
         "2026-10-17T12:02:29.261640+00:00 Combined28units/types/build bd096ee7358f PASS; fourChrome58.0s firstbrowser all passed actual48000Hz/93blocks/peak.261566/onecontext. Visual review rejected narrow screenshot: loading-only, controls.every vacuously passed. Firstproof retained; test-only fix waits ready/enabled Position andnonzero controlcount. Cycle1 focused offline/narrow retest to unique output, no productsource/nativeexpectation change. Other3behaviorproofs remainvalid; no geometric acceptance untilactualviewimage checked.",
         "2026-10-17T12:03:25.831119+00:00 Focused ready retest failed only new mistaken nonvacuous count: expected>=10, actual9. Layout has2transportbuttons+4ranges+3selects=9; checkbox excluded fromselector andhas44pxlabel. Correct to exact9, retain readywait/min44px/nooverflow unchanged. No productsource change. Second focused proof correction to unique browser-ready-fix2 output; original screenshot/firstfailuretrace preserved. If another acceptancefailure needs expansion, stop and ask under2-cycle rule.",
         "2026-10-17T12:04:53.906449+00:00 First bounded Playback productaccepted; fullT12in_progress. UIworker9dbdb2ed clean/idle; Sol6751b4d9 RNGaccepted/idle. Root reviewedactualreadygeometryimage after2testharnesscorrections, no productsourcefailure or furtherexpansion. Allpriorproofs/branches preserved. Latest67%five-hour/82%weekly, weekly100/fivehour70/80 policy active.",
-        "2026-10-17T12:07:51.258571+00:00 Exact committed4Chrome coveringPASS59.8s; productde8b8c49 accepted, primary0a8e796ddc2c24d754635f04658ef9bb8112718c clean. Bothworkersidle; SolonlydirtyintentWORKLOG at6751b4d9, no checkpoint2implementation/checks started after live69->70. Root observed72%five-hour/82%weekly, guard0recovery andno remaining node/python process. Save docscheckpoint, no new slice/check until applicable five-hourreset1792254573(2026-10-17T16:29:33Z), refreshlive. Weekly82not blocker;ownerweekly100override remainsactive. Automation staysACTIVE."
+        "2026-10-17T12:07:51.258571+00:00 Exact committed4Chrome coveringPASS59.8s; productde8b8c49 accepted, primary0a8e796ddc2c24d754635f04658ef9bb8112718c clean. Bothworkersidle; SolonlydirtyintentWORKLOG at6751b4d9, no checkpoint2implementation/checks started after live69->70. Root observed72%five-hour/82%weekly, guard0recovery andno remaining node/python process. Save docscheckpoint, no new slice/check until applicable five-hourreset1792254573(2026-10-17T16:29:33Z), refreshlive. Weekly82not blocker;ownerweekly100override remainsactive. Automation staysACTIVE.",
+        "2026-10-17T17:15:22.514889+00:00 Root disjointT12cardmodel claim from0ff4b24f00e9cccc863b3c15cf5f0ff690788bec; soleSol/highworkerT14builtin6paths. Activeeventnativeclass and interval functions inspected, reuseacceptedtheory; rawnative rests maskpreviousactive event, root skips priorrests whilemelody restbarrier, enharmonic writtenunison distinct. Oneboundedmodelstep; fullT12unaccepted, no repeatexistingproofs. Weekly83%, checkpointat90thencontinue100/fivehour70/80.",
+        "2026-10-17T17:19:46.474121+00:00 Event/cardpuremodel accepted beforeproductpresentation. Nativeidentityretained, timed/keyindexcachedonce, no frame-time sorting. SoleSol/highworkerbuiltin32nativefixturesPASS, tests/types pending atlast9%five-hour/85%weekly. Latestroot14%/86%; weekly90checkpointthencontinue100."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1444,6 +1451,26 @@
         "scope": "Implement only frozen view-contracts props/comments using accepted SongDetailController and SectionPlaybackController. No root contracts/routes/App/audio/catalog/dependency/task writes. Root owns actual browser integration; full T12 remains in_progress.",
         "status": "ACCEPTED bounded product screen9dbdb2ed after normalmerge/root App wiring;28coveringunits/types/build bd096ee7358f and4actualChrome58.0s passed. Narrow readiness proof corrected separately andpassed13s, screenshotactualcontrols visually reviewed. No fullT12/device claim.",
         "nextAction": "Root normalmerge exact reviewed3pathtip, install Appcandidate andcombined focusedunits/types/build; four new actualChrome cases including error recovery. Primary owns dirty fixtureproducer/tasks and untrackedbrowser only."
+      },
+      "cardModelAssignment": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "0ff4b24f00e9cccc863b3c15cf5f0ff690788bec",
+        "ownedPaths": [
+          "pwa/src/features/playback/event-state.ts",
+          "pwa/src/features/playback/event-state.test.ts",
+          "pwa/src/features/playback/fixtures/generate-event-native.py",
+          "pwa/src/features/playback/fixtures/native-event.json",
+          "pwa/src/features/playback/WORKLOG.md"
+        ],
+        "scope": "Frozen PlaybackIntervalState.kt activeindex/timed sorting/halfopen overlaps/source tie order/chordprevious skippingrests andmelody immediateprevious restbarrier; melody SINGLE/INTERVAL/HIDDEN/vertical pair nativepure leafs. Reuse accepted music/key/pitch/interval implementations; native roots retainwritten spellings/simple register, no source/display conversion or transpose inmodel. Native unchanged leafs+realtheory capture<=16NEWcases/finitequeries only; no acceptedfixture recapture. Existing4096event/4096rawkey browser bounds andfinitequery validation explicit. No React/audio/controller/App/learning changes yet.",
+        "status": "ACCEPTED private model14NEWnativecases/61queries(97422bytes), unchanged native purestate/realtheory/Kotlin2.2.10.25coveringunits andstrictcombinedtypesPASS; one fixture-driver visibility fix and one test-only union-context fix, no productsource/nativeexpectation correction.",
+        "nextAction": "Named coherent checkpoint then separately claim productcard presentation/current-key/relative-display/previewintegration ifallowancepermits. No App/card/browser acceptance inthismodelstep.",
+        "testedSha256": {
+          "pwa/src/features/playback/event-state.ts": "355e86f6170d4e29a398d1f10f50db7b4179e03c68cd7b3a5c190a6f8e630e6f",
+          "pwa/src/features/playback/event-state.test.ts": "e1db4248ec1a0c66b1282ef4e83bbd4e7f8f5d44f770608e7968d185f9c755ac",
+          "pwa/src/features/playback/fixtures/generate-event-native.py": "eedc8303c241a071b0467ddba19b62673bbb0ad1abe17c1210a0309ed081fb73",
+          "pwa/src/features/playback/fixtures/native-event.json": "c3f11214caee6b3d45c851f15f43f0a39c03b03a62353be7e9674b274a3c605f"
+        }
       }
     },
     {

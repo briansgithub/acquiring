@@ -1,0 +1,3672 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "kotlinVersion": "2.2.10",
+  "sourceSha256": {
+    "MusicTheory": "46af5e1e502ba2e1e67e3cba4d2d227cea1061454fd7f5285b2a033925de98ca",
+    "HooktheoryModels": "24ce7329ba97a77c0048d35eb66707a1f5a33bb1bcdc14f44572d888fc55771f",
+    "SpelledInterval": "ddcc1cf8692f077c4d3b72137ce6cf4c61abe21f474c39eadccbc1fc470dbda3",
+    "RelativeIonianContext": "2c5afe3f9e45684a6d5e483001a463b60cd20e7465d6d7179e0171c8d30fe1ed",
+    "AudioPitchAdapter": "54d2a1b314064ce690eac55788c3807c327610723a262f06ca12644396199a68",
+    "ChordInterpreter": "646b65b99ba39c8e2fa78c44f6e80525590f472ccceadb69f855ceb7f144f61d",
+    "ChordLetterFormat": "55e63e3afca04ee0cee6d1fd1ac191d661f40197f79e9b2c693c1c260f1e000b",
+    "ChordVoicing": "082ab84c561844c03055914d66277c355ba6b2e559fdd6c1ad30f2b29cd6fbd3",
+    "PlaybackTiming": "a9f51c493258bfdab0f94ee54e383fb2d10257c020b0d1168b0681f0ac40586f",
+    "PlaybackIntervalState": "861219ec65df28f106bbb3a0ec2eea6b1efc13c4afe47fc63d5a7484c66082b6",
+    "RootConditions": "9956c5b0644182e4205231e328a3d2c9edf481ffc1c5b4f3cce80f198875bc32"
+  },
+  "driverSha256": "5b363e2d1c9d075960e80a4bb6f4adfc0b8c57754e4f339934d7b6cb51102797",
+  "producerSha256": "eedc8303c241a071b0467ddba19b62673bbb0ad1abe17c1210a0309ed081fb73",
+  "jarSha256": {
+    "kotlin-stdlib-2.2.10.jar": "9c67cc79efd6b9215b49d2a4308f5f3433537376c7c88e89bdd6729bd096e61a",
+    "annotations-23.0.0.jar": "7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05",
+    "kotlinx-serialization-json-jvm-1.8.1.jar": "8769e5647557e3700919c32d508f5c5dad53c5d8234cd10846354fbcff14aa24",
+    "kotlinx-serialization-core-jvm-1.8.1.jar": "3565b6d4d789bf70683c45566944287fc1d8dc75c23d98bd87d01059cc76f2b3",
+    "kotlin-compiler-embeddable-2.2.10.jar": "79628fd5d64b4692a62f98962baab00e9076a37e2cffd6ace33cd0b7be7d1cdf",
+    "kotlin-script-runtime-2.2.10.jar": "c304a67dba6a61dde560e6310920bed746307c3854f6675c29ac29114731b6b0",
+    "kotlin-daemon-embeddable-2.2.10.jar": "b31573d418961fa080760fedcfc90d68ad67a85eafa245c73fe3d551476777ba",
+    "kotlinx-coroutines-core-jvm-1.9.0.jar": "ad89c2892235e670f222d819cb3d81188143cb19a05b59df9889ae4269f5c70a"
+  },
+  "adapter": "Unchanged native pure functions/classes and real native theory; root-only condition leafs extracted unchanged. No TypeScript expectations.",
+  "cases": [
+    {
+      "label": "empty",
+      "section": {
+        "chords": [],
+        "metadata": null
+      },
+      "melody": [],
+      "beats": [
+        0,
+        1,
+        2
+      ],
+      "expected": [
+        {
+          "chordIndex": null,
+          "melodyNote": null,
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": null,
+          "melodyNote": null,
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": null,
+          "melodyNote": null,
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        }
+      ]
+    },
+    {
+      "label": "zero-normalized-exclusive-end",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 0,
+            "duration": 2,
+            "_fixtureId": 0
+          }
+        ],
+        "metadata": null
+      },
+      "melody": [
+        {
+          "sd": "1",
+          "beat": 0,
+          "duration": 2,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        0,
+        1,
+        2.999,
+        3
+      ],
+      "expected": [
+        {
+          "chordIndex": null,
+          "melodyNote": null,
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 0.0,
+            "duration": 2.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 0.0,
+            "duration": 2.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": null,
+          "melodyNote": null,
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        }
+      ]
+    },
+    {
+      "label": "unsorted-overlap-falls-back",
+      "section": {
+        "chords": [
+          {
+            "root": 5,
+            "type": 5,
+            "beat": 3,
+            "duration": 1,
+            "_fixtureId": 0
+          },
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1,
+            "duration": 8,
+            "_fixtureId": 1
+          },
+          {
+            "root": 4,
+            "type": 5,
+            "beat": 2,
+            "duration": 0,
+            "_fixtureId": 2
+          }
+        ],
+        "metadata": null
+      },
+      "melody": [
+        {
+          "sd": "5",
+          "beat": 3,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "1",
+          "beat": 1,
+          "duration": 8,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "4",
+          "beat": 2,
+          "duration": 0,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        1,
+        2.999,
+        3,
+        3.999,
+        4,
+        8.999,
+        9
+      ],
+      "expected": [
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 8.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 8.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "5",
+            "beat": 3.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C3",
+              "midi": 48
+            },
+            "current": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "currentIntervalPitch": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 5,
+              "quality": "P",
+              "direction": "ASCENDING",
+              "spokenName": "perfect fifth, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "5̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "5",
+            "beat": 3.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C3",
+              "midi": 48
+            },
+            "current": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "currentIntervalPitch": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 5,
+              "quality": "P",
+              "direction": "ASCENDING",
+              "spokenName": "perfect fifth, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "5̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 8.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 8.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": null,
+          "melodyNote": null,
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        }
+      ]
+    },
+    {
+      "label": "same-onset-source-order",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1,
+            "duration": 4,
+            "_fixtureId": 0
+          },
+          {
+            "root": 5,
+            "type": 5,
+            "beat": 1,
+            "duration": 1,
+            "_fixtureId": 1
+          },
+          {
+            "root": 4,
+            "type": 5,
+            "beat": 2,
+            "duration": 2,
+            "_fixtureId": 2
+          }
+        ],
+        "metadata": null
+      },
+      "melody": [
+        {
+          "sd": "1",
+          "beat": 1,
+          "duration": 4,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "5",
+          "beat": 1,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "4",
+          "beat": 2,
+          "duration": 2,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        1,
+        1.999,
+        2,
+        3,
+        4
+      ],
+      "expected": [
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "5",
+            "beat": 1.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "5̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": {
+            "previous": {
+              "name": "C4",
+              "midi": 60
+            },
+            "current": {
+              "name": "G4",
+              "midi": 67
+            },
+            "interval": {
+              "number": 5,
+              "quality": "P",
+              "direction": "ASCENDING",
+              "spokenName": "perfect fifth, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "5̂",
+            "contentDescription": "Play melody interval C4 to G4, perfect fifth, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "C4",
+                "midi": 60
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "G4",
+                "midi": 67
+              },
+              "scaleDegreeLabel": "5̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "5",
+            "beat": 1.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "5̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": {
+            "previous": {
+              "name": "C4",
+              "midi": 60
+            },
+            "current": {
+              "name": "G4",
+              "midi": 67
+            },
+            "interval": {
+              "number": 5,
+              "quality": "P",
+              "direction": "ASCENDING",
+              "spokenName": "perfect fifth, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "5̂",
+            "contentDescription": "Play melody interval C4 to G4, perfect fifth, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "C4",
+                "midi": 60
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "G4",
+                "midi": 67
+              },
+              "scaleDegreeLabel": "5̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        },
+        {
+          "chordIndex": 2,
+          "melodyNote": {
+            "sd": "4",
+            "beat": 2.0,
+            "duration": 2.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "G3",
+              "midi": 55
+            },
+            "current": {
+              "name": "F3",
+              "midi": 53
+            },
+            "previousIntervalPitch": {
+              "name": "G3",
+              "midi": 55
+            },
+            "currentIntervalPitch": {
+              "name": "F3",
+              "midi": 53
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "M",
+              "direction": "DESCENDING",
+              "spokenName": "major second, descending"
+            },
+            "previousDegreeLabel": "5̂",
+            "currentDegreeLabel": "4̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "G4",
+              "midi": 67
+            },
+            "current": {
+              "name": "F4",
+              "midi": 65
+            },
+            "interval": {
+              "number": 2,
+              "quality": "M",
+              "direction": "DESCENDING",
+              "spokenName": "major second, descending"
+            },
+            "previousDegreeLabel": "5̂",
+            "currentDegreeLabel": "4̂",
+            "contentDescription": "Play melody interval G4 to F4, major second, descending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "G4",
+                "midi": 67
+              },
+              "scaleDegreeLabel": "5̂",
+              "verticalPosition": "TOP"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "F4",
+                "midi": 65
+              },
+              "scaleDegreeLabel": "4̂",
+              "verticalPosition": "BOTTOM"
+            }
+          ]
+        },
+        {
+          "chordIndex": 2,
+          "melodyNote": {
+            "sd": "4",
+            "beat": 2.0,
+            "duration": 2.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "G3",
+              "midi": 55
+            },
+            "current": {
+              "name": "F3",
+              "midi": 53
+            },
+            "previousIntervalPitch": {
+              "name": "G3",
+              "midi": 55
+            },
+            "currentIntervalPitch": {
+              "name": "F3",
+              "midi": 53
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "M",
+              "direction": "DESCENDING",
+              "spokenName": "major second, descending"
+            },
+            "previousDegreeLabel": "5̂",
+            "currentDegreeLabel": "4̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "G4",
+              "midi": 67
+            },
+            "current": {
+              "name": "F4",
+              "midi": 65
+            },
+            "interval": {
+              "number": 2,
+              "quality": "M",
+              "direction": "DESCENDING",
+              "spokenName": "major second, descending"
+            },
+            "previousDegreeLabel": "5̂",
+            "currentDegreeLabel": "4̂",
+            "contentDescription": "Play melody interval G4 to F4, major second, descending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "G4",
+                "midi": 67
+              },
+              "scaleDegreeLabel": "5̂",
+              "verticalPosition": "TOP"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "F4",
+                "midi": 65
+              },
+              "scaleDegreeLabel": "4̂",
+              "verticalPosition": "BOTTOM"
+            }
+          ]
+        },
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 4.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        }
+      ]
+    },
+    {
+      "label": "rest-current-masks-overlap",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1,
+            "duration": 4,
+            "_fixtureId": 0
+          },
+          {
+            "root": 5,
+            "type": 5,
+            "beat": 2,
+            "duration": 1,
+            "rest": true,
+            "_fixtureId": 1
+          }
+        ],
+        "metadata": null
+      },
+      "melody": [
+        {
+          "sd": "1",
+          "beat": 1,
+          "duration": 4,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "5",
+          "beat": 2,
+          "duration": 1,
+          "octave": 0,
+          "isRest": true
+        }
+      ],
+      "beats": [
+        1,
+        2,
+        2.999,
+        3
+      ],
+      "expected": [
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 4.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "5",
+            "beat": 2.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": true
+          },
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "5",
+            "beat": 2.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": true
+          },
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 4.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        }
+      ]
+    },
+    {
+      "label": "previous-root-skips-rest-melody-barrier",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1,
+            "duration": 1,
+            "_fixtureId": 0
+          },
+          {
+            "root": 5,
+            "type": 5,
+            "beat": 2,
+            "duration": 1,
+            "rest": true,
+            "_fixtureId": 1
+          },
+          {
+            "root": 6,
+            "type": 5,
+            "beat": 3,
+            "duration": 1,
+            "_fixtureId": 2
+          }
+        ],
+        "metadata": null
+      },
+      "melody": [
+        {
+          "sd": "1",
+          "beat": 1,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "5",
+          "beat": 2,
+          "duration": 1,
+          "octave": 0,
+          "isRest": true
+        },
+        {
+          "sd": "6",
+          "beat": 3,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        1,
+        2,
+        3
+      ],
+      "expected": [
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "5",
+            "beat": 2.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": true
+          },
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 2,
+          "melodyNote": {
+            "sd": "6",
+            "beat": 3.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C3",
+              "midi": 48
+            },
+            "current": {
+              "name": "A3",
+              "midi": 57
+            },
+            "previousIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "currentIntervalPitch": {
+              "name": "A3",
+              "midi": 57
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 6,
+              "quality": "M",
+              "direction": "ASCENDING",
+              "spokenName": "major sixth, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "6̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        }
+      ]
+    },
+    {
+      "label": "zero-duration-invalid-previous",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1,
+            "duration": 1,
+            "_fixtureId": 0
+          },
+          {
+            "root": 2,
+            "type": 5,
+            "beat": 2,
+            "duration": 0,
+            "_fixtureId": 1
+          },
+          {
+            "root": 3,
+            "type": 5,
+            "beat": 3,
+            "duration": 1,
+            "_fixtureId": 2
+          },
+          {
+            "root": 9,
+            "type": 5,
+            "beat": 4,
+            "duration": 1,
+            "_fixtureId": 3
+          },
+          {
+            "root": 5,
+            "type": 5,
+            "beat": 5,
+            "duration": 1,
+            "_fixtureId": 4
+          }
+        ],
+        "metadata": null
+      },
+      "melody": [
+        {
+          "sd": "1",
+          "beat": 1,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "2",
+          "beat": 2,
+          "duration": 0,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "3",
+          "beat": 3,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "bad",
+          "beat": 4,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "5",
+          "beat": 5,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "expected": [
+        {
+          "chordIndex": null,
+          "melodyNote": null,
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 2,
+          "melodyNote": {
+            "sd": "3",
+            "beat": 3.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C3",
+              "midi": 48
+            },
+            "current": {
+              "name": "E3",
+              "midi": 52
+            },
+            "previousIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "currentIntervalPitch": {
+              "name": "E3",
+              "midi": 52
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 3,
+              "quality": "M",
+              "direction": "ASCENDING",
+              "spokenName": "major third, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "3̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 3,
+          "melodyNote": {
+            "sd": "bad",
+            "beat": 4.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 4,
+          "melodyNote": {
+            "sd": "5",
+            "beat": 5.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "E3",
+              "midi": 52
+            },
+            "current": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousIntervalPitch": {
+              "name": "E3",
+              "midi": 52
+            },
+            "currentIntervalPitch": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 3,
+              "quality": "m",
+              "direction": "ASCENDING",
+              "spokenName": "minor third, ascending"
+            },
+            "previousDegreeLabel": "3̂",
+            "currentDegreeLabel": "5̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        }
+      ]
+    },
+    {
+      "label": "unison-and-enharmonic-spelling",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1,
+            "duration": 1,
+            "_fixtureId": 0
+          },
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 2,
+            "duration": 1,
+            "_fixtureId": 1
+          },
+          {
+            "root": 2,
+            "type": 5,
+            "beat": 3,
+            "duration": 1,
+            "_fixtureId": 2
+          }
+        ],
+        "metadata": null
+      },
+      "melody": [
+        {
+          "sd": "1",
+          "beat": 1,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "1",
+          "beat": 2,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "#2",
+          "beat": 3,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "b3",
+          "beat": 4,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": [
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 2.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C3",
+              "midi": 48
+            },
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 1,
+              "quality": "P",
+              "direction": "ASCENDING",
+              "spokenName": "perfect unison, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "1̂",
+            "showPrevious": true,
+            "showInterval": false
+          },
+          "melody": {
+            "previous": {
+              "name": "C4",
+              "midi": 60
+            },
+            "current": {
+              "name": "C4",
+              "midi": 60
+            },
+            "interval": {
+              "number": 1,
+              "quality": "P",
+              "direction": "ASCENDING",
+              "spokenName": "perfect unison, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "1̂",
+            "contentDescription": "Play melody interval C4 to C4, perfect unison, ascending"
+          },
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "C4",
+                "midi": 60
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "C4",
+                "midi": 60
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        },
+        {
+          "chordIndex": 2,
+          "melodyNote": {
+            "sd": "#2",
+            "beat": 3.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C3",
+              "midi": 48
+            },
+            "current": {
+              "name": "D3",
+              "midi": 50
+            },
+            "previousIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "currentIntervalPitch": {
+              "name": "D3",
+              "midi": 50
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "M",
+              "direction": "ASCENDING",
+              "spokenName": "major second, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "2̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "C4",
+              "midi": 60
+            },
+            "current": {
+              "name": "D♯4",
+              "midi": 63
+            },
+            "interval": {
+              "number": 2,
+              "quality": "A",
+              "direction": "ASCENDING",
+              "spokenName": "augmented second, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "♯2̂",
+            "contentDescription": "Play melody interval C4 to D♯4, augmented second, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "C4",
+                "midi": 60
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "D♯4",
+                "midi": 63
+              },
+              "scaleDegreeLabel": "♯2̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        },
+        {
+          "chordIndex": null,
+          "melodyNote": {
+            "sd": "b3",
+            "beat": 4.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": null,
+          "melody": {
+            "previous": {
+              "name": "D♯4",
+              "midi": 63
+            },
+            "current": {
+              "name": "E♭4",
+              "midi": 63
+            },
+            "interval": {
+              "number": 2,
+              "quality": "d",
+              "direction": "ASCENDING",
+              "spokenName": "diminished second, ascending"
+            },
+            "previousDegreeLabel": "♯2̂",
+            "currentDegreeLabel": "♭3̂",
+            "contentDescription": "Play melody interval D♯4 to E♭4, diminished second, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "D♯4",
+                "midi": 63
+              },
+              "scaleDegreeLabel": "♯2̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "E♭4",
+                "midi": 63
+              },
+              "scaleDegreeLabel": "♭3̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "ascending-descending-register",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1,
+            "duration": 1,
+            "_fixtureId": 0
+          },
+          {
+            "root": 7,
+            "type": 5,
+            "beat": 2,
+            "duration": 1,
+            "_fixtureId": 1
+          },
+          {
+            "root": 2,
+            "type": 5,
+            "beat": 3,
+            "duration": 1,
+            "_fixtureId": 2
+          }
+        ],
+        "metadata": null
+      },
+      "melody": [
+        {
+          "sd": "1",
+          "beat": 1,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "7",
+          "beat": 2,
+          "duration": 1,
+          "octave": -1,
+          "isRest": false
+        },
+        {
+          "sd": "2",
+          "beat": 3,
+          "duration": 1,
+          "octave": 1,
+          "isRest": false
+        },
+        {
+          "sd": "1",
+          "beat": 4,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": [
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "7",
+            "beat": 2.0,
+            "duration": 1.0,
+            "octave": -1,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C3",
+              "midi": 48
+            },
+            "current": {
+              "name": "B3",
+              "midi": 59
+            },
+            "previousIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "currentIntervalPitch": {
+              "name": "B3",
+              "midi": 59
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 7,
+              "quality": "M",
+              "direction": "ASCENDING",
+              "spokenName": "major seventh, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "7̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "C4",
+              "midi": 60
+            },
+            "current": {
+              "name": "B3",
+              "midi": 59
+            },
+            "interval": {
+              "number": 2,
+              "quality": "m",
+              "direction": "DESCENDING",
+              "spokenName": "minor second, descending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "7̂",
+            "contentDescription": "Play melody interval C4 to B3, minor second, descending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "C4",
+                "midi": 60
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "TOP"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "B3",
+                "midi": 59
+              },
+              "scaleDegreeLabel": "7̂",
+              "verticalPosition": "BOTTOM"
+            }
+          ]
+        },
+        {
+          "chordIndex": 2,
+          "melodyNote": {
+            "sd": "2",
+            "beat": 3.0,
+            "duration": 1.0,
+            "octave": 1,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "B3",
+              "midi": 59
+            },
+            "current": {
+              "name": "D3",
+              "midi": 50
+            },
+            "previousIntervalPitch": {
+              "name": "B3",
+              "midi": 59
+            },
+            "currentIntervalPitch": {
+              "name": "D3",
+              "midi": 50
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 6,
+              "quality": "M",
+              "direction": "DESCENDING",
+              "spokenName": "major sixth, descending"
+            },
+            "previousDegreeLabel": "7̂",
+            "currentDegreeLabel": "2̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "B3",
+              "midi": 59
+            },
+            "current": {
+              "name": "D5",
+              "midi": 74
+            },
+            "interval": {
+              "number": 10,
+              "quality": "m",
+              "direction": "ASCENDING",
+              "spokenName": "minor 10th, ascending"
+            },
+            "previousDegreeLabel": "7̂",
+            "currentDegreeLabel": "2̂",
+            "contentDescription": "Play melody interval B3 to D5, minor 10th, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "B3",
+                "midi": 59
+              },
+              "scaleDegreeLabel": "7̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "D5",
+                "midi": 74
+              },
+              "scaleDegreeLabel": "2̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        },
+        {
+          "chordIndex": null,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 4.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": null,
+          "melody": {
+            "previous": {
+              "name": "D5",
+              "midi": 74
+            },
+            "current": {
+              "name": "C4",
+              "midi": 60
+            },
+            "interval": {
+              "number": 9,
+              "quality": "M",
+              "direction": "DESCENDING",
+              "spokenName": "major 9th, descending"
+            },
+            "previousDegreeLabel": "2̂",
+            "currentDegreeLabel": "1̂",
+            "contentDescription": "Play melody interval D5 to C4, major 9th, descending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "D5",
+                "midi": 74
+              },
+              "scaleDegreeLabel": "2̂",
+              "verticalPosition": "TOP"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "C4",
+                "midi": 60
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "BOTTOM"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "source-key-at-each-onset",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1,
+            "duration": 3,
+            "_fixtureId": 0
+          },
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 3,
+            "duration": 1,
+            "_fixtureId": 1
+          },
+          {
+            "root": 5,
+            "type": 5,
+            "beat": 4,
+            "duration": 1,
+            "_fixtureId": 2
+          }
+        ],
+        "metadata": {
+          "keys": [
+            {
+              "tonic": "C",
+              "scale": "major",
+              "beat": 1
+            },
+            {
+              "tonic": "D",
+              "scale": "minor",
+              "beat": 3
+            },
+            {
+              "tonic": "F#",
+              "scale": "major",
+              "beat": 4
+            }
+          ]
+        }
+      },
+      "melody": [
+        {
+          "sd": "1",
+          "beat": 1,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "3",
+          "beat": 2,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "1",
+          "beat": 3,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "5",
+          "beat": 4,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": [
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "3",
+            "beat": 2.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": {
+            "previous": {
+              "name": "C4",
+              "midi": 60
+            },
+            "current": {
+              "name": "E4",
+              "midi": 64
+            },
+            "interval": {
+              "number": 3,
+              "quality": "M",
+              "direction": "ASCENDING",
+              "spokenName": "major third, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "3̂",
+            "contentDescription": "Play melody interval C4 to E4, major third, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "C4",
+                "midi": 60
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "E4",
+                "midi": 64
+              },
+              "scaleDegreeLabel": "3̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 3.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C3",
+              "midi": 48
+            },
+            "current": {
+              "name": "D3",
+              "midi": 50
+            },
+            "previousIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "currentIntervalPitch": {
+              "name": "D3",
+              "midi": 50
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "D",
+              "scale": "minor"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "M",
+              "direction": "ASCENDING",
+              "spokenName": "major second, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "1̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "E4",
+              "midi": 64
+            },
+            "current": {
+              "name": "D4",
+              "midi": 62
+            },
+            "interval": {
+              "number": 2,
+              "quality": "M",
+              "direction": "DESCENDING",
+              "spokenName": "major second, descending"
+            },
+            "previousDegreeLabel": "3̂",
+            "currentDegreeLabel": "1̂",
+            "contentDescription": "Play melody interval E4 to D4, major second, descending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "E4",
+                "midi": 64
+              },
+              "scaleDegreeLabel": "3̂",
+              "verticalPosition": "TOP"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "D4",
+                "midi": 62
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "BOTTOM"
+            }
+          ]
+        },
+        {
+          "chordIndex": 2,
+          "melodyNote": {
+            "sd": "5",
+            "beat": 4.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "D3",
+              "midi": 50
+            },
+            "current": {
+              "name": "C♯4",
+              "midi": 61
+            },
+            "previousIntervalPitch": {
+              "name": "D3",
+              "midi": 50
+            },
+            "currentIntervalPitch": {
+              "name": "C♯3",
+              "midi": 49
+            },
+            "previousKey": {
+              "tonic": "D",
+              "scale": "minor"
+            },
+            "currentKey": {
+              "tonic": "F#",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "m",
+              "direction": "DESCENDING",
+              "spokenName": "minor second, descending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "5̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "D4",
+              "midi": 62
+            },
+            "current": {
+              "name": "C♯5",
+              "midi": 73
+            },
+            "interval": {
+              "number": 7,
+              "quality": "M",
+              "direction": "ASCENDING",
+              "spokenName": "major seventh, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "5̂",
+            "contentDescription": "Play melody interval D4 to C♯5, major seventh, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "D4",
+                "midi": 62
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "C♯5",
+                "midi": 73
+              },
+              "scaleDegreeLabel": "5̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "borrowed-applied-written-root",
+      "section": {
+        "chords": [
+          {
+            "root": 2,
+            "type": 5,
+            "beat": 1,
+            "duration": 1,
+            "borrowed": "minor",
+            "_fixtureId": 0
+          },
+          {
+            "root": 6,
+            "type": 5,
+            "beat": 2,
+            "duration": 1,
+            "borrowed": "minor",
+            "applied": 5,
+            "_fixtureId": 1
+          },
+          {
+            "root": 5,
+            "type": 5,
+            "beat": 3,
+            "duration": 1,
+            "applied": 5,
+            "substitutions": [
+              "tri"
+            ],
+            "_fixtureId": 2
+          },
+          {
+            "root": 0,
+            "type": 5,
+            "beat": 4,
+            "duration": 1,
+            "_letterRootName": "A#",
+            "_fixtureId": 3
+          }
+        ],
+        "metadata": {
+          "keys": [
+            {
+              "tonic": "Bb",
+              "scale": "minor",
+              "beat": 1
+            }
+          ]
+        }
+      },
+      "melody": [
+        {
+          "sd": "b3",
+          "beat": 1,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "#4",
+          "beat": 2,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "bb7",
+          "beat": 3,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "1",
+          "beat": 4,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": [
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "b3",
+            "beat": 1.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C4",
+              "midi": 60
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "Bb",
+              "scale": "minor"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "2̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "#4",
+            "beat": 2.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C4",
+              "midi": 60
+            },
+            "current": {
+              "name": "D♭4",
+              "midi": 61
+            },
+            "previousIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "currentIntervalPitch": {
+              "name": "D♭3",
+              "midi": 49
+            },
+            "previousKey": {
+              "tonic": "Bb",
+              "scale": "minor"
+            },
+            "currentKey": {
+              "tonic": "Bb",
+              "scale": "minor"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "m",
+              "direction": "ASCENDING",
+              "spokenName": "minor second, ascending"
+            },
+            "previousDegreeLabel": "2̂",
+            "currentDegreeLabel": "3̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "D♭♭5",
+              "midi": 72
+            },
+            "current": {
+              "name": "E5",
+              "midi": 76
+            },
+            "interval": {
+              "number": 2,
+              "quality": "AA",
+              "direction": "ASCENDING",
+              "spokenName": "augmented augmented second, ascending"
+            },
+            "previousDegreeLabel": "♭3̂",
+            "currentDegreeLabel": "♯4̂",
+            "contentDescription": "Play melody interval D♭♭5 to E5, augmented augmented second, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "D♭♭5",
+                "midi": 72
+              },
+              "scaleDegreeLabel": "♭3̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "E5",
+                "midi": 76
+              },
+              "scaleDegreeLabel": "♯4̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        },
+        {
+          "chordIndex": 2,
+          "melodyNote": {
+            "sd": "bb7",
+            "beat": 3.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "D♭4",
+              "midi": 61
+            },
+            "current": {
+              "name": "G♭4",
+              "midi": 66
+            },
+            "previousIntervalPitch": {
+              "name": "D♭3",
+              "midi": 49
+            },
+            "currentIntervalPitch": {
+              "name": "G♭3",
+              "midi": 54
+            },
+            "previousKey": {
+              "tonic": "Bb",
+              "scale": "minor"
+            },
+            "currentKey": {
+              "tonic": "Bb",
+              "scale": "minor"
+            },
+            "interval": {
+              "number": 4,
+              "quality": "P",
+              "direction": "ASCENDING",
+              "spokenName": "perfect fourth, ascending"
+            },
+            "previousDegreeLabel": "3̂",
+            "currentDegreeLabel": "6̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "E5",
+              "midi": 76
+            },
+            "current": {
+              "name": "A♭♭♭5",
+              "midi": 78
+            },
+            "interval": {
+              "number": 4,
+              "quality": "ddd",
+              "direction": "ASCENDING",
+              "spokenName": "diminished diminished diminished fourth, ascending"
+            },
+            "previousDegreeLabel": "♯4̂",
+            "currentDegreeLabel": "♭♭7̂",
+            "contentDescription": "Play melody interval E5 to A♭♭♭5, diminished diminished diminished fourth, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "E5",
+                "midi": 76
+              },
+              "scaleDegreeLabel": "♯4̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "A♭♭♭5",
+                "midi": 78
+              },
+              "scaleDegreeLabel": "♭♭7̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        },
+        {
+          "chordIndex": 3,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 4.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "G♭4",
+              "midi": 66
+            },
+            "current": {
+              "name": "A♯4",
+              "midi": 70
+            },
+            "previousIntervalPitch": {
+              "name": "G♭3",
+              "midi": 54
+            },
+            "currentIntervalPitch": {
+              "name": "A♯3",
+              "midi": 58
+            },
+            "previousKey": {
+              "tonic": "Bb",
+              "scale": "minor"
+            },
+            "currentKey": {
+              "tonic": "Bb",
+              "scale": "minor"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "AA",
+              "direction": "ASCENDING",
+              "spokenName": "augmented augmented second, ascending"
+            },
+            "previousDegreeLabel": "6̂",
+            "currentDegreeLabel": "♯♯7̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "A♭♭♭5",
+              "midi": 78
+            },
+            "current": {
+              "name": "B♭4",
+              "midi": 70
+            },
+            "interval": {
+              "number": 7,
+              "quality": "dd",
+              "direction": "DESCENDING",
+              "spokenName": "diminished diminished seventh, descending"
+            },
+            "previousDegreeLabel": "♭♭7̂",
+            "currentDegreeLabel": "1̂",
+            "contentDescription": "Play melody interval A♭♭♭5 to B♭4, diminished diminished seventh, descending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "A♭♭♭5",
+                "midi": 78
+              },
+              "scaleDegreeLabel": "♭♭7̂",
+              "verticalPosition": "TOP"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "B♭4",
+                "midi": 70
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "BOTTOM"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "negative-onsets-and-durations",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": -1,
+            "duration": 3,
+            "_fixtureId": 0
+          },
+          {
+            "root": 5,
+            "type": 5,
+            "beat": 0,
+            "duration": 1,
+            "_fixtureId": 1
+          },
+          {
+            "root": 4,
+            "type": 5,
+            "beat": 2,
+            "duration": -1,
+            "_fixtureId": 2
+          }
+        ],
+        "metadata": null
+      },
+      "melody": [
+        {
+          "sd": "1",
+          "beat": -1,
+          "duration": 3,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "5",
+          "beat": 0,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "4",
+          "beat": 2,
+          "duration": -1,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        -1,
+        0,
+        0.5,
+        1,
+        2
+      ],
+      "expected": [
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": -1.0,
+            "duration": 3.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": -1.0,
+            "duration": 3.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": -1.0,
+            "duration": 3.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "5",
+            "beat": 0.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C3",
+              "midi": 48
+            },
+            "current": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "currentIntervalPitch": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 5,
+              "quality": "P",
+              "direction": "ASCENDING",
+              "spokenName": "perfect fifth, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "5̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "C4",
+              "midi": 60
+            },
+            "current": {
+              "name": "G4",
+              "midi": 67
+            },
+            "interval": {
+              "number": 5,
+              "quality": "P",
+              "direction": "ASCENDING",
+              "spokenName": "perfect fifth, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "5̂",
+            "contentDescription": "Play melody interval C4 to G4, perfect fifth, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "C4",
+                "midi": 60
+              },
+              "scaleDegreeLabel": "1̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "G4",
+                "midi": 67
+              },
+              "scaleDegreeLabel": "5̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        },
+        {
+          "chordIndex": null,
+          "melodyNote": null,
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        }
+      ]
+    },
+    {
+      "label": "primitive-nan-infinite-event-order",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": [],
+            "duration": {},
+            "_fixtureId": 0
+          },
+          {
+            "root": 2,
+            "type": 5,
+            "beat": "NaN",
+            "duration": 1,
+            "_fixtureId": 1
+          },
+          {
+            "root": 3,
+            "type": 5,
+            "beat": "2",
+            "duration": "NaN",
+            "_fixtureId": 2
+          },
+          {
+            "root": 4,
+            "type": 5,
+            "beat": "3e0",
+            "duration": "Infinity",
+            "_fixtureId": 3
+          },
+          {
+            "root": 5,
+            "type": 5,
+            "beat": "4",
+            "duration": "1.25",
+            "_fixtureId": 4
+          }
+        ],
+        "metadata": null
+      },
+      "melody": [],
+      "beats": [
+        1,
+        2,
+        3,
+        4,
+        5.25,
+        9
+      ],
+      "expected": [
+        {
+          "chordIndex": 0,
+          "melodyNote": null,
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C3",
+              "midi": 48
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": null,
+          "melodyNote": null,
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 3,
+          "melodyNote": null,
+          "root": {
+            "previous": {
+              "name": "E3",
+              "midi": 52
+            },
+            "current": {
+              "name": "F3",
+              "midi": 53
+            },
+            "previousIntervalPitch": {
+              "name": "E3",
+              "midi": 52
+            },
+            "currentIntervalPitch": {
+              "name": "F3",
+              "midi": 53
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "m",
+              "direction": "ASCENDING",
+              "spokenName": "minor second, ascending"
+            },
+            "previousDegreeLabel": "3̂",
+            "currentDegreeLabel": "4̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 4,
+          "melodyNote": null,
+          "root": {
+            "previous": {
+              "name": "F3",
+              "midi": 53
+            },
+            "current": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousIntervalPitch": {
+              "name": "F3",
+              "midi": 53
+            },
+            "currentIntervalPitch": {
+              "name": "G3",
+              "midi": 55
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "M",
+              "direction": "ASCENDING",
+              "spokenName": "major second, ascending"
+            },
+            "previousDegreeLabel": "4̂",
+            "currentDegreeLabel": "5̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 3,
+          "melodyNote": null,
+          "root": {
+            "previous": {
+              "name": "E3",
+              "midi": 52
+            },
+            "current": {
+              "name": "F3",
+              "midi": 53
+            },
+            "previousIntervalPitch": {
+              "name": "E3",
+              "midi": 52
+            },
+            "currentIntervalPitch": {
+              "name": "F3",
+              "midi": 53
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "m",
+              "direction": "ASCENDING",
+              "spokenName": "minor second, ascending"
+            },
+            "previousDegreeLabel": "3̂",
+            "currentDegreeLabel": "4̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 3,
+          "melodyNote": null,
+          "root": {
+            "previous": {
+              "name": "E3",
+              "midi": 52
+            },
+            "current": {
+              "name": "F3",
+              "midi": 53
+            },
+            "previousIntervalPitch": {
+              "name": "E3",
+              "midi": 52
+            },
+            "currentIntervalPitch": {
+              "name": "F3",
+              "midi": 53
+            },
+            "previousKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "C",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "m",
+              "direction": "ASCENDING",
+              "spokenName": "minor second, ascending"
+            },
+            "previousDegreeLabel": "3̂",
+            "currentDegreeLabel": "4̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        }
+      ]
+    },
+    {
+      "label": "primitive-rest-case-and-invalid-key",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1,
+            "duration": 1,
+            "_fixtureId": 0
+          },
+          {
+            "root": 2,
+            "type": 5,
+            "beat": 2,
+            "duration": 1,
+            "rest": "True",
+            "_fixtureId": 1
+          },
+          {
+            "root": 3,
+            "type": 5,
+            "beat": 3,
+            "duration": 1,
+            "rest": " true ",
+            "_fixtureId": 2
+          },
+          {
+            "root": 4,
+            "type": 5,
+            "beat": 4,
+            "duration": 1,
+            "isRest": "FALSE",
+            "_fixtureId": 3
+          }
+        ],
+        "metadata": {
+          "keys": [
+            null,
+            {
+              "tonic": "Cb",
+              "scale": "major",
+              "beat": 1
+            }
+          ]
+        }
+      },
+      "melody": [
+        {
+          "sd": "1",
+          "beat": 1,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "2",
+          "beat": 2,
+          "duration": 1,
+          "octave": 0,
+          "isRest": true
+        },
+        {
+          "sd": "3",
+          "beat": 3,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        },
+        {
+          "sd": "4",
+          "beat": 4,
+          "duration": 1,
+          "octave": 0,
+          "isRest": false
+        }
+      ],
+      "beats": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": [
+        {
+          "chordIndex": 0,
+          "melodyNote": {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": null,
+            "current": {
+              "name": "C♭3",
+              "midi": 47
+            },
+            "previousIntervalPitch": null,
+            "currentIntervalPitch": {
+              "name": "C♭3",
+              "midi": 47
+            },
+            "previousKey": null,
+            "currentKey": {
+              "tonic": "Cb",
+              "scale": "major"
+            },
+            "interval": null,
+            "previousDegreeLabel": null,
+            "currentDegreeLabel": "1̂",
+            "showPrevious": false,
+            "showInterval": false
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 1,
+          "melodyNote": {
+            "sd": "2",
+            "beat": 2.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": true
+          },
+          "root": null,
+          "melody": null,
+          "melodyMode": "HIDDEN",
+          "currentVertical": "TOP",
+          "cards": []
+        },
+        {
+          "chordIndex": 2,
+          "melodyNote": {
+            "sd": "3",
+            "beat": 3.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "C♭3",
+              "midi": 47
+            },
+            "current": {
+              "name": "E♭3",
+              "midi": 51
+            },
+            "previousIntervalPitch": {
+              "name": "C♭3",
+              "midi": 47
+            },
+            "currentIntervalPitch": {
+              "name": "E♭3",
+              "midi": 51
+            },
+            "previousKey": {
+              "tonic": "Cb",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "Cb",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 3,
+              "quality": "M",
+              "direction": "ASCENDING",
+              "spokenName": "major third, ascending"
+            },
+            "previousDegreeLabel": "1̂",
+            "currentDegreeLabel": "3̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": null,
+          "melodyMode": "SINGLE",
+          "currentVertical": "CENTER",
+          "cards": []
+        },
+        {
+          "chordIndex": 3,
+          "melodyNote": {
+            "sd": "4",
+            "beat": 4.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          "root": {
+            "previous": {
+              "name": "E♭3",
+              "midi": 51
+            },
+            "current": {
+              "name": "F♭3",
+              "midi": 52
+            },
+            "previousIntervalPitch": {
+              "name": "E♭3",
+              "midi": 51
+            },
+            "currentIntervalPitch": {
+              "name": "F♭3",
+              "midi": 52
+            },
+            "previousKey": {
+              "tonic": "Cb",
+              "scale": "major"
+            },
+            "currentKey": {
+              "tonic": "Cb",
+              "scale": "major"
+            },
+            "interval": {
+              "number": 2,
+              "quality": "m",
+              "direction": "ASCENDING",
+              "spokenName": "minor second, ascending"
+            },
+            "previousDegreeLabel": "3̂",
+            "currentDegreeLabel": "4̂",
+            "showPrevious": true,
+            "showInterval": true
+          },
+          "melody": {
+            "previous": {
+              "name": "E♭4",
+              "midi": 63
+            },
+            "current": {
+              "name": "F♭4",
+              "midi": 64
+            },
+            "interval": {
+              "number": 2,
+              "quality": "m",
+              "direction": "ASCENDING",
+              "spokenName": "minor second, ascending"
+            },
+            "previousDegreeLabel": "3̂",
+            "currentDegreeLabel": "4̂",
+            "contentDescription": "Play melody interval E♭4 to F♭4, minor second, ascending"
+          },
+          "melodyMode": "INTERVAL",
+          "currentVertical": "TOP",
+          "cards": [
+            {
+              "role": "PREVIOUS",
+              "pitch": {
+                "name": "E♭4",
+                "midi": 63
+              },
+              "scaleDegreeLabel": "3̂",
+              "verticalPosition": "BOTTOM"
+            },
+            {
+              "role": "CURRENT",
+              "pitch": {
+                "name": "F♭4",
+                "midi": 64
+              },
+              "scaleDegreeLabel": "4̂",
+              "verticalPosition": "TOP"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
