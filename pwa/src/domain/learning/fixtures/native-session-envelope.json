@@ -1,0 +1,856 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "kotlinVersion": "2.2.10",
+  "compilerVersion": "info: kotlinc-jvm 2.2.10 (JRE 25.0.3+-15898627-b508.16)",
+  "sessionSha256": "4ad8249be63632815fe13dfa55c1d60a1f980892d053ea49d4b72be09b6c110f",
+  "blocksSha256": "e0bb18ec8224c17b8a3576e62ac50fbf4fb869d603521714621b49037cb14347",
+  "declarationsSha256": "9684d106b477f3df3124b14dc812e83b4a3157466b9efa6d43ad7374d352e704",
+  "helperSha256": "6753207cf3acede9906930708d6e5d15735f847689f0b8ff3947ed9b23311f15",
+  "producerSha256": "ab4e33f29994dc1299cd04bc5ffd19106007a67db1b9f58e7c615b78de43e052",
+  "driverSha256": "ffd64f3d2dac644fc2e796b4b19e5ad7a796191b4fef952ed7e4b74d77840303",
+  "jars": [
+    {
+      "file": "kotlin-serialization-compiler-plugin-embeddable-2.2.10.jar",
+      "sha256": "c70a592804a59525ba1e314579c01a23ecc8566119fe21cd977f5a290d28bfa9"
+    },
+    {
+      "file": "kotlin-compiler-embeddable-2.2.10.jar",
+      "sha256": "79628fd5d64b4692a62f98962baab00e9076a37e2cffd6ace33cd0b7be7d1cdf"
+    },
+    {
+      "file": "kotlin-stdlib-2.2.10.jar",
+      "sha256": "9c67cc79efd6b9215b49d2a4308f5f3433537376c7c88e89bdd6729bd096e61a"
+    },
+    {
+      "file": "kotlin-script-runtime-2.2.10.jar",
+      "sha256": "c304a67dba6a61dde560e6310920bed746307c3854f6675c29ac29114731b6b0"
+    },
+    {
+      "file": "kotlin-daemon-embeddable-2.2.10.jar",
+      "sha256": "b31573d418961fa080760fedcfc90d68ad67a85eafa245c73fe3d551476777ba"
+    },
+    {
+      "file": "kotlinx-coroutines-core-jvm-1.9.0.jar",
+      "sha256": "ad89c2892235e670f222d819cb3d81188143cb19a05b59df9889ae4269f5c70a"
+    },
+    {
+      "file": "annotations-23.0.0.jar",
+      "sha256": "7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05"
+    },
+    {
+      "file": "kotlinx-serialization-json-jvm-1.8.1.jar",
+      "sha256": "8769e5647557e3700919c32d508f5c5dad53c5d8234cd10846354fbcff14aa24"
+    },
+    {
+      "file": "kotlinx-serialization-core-jvm-1.8.1.jar",
+      "sha256": "3565b6d4d789bf70683c45566944287fc1d8dc75c23d98bd87d01059cc76f2b3"
+    }
+  ],
+  "adapter": "Native field blocks80..123/139/149..154 with fixture current=null; inputs omit current/return; real serializers; corpus presence projection only; Long seed/serial text adapter; no TS.",
+  "cases": [
+    {
+      "label": "absent",
+      "raw": null,
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": ""
+      }
+    },
+    {
+      "label": "defaults",
+      "raw": "{}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": ""
+      }
+    },
+    {
+      "label": "metadata-damage-keeps-progress",
+      "raw": "{\"version\":2,\"progress\":{\"attempts\":7,\"cells\":{\"dominant-return:guided\":{\"practice\":4,\"practiceCorrect\":4}}},\"inversionProgress\":{\"attempts\":7,\"cells\":{\"dominant-return:guided\":{\"practice\":4,\"practiceCorrect\":4}}},\"serial\":{},\"microphoneEnabled\":{},\"exampleSettings\":{\"popularity\":null},\"sourceHistoryReliable\":{},\"sourceExposures\":{}}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {
+              "dominant-return:guided": {
+                "practice": 4,
+                "practiceCorrect": 4,
+                "independentAttempts": 0,
+                "independentCorrect": 0,
+                "transferCorrect": 0,
+                "keys": [],
+                "mastered": false,
+                "support": 0,
+                "lastAt": 0,
+                "dueAt": 0,
+                "lastCorrect": null,
+                "streak": 0,
+                "recentIndependent": [],
+                "microphonePractice": {},
+                "microphoneIndependent": {}
+              }
+            },
+            "attempts": 7,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {
+              "dominant-return:guided": {
+                "practice": 4,
+                "practiceCorrect": 4,
+                "independentAttempts": 0,
+                "independentCorrect": 0,
+                "transferCorrect": 0,
+                "keys": [],
+                "mastered": false,
+                "support": 0,
+                "lastAt": 0,
+                "dueAt": 0,
+                "lastCorrect": null,
+                "streak": 0,
+                "recentIndependent": [],
+                "microphonePractice": {},
+                "microphoneIndependent": {}
+              }
+            },
+            "attempts": 7,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": false
+        },
+        "warning": "Some listening history could not be restored. Your progress has been kept; song examples count as supported practice."
+      }
+    },
+    {
+      "label": "unsupported-version",
+      "raw": "{\"version\":3,\"progress\":{\"attempts\":7,\"cells\":{\"dominant-return:guided\":{\"practice\":4,\"practiceCorrect\":4}}}}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": "Saved progress could not be read. Starting fresh for this session."
+      }
+    },
+    {
+      "label": "structural-version",
+      "raw": "{\"version\":{},\"progress\":{\"attempts\":7,\"cells\":{\"dominant-return:guided\":{\"practice\":4,\"practiceCorrect\":4}}}}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": "Saved progress could not be read. Starting fresh for this session."
+      }
+    },
+    {
+      "label": "version-number-lexeme-falls-back1",
+      "raw": "{\"version\":2.0,\"exampleSettings\":{\"analysis\":\"allModes\",\"groupingPriority\":\"mode\"}}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": ""
+      }
+    },
+    {
+      "label": "v2-settings-preserved",
+      "raw": "{\"version\":2,\"exampleSettings\":{\"analysis\":\"allModes\",\"groupingPriority\":\"mode\",\"sortOrder\":\"random\",\"popularity\":false}}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": false,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "allModes",
+            "modeFilter": "major",
+            "groupingPriority": "mode",
+            "sortOrder": "random"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": ""
+      }
+    },
+    {
+      "label": "progress-decode-damage-isolated",
+      "raw": "{\"version\":2,\"progress\":{\"cells\":{\"dominant-return:guided\":{\"practice\":\"bad\"}}},\"inversionProgress\":{\"attempts\":7,\"cells\":{\"dominant-return:guided\":{\"practice\":4,\"practiceCorrect\":4}}},\"serial\":\"9223372036854775807\"}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "9223372036854775807",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {
+              "dominant-return:guided": {
+                "practice": 4,
+                "practiceCorrect": 4,
+                "independentAttempts": 0,
+                "independentCorrect": 0,
+                "transferCorrect": 0,
+                "keys": [],
+                "mastered": false,
+                "support": 0,
+                "lastAt": 0,
+                "dueAt": 0,
+                "lastCorrect": null,
+                "streak": 0,
+                "recentIndependent": [],
+                "microphonePractice": {},
+                "microphoneIndependent": {}
+              }
+            },
+            "attempts": 7,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": "Some saved settings or history could not be read. Valid learning progress has been kept."
+      }
+    },
+    {
+      "label": "inversion-decode-damage-isolated",
+      "raw": "{\"progress\":{\"attempts\":7,\"cells\":{\"dominant-return:guided\":{\"practice\":4,\"practiceCorrect\":4}}},\"inversionProgress\":{\"cells\":{\"dominant-return:guided\":{\"practice\":null}}}}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {
+              "dominant-return:guided": {
+                "practice": 4,
+                "practiceCorrect": 4,
+                "independentAttempts": 0,
+                "independentCorrect": 0,
+                "transferCorrect": 0,
+                "keys": [],
+                "mastered": false,
+                "support": 0,
+                "lastAt": 0,
+                "dueAt": 0,
+                "lastCorrect": null,
+                "streak": 0,
+                "recentIndependent": [],
+                "microphonePractice": {},
+                "microphoneIndependent": {}
+              }
+            },
+            "attempts": 7,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": "Some saved settings or history could not be read. Valid learning progress has been kept."
+      }
+    },
+    {
+      "label": "history-damage-last-wins",
+      "raw": "{\"progress\":{\"attempts\":7,\"cells\":{\"dominant-return:guided\":{\"practice\":4,\"practiceCorrect\":4}}},\"sourceExposures\":[{\"sourceId\":\"a\",\"songId\":\"one\",\"at\":1},{\"sourceId\":\"b\",\"songId\":\"two\",\"at\":2},{\"sourceId\":\"a\",\"songId\":\"three\",\"at\":3},{\"sourceId\":\"x\",\"songId\":\" \",\"at\":4},{\"sourceId\":\"\",\"songId\":\"bad\",\"at\":5},{\"sourceId\":\"z\",\"songId\":\"bad\",\"at\":-1}]}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {
+              "dominant-return:guided": {
+                "practice": 4,
+                "practiceCorrect": 4,
+                "independentAttempts": 0,
+                "independentCorrect": 0,
+                "transferCorrect": 0,
+                "keys": [],
+                "mastered": false,
+                "support": 0,
+                "lastAt": 0,
+                "dueAt": 0,
+                "lastCorrect": null,
+                "streak": 0,
+                "recentIndependent": [],
+                "microphonePractice": {},
+                "microphoneIndependent": {}
+              }
+            },
+            "attempts": 7,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [
+            {
+              "sourceId": "b",
+              "songId": "two",
+              "at": 2
+            },
+            {
+              "sourceId": "a",
+              "songId": "three",
+              "at": 3
+            }
+          ],
+          "sourceHistoryReliable": false
+        },
+        "warning": "Some listening history could not be restored. Your progress has been kept; song examples count as supported practice."
+      }
+    },
+    {
+      "label": "history-unreliable",
+      "raw": "{\"progress\":{\"attempts\":7,\"cells\":{\"dominant-return:guided\":{\"practice\":4,\"practiceCorrect\":4}}},\"sourceHistoryReliable\":false}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {
+              "dominant-return:guided": {
+                "practice": 4,
+                "practiceCorrect": 4,
+                "independentAttempts": 0,
+                "independentCorrect": 0,
+                "transferCorrect": 0,
+                "keys": [],
+                "mastered": false,
+                "support": 0,
+                "lastAt": 0,
+                "dueAt": 0,
+                "lastCorrect": null,
+                "streak": 0,
+                "recentIndependent": [],
+                "microphonePractice": {},
+                "microphoneIndependent": {}
+              }
+            },
+            "attempts": 7,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": false
+        },
+        "warning": "Some listening history could not be restored. Your progress has been kept; song examples count as supported practice."
+      }
+    },
+    {
+      "label": "progress-version-and-cell-normalization",
+      "raw": "{\"progress\":{\"version\":99,\"attempts\":100},\"inversionProgress\":{\"attempts\":-2,\"cells\":{\"dominant-return:guided\":{\"practice\":3,\"practiceCorrect\":9,\"lastAt\":-1,\"dueAt\":-2,\"mastered\":true,\"support\":0}}}}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {
+              "dominant-return:guided": {
+                "practice": 3,
+                "practiceCorrect": 3,
+                "independentAttempts": 0,
+                "independentCorrect": 0,
+                "transferCorrect": 0,
+                "keys": [],
+                "mastered": false,
+                "support": 1,
+                "lastAt": 0,
+                "dueAt": 0,
+                "lastCorrect": null,
+                "streak": 0,
+                "recentIndependent": [],
+                "microphonePractice": {},
+                "microphoneIndependent": {}
+              }
+            },
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": ""
+      }
+    },
+    {
+      "label": "native-scalar-lexemes",
+      "raw": "{\"serial\":\"+00012\",\"microphoneEnabled\":\"TrUe\",\"sourceHistoryReliable\":\"FALSE\",\"exampleSettings\":{\"popularity\":\"true\",\"analysis\":123},\"progress\":{\"attempts\":\"2\"}}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 2,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": false
+        },
+        "warning": "Some listening history could not be restored. Your progress has been kept; song examples count as supported practice."
+      }
+    },
+    {
+      "label": "typed-corpus-and-exact-history-seed",
+      "raw": "{\"progress\":{\"attempts\":3,\"recent\":[{\"id\":\"h\",\"familyId\":\"dominant-return\",\"skillId\":\"identify\",\"correct\":true,\"independent\":true,\"technicalUncertainty\":false,\"at\":10,\"seed\":\"9223372036854775807\",\"generatorVersion\":\"g\",\"fingerprint\":\"f\",\"key\":\"C\",\"variantId\":\"direct\",\"support\":0,\"transfer\":false,\"assistance\":[],\"plays\":1,\"attempt\":1,\"corpus\":{\"snapshotId\":\"snap\",\"popularityVersion\":null,\"familyMappingVersion\":\"map\",\"passage\":{\"occurrenceId\":\"o\",\"patternId\":\"p\",\"songId\":\"s\",\"sectionId\":\"sec\",\"sourceRevision\":\"r\",\"startIndex\":0,\"endIndex\":2,\"view\":\"harmony\",\"familyId\":\"dominant-return\",\"variantId\":\"direct\",\"keyTonic\":\"C\",\"keyScale\":\"major\",\"tempo\":72,\"events\":[{\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60,\"degree\":\"I\",\"functionLabel\":\"tonic\"}],\"context\":[{\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60,\"degree\":\"I\",\"functionLabel\":\"tonic\"}],\"degreeLabels\":[\"I\"]},\"settings\":{},\"seed\":\"-9223372036854775808\",\"semitoneShift\":0}}]}}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 3,
+            "recent": [
+              {
+                "id": "h",
+                "familyId": "dominant-return",
+                "skillId": "identify",
+                "correct": true,
+                "independent": true,
+                "technicalUncertainty": false,
+                "at": 10,
+                "seed": "9223372036854775807",
+                "generatorVersion": "g",
+                "fingerprint": "f",
+                "key": "C",
+                "variantId": "direct",
+                "support": 0,
+                "transfer": false,
+                "assistance": [],
+                "plays": 1,
+                "attempt": 1,
+                "microphoneKind": null,
+                "requestedVariantId": null,
+                "instrumentOverride": null,
+                "octaveShift": 0,
+                "corpus": "typed-corpus-present"
+              }
+            ],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": ""
+      }
+    },
+    {
+      "label": "typed-corpus-required-field-damage",
+      "raw": "{\"progress\":{\"attempts\":3,\"recent\":[{\"id\":\"h\",\"familyId\":\"dominant-return\",\"skillId\":\"identify\",\"correct\":true,\"independent\":true,\"technicalUncertainty\":false,\"at\":10,\"seed\":\"9223372036854775807\",\"generatorVersion\":\"g\",\"fingerprint\":\"f\",\"key\":\"C\",\"variantId\":\"direct\",\"support\":0,\"transfer\":false,\"assistance\":[],\"plays\":1,\"attempt\":1,\"corpus\":{\"snapshotId\":\"snap\",\"popularityVersion\":null,\"familyMappingVersion\":\"map\",\"passage\":{\"occurrenceId\":\"o\",\"patternId\":\"p\",\"songId\":\"s\",\"sourceRevision\":\"r\",\"startIndex\":0,\"endIndex\":2,\"view\":\"harmony\",\"familyId\":\"dominant-return\",\"variantId\":\"direct\",\"keyTonic\":\"C\",\"keyScale\":\"major\",\"tempo\":72,\"events\":[{\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60,\"degree\":\"I\",\"functionLabel\":\"tonic\"}],\"context\":[{\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60,\"degree\":\"I\",\"functionLabel\":\"tonic\"}],\"degreeLabels\":[\"I\"]},\"settings\":{},\"seed\":\"-9223372036854775808\",\"semitoneShift\":0}}]},\"serial\":-2}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": true
+        },
+        "warning": "Some saved settings or history could not be read. Valid learning progress has been kept."
+      }
+    },
+    {
+      "label": "explicit-null-field-isolation",
+      "raw": "{\"progress\":null,\"inversionProgress\":{\"attempts\":7,\"cells\":{\"dominant-return:guided\":{\"practice\":4,\"practiceCorrect\":4}}},\"exampleSettings\":null,\"serial\":null,\"microphoneEnabled\":null,\"sourceExposures\":null,\"sourceHistoryReliable\":null}",
+      "expected": {
+        "envelope": {
+          "version": 2,
+          "progress": {
+            "version": 1,
+            "cells": {},
+            "attempts": 0,
+            "recent": [],
+            "exposures": []
+          },
+          "serial": "0",
+          "microphoneEnabled": true,
+          "exampleSettings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false,
+            "distinguishInversions": false,
+            "flatList": false,
+            "analysis": "relativeMajor",
+            "modeFilter": "major",
+            "groupingPriority": "none",
+            "sortOrder": "mostSongs"
+          },
+          "inversionProgress": {
+            "version": 1,
+            "cells": {
+              "dominant-return:guided": {
+                "practice": 4,
+                "practiceCorrect": 4,
+                "independentAttempts": 0,
+                "independentCorrect": 0,
+                "transferCorrect": 0,
+                "keys": [],
+                "mastered": false,
+                "support": 0,
+                "lastAt": 0,
+                "dueAt": 0,
+                "lastCorrect": null,
+                "streak": 0,
+                "recentIndependent": [],
+                "microphonePractice": {},
+                "microphoneIndependent": {}
+              }
+            },
+            "attempts": 7,
+            "recent": [],
+            "exposures": []
+          },
+          "sourceExposures": [],
+          "sourceHistoryReliable": false
+        },
+        "warning": "Some listening history could not be restored. Your progress has been kept; song examples count as supported practice."
+      }
+    }
+  ]
+}
