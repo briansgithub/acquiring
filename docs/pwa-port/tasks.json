@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T21:43:59.454140+00:00",
+  "updated": "2026-10-17T21:45:07.593475+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1608,6 +1608,15 @@
           "pwa/src/features/playback/fixtures/generate-interval-preview-native.py": "41fc4ee58a6018f5809c20ede4838e1c0642338c40909803860dfa478bc668a0",
           "pwa/src/features/playback/fixtures/native-interval-preview.json": "b099c80b91da2ef25ab58b29cd92a0fb77cc7651a640c808078846e07bc6c4ba"
         }
+      },
+      "previousCardUiContractIntent": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "c545c4af2c85ba1a3576e44d7d4897ddd803301c",
+        "ownedPaths": [
+          "pwa/src/features/playback/view-contracts.ts"
+        ],
+        "status": "Frozen comments/unchangedprops on accepted177unit/strict types revision; no newruntime/type surface or unnecessarytestrepeat. Rootbrowseracceptance remains separate.",
+        "scope": "Previousroot/melody450ms rawtap +nativevisibility/verticalpositions only; reuseacceptedhelpers/oneexistingpreviewowner. Intervalsequence/audio/UI/singing/globalpreference andparentcontracts excluded."
       }
     },
     {

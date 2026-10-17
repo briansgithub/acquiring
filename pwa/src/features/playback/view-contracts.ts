@@ -20,6 +20,21 @@
  * Remaining slices: previous/interval cards,visualtimeline/singing/favorites/default persistence
  * and routepositionmemory; wholeT12 remains in_progress, device/Safari acceptance remains unrun.
  */
+/** Next bounded presentation slice: previous root/melody single-pitch cards only.
+ * Use accepted PlaybackActiveEventIndex, showsRootOnlyPrevious, melodyPitchCardDisplayMode,
+ * buildMelodyPitchCards and melodyCurrentCardVerticalPosition. Root previous remains visible
+ * even on unison; melody previous exists only in INTERVAL mode (written-pitch equality).
+ * Previous root source label is state.previousDegreeLabel; Major label uses previousIntervalPitch.
+ * Melody previous label is state.previousDegreeLabel or fixed Ionian context label when locked.
+ * ALL root/melody tap audio remains RAW source pitch +manualtransposeonce,450ms/currentpreset.
+ * Previous/current melody vertical placement follows the accepted native card helper; SINGLE
+ * current remains centered. Source keys per event, relative display context fixed per section.
+ * Reuse the existing preview owner/stop ref; no new owner/timers/context/controller/props/API.
+ * Add accessible Play previous root <label>/Play previous melody <label> buttons; keep current
+ * labels/selectors and empty/rest slots, section lifecycle/scrub/Reset behavior unchanged.
+ * Keep 44px targets, 320px/200%text wrapping and keyboard operation. No interval-play button
+ * before separately accepted sequenceaudio; no placeholder/debugtext, singing or persistence.
+ */
 export interface PlaybackScreenProps {
   readonly slug:string;readonly onBack:()=>void;readonly onHome:()=>void;readonly onDownload:()=>void;
 }
