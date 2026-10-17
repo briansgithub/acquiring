@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-17T11:44:15.224142+00:00. Ownerweekly100/fivehour70/80 policy active,last33%/76%. T12puremodel0fab9288 accepted14native/6units/types/build; newprivateSectionPlaybackController PASS12coveringunits/strict types,syncgesture/silentscrub/revisionlifecycleguard/nativeFloatconfig/sectionreplace/permanentrelease. No Appcontrols yet. SoleSol/highworker oncodex/pwa-aural-generator fromd4356715 owns6RNGpaths;8pinnedKotlin2.2.10 nativeanchors captured,tests/types/commitpending. Do not duplicate/integrateuntilvalidatedreviewedtip; preserve allwork.
+Updated 2026-10-17T11:50:42.708645+00:00. Ownerweekly100/fivehour70/80 active. Private T14 RNG6751b4d9 accepted after normal merge/combined29learningtests/types. Luna/medium owns only bounded PlaybackScreen/css/worklog from21d7bea3 in preserved UI sibling; root owns routing/integration/browser. No fullT12/T14/device acceptance yet. Preserve all prior branches/evidence.
 
 ## Authority and completion
 

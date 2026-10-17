@@ -1466,6 +1466,11 @@
           "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run check (from pwa through run-control)",
           "revision": "fb3f23b15a5bfe27fa473a7afcaf800441d0fdec",
           "result": "PASS317unit+1input-contract/strict types/production build. Guard window7-evidence-combined-check-20261015. Native60case/80step reducer now integrated with existing119assessment and audio/domain/data code. Build shell4cbe15e19dde unchanged because these components are not wired into App. No browser/device/account check rerun or implied."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/learning; node node_modules/typescript/bin/tsc --noEmit (pwa through run-control)",
+          "revision": "8ee76e6910592504faa7d52fcae5c7e3ecd87de2",
+          "result": "PASS29learning tests/window12-rng-combined-unit-20261017, combined strict types/window12-rng-combined-types-20261017. Native8seedcases/15focused worker tests/scopedtypes already passed6751b4d9, not recaptured. Private helpers not in product barrel; no browser/App/fullgenerator claim."
         }
       ],
       "progress": [
@@ -1479,7 +1484,8 @@
         "2026-10-16T17:56:09.596140+00:00 weeklyboundary70%/fivehour49%; Sol/high firstcheck already70%, stopped without nativeinvestigation. Ignored no-findings receipt digest d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8 preserved in existing sibling; workeridle/no source/branch changes. RootT11completed5cf90c24. No work/check/newassignment afterboundary; checkpoint only.",
         "2026-10-17T11:31:57.366729+00:00 owner overrides weekly70%cutoff with runweeklyto0%remaining. Root4dbef998 clean, siblingf9330517 preserved/idle;guard0recovery. No sourceinvestigation previouslydone. Resume same read-onlyproposal afterpolicycheckpoint, no duplicate.",
         "2026-10-17T11:38:43.814275+00:00 read-only72lineproposal reviewed, native AuralCurriculum9-27/149-231 inspected. Root freezes builtin API; exactKotlin2.2.10 RNGdraworder andJVMhash/nestedlistformat seedBigInt mandatory. T12puremodel0fab9288 accepted/disjoint. Worker remainsidle untilcontractcheckpoint/sourceclaim.",
-        "2026-10-17T11:40:01.081136+00:00 Prebranch: primaryd43567157d8be5028c81b33b33386dc98d459083 clean; siblingf9330517 clean/idle; pureT12model0fab9288 accepted. SameSol/highworker onlycheckpoint1 RNG/hash8nativeanchors; root disjointproductPlaybackUI preparation/contracts/integration. Lastlive25%fivehour/75%weekly underweekly100override."
+        "2026-10-17T11:40:01.081136+00:00 Prebranch: primaryd43567157d8be5028c81b33b33386dc98d459083 clean; siblingf9330517 clean/idle; pureT12model0fab9288 accepted. SameSol/highworker onlycheckpoint1 RNG/hash8nativeanchors; root disjointproductPlaybackUI preparation/contracts/integration. Lastlive25%fivehour/75%weekly underweekly100override.",
+        "2026-10-17T11:50:07.443998+00:00 Pre-integration: primary3861627a88ae19222afe1348f13b485dc35b1d65 clean; worker6751b4d9e9ec97d4562be14cbe7c9d5015eadb35 clean, one LunaUI worker active in separate sibling. Root reviewed private RNG156lines/tests111/native producer134 and license pins; 8nativecases/15tests/scopedtypes passed. One fixture-loader-only UTF16 adapter correction, native expected values unchanged. All branches/evidence preserved; no fullT14completion."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1529,8 +1535,8 @@
           "pwa/src/domain/learning/fixtures/native-random.json"
         ],
         "scope": "Checkpoint1 ONLY: private Kotlin2.2.10 Longseed XorWow nextInt/nextDouble/listshuffle plus JVM UTF16/wrapped hash/native nested-list string helpers,8intentional native RNG/hash anchors. Exact source/runtime pinned; canonical signed64 decimal strings/BigInt. No fullgenerator before rootreview/followup, no public RNGindex, no rootcontract/evidence/assessment/theory/DSP/source changes.",
-        "status": "dated prebranch claim; strict contracttypes PASS window12-generator-contract-types-20261017",
-        "nextAction": "Under own guard reuse cleanf9330517 sibling on new absent branch from exact frozenbase; preserve all priorbranches. Save small receipts and validated RNG/helper checkpoint thenidle/report; nophase2withoutrootfollowup. Newweekly100/fivehour70/80 policy applies, no credits/resets."
+        "status": "ACCEPTED private RNG checkpoint1 6751b4d9e9ec97d4562be14cbe7c9d5015eadb35 normally merged; combined learning29tests/strict types PASS first root checks. Full generator remains open.",
+        "nextAction": "Separate builtin generator checkpoint2 only after Luna idle and fresh capacity; frozen API remains d4356715. Do not recapture successful RNG/assessment/evidence fixtures."
       }
     },
     {
