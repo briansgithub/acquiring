@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-16",
+  "updated": "2026-10-17T17:35:26.122831+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1675,8 +1675,17 @@
         "baseCommit": "c8a46052f49591139c0e8f76f898c3281285fe89",
         "scope": "READONLY bounded proposal only for frozen AuralCurriculum selectTarget/unlock/family+skill status. Inspect relevant native79..147 and currentaccepted auralevidence/assessment/generator contracts; propose smallest deterministic API/bounds andnew<=24nativecases, no source/contract/fixture/test/index edits, no nativecapture orbranch/tree changes. Saved-sessionrepair/pattern/corpus/audio/UI excluded. Root freezesnextcontract before sourceassignment.",
         "output": ".artifacts/pwa-port/t14-scheduler-proposal-window13.md",
-        "status": "claimed before read-only dispatch, priorworkerbuiltinaccepted/idle andLunaidle",
+        "status": "COMPLETE read-only69line proposal; SHA2562b24a9fa2510e9b4fddd93a612f2555dd72a65a7c475484f69a87e183782ff94; native ordering/version distinction reviewed.",
         "nextAction": "Save shortignoredintent/result under own guard, return boundedproposal<=80lines/sha256 andidle. Weekly90checkpointcontinue100/fivehour70/80; no recapturepriornativeevidence."
+      },
+      "schedulerContractIntent": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "d31d97dc359d26d0c2af6a541dd6a3ac9218d963",
+        "ownedPaths": [
+          "pwa/src/domain/learning/scheduler-contracts.ts"
+        ],
+        "status": "Frozen three-function builtin scheduler contract; strict combined types PASS/window13-scheduler-contract-types-20261017 before assignment. Runtime unchanged/unknown.",
+        "scope": "Three pure builtin unlock/selection functions only, exact native105..147 and helper versus selector version behavior; reuse unchanged evidence/RNG/target factory, at most24 new native cases. No generation/pattern/corpus/session/UI/storage."
       }
     },
     {
