@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-17T11:37:44.976368+00:00. OWNER weekly100%/0%remaining policy active; fivehour70/80unchanged. New T12puresectionmodel PASS14independentnative cases/6coveringunits/types/build43e5a745cf9f unchanged; no UI/Appplayback yet. Explicit T08composed-stream-runtime developmentgate nowpermits boundedT12; T08parent/T26release/device gates remain. T14read-only72lineproposal complete/digest in tasks,Sol/highidle. Nextrootfreeze builtin generator contract then sameworkerRNG/hash andbuiltin nativecases checkpoints. Preserve allwork/no oldfixturecapture.
+Updated 2026-10-17T11:40:01.081136+00:00. Ownerweekly100policy active,fivehour70/80unchanged. T12puremodel0fab9288 accepted14native/6unit/types/build. Generatorcontract frozend43567157d8be5028c81b33b33386dc98d459083 +strict typesPASS. Datedprebranch: sameSol/high preview_owner reusescleanf9330517 sibling on newcodex/pwa-aural-generator fromexactbase; checkpoint1 ONLY privateKotlin2.2.10 RNG/hash8nativeanchors thenidle. RootdisjointPlaybackUI/contracts/integration. Last25%/75%. Preserve all branches/work/oldfixtures; nofullgeneratoruntilrootfollowup.
 
 ## Authority and completion
 

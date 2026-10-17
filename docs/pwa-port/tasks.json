@@ -1395,7 +1395,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "fb3f23b15a5bfe27fa473a7afcaf800441d0fdec",
       "slice": "Pure assessment and evidence reducers integrated and validated; generator/scheduler/session repair open",
-      "nextAction": "Reuse validated pitch-assessment and evidence reducers. Remaining T14 work is deterministic generator/target selection/unlock/scheduler and saved-session decoding/repair;freeze a narrow contract before delegation. Do not repeat119assessment or60evidence fixture capture. T14 remains in_progress;no actual capture/UI acceptance.",
+      "nextAction": "Under own guard reuse cleanf9330517 sibling on new absent branch from exact frozenbase; preserve all priorbranches. Save small receipts and validated RNG/helper checkpoint thenidle/report; nophase2withoutrootfollowup. Newweekly100/fivehour70/80 policy applies, no credits/resets.",
       "validation": [
         {
           "command": "python pwa/src/domain/learning/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/domain/learning/pitch-assessment.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (node commands from pwa)",
@@ -1423,7 +1423,8 @@
         "2026-10-16T17:54:27.412784+00:00 primary5cf90c24 T11complete/clean; existing Sol/high worker/tree f9330517 clean/idle, no branchchange. Root persists one bounded read-only T14generator-contract proposal. Lastlive48%/69%, no source/dependency changes; no duplicateworker or fixturecapture.",
         "2026-10-16T17:56:09.596140+00:00 weeklyboundary70%/fivehour49%; Sol/high firstcheck already70%, stopped without nativeinvestigation. Ignored no-findings receipt digest d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8 preserved in existing sibling; workeridle/no source/branch changes. RootT11completed5cf90c24. No work/check/newassignment afterboundary; checkpoint only.",
         "2026-10-17T11:31:57.366729+00:00 owner overrides weekly70%cutoff with runweeklyto0%remaining. Root4dbef998 clean, siblingf9330517 preserved/idle;guard0recovery. No sourceinvestigation previouslydone. Resume same read-onlyproposal afterpolicycheckpoint, no duplicate.",
-        "2026-10-17T11:38:43.814275+00:00 read-only72lineproposal reviewed, native AuralCurriculum9-27/149-231 inspected. Root freezes builtin API; exactKotlin2.2.10 RNGdraworder andJVMhash/nestedlistformat seedBigInt mandatory. T12puremodel0fab9288 accepted/disjoint. Worker remainsidle untilcontractcheckpoint/sourceclaim."
+        "2026-10-17T11:38:43.814275+00:00 read-only72lineproposal reviewed, native AuralCurriculum9-27/149-231 inspected. Root freezes builtin API; exactKotlin2.2.10 RNGdraworder andJVMhash/nestedlistformat seedBigInt mandatory. T12puremodel0fab9288 accepted/disjoint. Worker remainsidle untilcontractcheckpoint/sourceclaim.",
+        "2026-10-17T11:40:01.081136+00:00 Prebranch: primaryd43567157d8be5028c81b33b33386dc98d459083 clean; siblingf9330517 clean/idle; pureT12model0fab9288 accepted. SameSol/highworker onlycheckpoint1 RNG/hash8nativeanchors; root disjointproductPlaybackUI preparation/contracts/integration. Lastlive25%fivehour/75%weekly underweekly100override."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1454,7 +1455,27 @@
           "pwa/src/domain/learning/generator-contracts.ts"
         ],
         "scope": "Freeze built-in explicittarget/Longseed rich exercise API only; exactnativeWaveform override union via accepted enum, native aliases onlyfor generated instrument. Family/skill/support/mic/variant/octavevalidation, no pattern/scheduler/corpus/session/UI.",
-        "nextAction": "Strict combined types before named contract checkpoint and dated sameSol/highworker claim. Two checkpoints RNG/hash8nativeanchors first then24..32rich nativeexercises; no oldfixturecapture."
+        "nextAction": "Strict combined types before named contract checkpoint and dated sameSol/highworker claim. Two checkpoints RNG/hash8nativeanchors first then24..32rich nativeexercises; no oldfixturecapture.",
+        "status": "Frozen atd43567157d8be5028c81b33b33386dc98d459083; combined strict types PASS before source assignment."
+      },
+      "generatorAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-aural-generator",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "d43567157d8be5028c81b33b33386dc98d459083",
+        "ownedPaths": [
+          "pwa/src/domain/learning/kotlin-random.ts",
+          "pwa/src/domain/learning/kotlin-random.test.ts",
+          "pwa/src/domain/learning/KOTLIN_RANDOM_LICENSE.txt",
+          "pwa/src/domain/learning/GENERATOR_WORKLOG.md",
+          "pwa/src/domain/learning/fixtures/generate-random-native.py",
+          "pwa/src/domain/learning/fixtures/native-random.json"
+        ],
+        "scope": "Checkpoint1 ONLY: private Kotlin2.2.10 Longseed XorWow nextInt/nextDouble/listshuffle plus JVM UTF16/wrapped hash/native nested-list string helpers,8intentional native RNG/hash anchors. Exact source/runtime pinned; canonical signed64 decimal strings/BigInt. No fullgenerator before rootreview/followup, no public RNGindex, no rootcontract/evidence/assessment/theory/DSP/source changes.",
+        "status": "dated prebranch claim; strict contracttypes PASS window12-generator-contract-types-20261017",
+        "nextAction": "Under own guard reuse cleanf9330517 sibling on new absent branch from exact frozenbase; preserve all priorbranches. Save small receipts and validated RNG/helper checkpoint thenidle/report; nophase2withoutrootfollowup. Newweekly100/fivehour70/80 policy applies, no credits/resets."
       }
     },
     {
@@ -1801,16 +1822,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-17T11:37:44.976368+00:00",
-    "sourceCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
+    "date": "2026-10-17T11:40:01.081136+00:00",
+    "sourceCommit": "d43567157d8be5028c81b33b33386dc98d459083",
     "usageObserved": {
-      "fiveHourUsedPercent": 1,
-      "weeklyUsedPercent": 71
+      "fiveHourUsedPercent": 25,
+      "weeklyUsedPercent": 75
     },
     "fiveHourResetUnix": 1792254573,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "New pureT12sectionmodel accepted; T14read-onlyproposal ready for rootcontract. Owner weekly100policy active.",
+    "reason": "Strict typed frozen generator contract ready; bounded RNG/hash checkpoint1 assigned beforefullgeneration.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T16:51:44.987830+00:00",
@@ -1820,7 +1841,27 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Prior cutoff reset passed; live counters permit bounded resumption."
     },
-    "activeWorker": null,
+    "activeWorker": {
+      "owner": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "branch": "codex/pwa-aural-generator",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "d43567157d8be5028c81b33b33386dc98d459083",
+      "ownedPaths": [
+        "pwa/src/domain/learning/kotlin-random.ts",
+        "pwa/src/domain/learning/kotlin-random.test.ts",
+        "pwa/src/domain/learning/KOTLIN_RANDOM_LICENSE.txt",
+        "pwa/src/domain/learning/GENERATOR_WORKLOG.md",
+        "pwa/src/domain/learning/fixtures/generate-random-native.py",
+        "pwa/src/domain/learning/fixtures/native-random.json"
+      ],
+      "scope": "Checkpoint1 ONLY: private Kotlin2.2.10 Longseed XorWow nextInt/nextDouble/listshuffle plus JVM UTF16/wrapped hash/native nested-list string helpers,8intentional native RNG/hash anchors. Exact source/runtime pinned; canonical signed64 decimal strings/BigInt. No fullgenerator before rootreview/followup, no public RNGindex, no rootcontract/evidence/assessment/theory/DSP/source changes.",
+      "status": "dated prebranch claim; strict contracttypes PASS window12-generator-contract-types-20261017",
+      "nextAction": "Under own guard reuse cleanf9330517 sibling on new absent branch from exact frozenbase; preserve all priorbranches. Save small receipts and validated RNG/helper checkpoint thenidle/report; nophase2withoutrootfollowup. Newweekly100/fivehour70/80 policy applies, no credits/resets.",
+      "agent": "preview_owner",
+      "task": "T14"
+    },
     "completedWorker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",
@@ -1854,7 +1895,7 @@
       "commit": "e084ccb601e2e7918e922574c62a7d95345984d6"
     },
     "usageAvailability": "Ordinaryusageallowedtrue,last1%/71%; refresh beforelargework.",
-    "nextAction": "Root freeze bounded builtin generator contract/exactwaveforms, then two named worker checkpoints: Kotlin2.2.10 RNG/hash anchors first,24..32nativebuiltin exercises second. No scheduler/pattern/corpus/session/UI/oldfixturecapture.",
+    "nextAction": "Under own guard reuse cleanf9330517 sibling on new absent branch from exact frozenbase; preserve all priorbranches. Save small receipts and validated RNG/helper checkpoint thenidle/report; nophase2withoutrootfollowup. Newweekly100/fivehour70/80 policy applies, no credits/resets.",
     "latestAcceptedProductTree": {
       "baseCommit": "8ee74c0960c64cdf328055bd7b9522295f8c0263",
       "shell": "43e5a745cf9f",

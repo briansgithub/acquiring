@@ -51,3 +51,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-16T17:56:09.596140+00:00 preview_owner gpt-6.1-sol/high received read-onlyT14generator proposal on existingf9330517tree. Its FIRSTusagecheck was70%weekly, so no nativeinvestigation/check/sourceedit/branch began; saved ignored no-findings receipt thenidle. Rootruntimeunknown/unchanged. Weekly49%fivehour/70%weekly cutoff; no newassignment untilapplicablecapacityreturn.
 
 2026-10-17T11:31:57.366729+00:00 OWNER weeklyoverride to0%remaining supersedes historicalweekly70%cutoff; fivehour70/80unchanged. Reuse samepreview_owner Sol/high for boundedread-onlyT14proposal afterpolicycheckpoint; no newworker/modelchange. Weekly90%checkpointthencontinue,100%/ordinaryexhaustionstop; no credit/resetactions.
+
+2026-10-17T11:40:01.081136+00:00 samepreview_owner gpt-6.1-sol/high assignedT14checkpoint1 Kotlin2.2.10 RNG/hash helpers+8nativeanchors fromfrozend43567157d8be5028c81b33b33386dc98d459083 onnewcodex/pwa-aural-generator inpreservedsibling. No fullgeneratorbefore rootreview, oneworkeronly; rootunknownunchanged/disjointPlaybackUI. Weekly100/fivehour70/80 policy,last25%/75%.
