@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T17:45:30.506367+00:00",
+  "updated": "2026-10-17T17:46:09.974418+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1753,6 +1753,18 @@
             "result": "PASSstrictcombinedtypes firstattempt. Appbuild7674a0134d8c unchanged; purelearningbarrel not imported byApp, no unnecessary browser/buildrecapture."
           }
         ]
+      },
+      "sessionProposalAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-aural-scheduler",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "22af4635e27195de47f0247a062758b70ba24753",
+        "scope": "READONLY bounded saved-session restore/repair seam proposal only. Inspect frozen AuralSession declarations/init plus directlycalled validation leaves, accepted learning contracts and T06recordboundary. Identify smallest pure-first repair API, exact metadata/progress/current/history failure isolation, version/Long preservation and dependencies; <=80line ignored proposal. No entire sessionport, storage/audio/UI/credentials/pattern/corpus implementation, no trackededit/branch/fixturecapture/test. Root freezescontract later.",
+        "output": ".artifacts/pwa-port/t14-session-proposal-window13.md",
+        "status": "Claim beforedispatch, schedulerrootd3445c5f143combined/strict types accepted; sibling22afclean/idle. One Sol/high only, Lunaidle. Last64%fivehour/93%weekly, no newstep70/80yield; weekly100override.",
+        "nextAction": "Worker FIRSTrefreshusage; boundedread-onlystep/guardedintent/result only whilefivehour<70; checkpointpartialproposal ifboundary andidle. Rootreview/contract nextcapacity; no duplicatework."
       }
     },
     {

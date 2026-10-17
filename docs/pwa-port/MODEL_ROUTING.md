@@ -67,3 +67,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-10-17T17:35:36.906939+00:00 Prebranch: primary9333043f4cf87cccb4bd276ba6b2e9d07662b9e4 clean after frozen schedulercontract/typesPASS; siblingc8a46052 clean/idle. Reuse existing tree on new codex/pwa-aural-scheduler, preserve generatorbranch/allrefs/ignoredproofs. One Sol/high only; root runtimeunknown unchanged. Last45%five-hour/90%weekly, checkpoint eachsmallstep andcontinue to100; fivehour70/80 retained. Root musicalHome notyetclaimed.
 
 2026-10-17T17:45:30.506367+00:00 Samepreview_owner gpt-6.1-sol/high completed scheduler22af4635/oraclefa836ee1, firstnative24/29focused/scopedtypes; rootnormallyintegratedandaccepted143combined/strict types. Workeridle, no newassignment, runtimeunknownunchanged;weekly93checkpointcontinue100/fivehour70/80.
+
+2026-10-17T17:46:09.974418+00:00 Samepreview_owner Sol/high READONLY saved-sessionrepair seam proposal onexistingclean22af4635 afterscheduleraccepted143checks/types. Max80lineignoredproposal, no nativecapture/source/storage/branchwork. Rootruntimeunknownunchanged;last64%fivehour/93%weekly, no newstep70/80yield, weekly100override.
