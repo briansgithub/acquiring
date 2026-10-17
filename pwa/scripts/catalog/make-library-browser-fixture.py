@@ -2,7 +2,7 @@
 import argparse,gzip,hashlib,importlib.util,json,sqlite3,uuid
 from contextlib import closing
 from pathlib import Path
-parser=argparse.ArgumentParser();parser.add_argument('--variant',choices=['old','new'],default='old');parser.add_argument('--details',action='store_true');parser.add_argument('--song-screen',action='store_true');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--variant',choices=['old','new'],default='old');parser.add_argument('--details',action='store_true');parser.add_argument('--song-screen',action='store_true');parser.add_argument('--playback-errors',action='store_true');args=parser.parse_args()
 root=Path.cwd()/'.artifacts/pwa-port/browser-library'/str(uuid.uuid4());source=root/'source';source.mkdir(parents=True);path=source/'catalog.db'
 with closing(sqlite3.connect(path)) as db:
     db.executescript("""
@@ -26,6 +26,13 @@ with closing(sqlite3.connect(path)) as db:
         payload=json.dumps({'10':{'sectionName':'Chorus','sectionIndex':1,'chords':[{'root':4,'type':5,'beat':1,'duration':2}],'metadata':{'youtube':{'id':None}}},'2':{'sectionName':'Verse','sectionIndex':0,'chords':[{'root':1,'type':5,'beat':1,'duration':1},{'root':5,'type':7,'beat':2,'duration':1}],'numericId':'12345','notes':{'melody1':[{'sd':'1','beat':1},{'rest':True},{}]},'metadata':{'endBeat':9,'tempos':[{'bpm':90,'beat':1},{'bpm':120,'beat':5}],'meters':[{'numBeats':4,'beat':1},{'numBeats':3,'beat':5}],'keys':[{'tonic':'C','scale':'major','beat':1},{'tonic':'D','scale':'minor','beat':2}],'youtube':{'id':'fixture&part=2'}}}}).encode('utf-8')
         rows.extend([('detail-gzip','Detail Artist','Detail_Gzip',gzip.compress(payload,mtime=0)),('detail-raw',None,'Detail Raw',payload),('detail-unrated',None,'Detail Unrated',payload),('detail-broken',None,'Detail Broken',b'{broken')])
         if args.details:rows.append(('detail-oversize',None,'Detail Oversize',b'Z'*(8*1024*1024+1)))
+    if args.playback_errors:
+        # Valid catalog/JSON, but the declared release exceeds the supported playback timeline.
+        bad={'sectionName':'Unsupported','chords':[{'root':1,'type':5,'beat':1,'duration':1e12}]}
+        good={'sectionName':'Supported','chords':[{'root':1,'type':5,'beat':1,'duration':2}]}
+        for slug,first,last in [('playback-bad-first',bad,good),('playback-bad-last',good,bad)]:
+            payload=json.dumps({'2':dict(first,sectionIndex=0),'10':dict(last,sectionIndex=1)}).encode('utf-8')
+            rows.append((slug,'Playback fixture',slug,payload))
     for slug,artist,title,blob in rows:
         db.execute('INSERT INTO songs VALUES(?,?,?,?,?,?)',(slug,artist,'Updated Search' if args.variant=='new' and slug=='a-alpha' else title,'https://example.test','complete',blob))
     for slug,artist,title in db.execute('SELECT slug,artist,title FROM songs WHERE dataBlob IS NOT NULL').fetchall():

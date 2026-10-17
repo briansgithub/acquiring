@@ -1,6 +1,6 @@
 # PWA implementation continuation
 
-Updated 2026-10-17T11:50:42.708645+00:00. Ownerweekly100/fivehour70/80 active. Private T14 RNG6751b4d9 accepted after normal merge/combined29learningtests/types. Luna/medium owns only bounded PlaybackScreen/css/worklog from21d7bea3 in preserved UI sibling; root owns routing/integration/browser. No fullT12/T14/device acceptance yet. Preserve all prior branches/evidence.
+Updated 2026-10-17T12:04:53.906449+00:00. First bounded productPlayback accepted:28units/types/build bd096ee7358f,4Chrome58s pluscorrectedactual320px/200%offlineproof. Root finalcovering4 next; current sourcecheckpoint includesexplicitInfoPlay route/controls/errorrecovery/teardown/offlineaudio. FullT12/T08device gates open. T14 RNG6751b4d9accepted29learningtests/types, fullbuiltin generator next. Bothworkersidle; weekly100/fivehour70/80 policy last67%/82%. Preserve all evidence/branches.
 
 ## Authority and completion
 

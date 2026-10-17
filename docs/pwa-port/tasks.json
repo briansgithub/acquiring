@@ -1319,7 +1319,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
       "slice": "First bounded product playback screen and explicit song entry",
-      "nextAction": "Await Luna validated three-path view checkpoint; root review/normal integration then install ignored App candidate and combined checks/build/actualChrome proof. No implicit autoplay or fullT12claim.",
+      "nextAction": "Final4Chrome covering on the exact committed checkpoint after shared install helper readiness correction; no old catalog/native/SongInfo recapture. Then next bounded T12visualtimeline/cards or T14builtin generator, based on fresh allowance. Trustedtab/physical/Safari and pendingLibraryscroll approval unchanged.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1335,6 +1335,18 @@
           "command": "node node_modules/vitest/vitest.mjs run src/app/routes.test.ts src/features/details/controller.test.ts src/features/playback; node node_modules/typescript/bin/tsc --noEmit (pwa via rootguard)",
           "revision": "f147d995328ef793fcd847b3a722721dbb983da1 plus named four-path route/optionalSongScreen entry tree",
           "result": "PASS15covering tests/window12-playback-route-unit-20261017 andstrict types/window12-playback-route-types-20261017. Exactslug/Unicode/encodedslash/invalidroute boundaries; optionalentry stops preview thencallback. Appcandidate remainsignored until viewtip integrated; notactualproduct/browseracceptance."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/app/routes.test.ts src/features/details src/features/playback; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --output .artifacts/pwa-port/playback/browser-first; focused --grep \"reloads offline\" --output .artifacts/pwa-port/playback/browser-ready-fix2; node node_modules/typescript/bin/tsc --noEmit",
+          "revision": "5fec9d5fbea71d0d99d7fe493678a26fcde1ca4d plus root App/browser/optionalfixture tree, exact ownedSha256 recorded",
+          "result": "PASS28units/window12-product-combined-unit, strict types/build bd096ee7358f/window12-product-build,4Chrome58.0s/window12-product-browser-first. Actual48000Hz onecontext/93scheduledblocks/.261566peak/11stoppedblocks. No implicitautoplay, playedhead progress, pause/silent keyboard+pointer scrub/prior-intent+blurcancel,0BPM requestedresume/settings/rootonly/13presets/8arp/sectionsettings/Reset/back/independentreentry. Offlineworker/WASM/audio anddevStrictMode/downloadBack, initialinvalidrecovery/lateinvalidsilence/recoveredSPAcleanup. Initial narrow screenshot rejected asloading despitepass; readiness fix1mistaken10count failed13.2s, correct2buttons+4ranges+3selects=9, unchanged44px/nooverflow assertionsPASS13s(20.9stotal)fix2. Bothfirst/failuretraces preserved. Finalactual320px/200%screenimage visually reviewed: no obviousoverlap/overflow. Finalstrict types/window12-product-final-typesPASS. Physicalhearing/trustedtab/BFCache/Safari/device checks unrun.",
+          "ownedSha256": {
+            "pwa/src/app/App.tsx": "318e51b2b8892a6dc9c1f3d6b28b6aff75f0cd6b756d97f66d655313f0835578",
+            "pwa/src/features/playback/PlaybackScreen.tsx": "58bc7c896b6fc41de9f285ff41dde9c5c6a0d156deb623e8ae8ee6a773ec91e6",
+            "pwa/src/features/playback/playback.css": "b35247da5273cb17fe1768fcf4f2e3b82b2e2e7d44e0baef2fcdc04b82797fbf",
+            "pwa/tests/browser/playback.spec.ts": "9124c9b71f62a3686c296f88a1a64b9d3de81be2983e13c7ba3e52722690604e",
+            "pwa/scripts/catalog/make-library-browser-fixture.py": "cf3167e14aa05e8af4d6e53c0bcb63c24420c3465c4a2c6ab83494004635bc78"
+          }
         }
       ],
       "progress": [
@@ -1342,7 +1354,12 @@
         "2026-10-17T11:37:44.976368+00:00 puresectionpreparation accepted; T12in_progress, productcontrols/card/timeline/home/sectionintegration open. Explicit development milestone permits work, fullT08/T26release/device gates retained. Source/fixtures standalone; modelbuilddoesnotchangeproductbundle.",
         "2026-10-17T11:42:07.305289+00:00 Root starts privatePlaybackcontroller on04556ebab017ac558236150b4c18216e171fa10f; nativePlaybackViewtempo0..200/arpeggio8steps/mix0..1,PlaybackMenus transpose-12..12 andInstrumentSessionfallbackCLARINET inspected. One Sol/high RNGworker disjointlearning paths; rootdoesnoteditcontracts/audio. No fullT12claim; weekly100/fivehour70/80.",
         "2026-10-17T11:44:15.224142+00:00 Privatecontrollerchecks/typesPASSfirstchecks; sourcepatterns reviewed. Only3privatefeaturepaths, no App/audio/contracts/learning changes. SameSol/highworkerRNGnative8anchorsPASSbuttypes/fakes/commitpending; no duplicateworker.",
-        "2026-10-17T11:49:25.269771+00:00 Pre-branch claim: primary21d7bea337cf8c3249690ec91213cd699d268cd8 clean after props/types checkpoint; clean UI sibling e968599b reused on new codex/pwa-playback-ui, old library branch preserved. Sol RNG6751b4d9 clean/idle awaiting root review. One Luna/medium worker only; root disjoint RNG review/integration and App routes/browser. Last46%five-hour/78%weekly; weekly100/five-hour70/80 policy."
+        "2026-10-17T11:49:25.269771+00:00 Pre-branch claim: primary21d7bea337cf8c3249690ec91213cd699d268cd8 clean after props/types checkpoint; clean UI sibling e968599b reused on new codex/pwa-playback-ui, old library branch preserved. Sol RNG6751b4d9 clean/idle awaiting root review. One Luna/medium worker only; root disjoint RNG review/integration and App routes/browser. Last46%five-hour/78%weekly; weekly100/five-hour70/80 policy.",
+        "2026-10-17T11:57:09.446595+00:00 Root review extends only testfixtureproducer with optional --playback-errors and two synthetic validcatalog/unsupportedtimeline songs. Needed actualbrowser evidence for invalid-first recovery, invalid-later stale-output prevention and recovered-owner SPAcleanup found in view review. Existing fixture behavior unchanged without flag; no runtime/catalog installer/native evidence changes or old capture repetition. Firstbrowser proofs still unrun.",
+        "2026-10-17T11:59:55.495456+00:00 Pre-integration: exactLunaUI9dbdb2ed487e5fe67830568b34ff4abbd4c1462a reviewed, root0225beec plus owned optional testfixture flag/browser/task dirty preserved. No conflicting App/view edits, all branches/ignoredprofiles preserved. Initial guarded worker operations used primary metadata with explicit siblingcwd, reconciled successfulreceipts and no root source changes; remaining used correct siblingguard. Oneworkeridle; no further UI sourceassignment.",
+        "2026-10-17T12:02:29.261640+00:00 Combined28units/types/build bd096ee7358f PASS; fourChrome58.0s firstbrowser all passed actual48000Hz/93blocks/peak.261566/onecontext. Visual review rejected narrow screenshot: loading-only, controls.every vacuously passed. Firstproof retained; test-only fix waits ready/enabled Position andnonzero controlcount. Cycle1 focused offline/narrow retest to unique output, no productsource/nativeexpectation change. Other3behaviorproofs remainvalid; no geometric acceptance untilactualviewimage checked.",
+        "2026-10-17T12:03:25.831119+00:00 Focused ready retest failed only new mistaken nonvacuous count: expected>=10, actual9. Layout has2transportbuttons+4ranges+3selects=9; checkbox excluded fromselector andhas44pxlabel. Correct to exact9, retain readywait/min44px/nooverflow unchanged. No productsource change. Second focused proof correction to unique browser-ready-fix2 output; original screenshot/firstfailuretrace preserved. If another acceptancefailure needs expansion, stop and ask under2-cycle rule.",
+        "2026-10-17T12:04:53.906449+00:00 First bounded Playback productaccepted; fullT12in_progress. UIworker9dbdb2ed clean/idle; Sol6751b4d9 RNGaccepted/idle. Root reviewedactualreadygeometryimage after2testharnesscorrections, no productsourcefailure or furtherexpansion. Allpriorproofs/branches preserved. Latest67%five-hour/82%weekly, weekly100/fivehour70/80 policy active."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1395,10 +1412,11 @@
           "pwa/src/app/App.tsx",
           "pwa/src/features/details/SongScreen.tsx",
           "pwa/tests/browser/playback.spec.ts",
-          "pwa/src/features/playback/WORKLOG.md"
+          "pwa/src/features/playback/WORKLOG.md",
+          "pwa/scripts/catalog/make-library-browser-fixture.py"
         ],
         "scope": "First productPlayback separate /playback/exactslug route and Play song entry from completedInfo. Borrow existing readonlydetails and lazySectionPlaybackController; basic play/pause/reset/silentpositionscrub/native tempo/transpose/rootonly/13instrument/mix/arpeggio/sectioncontrols, no implicitautoplay. Rootowns route/sharedtypes/browserintegration; later queuedLuna owns onlyview/css/separateworklog. Cards/visualtimeline/home/keycontext/favorites/singing/sessiondefaults/routepositionmemory remainfutureT12/T13/T21.",
-        "status": "Props frozen21d7bea3; combined strict types PASS window12-ui-props-types-resume-20261017. Original source helper reconciled exit0, premature types/commit attempts never started; no unresolved guard/process.",
+        "status": "First product playback accepted: explicit /playback/exactslug from Info, settings/back/download, lazy onecontext/noautoplay, full/rootonly/native controls, silentkeyboard/pointer scrub, section preservation/error recovery and teardown, actualcoldofflineaudio. Further T12cards/visualtimeline/home/keycontext/defaultpersistence/routepositionmemory open.",
         "nextAction": "Strictviewcontracttypes/checkpoint; after RNGworkeridle only, datednewUIbranchclaim andLuna/mediumview. Rootactualbrowser afterreview/integration, nofullT12claim."
       },
       "uiAssignment": {
@@ -1412,8 +1430,8 @@
           "pwa/src/features/playback/PLAYBACK_UI_WORKLOG.md"
         ],
         "scope": "Implement only frozen view-contracts props/comments using accepted SongDetailController and SectionPlaybackController. No root contracts/routes/App/audio/catalog/dependency/task writes. Root owns actual browser integration; full T12 remains in_progress.",
-        "status": "claimed before new branch; existing clean e968599b library branch preserved",
-        "nextAction": "Worker guard creates new branch from exact base, source/scoped types/named checkpoint; root review/integration/browser follows."
+        "status": "ACCEPTED bounded product screen9dbdb2ed after normalmerge/root App wiring;28coveringunits/types/build bd096ee7358f and4actualChrome58.0s passed. Narrow readiness proof corrected separately andpassed13s, screenshotactualcontrols visually reviewed. No fullT12/device claim.",
+        "nextAction": "Root normalmerge exact reviewed3pathtip, install Appcandidate andcombined focusedunits/types/build; four new actualChrome cases including error recovery. Primary owns dirty fixtureproducer/tasks and untrackedbrowser only."
       }
     },
     {
