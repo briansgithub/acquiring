@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T21:34:15.697050+00:00",
+  "updated": "2026-10-17T21:36:26.449477+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1570,6 +1570,43 @@
           "pwa/src/features/playback/view-contracts.ts": "caa4c74bfb97b3decc30849539730b7ef911e6852baa8824a283f6a58bc88792",
           "pwa/tests/browser/playback.spec.ts": "80ce5b9b2ca34ad73eb420b145330bd41bb8fe5f63a995c540b79edf3832594d",
           "pwa/scripts/catalog/make-library-browser-fixture.py": "7e36e51550b07045164b517b2a230c1417045ad8f02a63a74878078866a8d4aa"
+        }
+      },
+      "intervalPlanAssignment": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "b588fa35d9555d059833f5f8bb9135724d5ae882",
+        "ownedPaths": [
+          "pwa/src/features/playback/interval-preview.ts",
+          "pwa/src/features/playback/interval-preview.test.ts",
+          "pwa/src/features/playback/fixtures/generate-interval-preview-native.py",
+          "pwa/src/features/playback/fixtures/native-interval-preview.json",
+          "pwa/src/features/playback/WORKLOG.md"
+        ],
+        "scope": "Pure frozenRootIntervalPreview.kt3-stepplan only,6NEWnativecases pinnedKotlin2.2.10/unchangedfullnativefile. PreserveKotlinIntwrap/distinct/nativeLongdelay; deepfrozen/boundedIntbrowserinputs. No actualaudio/sequenceowner/PreviewOwnerAPI/App/UI/DSP/learning changes, no acceptedfixturecapture.",
+        "status": "ACCEPTED pure3stepplan:6NEWindependentnativecases/Kotlin2.2.10,32coveringplaybackchecks/strictcombinedtypes firstPASS. No actualsequenceaudio/App/UIclaim; productbuild36d31e5e4cec unchanged.",
+        "nextAction": "Freeze boundedsequencepreview audioAPI beforeowner/UIintegration; actualprevious/current/both450ms stages usewrittenpitches/nativeIntplan, cancellation/sharedcontext/clock needactualbrowserproof. Neverapproximateusingarpeggio, do not recaptureaccepted6nativeplans.",
+        "validation": [
+          {
+            "command": "python -X utf8 pwa/src/features/playback/fixtures/generate-interval-preview-native.py",
+            "guard": "window14-interval-plan-native-20261017",
+            "result": "PASS6newnativeplans/18steps firstcapture; exactfrozenentireRootIntervalPreview.kt, no acceptedrecapture."
+          },
+          {
+            "command": "node node_modules/vitest/vitest.mjs run src/features/playback",
+            "guard": "window14-interval-plan-unit-20261017",
+            "result": "PASS32checks/4files firstattempt, includes6nativeplans and1browserboundary/frozenvaluegroup plusacceptedmodels."
+          },
+          {
+            "command": "node node_modules/typescript/bin/tsc --noEmit",
+            "guard": "window14-interval-plan-types-20261017",
+            "result": "PASSstrictcombinedtypes firstattempt; privateunimportedmodel, no unchangedAppbuild/browserrepeat."
+          }
+        ],
+        "sha256": {
+          "pwa/src/features/playback/interval-preview.ts": "0a70bc87a1aba10b9596d9bb084d38e28893fa0d4ea1ca4b9a1f66dadc010973",
+          "pwa/src/features/playback/interval-preview.test.ts": "a8e87836bdea7338c7cb617d29f75e833d0558d451e096c3cb675649b44ac74b",
+          "pwa/src/features/playback/fixtures/generate-interval-preview-native.py": "41fc4ee58a6018f5809c20ede4838e1c0642338c40909803860dfa478bc668a0",
+          "pwa/src/features/playback/fixtures/native-interval-preview.json": "b099c80b91da2ef25ab58b29cd92a0fb77cc7651a640c808078846e07bc6c4ba"
         }
       }
     },

@@ -1,0 +1,233 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "kotlinVersion": "2.2.10",
+  "compilerVersion": "info: kotlinc-jvm 2.2.10 (JRE 25.0.3+-15898627-b508.16)",
+  "sourceSha256": "89732f92c74cb18e4781cdc289cc8ee0d0774a73f357bf794cdb245413ad55fd",
+  "producerSha256": "41fc4ee58a6018f5809c20ede4838e1c0642338c40909803860dfa478bc668a0",
+  "driverSha256": "a469001cc44e5263f6837aaff262049599137770f86da7e2d7f25b5d9385f52b",
+  "jars": [
+    {
+      "file": "kotlin-compiler-embeddable-2.2.10.jar",
+      "sha256": "79628fd5d64b4692a62f98962baab00e9076a37e2cffd6ace33cd0b7be7d1cdf"
+    },
+    {
+      "file": "kotlin-stdlib-2.2.10.jar",
+      "sha256": "9c67cc79efd6b9215b49d2a4308f5f3433537376c7c88e89bdd6729bd096e61a"
+    },
+    {
+      "file": "kotlin-script-runtime-2.2.10.jar",
+      "sha256": "c304a67dba6a61dde560e6310920bed746307c3854f6675c29ac29114731b6b0"
+    },
+    {
+      "file": "kotlin-daemon-embeddable-2.2.10.jar",
+      "sha256": "b31573d418961fa080760fedcfc90d68ad67a85eafa245c73fe3d551476777ba"
+    },
+    {
+      "file": "kotlinx-coroutines-core-jvm-1.9.0.jar",
+      "sha256": "ad89c2892235e670f222d819cb3d81188143cb19a05b59df9889ae4269f5c70a"
+    },
+    {
+      "file": "annotations-23.0.0.jar",
+      "sha256": "7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05"
+    }
+  ],
+  "cases": [
+    {
+      "label": "standard",
+      "input": {
+        "previousAudioNote": 60,
+        "currentAudioNote": 67,
+        "octaveShiftSemitones": 0,
+        "durationMs": 450
+      },
+      "expected": [
+        {
+          "audioNotes": [
+            60
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 450
+        },
+        {
+          "audioNotes": [
+            67
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 450
+        },
+        {
+          "audioNotes": [
+            60,
+            67
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 0
+        }
+      ]
+    },
+    {
+      "label": "octave-shift",
+      "input": {
+        "previousAudioNote": 60,
+        "currentAudioNote": 67,
+        "octaveShiftSemitones": 12,
+        "durationMs": 450
+      },
+      "expected": [
+        {
+          "audioNotes": [
+            72
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 450
+        },
+        {
+          "audioNotes": [
+            79
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 450
+        },
+        {
+          "audioNotes": [
+            72,
+            79
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 0
+        }
+      ]
+    },
+    {
+      "label": "unison-distinct",
+      "input": {
+        "previousAudioNote": 60,
+        "currentAudioNote": 60,
+        "octaveShiftSemitones": -12,
+        "durationMs": 450
+      },
+      "expected": [
+        {
+          "audioNotes": [
+            48
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 450
+        },
+        {
+          "audioNotes": [
+            48
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 450
+        },
+        {
+          "audioNotes": [
+            48
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 0
+        }
+      ]
+    },
+    {
+      "label": "wrapped-int-addition",
+      "input": {
+        "previousAudioNote": 2147483647,
+        "currentAudioNote": -2147483648,
+        "octaveShiftSemitones": 1,
+        "durationMs": 450
+      },
+      "expected": [
+        {
+          "audioNotes": [
+            -2147483648
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 450
+        },
+        {
+          "audioNotes": [
+            -2147483647
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 450
+        },
+        {
+          "audioNotes": [
+            -2147483648,
+            -2147483647
+          ],
+          "durationMs": 450,
+          "delayAfterMs": 0
+        }
+      ]
+    },
+    {
+      "label": "negative-duration",
+      "input": {
+        "previousAudioNote": 0,
+        "currentAudioNote": -1,
+        "octaveShiftSemitones": 0,
+        "durationMs": -1
+      },
+      "expected": [
+        {
+          "audioNotes": [
+            0
+          ],
+          "durationMs": -1,
+          "delayAfterMs": -1
+        },
+        {
+          "audioNotes": [
+            -1
+          ],
+          "durationMs": -1,
+          "delayAfterMs": -1
+        },
+        {
+          "audioNotes": [
+            0,
+            -1
+          ],
+          "durationMs": -1,
+          "delayAfterMs": 0
+        }
+      ]
+    },
+    {
+      "label": "long-delay-from-int",
+      "input": {
+        "previousAudioNote": 1,
+        "currentAudioNote": 127,
+        "octaveShiftSemitones": -2147483648,
+        "durationMs": 2147483647
+      },
+      "expected": [
+        {
+          "audioNotes": [
+            -2147483647
+          ],
+          "durationMs": 2147483647,
+          "delayAfterMs": 2147483647
+        },
+        {
+          "audioNotes": [
+            -2147483521
+          ],
+          "durationMs": 2147483647,
+          "delayAfterMs": 2147483647
+        },
+        {
+          "audioNotes": [
+            -2147483647,
+            -2147483521
+          ],
+          "durationMs": 2147483647,
+          "delayAfterMs": 0
+        }
+      ]
+    }
+  ]
+}
