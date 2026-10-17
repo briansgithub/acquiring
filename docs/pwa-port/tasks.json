@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T21:45:07.593475+00:00",
+  "updated": "2026-10-17T21:45:16.096769+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1617,6 +1617,24 @@
         ],
         "status": "Frozen comments/unchangedprops on accepted177unit/strict types revision; no newruntime/type surface or unnecessarytestrepeat. Rootbrowseracceptance remains separate.",
         "scope": "Previousroot/melody450ms rawtap +nativevisibility/verticalpositions only; reuseacceptedhelpers/oneexistingpreviewowner. Intervalsequence/audio/UI/singing/globalpreference andparentcontracts excluded."
+      },
+      "previousCardUiAssignment": {
+        "owner": "song_ui_review",
+        "model": "gpt-6-luna",
+        "thinking": "medium",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
+        "branch": "codex/pwa-previous-cards",
+        "baseCommit": "1267a84bf5b16ef38635306ef3f386e0f22f80b1",
+        "priorBranch": "codex/pwa-playback-ui",
+        "priorTip": "9dbdb2ed487e5fe67830568b34ff4abbd4c1462a",
+        "ownedPaths": [
+          "pwa/src/features/playback/PlaybackCards.tsx",
+          "pwa/src/features/playback/playback.css",
+          "pwa/src/features/playback/PREVIOUS_CARDS_WORKLOG.md"
+        ],
+        "status": "Datedclaim beforebranchreuse; primarycontract/sourceclean, UI9dbclean/idle, Sol40194815clean/idle andacceptedc545c4af177checks/types. OneLuna/mediumworkeronly; rootunknownunchanged ownsrendererproposal/browser/integration. Last48%fivehour/7%weekly.",
+        "scope": "Frozenview-contracts comments: previousroot/melody450msrawsourcepitchcards/nativevisibility/writtenunison/verticalpositions, Majorlabels only/nativeeventsourcekeys. Existing currentcards/owner/lifecycle untouched. No sharedcontract/controllers/browserfixtures/tasks/dependencies/sequenceaudio/intervalbutton/singing/persistence edits.",
+        "nextAction": "Underown guard existingUItree newclaimedbranch fromexactbase, persistintent, add2previouscards/style/worklog only/scopedstrict types+diffcheck/validatedcommit thenidle; rootownsactualbrowserfixture/acceptance. Recheckusagebeforeeachstep;70fivehournonew/80yield,weekly100override."
       }
     },
     {
