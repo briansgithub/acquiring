@@ -1377,6 +1377,23 @@
           "pwa/src/features/playback/controller.ts": "82981a06cea89002540ba05445c3bb8543176d17fa2e03479aad46cb8d628957",
           "pwa/src/features/playback/controller.test.ts": "859165379eb703a85abd1a033d180d8bfa9a4ccaf25b63aa4fdc988b27f243a8"
         }
+      },
+      "productUiIntent": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "be14eb81ab240234e465a39844f257f1e0b0d5ea",
+        "ownedPaths": [
+          "pwa/src/features/playback/view-contracts.ts",
+          "pwa/src/contracts/index.ts",
+          "pwa/src/app/routes.ts",
+          "pwa/src/app/routes.test.ts",
+          "pwa/src/app/App.tsx",
+          "pwa/src/features/details/SongScreen.tsx",
+          "pwa/tests/browser/playback.spec.ts",
+          "pwa/src/features/playback/WORKLOG.md"
+        ],
+        "scope": "First productPlayback separate /playback/exactslug route and Play song entry from completedInfo. Borrow existing readonlydetails and lazySectionPlaybackController; basic play/pause/reset/silentpositionscrub/native tempo/transpose/rootonly/13instrument/mix/arpeggio/sectioncontrols, no implicitautoplay. Rootowns route/sharedtypes/browserintegration; later queuedLuna owns onlyview/css/separateworklog. Cards/visualtimeline/home/keycontext/favorites/singing/sessiondefaults/routepositionmemory remainfutureT12/T13/T21.",
+        "status": "freezeprops/preparerootignoredcandidates; no workerdispatch whileRNGworkeractive",
+        "nextAction": "Strictviewcontracttypes/checkpoint; after RNGworkeridle only, datednewUIbranchclaim andLuna/mediumview. Rootactualbrowser afterreview/integration, nofullT12claim."
       }
     },
     {
