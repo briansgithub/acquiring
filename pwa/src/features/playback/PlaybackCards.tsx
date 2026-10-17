@@ -2,7 +2,7 @@ import {useEffect,useMemo,useRef,useState} from 'react';
 import type {ExtractedSection} from '../../contracts';
 import {getKeys,keyAtBeat} from '../../domain/data';
 import {doubleOrUndefined} from '../../domain/data/primitives';
-import {getDegreeLabelFromSpelling,interpret,resolveScaleDegreePitch} from '../../domain/music';
+import {canonicalScaleName,getChordNotes,getDegreeLabelFromSpelling,getMidiNote,interpret,resolveScaleDegreePitch} from '../../domain/music';
 import {nativeBooleanOrNull} from '../../domain/music/native-json';
 import {PreviewOwner,type PreviewState} from '../../audio/transport';
 import {RomanNumeral,ScaleDegree} from '../../ui/notation/Notation';
@@ -38,6 +38,7 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
     const sourceKey=keyAtBeat(model.keys,note.beat),pitch=resolveScaleDegreePitch(note.sd,note.octave,sourceKey);
     return pitch?{pitch,label:getDegreeLabelFromSpelling(pitch,sourceKey)}:null;
   },[note,model]);
+  const home=useMemo(()=>{const theoryKey={...key,scale:canonicalScaleName(key.scale)};return {note:getMidiNote('1',0,theoryKey),chord:getChordNotes({root:1,type:5},theoryKey)};},[key]);
   const duration=chord?cardDuration(doubleOrUndefined(chord.duration)??1,baseBpm):null;
   function play(id:string,notes:readonly number[],durationMs=450){
     // Exact-frequency preview API bypasses global transpose; apply it once at this boundary.
@@ -47,6 +48,10 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
   const scale=key.scale.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,first=>first.toLocaleUpperCase());
   return <section className="panel playback-cards" aria-label="At this beat" data-card-preview-phase={preview.phase}>
     <h2>At this beat</h2><p aria-label="Source key">{key.tonic} {scale}</p>
+    <div role="group" aria-label="Home references" className="playback-home-references">
+      <button className="playback-card" aria-label="Play scale degree 1" onClick={()=>play('home-note',[home.note])}><ScaleDegree label={'1\u0302'} fontSizePx={28} maxWidthPx={66} maxHeightPx={60}/><span>Home note</span></button>
+      <button className="playback-card" aria-label="Play home chord" onClick={()=>play('home-chord',home.chord)}><RomanNumeral display={romanNumeralDisplayFromChord('I',null)} fontSizePx={28} maxWidthPx={66} maxHeightPx={60}/><span>Home chord</span></button>
+    </div>
     {settings.rootOnly?<div role="group" aria-label="Root cards">
       <h3>Current root</h3>{root?<button className="playback-card" aria-label={'Play current root '+root.currentDegreeLabel} onClick={()=>play('root',[root.currentIntervalPitch.toAudioNoteNumber()])}>
         <ScaleDegree label={root.currentDegreeLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>

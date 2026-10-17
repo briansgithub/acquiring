@@ -13,7 +13,8 @@
  * 320px/200%text no overflow/overlap,44px targets, controls keyboard operable; stable loading,
  * missing/download/retry states. No App/router/catalog/audio/sharedcontract/dependency writes.
  * Current-card band now adds sourcekey/chord/tone/melody/root previews via borrowed owner.
- * Remaining slices: previous/interval cards,visualtimeline/home/relativekey/singing/favorites/default persistence
+ * Musical Home note/chord references follow sounding sourcekey,450ms/currentpreset/transposeonce.
+ * Remaining slices: previous/interval cards,visualtimeline/relativekey/singing/favorites/default persistence
  * and routepositionmemory; wholeT12 remains in_progress, device/Safari acceptance remains unrun.
  */
 export interface PlaybackScreenProps {

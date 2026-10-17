@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T17:35:36.906939+00:00",
+  "updated": "2026-10-17T17:38:42.086008+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1499,6 +1499,38 @@
           "pwa/src/features/playback/playback.css": "6825737b2e38c95da27ed1df52ffef442a026e7aa30d34fbddeb0296eb9c5789",
           "pwa/src/features/playback/view-contracts.ts": "890fc392dd3b31ed470e0c7def7320a4b7dd57a8a956c4f974b6abc46bdb99c1",
           "pwa/tests/browser/playback.spec.ts": "1c397bd47210ab0c085ab1748cd15a94da90454eb16ec20f4b0d07e2a18b7fda"
+        }
+      },
+      "homeReferenceAssignment": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "c4d7ae87",
+        "ownedPaths": [
+          "pwa/src/features/playback/PlaybackCards.tsx",
+          "pwa/src/features/playback/playback.css",
+          "pwa/src/features/playback/view-contracts.ts",
+          "pwa/tests/browser/playback.spec.ts",
+          "pwa/src/features/playback/WORKLOG.md"
+        ],
+        "scope": "Two accessible musical home note/chord buttons, frozen PlaybackHomeReference.kt entire18lines and PlaybackHeaderChrome/native callbacks. Sounding source key canonical scale; getMidiNote1/0 and chordroot1/type5. Reuse accepted theory/borrowedpreview/currentpreset/450ms/manualtransposeonce, no newcontext/controller/native recapture. Singing tessitura remains0 pendingT13. No relativecontext/previousinterval/timeline/persistence/Library change.",
+        "status": "ACCEPTED musicalHome note/chord: firststricttypes/build7674a0134d8c and3focusedChrome44.8s PASS. Actual48000Hz/Cmajor->Dminor/reference450ms/transposeonce/rootOnly/Reset/sharedcontext, renderedDminortriad spectrum D4/F4/A4 stronglypresent/Fsharpabsent. Fullpage320px200% visually reviewed, noobviousoverlap/overflow. No source/nativefixture change beyond5ownedpaths; singingoffset0futureT13.",
+        "nextAction": "Continue fullT12previous/intervalcards,relativeIonian,visualtimeline,defaults/routepositionmemory; scheduler soleSol/highindependent. Do not repeat acceptedhome/browserchecks unchanged or expand pendingLibraryscroll.",
+        "validation": [
+          {
+            "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build",
+            "guard": "window13-home-build-20261017",
+            "result": "PASSstrictcombinedtypes/productionbuild7674a0134d8c; acceptedtheory/sourcefixturesunchanged."
+          },
+          {
+            "command": "node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --project chrome --grep \"musical home|current cards|playback reloads\" --output .artifacts/pwa-port/playback-home/browser-first",
+            "guard": "window13-home-browser-first-20261017",
+            "result": "PASS3Chrome44.8s firstattempt; independentactualPCM spectralhomecheck andaffectedcurrentcard/offlinegeometry. No retries/assertionskips or physical/Safariclaim."
+          }
+        ],
+        "sha256": {
+          "pwa/src/features/playback/PlaybackCards.tsx": "cc4cea4e2c60cf7894230316e824f0358e829c672913b900f89ec85e9020d1e7",
+          "pwa/src/features/playback/playback.css": "aee6e800e07dfeff4ec49d72e41398ad0ce096e736f536038e64c778c48b9739",
+          "pwa/src/features/playback/view-contracts.ts": "969322b4dd10c6a5a7372703ad6547673e2490c445a6d8106611b84504d6f1c2",
+          "pwa/tests/browser/playback.spec.ts": "41264cfec40079594188becb28757da0c2d0df04b3526620b66a5dcd172f951d"
         }
       }
     },

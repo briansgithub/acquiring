@@ -27,3 +27,6 @@
 .playback-card:focus-visible { outline: 3px solid #e8d9ff; outline-offset: 2px; }
 .playback-tone-cards { display: flex; flex-wrap: wrap; gap: .5rem; }
 .playback-tone-cards .playback-card { flex: 0 1 66px; }
+
+.playback-home-references { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.playback-home-references .playback-card { flex: 1 1 100px; }

@@ -17,7 +17,7 @@ test.beforeEach(async({context})=>{
 });
 async function instrument(page:Page){
   await page.addInitScript(()=>{
-    type Item={peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number};
+    type Item={peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>};
     const proof:{contexts:AudioContext[];items:Item[]}={contexts:[],items:[]};
     (window as unknown as {playbackProof:typeof proof}).playbackProof=proof;
     const Native=window.AudioContext;
@@ -25,9 +25,14 @@ async function instrument(page:Page){
       constructor(options?:AudioContextOptions){super(options);proof.contexts.push(this);}
       createBufferSource(){
         const source=super.createBufferSource(),start=source.start.bind(source),stop=source.stop.bind(source),context=this;
-        const item:Item={peak:0,scheduled:0,endedAt:null,stops:0,frames:0,hz:0};
+        const item:Item={peak:0,scheduled:0,endedAt:null,stops:0,frames:0,hz:0,homeEnergy:{}};
         source.start=(when=0,offset=0,duration?:number)=>{
           const data=source.buffer?.getChannelData(0);if(data){item.frames=data.length;let crossings=0;for(let i=0;i<data.length;i++){item.peak=Math.max(item.peak,Math.abs(data[i]));if(i>0&&data[i-1]<=0&&data[i]>0)crossings++;}item.hz=crossings*context.sampleRate/Math.max(1,data.length-1);}
+          if(data&&Math.abs(data.length/context.sampleRate-.45)<.0001){
+            // Measure actual mixed PCM, independent of the requested notes or UI labels.
+            const first=Math.floor(context.sampleRate*.08),last=Math.min(data.length,Math.floor(context.sampleRate*.35));
+            for(const midi of [50,53,54,57,62,65,66,69]){let re=0,im=0;const omega=2*Math.PI*440*2**((midi-69)/12)/context.sampleRate;for(let i=first;i<last;i++){re+=data[i]*Math.cos(omega*i);im+=data[i]*Math.sin(omega*i);}item.homeEnergy[midi]=Math.hypot(re,im)/(last-first);}
+          }
           item.scheduled=when;proof.items.push(item);source.addEventListener('ended',()=>{item.endedAt=context.currentTime;});
           if(duration===undefined)start(when,offset);else start(when,offset,duration);
         };
@@ -37,7 +42,7 @@ async function instrument(page:Page){
   });
 }
 async function audio(page:Page){return page.evaluate(()=>{
-  const p=(window as unknown as {playbackProof:{contexts:AudioContext[];items:{peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number}[]}}).playbackProof;
+  const p=(window as unknown as {playbackProof:{contexts:AudioContext[];items:{peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>}[]}}).playbackProof;
   return {contexts:p.contexts.map(context=>({rate:context.sampleRate,state:context.state,time:context.currentTime})),items:p.items};
 });}
 async function installAndOpen(page:Page){
@@ -168,4 +173,26 @@ test('current cards use native source keys, written duration and one transpose w
   await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await band.getByRole('button').evaluateAll(elements=>elements.every(element=>{const b=element.getBoundingClientRect();return b.width>=44&&b.height>=44;}))).toBe(true);
   const path=testInfo.outputPath('current-cards-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await band.screenshot({path});await writeFile(testInfo.outputPath('card-proof.json'),JSON.stringify(await audio(page),null,2));
+});
+
+test('musical home references follow the sounding key and preview a minor triad with one transpose',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  const band=page.getByRole('region',{name:'At this beat',exact:true}),home=band.getByRole('group',{name:'Home references',exact:true});
+  const note=home.getByRole('button',{name:'Play scale degree 1',exact:true}),chord=home.getByRole('button',{name:'Play home chord',exact:true});
+  expect((await audio(page)).contexts).toHaveLength(0);await page.getByRole('combobox',{name:'Instrument',exact:true}).selectOption('SINE');
+  await note.focus();await note.press('Enter');await expect.poll(async()=>(await audio(page)).items.length).toBe(1);
+  let proof=await audio(page);const cHz=proof.items[0].hz;expect(cHz).toBeGreaterThan(250);expect(cHz).toBeLessThan(270);
+  const position=page.getByRole('slider',{name:'Position',exact:true});await position.focus();await position.press('End');
+  await expect(band.getByLabel('Source key',{exact:true})).toHaveText('D Minor');await expect(band.getByText('No sounding chord',{exact:true})).toBeVisible();
+  await page.getByRole('checkbox',{name:'Root only',exact:true}).check();await expect(home).toBeVisible();await note.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(2);
+  proof=await audio(page);const dHz=proof.items[1].hz;expect(dHz/cHz).toBeGreaterThan(1.1);expect(dHz/cHz).toBeLessThan(1.14);
+  const transpose=page.getByRole('slider',{name:'Transpose',exact:true});await transpose.focus();await transpose.press('End');await note.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(3);
+  proof=await audio(page);expect(proof.items[2].hz/dHz).toBeGreaterThan(1.95);expect(proof.items[2].hz/dHz).toBeLessThan(2.05);
+  await chord.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(4);proof=await audio(page);
+  const mixed=proof.items[3];expect(mixed.frames/proof.contexts[0].rate*1000).toBeCloseTo(450,1);
+  for(const midi of [62,65,69]){expect(mixed.homeEnergy[midi]).toBeGreaterThan(.001);expect(mixed.homeEnergy[midi]).toBeGreaterThan(mixed.homeEnergy[66]*10);}
+  expect(proof.contexts).toHaveLength(1);await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
+  await page.getByRole('button',{name:'Reset',exact:true}).click();await expect.poll(async()=>(await audio(page)).items[3].stops).toBeGreaterThan(0);
+  await expect(band.getByLabel('Source key',{exact:true})).toHaveText('C Major');
+  const path=testInfo.outputPath('home-proof.json');await mkdir(resolve(path,'..'),{recursive:true});await writeFile(path,JSON.stringify(await audio(page),null,2));
 });
