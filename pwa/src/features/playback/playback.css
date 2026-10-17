@@ -30,3 +30,9 @@
 
 .playback-home-references { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
 .playback-home-references .playback-card { flex: 1 1 100px; }
+.playback-root-cards { display: flex; flex-wrap: wrap; gap: .5rem; }
+.playback-melody-cards { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; min-height: 8rem; }
+.playback-melody-card { flex: 0 1 130px; }
+.playback-melody-card--top { align-self: flex-start; }
+.playback-melody-card--bottom { align-self: flex-end; }
+.playback-melody-card--center { align-self: center; }

@@ -7,7 +7,7 @@ import {nativeBooleanOrNull} from '../../domain/music/native-json';
 import {PreviewOwner,type PreviewState} from '../../audio/transport';
 import {RomanNumeral,ScaleDegree} from '../../ui/notation/Notation';
 import {romanNumeralDisplayFromChord} from '../../ui/notation/roman-numeral';
-import {PlaybackActiveEventIndex} from './event-state';
+import {buildMelodyPitchCards,melodyCurrentCardVerticalPosition,melodyPitchCardDisplayMode,PlaybackActiveEventIndex,showsRootOnlyPrevious} from './event-state';
 import {preparePlaybackSection} from './section-model';
 import type {PlaybackSettings} from './controller';
 
@@ -40,6 +40,14 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
     const sourceKey=keyAtBeat(model.keys,note.beat),pitch=resolveScaleDegreePitch(note.sd,note.octave,sourceKey);
     return pitch?{pitch,label:getDegreeLabelFromSpelling(pitch,sourceKey)}:null;
   },[note,model]);
+  const melodyInterval=useMemo(()=>settings.rootOnly?null:model.index.melodyIntervalAtBeat(beat),[beat,model,settings.rootOnly]);
+  const melodyMode=melodyPitchCardDisplayMode(melody?.pitch??null,melodyInterval);
+  const melodyCards=useMemo(()=>{
+    if(melodyMode!=='INTERVAL'||!melodyInterval)return [];
+    const previousLabel=majorLocked?ionianContextDegreeLabel(melodyInterval.previous,ionianKey):melodyInterval.previousDegreeLabel;
+    const currentLabel=majorLocked?ionianContextDegreeLabel(melodyInterval.current,ionianKey):melodyInterval.currentDegreeLabel;
+    return buildMelodyPitchCards(melodyInterval,previousLabel,currentLabel);
+  },[melodyMode,melodyInterval,majorLocked,ionianKey]);
   const home=useMemo(()=>{const theoryKey={...key,scale:canonicalScaleName(key.scale)};return {note:getMidiNote('1',0,theoryKey),chord:getChordNotes({root:1,type:5},theoryKey)};},[key]);
   const chordRoman=chord&&interpretation?(majorLocked?getRelativeIonianRomanSymbol(chord,key,ionianKey):interpretation.roman):'';
   const spelledRoot=useMemo(()=>chord?resolveChordRoot(chord,key)?.pitch:null,[chord,key]);
@@ -67,9 +75,14 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
       <button className="playback-card" aria-label="Play home chord" onClick={()=>play('home-chord',home.chord)}><RomanNumeral display={romanNumeralDisplayFromChord('I',null)} fontSizePx={28} maxWidthPx={66} maxHeightPx={60}/><span>Home chord</span></button>
     </div>
     {settings.rootOnly?<div role="group" aria-label="Root cards">
-      <h3>Current root</h3>{root?<button className="playback-card" aria-label={'Play current root '+rootLabel} onClick={()=>play('root',[rootMidi!])}>
-        <ScaleDegree label={rootLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>
-      </button>:<p>No sounding root</p>}
+      <h3>Current root</h3>{root?<div className="playback-root-cards">
+        {showsRootOnlyPrevious(root.previousIntervalPitch)&&<button className="playback-card" aria-label={'Play previous root '+(majorLocked?ionianContextDegreeLabel(root.previousIntervalPitch!,ionianKey):root.previousDegreeLabel)} onClick={()=>play('previous-root',[root.previousIntervalPitch!.toAudioNoteNumber()])}>
+          <ScaleDegree label={majorLocked?ionianContextDegreeLabel(root.previousIntervalPitch!,ionianKey):root.previousDegreeLabel!} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/><span>Previous</span>
+        </button>}
+        <button className="playback-card" aria-label={'Play current root '+rootLabel} onClick={()=>play('root',[rootMidi!])}>
+          <ScaleDegree label={rootLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>{showsRootOnlyPrevious(root.previousIntervalPitch)&&<span>Current</span>}
+        </button>
+      </div>:<p>No sounding root</p>}
     </div>:<>
       <div role="group" aria-label="Chord cards"><h3>Current chord</h3>
         {chord&&interpretation?<button className="playback-card" aria-label={'Play current chord '+chordRoman} disabled={duration===null||interpretation.midi.length===0} onClick={()=>{if(duration!==null)play('chord',interpretation.midi,duration);}}>
@@ -82,9 +95,13 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
           <ScaleDegree label={interpretation.toneLabels[index]??''} fontSizePx={30} maxWidthPx={66} maxHeightPx={60}/>
         </button>):null}
       </div></div>
-      <div role="group" aria-label="Melody cards"><h3>Current melody</h3>{melody?<button className="playback-card" aria-label={'Play melody '+melodyLabel} onClick={()=>play('melody',[melodyMidi!])}>
+      <div role="group" aria-label="Melody cards"><h3>Current melody</h3>{melody?melodyMode==='INTERVAL'?<div className="playback-melody-cards" data-melody-card-mode="INTERVAL">
+        {melodyCards.map(card=>{const label=card.role==='PREVIOUS'?'Play previous melody '+card.scaleDegreeLabel:'Play melody '+card.scaleDegreeLabel;const midi=card.pitch.toAudioNoteNumber();return <button key={card.role} className={'playback-card playback-melody-card playback-melody-card--'+card.verticalPosition.toLowerCase()} data-card-role={card.role.toLowerCase()} data-vertical-position={card.verticalPosition} aria-label={label} onClick={()=>play(card.role==='PREVIOUS'?'previous-melody':'melody',[midi])}>
+          <ScaleDegree label={card.scaleDegreeLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/><span>{card.role==='PREVIOUS'?'Previous':'Current'}</span>
+        </button>;})}
+      </div>:<div className="playback-melody-cards" data-melody-card-mode="SINGLE"><button className="playback-card playback-melody-card playback-melody-card--center" data-card-role="current" data-vertical-position={melodyCurrentCardVerticalPosition(melodyMode)} aria-label={'Play melody '+melodyLabel} onClick={()=>play('melody',[melodyMidi!])}>
         <ScaleDegree label={melodyLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>
-      </button>:<p>No sounding melody</p>}</div>
+      </button></div>:<p>No sounding melody</p>}</div>
     </>}
     {(preview.phase==='error'||preview.phase==='blocked')&&<p role="alert">{preview.message??'Tap a card to enable its audio.'}</p>}
   </section>;
