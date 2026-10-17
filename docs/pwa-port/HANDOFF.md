@@ -1,5 +1,6 @@
 # PWA implementation continuation
 
+2026-10-17T17:35:36.906939+00:00 Prebranch: primary9333043f4cf87cccb4bd276ba6b2e9d07662b9e4 clean after frozen schedulercontract/typesPASS; siblingc8a46052 clean/idle. Reuse existing tree on new codex/pwa-aural-scheduler, preserve generatorbranch/allrefs/ignoredproofs. One Sol/high only; root runtimeunknown unchanged. Last45%five-hour/90%weekly, checkpoint eachsmallstep andcontinue to100; fivehour70/80 retained. Root musicalHome notyetclaimed.
 Updated 2026-10-17T17:32:17.952864+00:00. Currentplaybackcards ACCEPTED:114coveringunits/finaltypes/build3a49c60f0f8c/6Chrome~1.3m; nativepreview667/450ms/exacttranspose1x/sourcekey/onecontext/scrub+Reset+sectioncleanup, actualfullpage320px200%image reviewed. FirstBUSYtesttrace retained, splitunsupportedcontexts PASS withoutLibraryruntime/scroll change. Builtin c8a46052accepted951e321c32native/40tests; pureevent3cd20c3f14native/61queries accepted. Live39%five-hour/90%weekly: CHECKPOINTNOW thencontinue smallsteps/checkpoint each until100, no weekly90stop. SoleSol/highREADONLYschedulerproposal onclean c8a46052 sibling; rootnextHome reference/currentcards scope, no duplicateworkers. FullT12/T14/device gatesopen; preserveallrefs/evidence.
 
 ## Authority and completion

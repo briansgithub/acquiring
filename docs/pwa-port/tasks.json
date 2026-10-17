@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T17:35:26.122831+00:00",
+  "updated": "2026-10-17T17:35:36.906939+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1686,6 +1686,27 @@
         ],
         "status": "Frozen three-function builtin scheduler contract; strict combined types PASS/window13-scheduler-contract-types-20261017 before assignment. Runtime unchanged/unknown.",
         "scope": "Three pure builtin unlock/selection functions only, exact native105..147 and helper versus selector version behavior; reuse unchanged evidence/RNG/target factory, at most24 new native cases. No generation/pattern/corpus/session/UI/storage."
+      },
+      "schedulerAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-aural-scheduler",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "9333043f4cf87cccb4bd276ba6b2e9d07662b9e4",
+        "priorBranch": "codex/pwa-aural-generator",
+        "priorTip": "c8a46052f49591139c0e8f76f898c3281285fe89",
+        "ownedPaths": [
+          "pwa/src/domain/learning/aural-scheduler.ts",
+          "pwa/src/domain/learning/aural-scheduler.test.ts",
+          "pwa/src/domain/learning/fixtures/generate-scheduler-native.py",
+          "pwa/src/domain/learning/fixtures/native-scheduler.json",
+          "pwa/src/domain/learning/SCHEDULER_WORKLOG.md",
+          "pwa/src/domain/learning/index.ts"
+        ],
+        "scope": "Pure builtin unlock/target selection only, frozen scheduler-contracts; <=24NEW native cases, unchanged801cf798 helpers/select and pinnedKotlin2.2.10. Reuse accepted evidence/RNG/factory unchanged; exactLongXOR/order/micshuffle/version distinction. No generation/pattern/corpus/session/audio/UI/sharedcontracts/dependencies/oldfixture recapture.",
+        "status": "Claimed before new narrowbranch in existing clean c8a46052 sibling; root alone integrates/tasks/contracts. SoleSol/high worker, Lunaidle.",
+        "nextAction": "Worker refreshusage/guard, persist intent, capture new native fixture checkpoint then source/tests/scopedtypes and clean validated commit. Weekly90+ checkpoint eachsmallstep; fivehour70nonew/80yield; stopweekly100/ordinaryfalse, preserve exactpartials."
       }
     },
     {
