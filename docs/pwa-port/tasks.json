@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T21:36:26.449477+00:00",
+  "updated": "2026-10-17T21:43:59.454140+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1694,7 +1694,8 @@
         "2026-10-17T17:13:16.558203+00:00 Window13resume: primary8f3cc2638e83dd48dd4c587d7a920768efc1562d clean; existing6751b4d9sibling ONLY dirtyintentWORKLOG, bothguards0recovery,no ownedprocess, agentsidle. Live0%fivehour/83%weekly ordinarytrue reset1792275143; prior1792254573 passed, weeklyresetnotblocking. SameSol/highclaim6paths unchanged; rootdisjointT12 boundedsource/displayprojection next. Preserveallrefs/artifacts;no newtree/branch/modelaction.",
         "2026-10-17T17:24:15.240008+00:00 Pre-integration: root3cd20c3fa9969fa03dfaf009bb00c0cf04c13ef6 withownedcurrentcarddirty paths, worker c8a46052clean/idle, bothguards0recovery; sixlearningpaths only, acceptedRNG unchanged. Source/provenance/nativeoracle reviewed, scalar-onlytargetsnapshot/deepfrozen independent outputs/nativeLongdraws/UTF16identities correct. No pendingapproval rejection; one testwrite timeoutneverexecuted thenexplicitlypermittedsmallerretry passed. Last25%/87%; weekly90checkpointthencontinue100. FullT14open.",
         "2026-10-17T17:29:34.067093+00:00 SoleSol/high read-only schedulerproposal claim onexistingclean c8a46052, builtinaccepted951e321c/root114checks/types/build. RootownsdisjointcurrentcardUI/cancellationproof pendingbrowser, dirtypaths preserved. No newbranch/tree/sourceassignment. Latest34%five-hour/89%weekly, at90checkpointthencontinue100; no credit/reset/modelaction.",
-        "2026-10-17T17:45:30.506367+00:00 Builtin scheduler ACCEPTED normalmerge5508a0a03f090d750c62626394f4504d8e4c90a8: first24native/29focused/scopedtypes, root143combined/strict typesPASS. Exactnativehelperversion/cap/seedxor/order/ties/masteredreview/micshuffle/support/transfer. Initialrawbyteprovenanceassertion CRLFvsGitLF only, normalizedcomparison+gitdiffPASS, no source/testfailure. Oldfixtures/accepteddependencies unchanged."
+        "2026-10-17T17:45:30.506367+00:00 Builtin scheduler ACCEPTED normalmerge5508a0a03f090d750c62626394f4504d8e4c90a8: first24native/29focused/scopedtypes, root143combined/strict typesPASS. Exactnativehelperversion/cap/seedxor/order/ties/masteredreview/micshuffle/support/transfer. Initialrawbyteprovenanceassertion CRLFvsGitLF only, normalizedcomparison+gitdiffPASS, no source/testfailure. Oldfixtures/accepteddependencies unchanged.",
+        "2026-10-17T21:43:59.454140+00:00 Pureenvelope repair ACCEPTED normalmerge7f33ff0df0acb3b29fa62f69ab3c5e2498ddb25d:native16pluginprojections/worker27/root177combinedchecks/types. Firsttypecheckcontrolflownarrowingfix1 explicitneverfunction, thenstrict typesPASS; no source-rule testfailure. Rootreviewcaughtdeferredunsafeintegercopy; exactoriginalrawretained andaffecteddeferredcopyrefused, newregression/exactsourcechecksPASS. Unsafe/inexact Longexponent andresourcebounds explicitbrowserextensions; rawrecovery preserved, no encoder/autowrite/fullsessionclaim."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1872,8 +1873,27 @@
           "pwa/src/domain/learning/index.ts"
         ],
         "scope": "Pure repair projection frozen session-contracts; <=16NEW nativecases using actualKotlin2.2.10 serializationcompilerplugin. No current/return validation or activation: opaque/rawpreserveexplicitdeferred, no encoder/autowrite. ExactLongstringoutput/unsafe numericreject; fieldfailureisolation/nativeordering/bounds. Reuseacceptednormalizer unchanged; no acceptedfixture recapture orstorage/audio/UI/fullsessionclass.",
-        "status": "Dated claim before branchreuse; primarycontracttypesPASS/sourceclean, sibling22af4635clean/idle; preserveoldrefs/evidence. SoleSol/high only, rootruntimeunknownunchanged.",
-        "nextAction": "Underown guard inspectcompileplugin availability, pinandcapture<=16nativefieldprojections checkpoint; then decoder/repair/tests/scopedtypes checkpoint. Snapshotintent beforeeachsmallstep; atfivehour70nonew/80yield andweekly90checkpoint eachstep/100stop. Rootownscontract/tasks/integration."
+        "status": "ACCEPTED pureenvelope/typedprogressrepair40194815 normallymerged.16NEWactual-serializer nativeprojections/27focusedworkerchecks/scopedtypesPASS; root177combinedchecks/strict typesPASS. Originalrawretained/current+returnunvalidateddeferred/noautowrite. FullT14/sessionUI/storage/corpus/currentrestoration stillopen.",
+        "nextAction": "Later separatelyfreeze builtin-current restoration/saved-sessionactions/atomicT06adapter; corpus/pattern support gated. NextindependentT12native intervalpreviewaudio composition proposal mayuseidleSol/high, no acceptedcomponent rewrite or oldcapture.",
+        "mergeCommit": "7f33ff0df0acb3b29fa62f69ab3c5e2498ddb25d",
+        "validation": [
+          {
+            "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback src/features/details src/app/routes.test.ts",
+            "guard": "window14-session-combined-unit-20261017",
+            "result": "PASS177checks/15files firstrootattempt; native16fieldprojections/browser11 includeslosslessunsafe-refusal bothdeferredfields andacceptedplayback/learning/details/routes."
+          },
+          {
+            "command": "node node_modules/typescript/bin/tsc --noEmit",
+            "guard": "window14-session-combined-types-20261017",
+            "result": "PASSstrictcombinedtypes firstrootattempt; pureunwiredlearningexport doesnotchangeAppbuild36d31e5e4cec, no unnecessarybuild/browser/nativefixture repeat."
+          }
+        ],
+        "sha256": {
+          "source": "57134bbee9e88b316e5d33ab427b0a727cbfcc699882777441243c1b5eb699b2",
+          "tests": "c103d7452176cb0997b2f93a59ed795ce7fb3fc16a41b809aa9fa60e5f92fc3b",
+          "producer": "ab4e33f29994dc1299cd04bc5ffd19106007a67db1b9f58e7c615b78de43e052",
+          "native": "9957d120a959fd491c3cc0b50cc0ffedfd8ba33803debd706170bb9af98d28c1"
+        }
       }
     },
     {
