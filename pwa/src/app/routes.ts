@@ -4,9 +4,9 @@ export function parseRoute(pathname: string): Route {
   if (path === '/') return { kind: 'library' };
   if (path === '/settings') return { kind: 'settings' };
   if (path === '/help') return { kind: 'help' };
-  const match = /^\/songs\/([^/]+)$/.exec(path);
+  const match = /^\/(songs|playback)\/([^/]+)$/.exec(path);
   if (match) {
-    try { return { kind: 'song', slug: decodeURIComponent(match[1]!) }; }
+    try { return { kind: match[1] === 'songs' ? 'song' : 'playback', slug: decodeURIComponent(match[2]!) }; }
     catch { return { kind: 'not-found' }; }
   }
   return { kind: 'not-found' };

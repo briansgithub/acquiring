@@ -14,7 +14,7 @@ import './details.css';
 interface SongView {sectionId:string|null;tab:'info'|'chords';letters:boolean}
 const remembered=new Map<string,SongView>();
 function sourceUrl(value:string):string|null {try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)?url.href:null;}catch{return null;}}
-export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:()=>void;onHome:()=>void;onDownload:()=>void}){
+export function SongScreen({slug,onBack,onHome,onDownload,onPlay}:{slug:string;onBack:()=>void;onHome:()=>void;onDownload:()=>void;onPlay?:()=>void}){
   const [controller,setController]=useState(()=>new SongDetailController(slug));
   const state=useSyncExternalStore(controller.subscribe,controller.getSnapshot,controller.getSnapshot);
   const [view,setView]=useState<SongView>(()=>remembered.get(slug)??{sectionId:null,tab:'info',letters:false});
@@ -72,6 +72,7 @@ export function SongScreen({slug,onBack,onHome,onDownload}:{slug:string;onBack:(
           {details.sections.map(([id,value])=><option key={id} value={id}>{safeSectionName(value)}</option>)}
         </select></label>:<p>No chord sections are available.</p>}
         {section&&safeSongInfo(section)&&<p>{safeSongInfo(section)}</p>}
+        {section&&onPlay&&<button className="action" onClick={()=>{previewOwner.current?.stop();onPlay();}}>Play song</button>}
       </section>
       {section&&analysis&&<>
         <nav className="song-tabs" aria-label="Song details">

@@ -10,7 +10,7 @@ export interface ExtractedSection {
   chords: JsonObject[]; notes?: JsonValue; metadata?: JsonObject | null;
 }
 export interface MelodyNote { sd: string; beat: number; duration: number; octave: number; isRest: boolean }
-export type Route = { kind: 'library' } | { kind: 'settings' } | { kind: 'help' } | { kind: 'song'; slug: string } | { kind: 'not-found' };
+export type Route = { kind: 'library' } | { kind: 'settings' } | { kind: 'help' } | { kind: 'song'; slug: string } | { kind: 'playback'; slug: string } | { kind: 'not-found' };
 export interface CorpusCase {
   id: string; json: string; key: KeyInfo; expectedRoman: string; expectedLetter: string;
   expectedPcs: number[]; expectedMidi: number[]; expectedRootMidi: number; expectedToneLabels: string[];

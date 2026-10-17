@@ -1318,8 +1318,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Pure native section-to-playback preparation before product controls",
-      "nextAction": "Port bounded native melody decoding/content-end/baseFloatBPM to pure feature model, generate NEW native leaf cases only, focused units/types. No audio/App/UI/learning edits in this slice.",
+      "slice": "First bounded product playback screen and explicit song entry",
+      "nextAction": "Await Luna validated three-path view checkpoint; root review/normal integration then install ignored App candidate and combined checks/build/actualChrome proof. No implicit autoplay or fullT12claim.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1330,6 +1330,11 @@
           "command": "node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node node_modules/typescript/bin/tsc --noEmit (pwa via rootguard)",
           "revision": "04556ebab017ac558236150b4c18216e171fa10f plus controlsAssignment.testedSha256 tree committednext",
           "result": "PASS12unit checks961ms/window12-controls-unit-20261017 andstrict types/window12-controls-types-20261017.6controllerfakegroups: lazyfactory/syncgesture/nativeFloatconfig,requested0BPM,full/rootonly/mix/wave/arp,paused/active/end/cancelscrub,revisionguardafterlifecycle,sectionreplacementandindependentfrozenstate,invalidcontrols/permanentidempotentrelease. No context/audio/browser/productclaim; buildnotrerunforunbundledprivateclass."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/app/routes.test.ts src/features/details/controller.test.ts src/features/playback; node node_modules/typescript/bin/tsc --noEmit (pwa via rootguard)",
+          "revision": "f147d995328ef793fcd847b3a722721dbb983da1 plus named four-path route/optionalSongScreen entry tree",
+          "result": "PASS15covering tests/window12-playback-route-unit-20261017 andstrict types/window12-playback-route-types-20261017. Exactslug/Unicode/encodedslash/invalidroute boundaries; optionalentry stops preview thencallback. Appcandidate remainsignored until viewtip integrated; notactualproduct/browseracceptance."
         }
       ],
       "progress": [
