@@ -1521,7 +1521,8 @@
         "2026-10-17T11:38:43.814275+00:00 read-only72lineproposal reviewed, native AuralCurriculum9-27/149-231 inspected. Root freezes builtin API; exactKotlin2.2.10 RNGdraworder andJVMhash/nestedlistformat seedBigInt mandatory. T12puremodel0fab9288 accepted/disjoint. Worker remainsidle untilcontractcheckpoint/sourceclaim.",
         "2026-10-17T11:40:01.081136+00:00 Prebranch: primaryd43567157d8be5028c81b33b33386dc98d459083 clean; siblingf9330517 clean/idle; pureT12model0fab9288 accepted. SameSol/highworker onlycheckpoint1 RNG/hash8nativeanchors; root disjointproductPlaybackUI preparation/contracts/integration. Lastlive25%fivehour/75%weekly underweekly100override.",
         "2026-10-17T11:50:07.443998+00:00 Pre-integration: primary3861627a88ae19222afe1348f13b485dc35b1d65 clean; worker6751b4d9e9ec97d4562be14cbe7c9d5015eadb35 clean, one LunaUI worker active in separate sibling. Root reviewed private RNG156lines/tests111/native producer134 and license pins; 8nativecases/15tests/scopedtypes passed. One fixture-loader-only UTF16 adapter correction, native expected values unchanged. All branches/evidence preserved; no fullT14completion.",
-        "2026-10-17T12:05:33.683697+00:00 Checkpoint2claim: primaryde8b8c494db8017533a79dd9dd5c562ac63258d4 clean, existingSol sibling6751b4d9clean/idle; preserveallrefs/ignoredproofs. LunaUI9dbdb2edclean/idle afterproductde8b8c49 28units/types/build+4Chrome andcorrectedactualnarrowimage. SameSol/highonlyboundedbuiltin generator6paths, no parallelrootlearning edits. Last68%five-hour/82%weekly; follow live70/80boundary, sourcecancheckpointunvalidatedifinterrupted."
+        "2026-10-17T12:05:33.683697+00:00 Checkpoint2claim: primaryde8b8c494db8017533a79dd9dd5c562ac63258d4 clean, existingSol sibling6751b4d9clean/idle; preserveallrefs/ignoredproofs. LunaUI9dbdb2edclean/idle afterproductde8b8c49 28units/types/build+4Chrome andcorrectedactualnarrowimage. SameSol/highonlyboundedbuiltin generator6paths, no parallelrootlearning edits. Last68%five-hour/82%weekly; follow live70/80boundary, sourcecancheckpointunvalidatedifinterrupted.",
+        "2026-10-17T17:13:16.558203+00:00 Window13resume: primary8f3cc2638e83dd48dd4c587d7a920768efc1562d clean; existing6751b4d9sibling ONLY dirtyintentWORKLOG, bothguards0recovery,no ownedprocess, agentsidle. Live0%fivehour/83%weekly ordinarytrue reset1792275143; prior1792254573 passed, weeklyresetnotblocking. SameSol/highclaim6paths unchanged; rootdisjointT12 boundedsource/displayprojection next. Preserveallrefs/artifacts;no newtree/branch/modelaction."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1590,8 +1591,8 @@
           "pwa/src/domain/learning/index.ts"
         ],
         "scope": "Checkpoint2 builtin-only factory/generation frozen generator-contracts.d4356715. Reuse accepted private RNG unchanged; actual Kotlin2.2.10/unchanged native generator/theory outputs24..32 new cases maximum; do not recapture RNG/assessment/evidence. Exclude scheduler/pattern/corpus/settingsstorage/sessionrepair/microphone/audio/UI/assessment/evidence/sharedcontracts/dependencies. Snapshot known fields once, canonical exactLong seed, deeplyfrozen independent rich output, native draworder/UTF16fingerprints.",
-        "status": "NOT STARTED/UNVALIDATED checkpoint2: initial69% refreshed70%; only dated intent appended in sibling GENERATOR_WORKLOG.md. No generator/source/fixture/index/test read or implementation. ExistingHEAD6751b4d9, dirtyintentpreserved, guard0recovery; workeridle.",
-        "nextAction": "After applicablefive-hourreset1792254573, refreshusage, inspectsame6751b4d9branch/dirtyintent/guard/process; continue existingclaim, no duplicateworker/newbranch. Read frozencontract/native generate168-231 then nextsmallsource step. No RNG/assessment/evidence fixture recapture.",
+        "status": "Resumed existing claim after verified ordinary allowance0%five-hour/83%weekly, applicable priorreset passed. Existing6751branch retains ONLY datedintentWORKLOG; no code/fixtures/tests previouslystarted, no duplicateworker.",
+        "nextAction": "Same Sol/high worker inspects preservedintent/currentguard then resumes builtin-only source/native24..32cases/scopedchecks, small recoverable checkpoints. No prior acceptedfixture recapture. Root owns disjoint nextT12projection/integration.",
         "recoveryReceipt": {
           "path": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-checkpoint2-allowance-window12.md",
           "sha256": "ff35163d570f73efe8a8d98349b9a61b90fa2162d160d9fe119b77f852d10d16",
@@ -2058,13 +2059,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-17T12:07:51.258571+00:00",
-      "fiveHourUsedPercent": 72,
-      "weeklyUsedPercent": 82,
+      "at": "2026-10-17T17:13:16.558203+00:00",
+      "fiveHourUsedPercent": 0,
+      "weeklyUsedPercent": 83,
       "ordinaryUsageAllowed": true,
-      "fiveHourResetsAt": 1792254573,
+      "fiveHourResetsAt": 1792275143,
       "weeklyResetsAt": 1792653278,
-      "action": "No newwork atfive-hour70; finishalreadyrunningcheck, savedocs/recoverythenyield. Weeklycontinues to100asownerrequested; no credit/reset/modelactions."
+      "action": "Applicable five-hour resetverified; resume existingbuiltin claim. Weekly100/fivehour70/80 policy unchanged."
     }
   }
 }
