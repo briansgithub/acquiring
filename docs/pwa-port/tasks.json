@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T17:46:09.974418+00:00",
+  "updated": "2026-10-17T17:49:59.317173+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1763,8 +1763,11 @@
         "baseCommit": "22af4635e27195de47f0247a062758b70ba24753",
         "scope": "READONLY bounded saved-session restore/repair seam proposal only. Inspect frozen AuralSession declarations/init plus directlycalled validation leaves, accepted learning contracts and T06recordboundary. Identify smallest pure-first repair API, exact metadata/progress/current/history failure isolation, version/Long preservation and dependencies; <=80line ignored proposal. No entire sessionport, storage/audio/UI/credentials/pattern/corpus implementation, no trackededit/branch/fixturecapture/test. Root freezescontract later.",
         "output": ".artifacts/pwa-port/t14-session-proposal-window13.md",
-        "status": "Claim beforedispatch, schedulerrootd3445c5f143combined/strict types accepted; sibling22afclean/idle. One Sol/high only, Lunaidle. Last64%fivehour/93%weekly, no newstep70/80yield; weekly100override.",
-        "nextAction": "Worker FIRSTrefreshusage; boundedread-onlystep/guardedintent/result only whilefivehour<70; checkpointpartialproposal ifboundary andidle. Rootreview/contract nextcapacity; no duplicatework."
+        "status": "COMPLETE72line read-only proposal; worker clean/idle, no tracked edit/branch/test/capture. Root reviewed proposal and frozenAuralSession80..153; contract deferred atfivehour70.",
+        "nextAction": "Afterlivecapacity returns, freeze smallestrepair/decode API/limits/warningpolicy andexplicitdeferredcurrent/Longencoding; inspectonlyadditionalneededdeclarations/validationleaves, do not reread completedproposal/init evidence. Reuse acceptedlearning/userDB unchanged, no all-sessionrewrite.",
+        "receiptSha256": "e54a8349d88fa54adfee6d9ac3ad03e023403bf22fb81e87f7dbd8ff61ba09cb",
+        "receiptPath": "H:\\Desktop\\Acquiring\\Acquiring-pwa-data-compat\\.artifacts\\pwa-port\\t14-session-proposal-window13.md",
+        "review": "Pureenvelope/progress repair first; preserve originalraw/current/return explicitly deferred/unplayable, no encoder/autowrite. Canonical decimalLong fields andstrict typeddecoder before acceptednormalizer; no Androidusermigration required. Separate corpus250..291 validation andbuiltin-current restoration later. No nativecapture performed; pinnedserializationcompilerplugin prerequisite for<=16newnativefieldrepaircases."
       }
     },
     {
@@ -2111,16 +2114,16 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-17T11:44:15.224142+00:00",
-    "sourceCommit": "04556ebab017ac558236150b4c18216e171fa10f",
+    "date": "2026-10-17T17:49:59.317173+00:00",
+    "sourceCommit": "a3f92cccd1d04eb3039e545b9ff1b3f2083175d1",
     "usageObserved": {
-      "fiveHourUsedPercent": 33,
-      "weeklyUsedPercent": 76
+      "fiveHourUsedPercent": 70,
+      "weeklyUsedPercent": 94
     },
-    "fiveHourResetUnix": 1792254573,
+    "fiveHourResetUnix": 1792275143,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "PrivateT12controller accepted12units/types; soleSol/high RNGcheckpoint1 native8anchorscaptured, workerchecks pending.",
+    "reason": "Window13 accepted currentcards/Home/builtin generator/scheduler; all assigned workers idle, exact receipts/checkpoints retained. Fivehour70 nonew slices; weeklyordinary allowance remains usable below100.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T16:51:44.987830+00:00",
@@ -2130,76 +2133,57 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Prior cutoff reset passed; live counters permit bounded resumption."
     },
-    "activeWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "branch": "codex/pwa-aural-generator",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "d43567157d8be5028c81b33b33386dc98d459083",
-      "ownedPaths": [
-        "pwa/src/domain/learning/kotlin-random.ts",
-        "pwa/src/domain/learning/kotlin-random.test.ts",
-        "pwa/src/domain/learning/KOTLIN_RANDOM_LICENSE.txt",
-        "pwa/src/domain/learning/GENERATOR_WORKLOG.md",
-        "pwa/src/domain/learning/fixtures/generate-random-native.py",
-        "pwa/src/domain/learning/fixtures/native-random.json"
-      ],
-      "scope": "Checkpoint1 ONLY: private Kotlin2.2.10 Longseed XorWow nextInt/nextDouble/listshuffle plus JVM UTF16/wrapped hash/native nested-list string helpers,8intentional native RNG/hash anchors. Exact source/runtime pinned; canonical signed64 decimal strings/BigInt. No fullgenerator before rootreview/followup, no public RNGindex, no rootcontract/evidence/assessment/theory/DSP/source changes.",
-      "status": "dated prebranch claim; strict contracttypes PASS window12-generator-contract-types-20261017",
-      "nextAction": "Under own guard reuse cleanf9330517 sibling on new absent branch from exact frozenbase; preserve all priorbranches. Save small receipts and validated RNG/helper checkpoint thenidle/report; nophase2withoutrootfollowup. Newweekly100/fivehour70/80 policy applies, no credits/resets.",
-      "agent": "preview_owner",
-      "task": "T14"
-    },
+    "activeWorker": null,
     "completedWorker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
-      "branch": "codex/pwa-stream-owner",
+      "branch": "codex/pwa-aural-scheduler",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "23bdd83ff42c849f6a59322f6106e1d510cddf2e",
+      "baseCommit": "9333043f4cf87cccb4bd276ba6b2e9d07662b9e4",
+      "priorBranch": "codex/pwa-aural-generator",
+      "priorTip": "c8a46052f49591139c0e8f76f898c3281285fe89",
       "ownedPaths": [
-        "pwa/src/audio/transport/playback-transport.ts",
-        "pwa/src/audio/transport/playback-transport.test.ts",
-        "pwa/src/audio/transport/TRANSPORT_WORKLOG.md",
-        "pwa/src/audio/transport/index.ts"
+        "pwa/src/domain/learning/aural-scheduler.ts",
+        "pwa/src/domain/learning/aural-scheduler.test.ts",
+        "pwa/src/domain/learning/fixtures/generate-scheduler-native.py",
+        "pwa/src/domain/learning/fixtures/native-scheduler.json",
+        "pwa/src/domain/learning/SCHEDULER_WORKLOG.md",
+        "pwa/src/domain/learning/index.ts"
       ],
-      "scope": "PlaybackTransport implements frozen AudioPlaybackTransport. Accepted kernel/context/worker/sink orchestration, immediate intent, explicit gesture, bounded/coalesced control/config/one-heldPCM/one10ms timer, selected played beat/final drain and lifecycle. No shared contracts/old components/DSP/App/catalog/dependency/task edits.",
-      "status": "Normally merged e084ccb6; combined186units/types/build and2actual composedChrome cases PASS after reviewed startup sink correction. Worker clean/idle.",
-      "nextAction": "No pending async owner implementation. Preserve exact f9330517 branch/tree; no duplicate worker.",
-      "commit": "f9330517354849f49f87a566c83378ce4e1158b4",
+      "scope": "Pure builtin unlock/target selection only, frozen scheduler-contracts; <=24NEW native cases, unchanged801cf798 helpers/select and pinnedKotlin2.2.10. Reuse accepted evidence/RNG/factory unchanged; exactLongXOR/order/micshuffle/version distinction. No generation/pattern/corpus/session/audio/UI/sharedcontracts/dependencies/oldfixture recapture.",
+      "status": "ACCEPTED builtin scheduler/unlocks22af4635 normallymerged;24NEWnativecases/29focusedworkerchecks/scopedtypes firstPASS, root143combinedchecks/strictcombinedtypes PASS. Pure42cellbuiltinselection only; no fullT14/session/pattern/corpus/audio/UI/deviceclaim.",
+      "nextAction": "T14 pattern/corpus target generation/selection andsaved-sessionrepair remainreadyfor boundedproposal/contract inlatercapacity. Existingworker22af clean/idle. No currenttaskblockingownercredentials; fullT12/T13/T15plusguestfeatures continueindependently.",
+      "mergeCommit": "5508a0a03f090d750c62626394f4504d8e4c90a8",
+      "validation": [
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback src/features/details src/app/routes.test.ts",
+          "guard": "window13-scheduler-combined-unit-20261017",
+          "result": "PASS143checks/13files firstattempt. Native24 targets andunlock matrices/Longseed/lane/mic/immutableinputs; includes acceptedlearning/playback/details/routes."
+        },
+        {
+          "command": "node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window13-scheduler-combined-types-20261017",
+          "result": "PASSstrictcombinedtypes firstattempt. Appbuild7674a0134d8c unchanged; purelearningbarrel not imported byApp, no unnecessary browser/buildrecapture."
+        }
+      ],
+      "commit": "22af4635e27195de47f0247a062758b70ba24753",
       "agent": "preview_owner",
-      "task": "T08"
+      "task": "T14"
     },
-    "lastAcceptedProductCommit": "5cf90c2442a23d22d3df70263ef2aeaf40a0d273",
-    "integrationAwaitingPrimaryAcceptance": {
-      "workerCommit": "f9330517354849f49f87a566c83378ce4e1158b4",
-      "status": "PASS186units/strict types/build +2composedChrome +2sinkChrome with named startup correction source. No pending owner integration check.",
-      "checks": [
-        "node node_modules/vitest/vitest.mjs run src/audio/transport src/features/details",
-        "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build",
-        "node node_modules/@playwright/test/cli.js test audio-transport.spec.ts --output=.artifacts/pwa-port/audio-transport/browser-first"
-      ],
-      "cwd": "pwa",
-      "commit": "e084ccb601e2e7918e922574c62a7d95345984d6"
-    },
-    "usageAvailability": "Ordinaryusageallowedtrue,last1%/71%; refresh beforelargework.",
-    "nextAction": "Checkpointrootcontroller; root prepares productPlaybackroute/view whileexistingRNGworkerfinishes validation. Do not integrate worker before reviewed validatedtip. Ownerweekly100/fivehour70/80 applies.",
+    "lastAcceptedProductCommit": "82f3d20a",
+    "integrationAwaitingPrimaryAcceptance": null,
+    "usageAvailability": "Ordinary allowed; last 70%fivehour/94%weekly. No weeklyresetwait below100; refresh before newwork.",
+    "nextAction": "Afterlivefivehour<70/ordinarytrue, freeze bounded saved-sessionrepair contract from alreadyreviewedproposal/init; else wait applicablefivehour reset1792275143(2026-10-17T22:12:23Z), verifylive onlaterheartbeat. Preserve pendingLibraryscrollquestion; no duplicateworker.",
     "latestAcceptedProductTree": {
-      "baseCommit": "8ee74c0960c64cdf328055bd7b9522295f8c0263",
-      "shell": "43e5a745cf9f",
-      "task": "T11",
+      "baseCommit": "82f3d20a",
+      "shell": "7674a0134d8c",
+      "task": "T12",
       "testedSha256": {
-        "pwa/src/storage/catalog/detail-query.ts": "255ad84c08f56976378cd212a5bfce183ea1c28d1a0a2332cdc0ee23e3dbdd4a",
-        "pwa/src/storage/catalog/detail-query.test.ts": "b6c309ae300d0415ff37865ba9780c7a5f07430a58861ade2d9677a2ca03953a",
-        "pwa/src/storage/catalog/catalog-worker.ts": "6492e726ecba2b9f2029c4fd39b33c7f24c790d3948780c0ede18cea4ceeca8c",
-        "pwa/src/features/details/reader.ts": "e791cb95c35b049ff0fb5ac9df17a130efaf4c923179c4b862954365192c4387",
-        "pwa/src/features/details/reader.test.ts": "446f7801e2bfa3c941b5a0bc1d4fbe57279299e627cf36853eb419b7d7fa835b",
-        "pwa/src/features/details/SongScreen.tsx": "445e496cc1bf09e3ab24a7e5cc9fd26662d819ae0e7af72c6ea27ef53880267f",
-        "pwa/scripts/catalog/make-library-browser-fixture.py": "6a8862fc1673cf33ed4eb1b059bd4eccae35734b6956c3051a0d96b01041ea16",
-        "pwa/tests/browser/song-details.spec.ts": "814c5362a95d1ad8eacb7e926529986bb9e45f6643d8ee432406fb10da8c4399",
-        "pwa/src/features/details/overview.ts": "3d7fadba4586b6d9fe97da1bbe24624f91c2866643151b7c9b9aa5d8dec04dec",
-        "pwa/src/features/details/overview.test.ts": "a05222dc93f5aab9179099ad8057107c9b085ab9af5e396196aa81885f6d99e6"
+        "pwa/src/features/playback/PlaybackCards.tsx": "cc4cea4e2c60cf7894230316e824f0358e829c672913b900f89ec85e9020d1e7",
+        "pwa/src/features/playback/playback.css": "aee6e800e07dfeff4ec49d72e41398ad0ce096e736f536038e64c778c48b9739",
+        "pwa/src/features/playback/view-contracts.ts": "969322b4dd10c6a5a7372703ad6547673e2490c445a6d8106611b84504d6f1c2",
+        "pwa/tests/browser/playback.spec.ts": "41264cfec40079594188becb28757da0c2d0df04b3526620b66a5dcd172f951d"
       }
     },
     "deferredWorker": null,
@@ -2222,13 +2206,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-17T17:32:17.952864+00:00",
-      "fiveHourUsedPercent": 39,
-      "weeklyUsedPercent": 90,
+      "at": "2026-10-17T17:49:59.317173+00:00",
+      "fiveHourUsedPercent": 70,
+      "weeklyUsedPercent": 94,
       "ordinaryUsageAllowed": true,
       "fiveHourResetsAt": 1792275143,
       "weeklyResetsAt": 1792653278,
-      "action": "Reachedweekly90: save validatedcurrentcardscheckpointnow andcheckpoint eachsubsequent smallstep; continue toweekly100. Fivehour70/80unchanged."
+      "action": "No new slice/worker/check iffivehour>=70; saveexactrecovery andyield. Weekly100override: remainingweekly allowance doesnotblockfuturework afterfivehourcapacityreturn."
     }
   }
 }
