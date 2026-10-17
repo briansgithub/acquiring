@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-17T17:49:59.317173+00:00",
+  "updated": "2026-10-17T21:23:09.482330+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1768,6 +1768,15 @@
         "receiptSha256": "e54a8349d88fa54adfee6d9ac3ad03e023403bf22fb81e87f7dbd8ff61ba09cb",
         "receiptPath": "H:\\Desktop\\Acquiring\\Acquiring-pwa-data-compat\\.artifacts\\pwa-port\\t14-session-proposal-window13.md",
         "review": "Pureenvelope/progress repair first; preserve originalraw/current/return explicitly deferred/unplayable, no encoder/autowrite. Canonical decimalLong fields andstrict typeddecoder before acceptednormalizer; no Androidusermigration required. Separate corpus250..291 validation andbuiltin-current restoration later. No nativecapture performed; pinnedserializationcompilerplugin prerequisite for<=16newnativefieldrepaircases."
+      },
+      "sessionContractIntent": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "f32a30a180d883bfc3c5d291758f870782d0ac7f",
+        "ownedPaths": [
+          "pwa/src/domain/learning/session-contracts.ts"
+        ],
+        "scope": "Pure envelope/progress decode+repair projection only, nativeAuralSession10..25/80..123/139/150..153 andrealtypedJSONserializer. Preserve current/return/raw explicitly unvalidated/deferred; no encoder/autowrite/storage/audio/class/sessionstate machine. CanonicalexactLongoutputs; rejectunsafe numericLong input, no Androidusermigrationrequired.",
+        "status": "Frozen pure repair projection; strictcombinedtypes PASS/window14-session-contract-types-20261017 before worker source assignment."
       }
     },
     {
@@ -2126,12 +2135,12 @@
     "reason": "Window13 accepted currentcards/Home/builtin generator/scheduler; all assigned workers idle, exact receipts/checkpoints retained. Fivehour70 nonew slices; weeklyordinary allowance remains usable below100.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
-      "date": "2026-10-16T16:51:44.987830+00:00",
+      "date": "2026-10-17T21:22:18.142718+00:00",
       "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 62,
-      "fiveHourResetUnix": 1792187464,
-      "weeklyResetUnix": 1792653278,
-      "reason": "Prior cutoff reset passed; live counters permit bounded resumption."
+      "weeklyUsedPercent": 0,
+      "fiveHourResetUnix": 1792290016,
+      "weeklyResetUnix": 1792876816,
+      "reason": "Verified live0/0,newtimestampsandcurrentUTC21:20 supersede oldforecast, ordinarytrue; primaryf32a30a1/sibling22af4635 clean,idle,guards0recovery/no ownedprocess."
     },
     "activeWorker": null,
     "completedWorker": {
@@ -2206,13 +2215,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-17T17:49:59.317173+00:00",
-      "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 94,
+      "at": "2026-10-17T21:22:18.142718+00:00",
+      "fiveHourUsedPercent": 0,
+      "weeklyUsedPercent": 0,
       "ordinaryUsageAllowed": true,
-      "fiveHourResetsAt": 1792275143,
-      "weeklyResetsAt": 1792653278,
-      "action": "No new slice/worker/check iffivehour>=70; saveexactrecovery andyield. Weekly100override: remainingweekly allowance doesnotblockfuturework afterfivehourcapacityreturn."
+      "fiveHourResetsAt": 1792290016,
+      "weeklyResetsAt": 1792876816,
+      "action": "Both livewindows reset0/0 andtimestampschanged; supersedes oldfutureforecast1792275143/1792653278. Resume boundedwork, no credit/reset/modelaction."
     }
   }
 }
