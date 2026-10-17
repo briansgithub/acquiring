@@ -1,3 +1,4 @@
+import {PlaybackCards} from './PlaybackCards';
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {INSTRUMENTS,Waveform} from '../../audio/synth';
 import type {PlaybackSettings} from './controller';
@@ -25,6 +26,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
   const [playback,setPlayback]=useState<SectionPlaybackController|null>(null);
   const [playbackError,setPlaybackError]=useState<string|null>(null);
   const playbackOwner=useRef<SectionPlaybackController|null>(null);
+  const cardPreviewStop=useRef<(()=>void)|null>(null);
   const loadedSection=useRef<string|null>(null);
 
   useEffect(()=>{
@@ -164,22 +166,23 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
         <section className="panel playback-transport" aria-label="Playback controls">
           <div className="playback-actions">
             <button className="action" onClick={()=>active?playback?.pause():playback?.play()} disabled={!playback||Boolean(playbackError)}>{active?'Pause':'Play'}</button>
-            <button className="action" onClick={()=>playback?.reset()} disabled={!playback}>Reset</button>
+            <button className="action" onClick={()=>{cardPreviewStop.current?.();playback?.reset();}} disabled={!playback}>Reset</button>
           </div>
           <label className="playback-field playback-position">Position
             <input aria-label="Position" type="range" min="1" max={playbackState.endBeat} step="0.01" value={beat} disabled={!playback}
-              onPointerDown={()=>playback?.beginScrub()}
+              onPointerDown={()=>{cardPreviewStop.current?.();playback?.beginScrub();}}
               onPointerUp={()=>playback?.finishScrub()}
               onPointerCancel={()=>playback?.cancelScrub()}
-              onKeyDown={event=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'].includes(event.key))playback?.beginScrub();}}
+              onKeyDown={event=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'].includes(event.key)){cardPreviewStop.current?.();playback?.beginScrub();}}}
               onKeyUp={event=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'].includes(event.key))playback?.finishScrub();}}
               onBlur={()=>playback?.cancelScrub()}
-              onChange={event=>playback?.scrubTo(Number(event.target.value))}/>
+              onChange={event=>{cardPreviewStop.current?.();playback?.scrubTo(Number(event.target.value));}}/>
           </label>
           <p className="playback-beat">Current beat <output aria-label="Current beat">{formatBeat(beat)}</output></p>
           <p role="status" aria-live="polite" className="playback-status">{status}</p>
         </section>
         {playbackError&&<section className="panel"><p role="alert">{playbackError}</p></section>}
+        {playback&&!playbackError&&<PlaybackCards section={selected[1]} beat={beat} baseBpm={playbackState.baseBpm} settings={settings} stopPreview={cardPreviewStop}/>}
         <section className="panel playback-settings" aria-label="Playback settings">
           <label className="playback-field">Tempo (%)
             <input aria-label="Tempo (%)" type="range" min="0" max="200" step="1" value={settings.tempoPercent} disabled={!playback}

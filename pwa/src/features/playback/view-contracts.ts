@@ -12,7 +12,8 @@
  * Expose data-playback-phase/requested for evidence and accessible labeled beat/settings controls.
  * 320px/200%text no overflow/overlap,44px targets, controls keyboard operable; stable loading,
  * missing/download/retry states. No App/router/catalog/audio/sharedcontract/dependency writes.
- * This slice excludes cards/visualtimeline/home/relativekey/singing/favorites/default persistence
+ * Current-card band now adds sourcekey/chord/tone/melody/root previews via borrowed owner.
+ * Remaining slices: previous/interval cards,visualtimeline/home/relativekey/singing/favorites/default persistence
  * and routepositionmemory; wholeT12 remains in_progress, device/Safari acceptance remains unrun.
  */
 export interface PlaybackScreenProps {

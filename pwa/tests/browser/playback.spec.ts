@@ -17,7 +17,7 @@ test.beforeEach(async({context})=>{
 });
 async function instrument(page:Page){
   await page.addInitScript(()=>{
-    type Item={peak:number;scheduled:number;endedAt:number|null;stops:number};
+    type Item={peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number};
     const proof:{contexts:AudioContext[];items:Item[]}={contexts:[],items:[]};
     (window as unknown as {playbackProof:typeof proof}).playbackProof=proof;
     const Native=window.AudioContext;
@@ -25,9 +25,9 @@ async function instrument(page:Page){
       constructor(options?:AudioContextOptions){super(options);proof.contexts.push(this);}
       createBufferSource(){
         const source=super.createBufferSource(),start=source.start.bind(source),stop=source.stop.bind(source),context=this;
-        const item:Item={peak:0,scheduled:0,endedAt:null,stops:0};
+        const item:Item={peak:0,scheduled:0,endedAt:null,stops:0,frames:0,hz:0};
         source.start=(when=0,offset=0,duration?:number)=>{
-          const data=source.buffer?.getChannelData(0);if(data)for(const sample of data)item.peak=Math.max(item.peak,Math.abs(sample));
+          const data=source.buffer?.getChannelData(0);if(data){item.frames=data.length;let crossings=0;for(let i=0;i<data.length;i++){item.peak=Math.max(item.peak,Math.abs(data[i]));if(i>0&&data[i-1]<=0&&data[i]>0)crossings++;}item.hz=crossings*context.sampleRate/Math.max(1,data.length-1);}
           item.scheduled=when;proof.items.push(item);source.addEventListener('ended',()=>{item.endedAt=context.currentTime;});
           if(duration===undefined)start(when,offset);else start(when,offset,duration);
         };
@@ -37,7 +37,7 @@ async function instrument(page:Page){
   });
 }
 async function audio(page:Page){return page.evaluate(()=>{
-  const p=(window as unknown as {playbackProof:{contexts:AudioContext[];items:{peak:number;scheduled:number;endedAt:number|null;stops:number}[]}}).playbackProof;
+  const p=(window as unknown as {playbackProof:{contexts:AudioContext[];items:{peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number}[]}}).playbackProof;
   return {contexts:p.contexts.map(context=>({rate:context.sampleRate,state:context.state,time:context.currentTime})),items:p.items};
 });}
 async function installAndOpen(page:Page){
@@ -104,7 +104,7 @@ test('playback reloads offline without autoplay and fits narrow large text',asyn
   const view=page.locator('[data-playback-phase]');await expect(view).toHaveAttribute('aria-busy','false');await expect(page.getByRole('slider',{name:'Position',exact:true})).toBeEnabled();await expect(view).toHaveAttribute('data-playback-phase','stopped');await expect(view).toHaveAttribute('data-playback-requested','false');expect((await audio(page)).contexts).toHaveLength(0);
   await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  const controls=view.locator('button,select,input[type=range]');
+  const controls=view.locator('.playback-transport button,.playback-field select,.playback-field input[type=range]');
   // Two transport buttons, four ranges and three selects; checkbox uses its44px label.
   expect(await controls.count()).toBe(9);
   expect(await controls.evaluateAll(elements=>elements.every(element=>{const b=element.getBoundingClientRect();return b.width>=44&&b.height>=44;}))).toBe(true);
@@ -126,7 +126,11 @@ test('unsupported sections remain silent, recover to a valid section, and releas
   await expect.poll(async()=>(await audio(page)).items.some(item=>item.peak>.001)).toBe(true);
   await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('searchbox',{name:'Search songs',exact:true})).toBeVisible();
   const count=(await audio(page)).items.length;await page.waitForTimeout(150);expect((await audio(page)).items).toHaveLength(count);
-  await page.goto('/playback/playback-bad-last');await expect(view).toHaveAttribute('data-playback-phase','stopped');
+});
+
+test('later unsupported section stays silent until a valid section is selected',async({page})=>{
+  await instrument(page);await installAndOpen(page);const view=page.locator('[data-playback-phase]');
+  await page.goto('/playback/playback-bad-last');await expect(view).toHaveAttribute('aria-busy','false');await expect(view).toHaveAttribute('data-playback-phase','stopped');
   await page.getByRole('button',{name:'Play',exact:true}).click();await expect(view).toHaveAttribute('data-playback-phase','playing');
   await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');await expect(view).toHaveAttribute('data-playback-phase','error');
   await expect(page.getByRole('button',{name:'Play',exact:true})).toBeDisabled();
@@ -134,4 +138,34 @@ test('unsupported sections remain silent, recover to a valid section, and releas
   await expect(page.getByRole('button',{name:'Play',exact:true})).toBeDisabled();
   const invalidCount=(await audio(page)).items.length;await page.waitForTimeout(150);expect((await audio(page)).items).toHaveLength(invalidCount);
   await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('2');await expect(view).toHaveAttribute('data-playback-phase','stopped');await expect(page.getByRole('button',{name:'Play',exact:true})).toBeEnabled();
+});
+
+test('current cards use native source keys, written duration and one transpose while sharing audio ownership',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  const band=page.getByRole('region',{name:'At this beat',exact:true}),view=page.locator('[data-playback-phase]');
+  await expect(band.getByLabel('Source key',{exact:true})).toHaveText('C Major');
+  const chord=band.getByRole('button',{name:'Play current chord I',exact:true});await expect(chord).toBeVisible();
+  const tones=band.getByRole('group',{name:'Chord tones',exact:true}).getByRole('button');await expect(tones).toHaveCount(3);
+  expect((await audio(page)).contexts).toHaveLength(0);
+  await page.getByRole('combobox',{name:'Instrument',exact:true}).selectOption('SINE');
+  const tempo=page.getByRole('slider',{name:'Tempo (%)',exact:true});await tempo.focus();await tempo.press('Home');await page.getByRole('combobox',{name:'Arpeggio',exact:true}).selectOption({index:7});
+  await chord.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(1);
+  let proof=await audio(page);expect(proof.items[0].peak).toBeGreaterThan(.001);expect(proof.items[0].frames/proof.contexts[0].rate*1000).toBeCloseTo(667,1);
+  await tones.first().click();await expect.poll(async()=>(await audio(page)).items.length).toBe(2);proof=await audio(page);
+  const firstHz=proof.items[1].hz;expect(firstHz).toBeGreaterThan(50);expect(proof.items[1].frames/proof.contexts[0].rate*1000).toBeCloseTo(450,1);
+  const transpose=page.getByRole('slider',{name:'Transpose',exact:true});await transpose.focus();await transpose.press('End');await tones.first().click();await expect.poll(async()=>(await audio(page)).items.length).toBe(3);
+  proof=await audio(page);expect(proof.items[2].hz/firstHz).toBeGreaterThan(1.95);expect(proof.items[2].hz/firstHz).toBeLessThan(2.05);expect(proof.contexts).toHaveLength(1);
+  await expect(view).toHaveAttribute('data-playback-requested','false');
+  await page.getByRole('checkbox',{name:'Root only',exact:true}).check();await expect(band.getByRole('group',{name:'Chord cards',exact:true})).toHaveCount(0);await expect(band.getByRole('group',{name:'Melody cards',exact:true})).toHaveCount(0);
+  await expect(band.getByRole('group',{name:'Root cards',exact:true}).getByRole('button')).toHaveCount(1);
+  const position=page.getByRole('slider',{name:'Position',exact:true});await position.focus();await position.press('End');await expect.poll(async()=>(await audio(page)).items[2].stops).toBeGreaterThan(0);await expect(band.getByLabel('Source key',{exact:true})).toHaveText('D Minor');await expect(band.getByText('No sounding root',{exact:true})).toBeVisible();
+  await position.press('Home');await page.getByRole('checkbox',{name:'Root only',exact:true}).uncheck();
+  await expect(band.getByRole('group',{name:'Melody cards',exact:true}).getByRole('button')).toHaveCount(1);
+  await band.getByRole('group',{name:'Melody cards',exact:true}).getByRole('button').click();await expect.poll(async()=>(await audio(page)).items.length).toBe(4);
+  await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');await expect.poll(async()=>(await audio(page)).items[3].stops).toBeGreaterThan(0);await expect(band.getByText('No sounding melody',{exact:true})).toBeVisible();
+  await expect(band.getByRole('button',{name:'Play current chord IV',exact:true})).toBeVisible();
+  await band.getByRole('button',{name:'Play current chord IV',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(5);await page.getByRole('button',{name:'Reset',exact:true}).click();await expect.poll(async()=>(await audio(page)).items[4].stops).toBeGreaterThan(0);
+  await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await band.getByRole('button').evaluateAll(elements=>elements.every(element=>{const b=element.getBoundingClientRect();return b.width>=44&&b.height>=44;}))).toBe(true);
+  const path=testInfo.outputPath('current-cards-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await band.screenshot({path});await writeFile(testInfo.outputPath('card-proof.json'),JSON.stringify(await audio(page),null,2));
 });

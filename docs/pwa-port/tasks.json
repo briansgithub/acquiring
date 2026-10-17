@@ -1325,7 +1325,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
       "slice": "First product current chord, tone, melody and root cards",
-      "nextAction": "Implement bounded React band/lifecycle, extend actualChrome cardpreview/key/silentposition/transpose/sectioncleanup/320px200% proof. Preserve old ninecontrol checks byexplicitselectors; rootcombinedtypes/build/browser aftervalidated workerintegration asneeded.",
+      "nextAction": "Named validated currentcardcheckpoint atweekly90, continue smallsteps/checkpoint each. Next smallHome reference orprevious/interval/relative context afterownclaim; separateSol schedulerproposal pendingrootfreeze.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1363,6 +1363,11 @@
           "command": "python pwa/src/features/playback/fixtures/generate-event-native.py; node node_modules/vitest/vitest.mjs run src/features/playback; node node_modules/typescript/bin/tsc --noEmit; node node_modules/vitest/vitest.mjs run src/features/playback/event-state.test.ts -t \"bounds raw events\" (rootguard, nodefrompwa)",
           "revision": "0ff4b24f00e9cccc863b3c15cf5f0ff690788bec plus cardModelAssignment.testedSha256 tree",
           "result": "PASS14nativecases/61queries97422bytes, pinnedcompiler/runtime2.2.10, unchanged PlaybackIntervalState/PlaybackTiming/rootvisibilityleafs +realtheory. Guards window13-event-native-capture-fix1, event-unit-first(25/2.21s), event-types-retest-fix1, event-boundary-retest-fix1(1changedgroup,16unchangedskipped). Producerfirstcompile driverpublic/internal mismatch fixedprivatehelpers only; firsttypes testunion.call mismatch fixedarrows only. Source/nativeexpectedunchanged, no recaptureoldfixtures. Includesstabletie/overlapfallback/exclusiveends/restmask/rootpreviousskip/melodyrestbarrier/keys/enharmonicwrittenequality/cardmode/verticalpositions. Raw4096event/4096key/finitequery browserextensions tested. Pureprivateunbundledmodel: no App/browser/deviceclaim/buildrerun."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback src/features/details src/app/routes.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --output .artifacts/pwa-port/playback-cards/browser-fix1 (pwa/rootguard)",
+          "revision": "951e321c7f402bcb7e01160c0b2ba724aac24cad plus currentCardsAssignment.testedSha256 tree",
+          "result": "PASS114unchangedcoveringunits/window13-builtin-card-combined-unit(3.43s); finalchangedUI strict types/build3a49c60f0f8c/window13-current-cards-build-fix1;6Chrome~1.3m/window13-current-card-browser-fix1. Firstbrowser4PASSinclnewcardtest, onecombinedunsupportedtest Library->hardnavigationBUSYtimeout; no runtime/storage/Libraryscroll edits. Fix1isolatedinitial/laterunsupported contexts preservingassertions, all6thenPASS. NativebeginscrubstopPreviewlinked synchronously, Resetalso;48000Hzonecontext,667mswrittenchord vs450mstones despitezeroTempo/arp,131.117Hz->262.234Hzexactoneoctave, sourcekeyDMinoratsilentend/Cmajorreset, root/melodymode/sectioncleanup/disabledinvaliderror. All5previewnodesstop onreplacement/scrub/section/Reset. Fullpageoffline320px200%image visuallyreviewed noobviousoverlap/overflow;9transport/settingscontrols retain44px, cardbuttons>=44px. Subsectioncaptureincludesstickyheaderoverlay,usefullpageimageforlayoutreview. Firstfailuretrace+images/proofretained. Physicalhearing/Safari/mobile/trustedtab/BFCache/fullT12unrun."
         }
       ],
       "progress": [
@@ -1378,7 +1383,9 @@
         "2026-10-17T12:04:53.906449+00:00 First bounded Playback productaccepted; fullT12in_progress. UIworker9dbdb2ed clean/idle; Sol6751b4d9 RNGaccepted/idle. Root reviewedactualreadygeometryimage after2testharnesscorrections, no productsourcefailure or furtherexpansion. Allpriorproofs/branches preserved. Latest67%five-hour/82%weekly, weekly100/fivehour70/80 policy active.",
         "2026-10-17T12:07:51.258571+00:00 Exact committed4Chrome coveringPASS59.8s; productde8b8c49 accepted, primary0a8e796ddc2c24d754635f04658ef9bb8112718c clean. Bothworkersidle; SolonlydirtyintentWORKLOG at6751b4d9, no checkpoint2implementation/checks started after live69->70. Root observed72%five-hour/82%weekly, guard0recovery andno remaining node/python process. Save docscheckpoint, no new slice/check until applicable five-hourreset1792254573(2026-10-17T16:29:33Z), refreshlive. Weekly82not blocker;ownerweekly100override remainsactive. Automation staysACTIVE.",
         "2026-10-17T17:15:22.514889+00:00 Root disjointT12cardmodel claim from0ff4b24f00e9cccc863b3c15cf5f0ff690788bec; soleSol/highworkerT14builtin6paths. Activeeventnativeclass and interval functions inspected, reuseacceptedtheory; rawnative rests maskpreviousactive event, root skips priorrests whilemelody restbarrier, enharmonic writtenunison distinct. Oneboundedmodelstep; fullT12unaccepted, no repeatexistingproofs. Weekly83%, checkpointat90thencontinue100/fivehour70/80.",
-        "2026-10-17T17:19:46.474121+00:00 Event/cardpuremodel accepted beforeproductpresentation. Nativeidentityretained, timed/keyindexcachedonce, no frame-time sorting. SoleSol/highworkerbuiltin32nativefixturesPASS, tests/types pending atlast9%five-hour/85%weekly. Latestroot14%/86%; weekly90checkpointthencontinue100."
+        "2026-10-17T17:19:46.474121+00:00 Event/cardpuremodel accepted beforeproductpresentation. Nativeidentityretained, timed/keyindexcachedonce, no frame-time sorting. SoleSol/highworkerbuiltin32nativefixturesPASS, tests/types pending atlast9%five-hour/85%weekly. Latestroot14%/86%; weekly90checkpointthencontinue100.",
+        "2026-10-17T17:28:34.239741+00:00 Currentcardfirstbrowser:4PASSincl actualpreviewframes32016(667ms)/21600(450ms), SINEtone131.117Hz->262.234Hz exactlyoneoctavetranspose/onecontext/sectionrelease/narrowcards. Existingunsupportedcombinedtestfailed Library->hardnavigation BUSY ownership, error-context/trace preserved browser-first. No storage/Libraryscroll investigation orruntimechange. Firstharnessfix splits initialrecover/unmount andlaterinvalid into independent contexts, sameassertions; noRetry/assertionrelaxation. NativePlaybackViewbeginScrubbing explicitstopPreview foundread-only; wire synchronousborrowedpreviewStop for scrub/Reset andaddproof, preserve streamintent. Covering6Chrome next, atmost2fix/retestcycles per failure.",
+        "2026-10-17T17:32:17.952864+00:00 Firstcurrentcards accepted, checkpointatlive39%fivehour/90%weekly, ordinarytrue. Rootsourceownedpaths only, allpriorproofs/refs preserved; Solread-onlyschedulerproposal no trackedchanges, Lunaidle. Weekly90intensifiedcheckpointbutcontinue100, fivehour70/80unchanged. No nativeexpectedchanges or acceptedcatalogrecapture."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1484,8 +1491,15 @@
           "pwa/src/features/playback/WORKLOG.md"
         ],
         "scope": "First product current-chord/tone/current-melody/root card band plus sourcekey readout. Reuse accepted preparePlaybackSection/PlaybackActiveEventIndex/theory/notation/borrowed PreviewOwner; no new context/clock. Native current chord interpretation at activebeat key; root degree at currentchord onset; melody key at note sourcebeat. Chord preview rounds writtenbeats at nativebaseBPM(min40ms/Intsat), independent of tempo/arpeggio; note previews450ms. All exactfreq previews applymanualtransposeONCE andcurrentwaveform, no singing octave beforeT13. New section/unmount/pagehide retiresborrower; previews neverchange streamintent. Sourcekeydisplay only; relativeIonian/previousintervalbuttons/timeline/home/persistence remainfuture. No claimsfullT12/physicaldevices.",
-        "status": "intent before edits; native leafsemantics inspected, pureeventmodel3cd20c3f accepted",
-        "nextAction": "Implement bounded React band/lifecycle, extend actualChrome cardpreview/key/silentposition/transpose/sectioncleanup/320px200% proof. Preserve old ninecontrol checks byexplicitselectors; rootcombinedtypes/build/browser aftervalidated workerintegration asneeded."
+        "status": "ACCEPTED first currentcard band:114combinedcoveringunits, finalstrict types/build3a49c60f0f8c and6Chrome~1.3m PASS. Sourcekey/currentchord/tone/melody/root, nativepreviewduration/singletranspose/borrowedcontext/synchronousscrub+Reset/sectioncleanup verified. FullT12previousinterval/relative/timeline/home/persistence remainopen.",
+        "nextAction": "Named validated currentcardcheckpoint atweekly90, continue smallsteps/checkpoint each. Next smallHome reference orprevious/interval/relative context afterownclaim; separateSol schedulerproposal pendingrootfreeze.",
+        "testedSha256": {
+          "pwa/src/features/playback/PlaybackCards.tsx": "971de3967c838b934449a3939c8d862f000ca8b02edc2a9b3985e840111240b2",
+          "pwa/src/features/playback/PlaybackScreen.tsx": "b682ec1c08438f8f642a0ce24bc508fa5e336f7bcbef29ec66cdc5c6ae413963",
+          "pwa/src/features/playback/playback.css": "6825737b2e38c95da27ed1df52ffef442a026e7aa30d34fbddeb0296eb9c5789",
+          "pwa/src/features/playback/view-contracts.ts": "890fc392dd3b31ed470e0c7def7320a4b7dd57a8a956c4f974b6abc46bdb99c1",
+          "pwa/tests/browser/playback.spec.ts": "1c397bd47210ab0c085ab1748cd15a94da90454eb16ec20f4b0d07e2a18b7fda"
+        }
       }
     },
     {
@@ -1570,7 +1584,8 @@
         "2026-10-17T11:50:07.443998+00:00 Pre-integration: primary3861627a88ae19222afe1348f13b485dc35b1d65 clean; worker6751b4d9e9ec97d4562be14cbe7c9d5015eadb35 clean, one LunaUI worker active in separate sibling. Root reviewed private RNG156lines/tests111/native producer134 and license pins; 8nativecases/15tests/scopedtypes passed. One fixture-loader-only UTF16 adapter correction, native expected values unchanged. All branches/evidence preserved; no fullT14completion.",
         "2026-10-17T12:05:33.683697+00:00 Checkpoint2claim: primaryde8b8c494db8017533a79dd9dd5c562ac63258d4 clean, existingSol sibling6751b4d9clean/idle; preserveallrefs/ignoredproofs. LunaUI9dbdb2edclean/idle afterproductde8b8c49 28units/types/build+4Chrome andcorrectedactualnarrowimage. SameSol/highonlyboundedbuiltin generator6paths, no parallelrootlearning edits. Last68%five-hour/82%weekly; follow live70/80boundary, sourcecancheckpointunvalidatedifinterrupted.",
         "2026-10-17T17:13:16.558203+00:00 Window13resume: primary8f3cc2638e83dd48dd4c587d7a920768efc1562d clean; existing6751b4d9sibling ONLY dirtyintentWORKLOG, bothguards0recovery,no ownedprocess, agentsidle. Live0%fivehour/83%weekly ordinarytrue reset1792275143; prior1792254573 passed, weeklyresetnotblocking. SameSol/highclaim6paths unchanged; rootdisjointT12 boundedsource/displayprojection next. Preserveallrefs/artifacts;no newtree/branch/modelaction.",
-        "2026-10-17T17:24:15.240008+00:00 Pre-integration: root3cd20c3fa9969fa03dfaf009bb00c0cf04c13ef6 withownedcurrentcarddirty paths, worker c8a46052clean/idle, bothguards0recovery; sixlearningpaths only, acceptedRNG unchanged. Source/provenance/nativeoracle reviewed, scalar-onlytargetsnapshot/deepfrozen independent outputs/nativeLongdraws/UTF16identities correct. No pendingapproval rejection; one testwrite timeoutneverexecuted thenexplicitlypermittedsmallerretry passed. Last25%/87%; weekly90checkpointthencontinue100. FullT14open."
+        "2026-10-17T17:24:15.240008+00:00 Pre-integration: root3cd20c3fa9969fa03dfaf009bb00c0cf04c13ef6 withownedcurrentcarddirty paths, worker c8a46052clean/idle, bothguards0recovery; sixlearningpaths only, acceptedRNG unchanged. Source/provenance/nativeoracle reviewed, scalar-onlytargetsnapshot/deepfrozen independent outputs/nativeLongdraws/UTF16identities correct. No pendingapproval rejection; one testwrite timeoutneverexecuted thenexplicitlypermittedsmallerretry passed. Last25%/87%; weekly90checkpointthencontinue100. FullT14open.",
+        "2026-10-17T17:29:34.067093+00:00 SoleSol/high read-only schedulerproposal claim onexistingclean c8a46052, builtinaccepted951e321c/root114checks/types/build. RootownsdisjointcurrentcardUI/cancellationproof pendingbrowser, dirtypaths preserved. No newbranch/tree/sourceassignment. Latest34%five-hour/89%weekly, at90checkpointthencontinue100; no credit/reset/modelaction."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -1650,6 +1665,18 @@
           ],
           "result": "Both exit0; only intent saved. No source/test milestone or commit claimed."
         }
+      },
+      "schedulerProposalAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-aural-generator",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "c8a46052f49591139c0e8f76f898c3281285fe89",
+        "scope": "READONLY bounded proposal only for frozen AuralCurriculum selectTarget/unlock/family+skill status. Inspect relevant native79..147 and currentaccepted auralevidence/assessment/generator contracts; propose smallest deterministic API/bounds andnew<=24nativecases, no source/contract/fixture/test/index edits, no nativecapture orbranch/tree changes. Saved-sessionrepair/pattern/corpus/audio/UI excluded. Root freezesnextcontract before sourceassignment.",
+        "output": ".artifacts/pwa-port/t14-scheduler-proposal-window13.md",
+        "status": "claimed before read-only dispatch, priorworkerbuiltinaccepted/idle andLunaidle",
+        "nextAction": "Save shortignoredintent/result under own guard, return boundedproposal<=80lines/sha256 andidle. Weekly90checkpointcontinue100/fivehour70/80; no recapturepriornativeevidence."
       }
     },
     {
@@ -2107,13 +2134,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-17T17:13:16.558203+00:00",
-      "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 83,
+      "at": "2026-10-17T17:32:17.952864+00:00",
+      "fiveHourUsedPercent": 39,
+      "weeklyUsedPercent": 90,
       "ordinaryUsageAllowed": true,
       "fiveHourResetsAt": 1792275143,
       "weeklyResetsAt": 1792653278,
-      "action": "Applicable five-hour resetverified; resume existingbuiltin claim. Weekly100/fivehour70/80 policy unchanged."
+      "action": "Reachedweekly90: save validatedcurrentcardscheckpointnow andcheckpoint eachsubsequent smallstep; continue toweekly100. Fivehour70/80unchanged."
     }
   }
 }
