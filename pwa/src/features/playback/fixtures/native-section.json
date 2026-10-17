@@ -1,0 +1,415 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "sourceSha256": {
+    "MusicTheory": "46af5e1e502ba2e1e67e3cba4d2d227cea1061454fd7f5285b2a033925de98ca",
+    "HooktheoryModels": "24ce7329ba97a77c0048d35eb66707a1f5a33bb1bcdc14f44572d888fc55771f",
+    "SpelledInterval": "ddcc1cf8692f077c4d3b72137ce6cf4c61abe21f474c39eadccbc1fc470dbda3",
+    "RelativeIonianContext": "2c5afe3f9e45684a6d5e483001a463b60cd20e7465d6d7179e0171c8d30fe1ed",
+    "AudioPitchAdapter": "54d2a1b314064ce690eac55788c3807c327610723a262f06ca12644396199a68",
+    "ChordInterpreter": "646b65b99ba39c8e2fa78c44f6e80525590f472ccceadb69f855ceb7f144f61d",
+    "ChordLetterFormat": "55e63e3afca04ee0cee6d1fd1ac191d661f40197f79e9b2c693c1c260f1e000b",
+    "ChordVoicing": "082ab84c561844c03055914d66277c355ba6b2e559fdd6c1ad30f2b29cd6fbd3",
+    "Timing": "a9f51c493258bfdab0f94ee54e383fb2d10257c020b0d1168b0681f0ac40586f",
+    "Preparation": "0fbe2f859683b724ebc3931ca21472b9366681814f3d3d45bfd9410eba833997"
+  },
+  "adapter": "Frozen leaf code; Compose remember replaced only with run, independent Kotlin/JVM JSON adapter, no TypeScript.",
+  "cases": [
+    {
+      "label": "empty-fallback",
+      "section": {
+        "chords": [],
+        "notes": null,
+        "metadata": null
+      },
+      "expected": {
+        "baseBpm": 120.0,
+        "endBeat": 32.0,
+        "melody": []
+      }
+    },
+    {
+      "label": "metadata-only",
+      "section": {
+        "chords": [],
+        "notes": null,
+        "metadata": {
+          "endBeat": 9
+        }
+      },
+      "expected": {
+        "baseBpm": 120.0,
+        "endBeat": 9.0,
+        "melody": []
+      }
+    },
+    {
+      "label": "metadata-not-authoritative",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1,
+            "duration": 2
+          }
+        ],
+        "notes": null,
+        "metadata": {
+          "endBeat": 99
+        }
+      },
+      "expected": {
+        "baseBpm": 120.0,
+        "endBeat": 3.0,
+        "melody": []
+      }
+    },
+    {
+      "label": "melody1-extends-chords",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 1
+          }
+        ],
+        "notes": {
+          "melody1": [
+            {
+              "sd": "3",
+              "beat": 3,
+              "duration": 2,
+              "octave": 1
+            }
+          ]
+        },
+        "metadata": null
+      },
+      "expected": {
+        "baseBpm": 120.0,
+        "endBeat": 5.0,
+        "melody": [
+          {
+            "sd": "3",
+            "beat": 3.0,
+            "duration": 2.0,
+            "octave": 1,
+            "isRest": false
+          }
+        ]
+      }
+    },
+    {
+      "label": "raw-array-and-defaults",
+      "section": {
+        "chords": [],
+        "notes": [
+          null,
+          1,
+          [],
+          {},
+          {
+            "sd": null,
+            "beat": 0,
+            "duration": "2.5",
+            "octave": "-1"
+          },
+          {
+            "sd": [
+              "bad"
+            ],
+            "beat": "3",
+            "octave": "1.0"
+          }
+        ],
+        "metadata": null
+      },
+      "expected": {
+        "baseBpm": 120.0,
+        "endBeat": 4.0,
+        "melody": [
+          {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          {
+            "sd": "1",
+            "beat": 1.0,
+            "duration": 2.5,
+            "octave": -1,
+            "isRest": false
+          },
+          {
+            "sd": "1",
+            "beat": 3.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          }
+        ]
+      }
+    },
+    {
+      "label": "rests-case",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 50,
+            "rest": "True"
+          }
+        ],
+        "notes": [
+          {
+            "sd": "1",
+            "beat": 100,
+            "isRest": "TRUE"
+          },
+          {
+            "sd": "3",
+            "beat": 2,
+            "rest": " true "
+          },
+          {
+            "sd": "5",
+            "beat": 4,
+            "rest": 1
+          }
+        ],
+        "metadata": null
+      },
+      "expected": {
+        "baseBpm": 120.0,
+        "endBeat": 5.0,
+        "melody": [
+          {
+            "sd": "1",
+            "beat": 100.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": true
+          },
+          {
+            "sd": "3",
+            "beat": 2.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          {
+            "sd": "5",
+            "beat": 4.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          }
+        ]
+      }
+    },
+    {
+      "label": "zero-beat-negative-duration",
+      "section": {
+        "chords": [
+          {
+            "root": 1,
+            "type": 5,
+            "beat": 0,
+            "duration": 2
+          },
+          {
+            "root": 5,
+            "type": 7,
+            "beat": 10,
+            "duration": 0
+          }
+        ],
+        "notes": [
+          {
+            "sd": "1",
+            "beat": -1,
+            "duration": 1
+          },
+          {
+            "sd": "3",
+            "beat": 4,
+            "duration": -1
+          }
+        ],
+        "metadata": null
+      },
+      "expected": {
+        "baseBpm": 120.0,
+        "endBeat": 3.0,
+        "melody": [
+          {
+            "sd": "1",
+            "beat": -1.0,
+            "duration": 1.0,
+            "octave": 0,
+            "isRest": false
+          },
+          {
+            "sd": "3",
+            "beat": 4.0,
+            "duration": -1.0,
+            "octave": 0,
+            "isRest": false
+          }
+        ]
+      }
+    },
+    {
+      "label": "invalid-melody-container",
+      "section": {
+        "chords": [],
+        "notes": {
+          "melody1": {}
+        },
+        "metadata": {
+          "endBeat": 1
+        }
+      },
+      "expected": {
+        "baseBpm": 120.0,
+        "endBeat": 32.0,
+        "melody": []
+      }
+    },
+    {
+      "label": "fractional-exclusive-end",
+      "section": {
+        "chords": [
+          {
+            "root": 4,
+            "type": 5,
+            "beat": 1.25,
+            "duration": 0.5
+          }
+        ],
+        "notes": [
+          {
+            "sd": "1",
+            "beat": 2.25,
+            "duration": 0.125
+          }
+        ],
+        "metadata": null
+      },
+      "expected": {
+        "baseBpm": 120.0,
+        "endBeat": 2.375,
+        "melody": [
+          {
+            "sd": "1",
+            "beat": 2.25,
+            "duration": 0.125,
+            "octave": 0,
+            "isRest": false
+          }
+        ]
+      }
+    },
+    {
+      "label": "float-bpm-0",
+      "section": {
+        "chords": [],
+        "notes": null,
+        "metadata": {
+          "tempos": [
+            {
+              "bpm": 0
+            }
+          ]
+        }
+      },
+      "expected": {
+        "baseBpm": 40.0,
+        "endBeat": 32.0,
+        "melody": []
+      }
+    },
+    {
+      "label": "float-bpm-1000",
+      "section": {
+        "chords": [],
+        "notes": null,
+        "metadata": {
+          "tempos": [
+            {
+              "bpm": 1000
+            }
+          ]
+        }
+      },
+      "expected": {
+        "baseBpm": 240.0,
+        "endBeat": 32.0,
+        "melody": []
+      }
+    },
+    {
+      "label": "float-bpm-95.123456789",
+      "section": {
+        "chords": [],
+        "notes": null,
+        "metadata": {
+          "tempos": [
+            {
+              "bpm": 95.123456789
+            }
+          ]
+        }
+      },
+      "expected": {
+        "baseBpm": 95.12345886230469,
+        "endBeat": 32.0,
+        "melody": []
+      }
+    },
+    {
+      "label": "float-bpm--2",
+      "section": {
+        "chords": [],
+        "notes": null,
+        "metadata": {
+          "tempos": [
+            {
+              "bpm": -2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "baseBpm": 40.0,
+        "endBeat": 32.0,
+        "melody": []
+      }
+    },
+    {
+      "label": "invalid-first-tempo",
+      "section": {
+        "chords": [],
+        "notes": null,
+        "metadata": {
+          "tempos": [
+            null,
+            {
+              "bpm": 88
+            }
+          ],
+          "endBeat": 4
+        }
+      },
+      "expected": {
+        "baseBpm": 120.0,
+        "endBeat": 4.0,
+        "melody": []
+      }
+    }
+  ]
+}

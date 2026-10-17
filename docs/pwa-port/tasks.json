@@ -1313,16 +1313,48 @@
         "pwa/src/features/playback/"
       ],
       "acceptance": "Current layout/gesture/transport contracts; source/display keys and zero-tempo semantics",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
-      "validation": [],
-      "progress": [],
-      "blocker": null
+      "status": "in_progress",
+      "owner": "coordinator runtime unknown",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
+      "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
+      "slice": "Pure native section-to-playback preparation before product controls",
+      "nextAction": "Port bounded native melody decoding/content-end/baseFloatBPM to pure feature model, generate NEW native leaf cases only, focused units/types. No audio/App/UI/learning edits in this slice.",
+      "validation": [
+        {
+          "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
+          "revision": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c plus exact modelAssignment.testedSha256 tree committednext",
+          "result": "PASS firstchecks:14NEWnative cases9123bytes,6units1.79s,strict types/build43e5a745cf9funchanged. Guards window12-playback-model-native/unit/build-20261017. Only Compose remember wrapper replaced with run in fixture; native leaf semantics unchanged,real models/theorycompiled; no existing fixturecapture repeated. RawJSONdefaults/restcase/0beat/default32/contentrelease/fractionalend/Floatclamp40..240 verified. Browser bounds/NaNtempo rejection/frozen snapshots tested. No App/productcontrol/physicalT12acceptance."
+        }
+      ],
+      "progress": [
+        "2026-10-17T11:35:13.258028+00:00 Explicit development-gate refinement: T08composed-stream-runtime accepted8ee74c09(186units/types/build,2composed+2sinkChrome). It is sufficient for bounded T12puremodel/product development. T08parent remainsin_progress; T26/T27release/device gates unchanged. Firstslice puremodel only, not completedT12. Root disjointfrom soleSol/high read-onlyT14proposal, all priorproofs preserved. Last11%fivehour/73%weekly under ownerweekly100override.",
+        "2026-10-17T11:37:44.976368+00:00 puresectionpreparation accepted; T12in_progress, productcontrols/card/timeline/home/sectionintegration open. Explicit development milestone permits work, fullT08/T26release/device gates retained. Source/fixtures standalone; modelbuilddoesnotchangeproductbundle."
+      ],
+      "blocker": null,
+      "dependencyGates": {
+        "T08": "composed-stream-runtime"
+      },
+      "modelAssignment": {
+        "owner": "coordinator runtime unknown",
+        "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
+        "ownedPaths": [
+          "pwa/src/features/playback/section-model.ts",
+          "pwa/src/features/playback/section-model.test.ts",
+          "pwa/src/features/playback/WORKLOG.md",
+          "pwa/src/features/playback/fixtures/generate-native.py",
+          "pwa/src/features/playback/fixtures/native-section.json"
+        ],
+        "scope": "Frozen PlaybackView notesJson/melody block227-247, baseFloatBPM208 and content-end255-277; PlaybackTiming14-56; reuse accepted buildPlaybackTimeline unchanged. Return frozen melody/timeline/baseBpm, cap rawnotes+chords at4096. No renderer/context/transport/App/learning edits; no existingnativecases recapture.",
+        "status": "PASS14 independent NEW native leaf cases,6covering unit checks and combined strict types/build; source reviewed, no App/audio/UI claim.",
+        "nextAction": "Named validated checkpoint; later freeze separate product control lifecycle/props, reuse this model and accepted transport.",
+        "testedSha256": {
+          "pwa/src/features/playback/section-model.ts": "92c24c382d22be1817da4e431bbd29de46f7cffeec27b117929f27cd7f52678f",
+          "pwa/src/features/playback/section-model.test.ts": "d79d42f73624c9703b172952e98027a20be710ef0a3c2456e201ec1a259d96d6",
+          "pwa/src/features/playback/fixtures/generate-native.py": "b89b4cd6d61c1c081aa6a9c943d660842e093db6dfcf3d3ec33987540e62c0a9",
+          "pwa/src/features/playback/fixtures/native-section.json": "98061b76600f0e6bf6bf20d12b6341af63d957c852a4f2f9dc28217fac584e24"
+        }
+      }
     },
     {
       "id": "T13",
@@ -1405,14 +1437,14 @@
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "branch": "codex/pwa-stream-owner",
         "baseCommit": "f9330517354849f49f87a566c83378ce4e1158b4",
-        "status": "Resume read-only proposal under owner weekly100%override; no source findings yet.",
+        "status": "Read-only proposal COMPLETE,72lines; no source/fixture/test/branch changes. Same Sol/high workeridle.",
         "ownedPaths": [
           ".artifacts/pwa-port/t14-generator-proposal-window11.md"
         ],
         "scope": "Locate frozen native deterministic generator/target selection entry point and propose one smallest pure-port contract with exact semantics, dependencies and next fixture cases. Reuse accepted assessment/evidence/nativecases. Do not port entire generator/scheduler/sessionrepair or regenerate datasets.",
-        "nextAction": "Same Sol/high worker resumes bounded nativegenerator proposal with one ignored receipt; no branch/source/fixture changes. Root contract beforeimplementation. Fivehour70/80cutoff; weeklyuseuntil0%remaining, checkpointoften/no creditreset actions.",
-        "receiptPath": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-proposal-window11.md",
-        "receiptSha256": "d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8"
+        "nextAction": "Root freeze bounded builtin generator contract/exactwaveforms, then two named worker checkpoints: Kotlin2.2.10 RNG/hash anchors first,24..32nativebuiltin exercises second. No scheduler/pattern/corpus/session/UI/oldfixturecapture.",
+        "receiptPath": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-proposal-window12.md",
+        "receiptSha256": "3159fd45cf32f15c24d4f8a7a6a011165de8be97f672818e43c525d686aa9c2f"
       }
     },
     {
@@ -1759,8 +1791,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-17T11:31:57.366729+00:00",
-    "sourceCommit": "4dbef9980ce6707ee93d8dc448721530089a694e",
+    "date": "2026-10-17T11:37:44.976368+00:00",
+    "sourceCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
     "usageObserved": {
       "fiveHourUsedPercent": 1,
       "weeklyUsedPercent": 71
@@ -1768,7 +1800,7 @@
     "fiveHourResetUnix": 1792254573,
     "weeklyResetUnix": 1792653278,
     "unresolvedRuns": [],
-    "reason": "Owner explicitly authorizes weekly ordinaryallowance to0%remaining;71%weekly no longerblocks. Fivehour70/80preserved.",
+    "reason": "New pureT12sectionmodel accepted; T14read-onlyproposal ready for rootcontract. Owner weekly100policy active.",
     "supersededWindowEvidence": "2026-10-15T07:14Z same account live counters0/0 and both reset timestamps changed superseded prior weekly forecast;all3reset credits remained available. Prior exhausted-window forecast must not override current applicable live windows.",
     "resumeObservation": {
       "date": "2026-10-16T16:51:44.987830+00:00",
@@ -1778,24 +1810,7 @@
       "weeklyResetUnix": 1792653278,
       "reason": "Prior cutoff reset passed; live counters permit bounded resumption."
     },
-    "activeWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-stream-owner",
-      "baseCommit": "f9330517354849f49f87a566c83378ce4e1158b4",
-      "status": "Existing Sol/high read-only proposal resumes after policy checkpoint; no sourcebranch assignment.",
-      "ownedPaths": [
-        ".artifacts/pwa-port/t14-generator-proposal-window11.md"
-      ],
-      "scope": "Locate frozen native deterministic generator/target selection entry point and propose one smallest pure-port contract with exact semantics, dependencies and next fixture cases. Reuse accepted assessment/evidence/nativecases. Do not port entire generator/scheduler/sessionrepair or regenerate datasets.",
-      "nextAction": "Same Sol/high worker resumes bounded nativegenerator proposal with one ignored receipt; no branch/source/fixture changes. Root contract beforeimplementation. Fivehour70/80cutoff; weeklyuseuntil0%remaining, checkpointoften/no creditreset actions.",
-      "receiptPath": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-proposal-window11.md",
-      "receiptSha256": "d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8",
-      "agent": "preview_owner",
-      "task": "T14"
-    },
+    "activeWorker": null,
     "completedWorker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",
@@ -1829,7 +1844,7 @@
       "commit": "e084ccb601e2e7918e922574c62a7d95345984d6"
     },
     "usageAvailability": "Ordinaryusageallowedtrue,last1%/71%; refresh beforelargework.",
-    "nextAction": "Same Sol/high worker resumes bounded nativegenerator proposal with one ignored receipt; no branch/source/fixture changes. Root contract beforeimplementation. Fivehour70/80cutoff; weeklyuseuntil0%remaining, checkpointoften/no creditreset actions.",
+    "nextAction": "Root freeze bounded builtin generator contract/exactwaveforms, then two named worker checkpoints: Kotlin2.2.10 RNG/hash anchors first,24..32nativebuiltin exercises second. No scheduler/pattern/corpus/session/UI/oldfixturecapture.",
     "latestAcceptedProductTree": {
       "baseCommit": "8ee74c0960c64cdf328055bd7b9522295f8c0263",
       "shell": "43e5a745cf9f",
@@ -1847,24 +1862,7 @@
         "pwa/src/features/details/overview.test.ts": "a05222dc93f5aab9179099ad8057107c9b085ab9af5e396196aa81885f6d99e6"
       }
     },
-    "deferredWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-stream-owner",
-      "baseCommit": "f9330517354849f49f87a566c83378ce4e1158b4",
-      "status": "DEFERRED at70%weekly on workerfirstusagecheck. No native source investigation/check began; ignored no-findings receipt saved, workeridle.",
-      "ownedPaths": [
-        ".artifacts/pwa-port/t14-generator-proposal-window11.md"
-      ],
-      "scope": "Locate frozen native deterministic generator/target selection entry point and propose one smallest pure-port contract with exact semantics, dependencies and next fixture cases. Reuse accepted assessment/evidence/nativecases. Do not port entire generator/scheduler/sessionrepair or regenerate datasets.",
-      "nextAction": "Await applicable weeklycapacity, then resume same bounded read-only native generator proposal; no source assignment/contract yet. No newworker beforefreshusage bothbelow70%.",
-      "receiptPath": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-generator-proposal-window11.md",
-      "receiptSha256": "d538ceb220a0e4757dd99a7d21c18ae7e6e133abbac470e095fb7e1bf4516be8",
-      "agent": "preview_owner",
-      "task": "T14"
-    },
+    "deferredWorker": null,
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
