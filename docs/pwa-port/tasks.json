@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T22:43:42.208250+00:00",
+  "updated": "2026-10-18T22:51:47.456504+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2386,7 +2386,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
       "slice": "Pure constraint/query matcher, stable pattern identity and loop/retained-children kernels accepted. Full SQL/eligibility/ranking/groups/search/pages/runtime/browser remain open.",
-      "nextAction": "Implement/test frozen header and8-byte suffix reader while sole worker finishes missing native codec note. Then exact native target decoder contract/oracle before source.",
+      "nextAction": "Review/integrate sole worker native target reference e6a9d166; freeze exact bounded typed decoder/target contract before any target implementation. Header runtime accepted; do not repeat unchanged browser/native/fullcatalog evidence.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -2418,6 +2418,68 @@
             "pwa/src/storage/catalog/aural-header.test.ts": "7dccf40fab2ee1da983e658b1e755c3a7fc0bb63633140b5e78128f7c088e337"
           },
           "result": "FIRST EXECUTED PASS15tests/1file668ms against real node:sqlite SQLite3.50.4 on Node24.11.1; strict full TypeScript PASS. Prior launch window21-header-first-tests-20261018 failed before tests (guard default rootcwd); explicit --cwd pwa corrected launcher only. No source fix/retest needed. No WASM/browser/fullcatalog validation or RPC/target acceptance yet."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/client.test.ts; node node_modules/typescript/bin/tsc --noEmit; node node_modules/vite/bin/vite.js build; node scripts/build-shell.mjs; node node_modules/@playwright/test/cli.js test tests/browser/aural-read.spec.ts --project=chrome --output=.artifacts/pwa-port/aural-read/header-window21-permitted-first",
+          "guards": [
+            "window21-header-client-first-20261018",
+            "window21-header-rpc-types-first-20261018",
+            "window21-header-worker-build-first-20261018",
+            "window21-header-browser-permitted-first-20261018"
+          ],
+          "result": "FIRST executed5clienttests/682ms +strict full types +production build shell7d81ece23bf8. FIRST actual browser execution3Chrome tests/19.0s all PASS (session53730 actual exit0), actual WASM/OPFS/WebLock/IDB/tiny real SQLite. Initial sandbox launch did not execute tests; exact stopped-child recovery retained separately. No product assertion failure/fix/retest cycles. No device/actual2GB or target/SQLranking/browserUI acceptance.",
+          "testedSha256": {
+            "pwa/src/storage/catalog/catalog-worker.ts": "725ec874c3365f418a9aa99b1ac4d70e876df5a71fbdcfcf1a118f446399e59e",
+            "pwa/src/storage/catalog/protocol.ts": "e37919aefaf089a04992b50b0d03978b61e6e0716f62cab069ccf139a50030c7",
+            "pwa/src/storage/catalog/client.ts": "bf25dfa5938a155b78e7dbd0a56dfa6f7479faf6592a7410087756cfb9d5819b",
+            "pwa/src/storage/catalog/client.test.ts": "f5ceae28218da77e55adfe9b3964e4d9ee6b8f6128709d60bb6849442057e53e",
+            "pwa/scripts/catalog/make-aural-read-browser-fixture.py": "ad33ce0be904350c40b1c1b49735eaec56a82b27256744deda756e0bfbac812f",
+            "pwa/tests/browser/catalog-worker-harness.ts": "679d6d6cd89ae73c6147e1c73411b1820196ffb863c4addebe9bd13eb0aa7f38",
+            "pwa/tests/browser/aural-read.spec.ts": "479210c9873add4a37de5bc4c009297d949fe8f62df55acc0c3c90f743cb8c42"
+          },
+          "proofs": [
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/header-window21-permitted-first/aural-read-actual-WASM-hea-62dc4-cks-active-snapshot-updates-chrome/proof.json",
+              "sha256": "d594a70026127b2a8fdafd3f3581de663e050ce4519f02a309ac811f3299068b",
+              "proof": {
+                "initial": {
+                  "sourceSnapshot": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                  "schemaVersion": "aural-catalog-3",
+                  "supportsModeAnalysis": true,
+                  "supportsStartGrouping": true,
+                  "reducedRanges": true,
+                  "suffixCount": 2
+                },
+                "updated": {
+                  "sourceSnapshot": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                  "schemaVersion": "aural-catalog-3",
+                  "supportsModeAnalysis": true,
+                  "supportsStartGrouping": true,
+                  "reducedRanges": true,
+                  "suffixCount": 3
+                },
+                "newWorkerOfflineRead": true,
+                "userStoresPreserved": true
+              }
+            },
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/header-window21-permitted-first/aural-read-header-read-kee-e15df-se-allows-the-next-real-tab-chrome/proof.json",
+              "sha256": "0120966954465aa28d4a433a172673a118c896bdece73fefffa7b0db1e2c4089",
+              "proof": {
+                "singleOwner": true,
+                "closeAndNextTabHeader": true
+              }
+            },
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/header-window21-permitted-first/aural-read-malformed-array-095f1-nstalled-files-or-user-data-chrome/proof.json",
+              "sha256": "36fab35b975a35b3defed8bbd13c7c531f2d6785cb2eb329d1b8097c9949a643",
+              "proof": {
+                "malformedRefused": true,
+                "filesAndUsersPreserved": true,
+                "retryWithNewValidAttempt": true
+              }
+            }
+          ]
         }
       ],
       "progress": [],
@@ -2774,6 +2836,109 @@
         "scope": "<=12groups/40probes NEW actual JVM typed run decoding+unchanged target128..132 with actual serializers/plugin, KeyInfo/position/target declarations and identity38..47. GZIP and row input adapter only; no Android SQLite stub/production source/deps or full catalog work. All native required position fields/both keys/unknown-key/default/scalar/zero-length/both-array bounds/view suffix/end copied cases, explicit unresolved quirks. Do not repeat accepted native captures.",
         "validationPlan": "Pinned cached Kotlin2.2.10/JRE/native serialization1.8.1 compiler/runtime first pass; exact extracted source/producer/input/stdout/emitted serializers hashes. Guard every mutation/check/commit, max2diagnose cycles; after reference commit return receipts+clean status then idle.",
         "recovery": "Primaryfe9fa before root-owned dirty docs/newheadercontract (all known root ownership); existing sibling clean6add. Preserve all previous branches/artifacts. No concurrent source paths; normal integration after root review."
+      },
+      "headerRuntimeAssignment": {
+        "owner": "coordinator runtime unknown unchanged",
+        "branch": "codex/pwa-foundation",
+        "worktree": "H:/Desktop/Acquiring/Acquiring",
+        "baseCommit": "d60bb3c87d380eea95d51a7c93386c1fa9f6e942",
+        "ownedPaths": [
+          "pwa/src/storage/catalog/catalog-worker.ts",
+          "pwa/src/storage/catalog/protocol.ts",
+          "pwa/src/storage/catalog/client.ts",
+          "pwa/src/storage/catalog/client.test.ts",
+          "pwa/scripts/catalog/make-aural-read-browser-fixture.py",
+          "pwa/tests/browser/catalog-worker-harness.ts",
+          "pwa/tests/browser/aural-read.spec.ts",
+          "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
+        ],
+        "status": "ACCEPTED bounded auralHeader RPC with actual desktop Chrome tiny SQLite evidence only; T15 incomplete",
+        "scope": "Wire bounded auralHeader RPC/client through existing confirmed active/cold recovery and command-held readonly DB/finally close; clear confirmation cache on error/owner release. No persistent lease/no target decoder yet.30s client timeout terminates whole worker preserving data. Tiny real SQLite+WASM Chrome tests for installed header/new-worker offline query/update/cache invalidation/malformed array/owner close, no actual full catalog proof repeat.",
+        "validationPlan": "Small focused client/header tests and strict types, new browser aural-read.spec.ts with UNIQUE ignored output directory. Build once for changed worker interfaces; no unrelated blocked Library assertion/captures.",
+        "recovery": "Native target oracle remains soleworker disjoint domain/catalog paths. Root owns protocol/client/worker and tiny SQL generator/browser harness. No new dependency/config/public app route/source URL.",
+        "browserRecovery": {
+          "at": "2026-10-18T22:50:31.560391+00:00",
+          "guard": "window21-header-browser-first-20261018",
+          "sessionId": 49957,
+          "controllerPid": 29608,
+          "childPid": 7908,
+          "playwrightPid": 24284,
+          "result": "SANDBOX BLOCKED before test execution/output creation. Local socket probe WinError10013 and process inspection denied; elevated inspection verified exact owned child. Only verified Playwright24284 stopped, original wrapper/guard exited1 (Node4294967295); no product/browser assertion ran. No source correction, capture overwrite, or unrelated process cleanup.",
+          "nextGuard": "window21-header-browser-permitted-first-20261018",
+          "output": "pwa/.artifacts/pwa-port/aural-read/header-window21-permitted-first",
+          "nextAction": "Authorized local test runs require sandbox escalation for localhost sockets/processes; same reviewed tests/source, unique output, no repeated old evidence. If approval rejected, preserve and report without bypass."
+        },
+        "validation": {
+          "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/client.test.ts; node node_modules/typescript/bin/tsc --noEmit; node node_modules/vite/bin/vite.js build; node scripts/build-shell.mjs; node node_modules/@playwright/test/cli.js test tests/browser/aural-read.spec.ts --project=chrome --output=.artifacts/pwa-port/aural-read/header-window21-permitted-first",
+          "guards": [
+            "window21-header-client-first-20261018",
+            "window21-header-rpc-types-first-20261018",
+            "window21-header-worker-build-first-20261018",
+            "window21-header-browser-permitted-first-20261018"
+          ],
+          "result": "FIRST executed5clienttests/682ms +strict full types +production build shell7d81ece23bf8. FIRST actual browser execution3Chrome tests/19.0s all PASS (session53730 actual exit0), actual WASM/OPFS/WebLock/IDB/tiny real SQLite. Initial sandbox launch did not execute tests; exact stopped-child recovery retained separately. No product assertion failure/fix/retest cycles. No device/actual2GB or target/SQLranking/browserUI acceptance.",
+          "testedSha256": {
+            "pwa/src/storage/catalog/catalog-worker.ts": "725ec874c3365f418a9aa99b1ac4d70e876df5a71fbdcfcf1a118f446399e59e",
+            "pwa/src/storage/catalog/protocol.ts": "e37919aefaf089a04992b50b0d03978b61e6e0716f62cab069ccf139a50030c7",
+            "pwa/src/storage/catalog/client.ts": "bf25dfa5938a155b78e7dbd0a56dfa6f7479faf6592a7410087756cfb9d5819b",
+            "pwa/src/storage/catalog/client.test.ts": "f5ceae28218da77e55adfe9b3964e4d9ee6b8f6128709d60bb6849442057e53e",
+            "pwa/scripts/catalog/make-aural-read-browser-fixture.py": "ad33ce0be904350c40b1c1b49735eaec56a82b27256744deda756e0bfbac812f",
+            "pwa/tests/browser/catalog-worker-harness.ts": "679d6d6cd89ae73c6147e1c73411b1820196ffb863c4addebe9bd13eb0aa7f38",
+            "pwa/tests/browser/aural-read.spec.ts": "479210c9873add4a37de5bc4c009297d949fe8f62df55acc0c3c90f743cb8c42"
+          },
+          "proofs": [
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/header-window21-permitted-first/aural-read-actual-WASM-hea-62dc4-cks-active-snapshot-updates-chrome/proof.json",
+              "sha256": "d594a70026127b2a8fdafd3f3581de663e050ce4519f02a309ac811f3299068b",
+              "proof": {
+                "initial": {
+                  "sourceSnapshot": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                  "schemaVersion": "aural-catalog-3",
+                  "supportsModeAnalysis": true,
+                  "supportsStartGrouping": true,
+                  "reducedRanges": true,
+                  "suffixCount": 2
+                },
+                "updated": {
+                  "sourceSnapshot": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                  "schemaVersion": "aural-catalog-3",
+                  "supportsModeAnalysis": true,
+                  "supportsStartGrouping": true,
+                  "reducedRanges": true,
+                  "suffixCount": 3
+                },
+                "newWorkerOfflineRead": true,
+                "userStoresPreserved": true
+              }
+            },
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/header-window21-permitted-first/aural-read-header-read-kee-e15df-se-allows-the-next-real-tab-chrome/proof.json",
+              "sha256": "0120966954465aa28d4a433a172673a118c896bdece73fefffa7b0db1e2c4089",
+              "proof": {
+                "singleOwner": true,
+                "closeAndNextTabHeader": true
+              }
+            },
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/header-window21-permitted-first/aural-read-malformed-array-095f1-nstalled-files-or-user-data-chrome/proof.json",
+              "sha256": "36fab35b975a35b3defed8bbd13c7c531f2d6785cb2eb329d1b8097c9949a643",
+              "proof": {
+                "malformedRefused": true,
+                "filesAndUsersPreserved": true,
+                "retryWithNewValidAttempt": true
+              }
+            }
+          ]
+        },
+        "testedSha256": {
+          "pwa/src/storage/catalog/catalog-worker.ts": "725ec874c3365f418a9aa99b1ac4d70e876df5a71fbdcfcf1a118f446399e59e",
+          "pwa/src/storage/catalog/protocol.ts": "e37919aefaf089a04992b50b0d03978b61e6e0716f62cab069ccf139a50030c7",
+          "pwa/src/storage/catalog/client.ts": "bf25dfa5938a155b78e7dbd0a56dfa6f7479faf6592a7410087756cfb9d5819b",
+          "pwa/src/storage/catalog/client.test.ts": "f5ceae28218da77e55adfe9b3964e4d9ee6b8f6128709d60bb6849442057e53e",
+          "pwa/scripts/catalog/make-aural-read-browser-fixture.py": "ad33ce0be904350c40b1c1b49735eaec56a82b27256744deda756e0bfbac812f",
+          "pwa/tests/browser/catalog-worker-harness.ts": "679d6d6cd89ae73c6147e1c73411b1820196ffb863c4addebe9bd13eb0aa7f38",
+          "pwa/tests/browser/aural-read.spec.ts": "479210c9873add4a37de5bc4c009297d949fe8f62df55acc0c3c90f743cb8c42"
+        }
       }
     },
     {
@@ -3124,8 +3289,8 @@
       "tip": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
       "status": "idle; accepted loop branch6add84a2 clean; partial read-only proposal saved with hash in T15.runtimeProposalAssignment"
     },
-    "nextAction": "Commit bounded header/SQL tests and retain separate native target oracle in flight. After reference review freeze native decoder/target contract and assign same worker only.",
-    "reason": "Live five-hour reset verified; resume saved minimal catalog runtime slice without repeating accepted evidence.",
+    "nextAction": "Review/integrate sole worker native target reference e6a9d166; freeze exact bounded typed decoder/target contract before any target implementation. Header runtime accepted; do not repeat unchanged browser/native/fullcatalog evidence.",
+    "reason": "Bounded header RPC accepted actual desktop runtime; next is native target decoder reference review.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -3167,35 +3332,21 @@
       "owner": "coordinator runtime unknown unchanged",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "fe9fa2af47d27143adcca3cfe31df5d6f4cf9025",
+      "baseCommit": "d60bb3c87d380eea95d51a7c93386c1fa9f6e942",
       "ownedPaths": [
-        "pwa/src/storage/catalog/aural-read-contracts.ts",
-        "pwa/src/storage/catalog/aural-header.ts",
-        "pwa/src/storage/catalog/aural-header.test.ts",
+        "pwa/src/storage/catalog/catalog-worker.ts",
+        "pwa/src/storage/catalog/protocol.ts",
+        "pwa/src/storage/catalog/client.ts",
+        "pwa/src/storage/catalog/client.test.ts",
+        "pwa/scripts/catalog/make-aural-read-browser-fixture.py",
+        "pwa/tests/browser/catalog-worker-harness.ts",
+        "pwa/tests/browser/aural-read.spec.ts",
         "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
       ],
-      "status": "VALIDATED bounded header/suffix foundation only; source reviewed, real SQLite15tests and strict types passed",
-      "scope": "Freeze and implement native header capability flags and bounded8-byte suffix location reads. Real in-memory node:sqlite tests; no full-array materialization, catalog scans, target decoder, RPC/UI or full-data checks yet. Runtime RPC integration/actual WASM browser proof separate bounded slice after checks.",
-      "validationPlan": "node node_modules/vitest/vitest.mjs run src/storage/catalog/aural-header.test.ts; node node_modules/typescript/bin/tsc --noEmit",
-      "lifetimeDecision": "One serialized command resolves active immutable attempt, opens readonly DB, snapshots exact expected sourceSnapshot, holds DB and worker Web Lock across awaits, finally closes. Existing queue prevents prepare/activate/close interleaving; protected active/previous attempts cannot be overwritten, no cleanup operation exists. No persistent public lease. Stale snapshot rejected; whole-client timeout/termination aborts ownership without file removal; no per-request SQL cancellation claim.",
-      "testedSha256": {
-        "pwa/src/storage/catalog/aural-read-contracts.ts": "02664e55364590a375991a8aba0d26d994e0301b31ea90781d7ecc51fc8e8aae",
-        "pwa/src/storage/catalog/aural-header.ts": "52f6fb3845e8b41f04a682f862ba48289a952d5403d4db577068677feab8c9fe",
-        "pwa/src/storage/catalog/aural-header.test.ts": "7dccf40fab2ee1da983e658b1e755c3a7fc0bb63633140b5e78128f7c088e337"
-      },
-      "validation": {
-        "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/aural-header.test.ts; node node_modules/typescript/bin/tsc --noEmit",
-        "guards": [
-          "window21-header-first-tests-cwd-20261018",
-          "window21-header-first-types-20261018"
-        ],
-        "testedSha256": {
-          "pwa/src/storage/catalog/aural-read-contracts.ts": "02664e55364590a375991a8aba0d26d994e0301b31ea90781d7ecc51fc8e8aae",
-          "pwa/src/storage/catalog/aural-header.ts": "52f6fb3845e8b41f04a682f862ba48289a952d5403d4db577068677feab8c9fe",
-          "pwa/src/storage/catalog/aural-header.test.ts": "7dccf40fab2ee1da983e658b1e755c3a7fc0bb63633140b5e78128f7c088e337"
-        },
-        "result": "FIRST EXECUTED PASS15tests/1file668ms against real node:sqlite SQLite3.50.4 on Node24.11.1; strict full TypeScript PASS. Prior launch window21-header-first-tests-20261018 failed before tests (guard default rootcwd); explicit --cwd pwa corrected launcher only. No source fix/retest needed. No WASM/browser/fullcatalog validation or RPC/target acceptance yet."
-      }
+      "status": "INTENT before header RPC/actual tiny-browser fixture edits",
+      "scope": "Wire bounded auralHeader RPC/client through existing confirmed active/cold recovery and command-held readonly DB/finally close; clear confirmation cache on error/owner release. No persistent lease/no target decoder yet.30s client timeout terminates whole worker preserving data. Tiny real SQLite+WASM Chrome tests for installed header/new-worker offline query/update/cache invalidation/malformed array/owner close, no actual full catalog proof repeat.",
+      "validationPlan": "Small focused client/header tests and strict types, new browser aural-read.spec.ts with UNIQUE ignored output directory. Build once for changed worker interfaces; no unrelated blocked Library assertion/captures.",
+      "recovery": "Native target oracle remains soleworker disjoint domain/catalog paths. Root owns protocol/client/worker and tiny SQL generator/browser harness. No new dependency/config/public app route/source URL."
     },
     "priorDocumentationCheckpoint": "67b589ffd8f0e8b84a77d5ccb6ce950e5247fce9",
     "recoveryState": {
@@ -3206,6 +3357,19 @@
       "processes": "No python/python3/node/java processes found immediately before this recovery helper. All named source/check children previously exited0; inspect current run-control receipt on resumption.",
       "proposal": "PARTIAL, not an accepted implementation contract",
       "preservation": "All worktrees/branches/ignored catalogs/native tooling/browser profiles/archives preserved; no cleanup or publication."
+    },
+    "latestRuntimeBuild": {
+      "shell": "7d81ece23bf8",
+      "status": "Production worker/header build and tiny real-WASM Chrome3tests accepted; App presentation unchanged, no fullcatalog/device claim",
+      "testedSha256": {
+        "pwa/src/storage/catalog/catalog-worker.ts": "725ec874c3365f418a9aa99b1ac4d70e876df5a71fbdcfcf1a118f446399e59e",
+        "pwa/src/storage/catalog/protocol.ts": "e37919aefaf089a04992b50b0d03978b61e6e0716f62cab069ccf139a50030c7",
+        "pwa/src/storage/catalog/client.ts": "bf25dfa5938a155b78e7dbd0a56dfa6f7479faf6592a7410087756cfb9d5819b",
+        "pwa/src/storage/catalog/client.test.ts": "f5ceae28218da77e55adfe9b3964e4d9ee6b8f6128709d60bb6849442057e53e",
+        "pwa/scripts/catalog/make-aural-read-browser-fixture.py": "ad33ce0be904350c40b1c1b49735eaec56a82b27256744deda756e0bfbac812f",
+        "pwa/tests/browser/catalog-worker-harness.ts": "679d6d6cd89ae73c6147e1c73411b1820196ffb863c4addebe9bd13eb0aa7f38",
+        "pwa/tests/browser/aural-read.spec.ts": "479210c9873add4a37de5bc4c009297d949fe8f62df55acc0c3c90f743cb8c42"
+      }
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",

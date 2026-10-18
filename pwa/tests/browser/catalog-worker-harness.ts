@@ -51,6 +51,7 @@ export const catalogHarness = {
   activate(name: string, attempt: string) { return clients.get(name)!.activate(attempt); },
   active(name: string, kind: CatalogManifest['kind']) { return clients.get(name)!.active(kind); },
   status(name: string, attempt: string) { return clients.get(name)!.status(attempt); },
+  auralHeader(name: string) { return clients.get(name)!.auralHeader(); },
   info(name: string) { return clients.get(name)!.info(); },
   stage(name: string, attempt: string, manifest: CatalogManifest, base: string) { return clients.get(name)!.stage(attempt, manifest, base); },
   inspect(name: string, attempt: string, manifest: CatalogManifest) { return clients.get(name)!.inspect(attempt, manifest); },

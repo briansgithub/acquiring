@@ -1,4 +1,5 @@
 import type { SongPageRequest } from './library-queries';
+export type { AuralCatalogHeader } from './aural-read-contracts';
 import type { CatalogManifest } from './manifest';
 import type { CatalogInstall, CatalogPointer } from './journal';
 export const CATALOG_OWNER_LOCK = 'acquiring-catalog-owner-v1';
@@ -13,7 +14,8 @@ export type CatalogCommand =
   | { kind: 'active'; catalogKind: CatalogManifest['kind'] }
   | { kind: 'status'; attemptId: string }
   | { kind: 'songPage'; query: SongPageRequest }
-  | { kind: 'songPayload'; slug: string };
+  | { kind: 'songPayload'; slug: string }
+  | { kind: 'auralHeader' };
 export interface ActiveCatalog { pointer: CatalogPointer; inspection: CatalogInspection; recovered: boolean }
 export type InstallStatus = CatalogInstall | null;
 export interface CatalogRequest { id: string; command: CatalogCommand }

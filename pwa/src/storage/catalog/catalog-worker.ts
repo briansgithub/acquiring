@@ -1,3 +1,4 @@
+import {readAuralHeader} from './aural-header';
 import { songPageQuery, type SongPageRequest, type SongPage } from './library-queries';
 import {songDetailQuery,songPayloadRecord,readSongComplexity,type SongPayload} from './detail-query';
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
@@ -10,6 +11,7 @@ import { planInstallSpace, validateManifest, type CatalogManifest, type CatalogC
 import { CATALOG_OWNER_LOCK, CatalogError, stagedPath, type CatalogCommand, type ActiveCatalog, type CatalogInfo, type CatalogInspection, type CatalogProgress, type CatalogRequest, type CatalogResponse } from './protocol';
 
 const scope = globalThis as unknown as { onmessage: ((event: MessageEvent<CatalogRequest>) => void) | null; postMessage: (value: CatalogResponse | CatalogProgress) => void };
+let confirmedAuralRead: { id:string; sourceSnapshot:string } | null = null;
 let confirmedSongRead: { id:string; sourceSnapshot:string } | null = null;
 let pool: SAHPoolUtil | null = null;
 let journal: CatalogJournal | null = null;
@@ -39,7 +41,7 @@ async function acquire(): Promise<void> {
       ready.resolve();
       await release.promise;
     } catch (error) { ready.reject(error); }
-    finally { confirmedSongRead = null; journal?.close(); journal = null; pool?.pauseVfs(); pool = null; sqlite = null; }
+    finally { confirmedAuralRead = null; confirmedSongRead = null; journal?.close(); journal = null; pool?.pauseVfs(); pool = null; sqlite = null; }
   }).catch(error => ready.reject(error));
   await ready.promise;
 }
@@ -210,11 +212,30 @@ async function songPage(request:SongPageRequest):Promise<SongPage> {
   } catch(error){confirmedSongRead=null;throw error;}
   finally {db?.close();}
 }
+/** Active validation/recovery once per immutable attempt, then one bounded readonly command. */
+async function auralHeader() {
+  let db:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
+  try {
+    const pointer=await journal!.pointer('aural');
+    if(!pointer)throw new CatalogError('NOT_INSTALLED','Download the listening catalog before browsing');
+    if(confirmedAuralRead?.id!==pointer.activeId){
+      const current=await active('aural');
+      if(!current)throw new CatalogError('NOT_INSTALLED','Download the listening catalog before browsing');
+      const record=await validatedInstall(current.pointer.activeId);
+      confirmedAuralRead={id:record.id,sourceSnapshot:record.manifest.sourceSnapshot};
+    }
+    const source=confirmedAuralRead!;
+    db=new sqlite!.oo1.DB(stagedPath(source.id,'aural-catalog.db'),'r',owner().vfsName);
+    return readAuralHeader(db,source.sourceSnapshot);
+  } catch(error){confirmedAuralRead=null;throw error;}
+  finally {db?.close();}
+}
 async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'init') { await acquire(); return info(); }
   if (command.kind === 'close') { releaseOwnership?.(); await ownershipTask; releaseOwnership = undefined; ownershipTask = undefined; return null; }
   owner();
   if (command.kind === 'info') return info();
+  if (command.kind === 'auralHeader') return auralHeader();
   if (command.kind === 'songPage') return songPage(command.query);
   if (command.kind === 'songPayload') return songPayload(command.slug);
   if (command.kind === 'prepare') return prepare(id, command.attemptId, validateManifest(command.manifest), command.baseUrl);

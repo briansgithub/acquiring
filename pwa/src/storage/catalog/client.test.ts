@@ -29,3 +29,24 @@ it('hands a completed open to its explicit owner and removes the initialization 
   const client=await opening;lifetime.abort();expect(worker.terminate).not.toHaveBeenCalled();
   client.terminate();expect(worker.terminate).toHaveBeenCalledTimes(1);
 });
+
+it('routes the bounded aural header response to its request',async()=>{
+  const opening=CatalogWorkerClient.open(),worker=workers[0]!;
+  worker.onmessage!({data:{type:'result',id:worker.requests[0]!.id,ok:true,value:undefined}});
+  const client=await opening,reading=client.auralHeader(),request=worker.requests[1]!;
+  expect(request.command).toEqual({kind:'auralHeader'});
+  const header={sourceSnapshot:'d'.repeat(64),schemaVersion:'aural-catalog-3',suffixCount:2,supportsModeAnalysis:true,supportsStartGrouping:true,reducedRanges:true};
+  worker.onmessage!({data:{type:'result',id:request.id,ok:true,value:header}});
+  await expect(reading).resolves.toEqual(header);client.terminate();
+});
+it('terminates a stalled header owner and rejects all pending reads at30seconds',async()=>{
+  vi.useFakeTimers();
+  try {
+    const opening=CatalogWorkerClient.open(),worker=workers[0]!;
+    worker.onmessage!({data:{type:'result',id:worker.requests[0]!.id,ok:true,value:undefined}});
+    const client=await opening,first=client.auralHeader(),second=client.info();
+    const failures=Promise.all([expect(first).rejects.toMatchObject({code:'TIMEOUT'}),expect(second).rejects.toMatchObject({code:'TIMEOUT'})]);
+    await vi.advanceTimersByTimeAsync(30_000);await failures;
+    expect(worker.terminate).toHaveBeenCalledTimes(1);await expect(client.auralHeader()).rejects.toMatchObject({code:'CLOSED'});
+  } finally {vi.useRealTimers();}
+});
