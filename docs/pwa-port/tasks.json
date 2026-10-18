@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T17:05:41.943324+00:00",
+  "updated": "2026-10-18T17:15:57.477515+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2381,12 +2381,12 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "coordinator; identity worker clean idle",
-      "branch": "codex/pwa-aural-identity",
+      "owner": "coordinator; same Sol/high readonly runtime proposal",
+      "branch": "codex/pwa-aural-loops",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "e4ef86ecb812f2f9bca297f435287c1bbcba540b",
-      "slice": "Pure constraint/query matcher and stable pattern identity accepted. Loop native reference/contract ready; loop implementation unassigned. Full SQL/ranks/groups/runtime/browser remain open.",
-      "nextAction": "Do not recapture native identity reference or repeat unchanged source checks. Next loop kernel uses frozen b0934dc6 contract and validated a897c99e native/shared reference after dated claim/fresh capacity.",
+      "baseCommit": "c264a3f61728254634f5cd8c8cd63b420d423f16",
+      "slice": "Pure constraint/query matcher, stable pattern identity and loop/retained-children kernels accepted. Full SQL/eligibility/ranking/groups/search/pages/runtime/browser remain open.",
+      "nextAction": "Review existing-worker bounded runtime proposal; freeze next smallest contract only after fresh capacity. No SQL source before explicit contract/reference and ownership.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -2399,6 +2399,12 @@
           "guard": "window20-identity-combined-20261018 (primary,cwd pwa)",
           "revision": "785a14e70876e3306f92beb85b19502e5a1939e1",
           "result": "FIRST PASS298tests/17files7.73s and strict combined types; actual child55807 exit0. Exact reviewed source/native55IDs via actual WebCrypto plus browser safety groups; query/old fixtures unchanged. No actualChrome/SQL/runtime/App/build/browser acceptance or rerun."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window20-loop-combined-20261018 (primary,cwd pwa)",
+          "revision": "c005ac5f06075b332bdd16a09a544372c23325ac",
+          "result": "FIRST PASS336tests/18files8.24s and strict combined types; actual child50292 exit0. Exact reviewed loop source31native/shared comparisons+7browser groups, raw structural pair/trie/BFS semantics. No old native/App/build/browser/fullcatalog/device rerun or acceptance."
         }
       ],
       "progress": [],
@@ -2592,7 +2598,12 @@
         "status": "READ-ONLY future runtime readiness; no SQL/frontier source, tests or acceptance.",
         "authority": "801cf798 AuralCatalog66..119/345..424/547..562 plus earlier15..48/147..185; PWA catalog protocol entire current file.",
         "findings": "Native supports schema1..3; current artifact3. Suffix LE32 pairs chunked1MiB from catalog_array/suffix_locations; catalog_run ids MUST contiguous0-based and paged2048. Optional popularity snapshot/version. Browse defaults invalidsort mostSongs, while rowOrder default/else recommended (distinct!). Range frontier splits inclusive length low/high, SQL order differs bysort; globalSongs/globalOccurrences drive mostSongs, popularity only eligibility/stat matching. Exact-root query uses rootLabels only harmony_bass. Loop reduction required before stats. Current PWA worker has songPage/songPayload only, no aural commands.",
-        "nextAction": "After query/identity/loop kernels, freeze readonly worker/lease/cancellation/array/rank contract; inspect remaining eligibleRankBits/matchingBuckets/run/target/rootLabels and actual schema/cursor adapters only. No repeat of saved prefix/stats/frontier ranges or unchanged2GB proof."
+        "nextAction": "After query/identity/loop kernels, freeze readonly worker/lease/cancellation/array/rank contract; inspect remaining eligibleRankBits/matchingBuckets/run/target/rootLabels and actual schema/cursor adapters only. No repeat of saved prefix/stats/frontier ranges or unchanged2GB proof.",
+        "additionalReadiness": {
+          "authority": "801cf798 tooling/aural-corpus/catalog-export.mjs17..31; AuralCorpus19..24/52..54; currentPWA catalog-worker179..210/228..240 and client/protocol requested methods.",
+          "findings": "ExporterDDL shows catalog_song/section/run/suffix/range/token/array +popularity with suffix_location, range_view_mode/start/frequency indices. Native9modes; analysis relativeMajor prefixes relative_ and distinguishInversions selects harmony_bass, otherwise harmony. confirmedSongs validates active pointer once/snapshot, closes readonlyDB perquery. Worker serializes execute via operations Promise chain, so awaited identity retains exclusive command ownership; stale result/controller generations/cancellation still need bounded runtime design. Client abort only during initializing worker, no per-request SQL cancel API.",
+          "limits": "No actual installedDBDDL/schema read/open/redecompression or repeated2GB proof performed; exporterDDL is source readiness, actual worker/runtime schema and capacity remain unverified for Aural queries."
+        }
       },
       "loopOracleAssignment": {
         "owner": "coordinator runtime unknown unchanged",
@@ -2618,6 +2629,62 @@
         "receipt": ".artifacts/pwa-port/t15-loop-native-validation-window20.json",
         "receiptSha256": "3147eb9539573302da65082687f648fd1d255d30233f63b8e29bfb9030271f1c",
         "referenceCommit": "a897c99e7b00892b3af98aeff34c6e0f18aaf24c"
+      },
+      "loopAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-aural-loops",
+        "baseCommit": "c264a3f61728254634f5cd8c8cd63b420d423f16",
+        "priorBranch": "codex/pwa-aural-identity",
+        "priorTip": "4e02227e5ece0857824650a03faf6cab98eae1a9",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/loop-reduction.ts",
+          "pwa/src/domain/catalog/loop-reduction.test.ts",
+          "pwa/src/domain/catalog/LOOP_WORKLOG.md",
+          "pwa/src/domain/catalog/index.ts"
+        ],
+        "status": "ACCEPTED pure loop reduction/ordered retained children after normal merge and primary checks. Explicit resource refusals, not complete catalog/SQL/browser acceptance.",
+        "scope": "Two exact native pure loop functions/version literal/frozenAPI, nativeKMP/unique directed pairs + BFS endpoint order/structural child dedupe. Explicit bounded input/work snapshots, no partial truncation. Reuse15shared+16new references immutable. No query/identity/fixture/producers/deps/tasks/SQL/rank/runtime/UI.",
+        "nextAction": "Do not repeat accepted loop/native/shared/typing evidence. Next bounded catalog worker proposal reuses saved SQL/readiness; contract and new native/runtime evidence before implementation.",
+        "workerTip": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
+        "sha256": {
+          "loop-reduction.ts": "9e62d5bb07c28ddd37e8f682e67c6314dadcb3122673d1b1b1313d9d4c515881",
+          "loop-reduction.test.ts": "74dd89598dc61fc523db9d65c35b5ff5bc8b1ad674574e11e0b2c2bafb4d0cd1",
+          "index.ts": "9e7dfa1b4ced51bf780d30dc5c3e8f1100b7fe01b555a11151bb10b8def2de6d"
+        },
+        "workerValidation": {
+          "commands": [
+            "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t15-loop-vitest.config.mjs",
+            "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc -p ../.artifacts/pwa-port/t15-loop-tsconfig.json"
+          ],
+          "guards": [
+            "t15-loop-unit-20261018-34",
+            "t15-loop-types-20261018-35"
+          ],
+          "result": "FIRST PASS38groups/1file1.07s (31native/shared+7browser) and strict scoped types, exit0; source failure cycles0. Examined work cap tested including failure after prior retained result; dominated span/output bounds not independently claimed reached. Native/producers/query/identity sources and old export prefix unchanged.",
+          "receiptSha256": "3614c768ac031048f6690fcf521f457a5d165c205f76975535095c186cb0c0fa"
+        },
+        "mergeCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
+        "testedRevision": "c005ac5f06075b332bdd16a09a544372c23325ac",
+        "primaryValidation": {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window20-loop-combined-20261018 (primary,cwd pwa)",
+          "revision": "c005ac5f06075b332bdd16a09a544372c23325ac",
+          "result": "FIRST PASS336tests/18files8.24s and strict combined types; actual child50292 exit0. Exact reviewed loop source31native/shared comparisons+7browser groups, raw structural pair/trie/BFS semantics. No old native/App/build/browser/fullcatalog/device rerun or acceptance."
+        }
+      },
+      "runtimeProposalAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-aural-loops",
+        "baseCommit": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
+        "output": ".artifacts/pwa-port/t15-runtime-proposal-window20.md",
+        "status": "READ-ONLY ASSIGNED at live66%fivehour, no source/branch/tests/capture/SQL execution. Save completed or partial proposal at70, idle by80.",
+        "scope": "<=60line proposal for NEXT smallest useful readonly catalog worker slice/sequence after accepted query/identity/loop kernels. Reuse T15 sqlReadiness/catalogScalarReadiness and frozen source ranges; inspect only missing run/target/rootLabels/eligibleRankBits/matchingBuckets and narrow existing adapters if necessary. Compare actual worker initialization/header/suffix/read lease vs pure stats/rank prerequisite; exact API/owned paths/minimal native+small-SQL/runtime proof/cancellation+snapshot/recovery. No new contract/implementation/branch/deps/native/browser/SQL/fulldata operations or repeated audit/install/proofs."
       }
     },
     {
@@ -2939,8 +3006,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T17:05:41.943324+00:00",
-    "sourceCommit": "785a14e70876e3306f92beb85b19502e5a1939e1",
+    "date": "2026-10-18T17:15:57.477515+00:00",
+    "sourceCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -2953,8 +3020,8 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 36,
-      "weeklyUsedPercent": 41
+      "fiveHourUsedPercent": 66,
+      "weeklyUsedPercent": 46
     },
     "fiveHourResetUnix": 1792358936,
     "weeklyResetUnix": 1792876817,
@@ -2964,12 +3031,12 @@
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-aural-identity",
-      "tip": "4e02227e5ece0857824650a03faf6cab98eae1a9",
-      "status": "accepted clean idle"
+      "branch": "codex/pwa-aural-loops",
+      "tip": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
+      "status": "loop accepted clean idle before read-only proposal"
     },
-    "nextAction": "Do not recapture native identity reference or repeat unchanged source checks. Next loop kernel uses frozen b0934dc6 contract and validated a897c99e native/shared reference after dated claim/fresh capacity.",
-    "reason": "Identity accepted298combined/types; next sole-worker loop source after frozen native reference, no reference recapture.",
+    "nextAction": "Review existing-worker bounded runtime proposal; freeze next smallest contract only after fresh capacity. No SQL source before explicit contract/reference and ownership.",
+    "reason": "All bounded catalog kernels accepted336combined/types. Final read-only next-worker slice proposal then recoverable checkpoint/yield at boundary.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -2977,9 +3044,19 @@
       "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
     },
     "usageAvailability": "Ordinary usage allowed at last observation. Five-hour70 no new work/80 checkpoint; weekly100 ordinary exhaustion. No credit/reset/model action.",
-    "activeWorker": null,
+    "activeWorker": {
+      "owner": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "branch": "codex/pwa-aural-loops",
+      "baseCommit": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
+      "output": ".artifacts/pwa-port/t15-runtime-proposal-window20.md",
+      "status": "READ-ONLY ASSIGNED at live66%fivehour, no source/branch/tests/capture/SQL execution. Save completed or partial proposal at70, idle by80.",
+      "scope": "<=60line proposal for NEXT smallest useful readonly catalog worker slice/sequence after accepted query/identity/loop kernels. Reuse T15 sqlReadiness/catalogScalarReadiness and frozen source ranges; inspect only missing run/target/rootLabels/eligibleRankBits/matchingBuckets and narrow existing adapters if necessary. Compare actual worker initialization/header/suffix/read lease vs pure stats/rank prerequisite; exact API/owned paths/minimal native+small-SQL/runtime proof/cancellation+snapshot/recovery. No new contract/implementation/branch/deps/native/browser/SQL/fulldata operations or repeated audit/install/proofs."
+    },
     "integrationAwaitingPrimaryAcceptance": null,
-    "fiveHourAction": "Live36%; no new slice/worker/check70, checkpoint/yield80.",
+    "fiveHourAction": "Live66%; no new slice/worker/check at70, finish proposal checkpoint only and yield by80.",
     "resumeObservation": {
       "at": "2026-10-18T16:29:57.211840+00:00",
       "fiveHourUsedPercent": 0,
@@ -3026,13 +3103,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-18T16:53:03.354126+00:00",
-      "fiveHourUsedPercent": 36,
-      "weeklyUsedPercent": 41,
+      "at": "2026-10-18T17:15:57.477515+00:00",
+      "fiveHourUsedPercent": 66,
+      "weeklyUsedPercent": 46,
       "ordinaryUsageAllowed": true,
       "fiveHourResetsAt": 1792358936,
       "weeklyResetsAt": 1792876816,
-      "action": "Query accepted; same sole Sol/high bounded identity source after frozen native reference, no capture repeat."
+      "action": "All bounded catalog kernels accepted336combined/types. Final read-only next-worker slice proposal then recoverable checkpoint/yield at boundary."
     }
   }
 }
