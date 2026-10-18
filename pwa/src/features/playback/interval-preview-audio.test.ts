@@ -24,6 +24,12 @@ describe('pure root interval request',()=>{
   expect(rootIntervalPreviewRequest(input({currentAudioNote:60})).freqs).toEqual([hz(60),hz(60)]);
   expect(rootIntervalPreviewRequest(input({transpose:-12})).freqs).toEqual([hz(48),hz(55)]);
  });
+ it('refuses actual adjacent-pitch frequency collapse but retains same-note boundary unison',()=>{
+  const a=hz(-12830),b=hz(-12829);
+  expect(Number.isFinite(a)).toBe(true);expect(a).toBeGreaterThan(0);expect(a).toBe(b);
+  expect(()=>rootIntervalPreviewRequest(input({previousAudioNote:-12830,currentAudioNote:-12829}))).toThrow(RangeError);
+  expect(rootIntervalPreviewRequest(input({previousAudioNote:-12830,currentAudioNote:-12830})).freqs).toEqual([a,a]);
+ });
  it('reads each of four known getters once and never enumerates unknown properties',()=>{
   const counts:Record<string,number>={},values=input(),source={} as RootIntervalAudioInput;
   for(const key of Object.keys(values) as (keyof RootIntervalAudioInput)[])Object.defineProperty(source,key,{get(){counts[key]=(counts[key]??0)+1;return values[key];}});

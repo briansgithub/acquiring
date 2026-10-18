@@ -15,6 +15,8 @@ export const rootIntervalPreviewRequest:RootIntervalAudioApi['rootIntervalPrevie
     return hz;
   };
   const freqs=Object.freeze([frequency(steps[0].audioNotes[0]),frequency(steps[1].audioNotes[0])] as const);
+  // The private pair protocol cannot encode distinct written pitches that IEEE rounding collapses.
+  if(steps[0].audioNotes[0]!==steps[1].audioNotes[0]&&freqs[0]===freqs[1])throw new RangeError('Distinct written pitches must have distinct representable frequencies');
   return Object.freeze({freqs,durationMs:450,arpeggiate:false,waveform});
 };
 
