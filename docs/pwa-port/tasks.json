@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T17:15:57.477515+00:00",
+  "updated": "2026-10-18T17:21:11.841800+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2381,12 +2381,12 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "coordinator; same Sol/high readonly runtime proposal",
-      "branch": "codex/pwa-aural-loops",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "c264a3f61728254634f5cd8c8cd63b420d423f16",
+      "owner": "coordinator; workers idle",
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
+      "baseCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
       "slice": "Pure constraint/query matcher, stable pattern identity and loop/retained-children kernels accepted. Full SQL/eligibility/ranking/groups/search/pages/runtime/browser remain open.",
-      "nextAction": "Review existing-worker bounded runtime proposal; freeze next smallest contract only after fresh capacity. No SQL source before explicit contract/reference and ownership.",
+      "nextAction": "After fresh five-hour capacity, read this partial proposal once; inspect only missing lease/import/cleanup lifetime and existing codec adapters, then freeze the smallest useful contract before source ownership or runtime checks.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -2683,8 +2683,18 @@
         "branch": "codex/pwa-aural-loops",
         "baseCommit": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
         "output": ".artifacts/pwa-port/t15-runtime-proposal-window20.md",
-        "status": "READ-ONLY ASSIGNED at live66%fivehour, no source/branch/tests/capture/SQL execution. Save completed or partial proposal at70, idle by80.",
-        "scope": "<=60line proposal for NEXT smallest useful readonly catalog worker slice/sequence after accepted query/identity/loop kernels. Reuse T15 sqlReadiness/catalogScalarReadiness and frozen source ranges; inspect only missing run/target/rootLabels/eligibleRankBits/matchingBuckets and narrow existing adapters if necessary. Compare actual worker initialization/header/suffix/read lease vs pure stats/rank prerequisite; exact API/owned paths/minimal native+small-SQL/runtime proof/cancellation+snapshot/recovery. No new contract/implementation/branch/deps/native/browser/SQL/fulldata operations or repeated audit/install/proofs."
+        "status": "PARTIAL READ-ONLY PROPOSAL SAVED at five-hour70%; worker idle. No root-frozen contract or source assignment. No further investigation this window.",
+        "scope": "<=60line proposal for NEXT smallest useful readonly catalog worker slice/sequence after accepted query/identity/loop kernels. Reuse T15 sqlReadiness/catalogScalarReadiness and frozen source ranges; inspect only missing run/target/rootLabels/eligibleRankBits/matchingBuckets and narrow existing adapters if necessary. Compare actual worker initialization/header/suffix/read lease vs pure stats/rank prerequisite; exact API/owned paths/minimal native+small-SQL/runtime proof/cancellation+snapshot/recovery. No new contract/implementation/branch/deps/native/browser/SQL/fulldata operations or repeated audit/install/proofs.",
+        "sha256": "4aca66242d3ba25fb68afcc2df467bc1f0650e496da8577f9b00fe89288c059a",
+        "lineCount": 52,
+        "savedAt": "2026-10-18T17:21:11.841800+00:00",
+        "guard": "worker checkpoint40 exit0; only ignored proposal/result mutated",
+        "lastObservedUsage": {
+          "fiveHourUsedPercent": 70,
+          "weeklyUsedPercent": 46
+        },
+        "findings": "Native run121..132, eligibleRankBits186..194, matchingBuckets248..313, rootLabels335..341 gathered. Provisional readonly header/single-target operation before stats/rank; root label map missing token yields empty string. Persistent lease vs one-command snapshot, installed header/DDL, codecs and typed bounds remain unverified.",
+        "nextAction": "After fresh five-hour capacity, read this partial proposal once; inspect only missing lease/import/cleanup lifetime and existing codec adapters, then freeze the smallest useful contract before source ownership or runtime checks."
       }
     },
     {
@@ -3006,7 +3016,7 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T17:15:57.477515+00:00",
+    "date": "2026-10-18T17:21:11.841800+00:00",
     "sourceCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
@@ -3020,11 +3030,11 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 66,
-      "weeklyUsedPercent": 46
+      "fiveHourUsedPercent": 74,
+      "weeklyUsedPercent": 47
     },
     "fiveHourResetUnix": 1792358936,
-    "weeklyResetUnix": 1792876817,
+    "weeklyResetUnix": 1792876816,
     "unresolvedRuns": [],
     "worker": {
       "owner": "preview_owner",
@@ -3033,30 +3043,20 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "branch": "codex/pwa-aural-loops",
       "tip": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
-      "status": "loop accepted clean idle before read-only proposal"
+      "status": "idle; accepted loop branch6add84a2 clean; partial read-only proposal saved with hash in T15.runtimeProposalAssignment"
     },
-    "nextAction": "Review existing-worker bounded runtime proposal; freeze next smallest contract only after fresh capacity. No SQL source before explicit contract/reference and ownership.",
-    "reason": "All bounded catalog kernels accepted336combined/types. Final read-only next-worker slice proposal then recoverable checkpoint/yield at boundary.",
+    "nextAction": "After fresh five-hour capacity, read this partial proposal once; inspect only missing lease/import/cleanup lifetime and existing codec adapters, then freeze the smallest useful contract before source ownership or runtime checks.",
+    "reason": "Five-hour no-new-work boundary reached; partial runtime proposal and all accepted source evidence checkpointed. No new slice/check/worker. Yield pending applicable five-hour reset.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
       "scope": "Preserve hourlyheartbeat/name/target/status/notificationsprompt; replace old combined70/80cutoff with separate fivehour70/80 andweekly100/ordinaryexhaustion, checkpointweekly90thencontinuing.",
       "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
     },
-    "usageAvailability": "Ordinary usage allowed at last observation. Five-hour70 no new work/80 checkpoint; weekly100 ordinary exhaustion. No credit/reset/model action.",
-    "activeWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-aural-loops",
-      "baseCommit": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
-      "output": ".artifacts/pwa-port/t15-runtime-proposal-window20.md",
-      "status": "READ-ONLY ASSIGNED at live66%fivehour, no source/branch/tests/capture/SQL execution. Save completed or partial proposal at70, idle by80.",
-      "scope": "<=60line proposal for NEXT smallest useful readonly catalog worker slice/sequence after accepted query/identity/loop kernels. Reuse T15 sqlReadiness/catalogScalarReadiness and frozen source ranges; inspect only missing run/target/rootLabels/eligibleRankBits/matchingBuckets and narrow existing adapters if necessary. Compare actual worker initialization/header/suffix/read lease vs pure stats/rank prerequisite; exact API/owned paths/minimal native+small-SQL/runtime proof/cancellation+snapshot/recovery. No new contract/implementation/branch/deps/native/browser/SQL/fulldata operations or repeated audit/install/proofs."
-    },
+    "usageAvailability": "Ordinary allowance remains; five-hour safeguard requires yield. Weekly future reset does not block work when five-hour capacity returns. No credit/reset/model action.",
+    "activeWorker": null,
     "integrationAwaitingPrimaryAcceptance": null,
-    "fiveHourAction": "Live66%; no new slice/worker/check at70, finish proposal checkpoint only and yield by80.",
+    "fiveHourAction": "Live74%five-hour/47%weekly ordinary allowed; only recovery documentation completed after70. Yield now; no source/check/investigation until applicable five-hour capacity returns.",
     "resumeObservation": {
       "at": "2026-10-18T16:29:57.211840+00:00",
       "fiveHourUsedPercent": 0,
@@ -3089,6 +3089,16 @@
       },
       "receipt": ".artifacts/pwa-port/t15-loop-native-validation-window20.json",
       "receiptSha256": "3147eb9539573302da65082687f648fd1d255d30233f63b8e29bfb9030271f1c"
+    },
+    "priorDocumentationCheckpoint": "67b589ffd8f0e8b84a77d5ccb6ce950e5247fce9",
+    "recoveryState": {
+      "at": "2026-10-18T17:21:11.841800+00:00",
+      "primary": "clean67b589ff before this documentation-only checkpoint",
+      "previewOwner": "completed/idle; clean codex/pwa-aural-loops6add84a2",
+      "songUiReview": "completed/idle; clean codex/pwa-interval-cardsc49c4047",
+      "processes": "No python/python3/node/java processes found immediately before this recovery helper. All named source/check children previously exited0; inspect current run-control receipt on resumption.",
+      "proposal": "PARTIAL, not an accepted implementation contract",
+      "preservation": "All worktrees/branches/ignored catalogs/native tooling/browser profiles/archives preserved; no cleanup or publication."
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",
@@ -3103,13 +3113,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-18T17:15:57.477515+00:00",
-      "fiveHourUsedPercent": 66,
-      "weeklyUsedPercent": 46,
+      "at": "2026-10-18T17:21:11.841800+00:00",
+      "fiveHourUsedPercent": 74,
+      "weeklyUsedPercent": 47,
       "ordinaryUsageAllowed": true,
       "fiveHourResetsAt": 1792358936,
       "weeklyResetsAt": 1792876816,
-      "action": "All bounded catalog kernels accepted336combined/types. Final read-only next-worker slice proposal then recoverable checkpoint/yield at boundary."
+      "action": "Five-hour no-new-work boundary reached; partial runtime proposal and all accepted source evidence checkpointed. No new slice/check/worker. Yield pending applicable five-hour reset."
     }
   }
 }
