@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T16:31:03.810102+00:00",
+  "updated": "2026-10-18T16:34:58.734514+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2400,8 +2400,17 @@
         "branch": "codex/pwa-builtin-initializer",
         "baseCommit": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
         "output": ".artifacts/pwa-port/t15-query-proposal-window20.md",
-        "status": "READ-ONLY ASSIGNED on existing clean branch/tree; no new branch/source/native capture/tests.",
-        "scope": "Bounded <=80line pure native constraint/query matcher proposal only. Reuse recorded readiness and frozen AuralProgressionQuery.kt/test/AuralCorpus26..50; identify semantics/defaults/public API/owned paths <=24 native cases and minimal actual Kotlin oracle extraction. No SQL/ranking/group/loop/runtime catalog implementation, old audit repeat, tracked edits/contracts or new branch. Coordinator freezes contract before source."
+        "status": "COMPLETE root reviewed70line proposal and exact frozen query/parser semantics; no source/capture/tests.",
+        "scope": "Bounded <=80line pure native constraint/query matcher proposal only. Reuse recorded readiness and frozen AuralProgressionQuery.kt/test/AuralCorpus26..50; identify semantics/defaults/public API/owned paths <=24 native cases and minimal actual Kotlin oracle extraction. No SQL/ranking/group/loop/runtime catalog implementation, old audit repeat, tracked edits/contracts or new branch. Coordinator freezes contract before source.",
+        "sha256": "e549f07e1131340277809eec0acc1f2e135356a95ac3a6dc17d51fd1f5e87a2a"
+      },
+      "queryContractIntent": {
+        "owner": "coordinator runtime unknown",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/query-contracts.ts"
+        ],
+        "status": "Pre-edit intent; freeze typed pure query/constraint API then strict types, before oracle-first worker claim.",
+        "scope": "Six pure functions; exact native query58lines/private corpus parser26..27/35..51, explicit browser bounds/snapshot discipline/equal root-label length. No SQL/runtime catalog/group/ranking/session/UI."
       }
     },
     {
