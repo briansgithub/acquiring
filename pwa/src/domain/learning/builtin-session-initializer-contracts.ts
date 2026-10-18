@@ -53,12 +53,14 @@ export interface AuralBuiltinSessionInitializerApi {
  * Deep-freeze fresh independent output/aliases. Existing exactLong/string/numeric browser policies,
  *1MiB UTF8/depth32/tokens65536/collections4096/text+keys65536/target reason1024 remain unchanged.
  * Nonstring nonnull JS input throws TypeError. No version/warning/schema changes to old APIs.
- * Both progress stores are exposed; NO derived view selector: native158 uses current.exampleSettings
+ * Both progress stores are exposed; NO derived view selector: native158 uses current.provenance.exampleSettings
  * when nonnull, otherwise global settings, and76 selects inversionProgress by distinguishInversions.
  * <=16NEW actual native whole-init projections: real Kotlin2.2.10 plugin/compiler/runtime and unchanged
- * declarations/members/WHOLE init80..154/normalize/theory/generator. Include primary normalization
- * failure overriding valid current/return, plus return match/mismatch/range/open/source/typed damage,
- * history/metadata/current warning precedence and invalid-version fresh guard. ORACLE FIRST; root
+ * declarations/members/WHOLE init80..154/normalize/theory/generator. Native normalization is total
+ * on supported typed progress: do not invent/inject an exception oracle. Include genuine normalization
+ * repair, return match/mismatch/range/open/source/typed damage, history/metadata/current warning
+ * precedence and invalid-version fresh guard. Browser safe-time normalization-fresh refusal must
+ * separately block valid current/return as an explicit browser-only extension. ORACLE FIRST; root
  * review/checkpoint before implementation. No old capture/fixtures/RNG/generator recapture.
  * No full class/view rewrite, actions/evidence credit, persistence/encoder/autowrite, UI/audio,
  * return navigation/source music validation or successful corpus/pattern support.
