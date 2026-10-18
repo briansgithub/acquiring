@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T17:02:51.115792+00:00",
+  "updated": "2026-10-18T17:05:41.943324+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2381,18 +2381,24 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "preview_owner gpt-6.1-sol/high; coordinator integration",
+      "owner": "coordinator; identity worker clean idle",
       "branch": "codex/pwa-aural-identity",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "e4ef86ecb812f2f9bca297f435287c1bbcba540b",
-      "slice": "Pure query matcher accepted. Stable pattern identity SOURCE assigned after validated native reference; full SQL/ranks/groups/browser remain open.",
-      "nextAction": "Inspect clean existing sibling/guards/PIDs and branch absence, preserve query refs, create codex/pwa-aural-identity from exact accepted primarybase; implement bounded source/test/narrow exports/WORKLOG only. First focused actual WebCrypto native55 comparisons plus browser-boundary/mutation/getter/reentry tests and scoped strict types. Commit validated4paths and idle for primary review/checks; no reference recapture.",
+      "slice": "Pure constraint/query matcher and stable pattern identity accepted. Loop native reference/contract ready; loop implementation unassigned. Full SQL/ranks/groups/runtime/browser remain open.",
+      "nextAction": "Do not recapture native identity reference or repeat unchanged source checks. Next loop kernel uses frozen b0934dc6 contract and validated a897c99e native/shared reference after dated claim/fresh capacity.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
           "guard": "window20-query-combined-20261018 (primary, cwd pwa)",
           "revision": "220fee3abda0076b5464482b18b5c2b5c6738e82",
           "result": "FIRST PASS274tests/16files7.07s and strict combined types; actual child45396 observed exit0. Exact reviewed query source/exports and unchanged native oracle integrated. No App/build/browser/old native recapture."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window20-identity-combined-20261018 (primary,cwd pwa)",
+          "revision": "785a14e70876e3306f92beb85b19502e5a1939e1",
+          "result": "FIRST PASS298tests/17files7.73s and strict combined types; actual child55807 exit0. Exact reviewed source/native55IDs via actual WebCrypto plus browser safety groups; query/old fixtures unchanged. No actualChrome/SQL/runtime/App/build/browser acceptance or rerun."
         }
       ],
       "progress": [],
@@ -2542,9 +2548,9 @@
           "pwa/src/domain/catalog/IDENTITY_WORKLOG.md",
           "pwa/src/domain/catalog/index.ts"
         ],
-        "status": "Worker validated clean idle; root reviewed complete45line source/121line tests/exports, no material finding. UNMERGED; primary acceptance pending.",
+        "status": "ACCEPTED pure native stable pattern identity after normal merge and primary checks; no actualChrome/runtime catalog acceptance.",
         "scope": "One pure asynchronous stable pattern ID API exactly identity-contracts.ts; actual WebCrypto SHA256 + exact LE32/Int overflow, all UTF8 input bytes captured before first await, independent local guards and no cache. Reuse immutable native16groups55samples. No producer/fixture/query/SQL/stats/rank/runtime/session/UI/deps/contracts/tasks edits.",
-        "nextAction": "Inspect clean existing sibling/guards/PIDs and branch absence, preserve query refs, create codex/pwa-aural-identity from exact accepted primarybase; implement bounded source/test/narrow exports/WORKLOG only. First focused actual WebCrypto native55 comparisons plus browser-boundary/mutation/getter/reentry tests and scoped strict types. Commit validated4paths and idle for primary review/checks; no reference recapture.",
+        "nextAction": "Do not recapture native identity reference or repeat unchanged source checks. Next loop kernel uses frozen b0934dc6 contract and validated a897c99e native/shared reference after dated claim/fresh capacity.",
         "workerTip": "4e02227e5ece0857824650a03faf6cab98eae1a9",
         "workerValidation": {
           "commands": [
@@ -2557,6 +2563,19 @@
           ],
           "result": "FIRST PASS24groups/1file1.93s (16native55actual WebCrypto IDs+8browser), strict scoped types exit0, source failure cycles0. No actualChrome claim.",
           "receiptSha256": "945b45a9c020c155997e9e68a14aeb33b0145a543557225beba4e3bb805b4ccc"
+        },
+        "sha256": {
+          "catalog-identity.ts": "bdd713f7b54e9a3025e6247eddbdf4f2870d04ee7664d9f09a1ffbe9cd676543",
+          "catalog-identity.test.ts": "98efa65d02446be5918aa421456c9b015a4d6b9f8b6b24da25d24d258f426d4e",
+          "index.ts": "548a4111d5781ccf9180a4e764207ccd99461e698c2efe60f8e3b7196fc8d464"
+        },
+        "mergeCommit": "785a14e70876e3306f92beb85b19502e5a1939e1",
+        "testedRevision": "785a14e70876e3306f92beb85b19502e5a1939e1",
+        "primaryValidation": {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window20-identity-combined-20261018 (primary,cwd pwa)",
+          "revision": "785a14e70876e3306f92beb85b19502e5a1939e1",
+          "result": "FIRST PASS298tests/17files7.73s and strict combined types; actual child55807 exit0. Exact reviewed source/native55IDs via actual WebCrypto plus browser safety groups; query/old fixtures unchanged. No actualChrome/SQL/runtime/App/build/browser acceptance or rerun."
         }
       },
       "loopContractIntent": {
@@ -2597,7 +2616,8 @@
           "sharedSourceSha256": "d37bb125de674a8e48531698128ab83a3a4af549d7b6844206ffd18f2dedd23a"
         },
         "receipt": ".artifacts/pwa-port/t15-loop-native-validation-window20.json",
-        "receiptSha256": "3147eb9539573302da65082687f648fd1d255d30233f63b8e29bfb9030271f1c"
+        "receiptSha256": "3147eb9539573302da65082687f648fd1d255d30233f63b8e29bfb9030271f1c",
+        "referenceCommit": "a897c99e7b00892b3af98aeff34c6e0f18aaf24c"
       }
     },
     {
@@ -2919,8 +2939,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T17:02:51.115792+00:00",
-    "sourceCommit": "b0934dc60c7a51ef2eedc1f3a5251c7ce85d4d54",
+    "date": "2026-10-18T17:05:41.943324+00:00",
+    "sourceCommit": "785a14e70876e3306f92beb85b19502e5a1939e1",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -2946,10 +2966,10 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "branch": "codex/pwa-aural-identity",
       "tip": "4e02227e5ece0857824650a03faf6cab98eae1a9",
-      "status": "clean idle; worker identity validated, primary acceptance pending"
+      "status": "accepted clean idle"
     },
-    "nextAction": "Checkpoint loop native reference; normally integrate exact reviewed identity4e02227e then primary catalog/learning/playback+strict types; no new worker before acceptance.",
-    "reason": "Query accepted; same sole Sol/high bounded identity source after frozen native reference, no capture repeat.",
+    "nextAction": "Do not recapture native identity reference or repeat unchanged source checks. Next loop kernel uses frozen b0934dc6 contract and validated a897c99e native/shared reference after dated claim/fresh capacity.",
+    "reason": "Identity accepted298combined/types; next sole-worker loop source after frozen native reference, no reference recapture.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -2958,10 +2978,7 @@
     },
     "usageAvailability": "Ordinary usage allowed at last observation. Five-hour70 no new work/80 checkpoint; weekly100 ordinary exhaustion. No credit/reset/model action.",
     "activeWorker": null,
-    "integrationAwaitingPrimaryAcceptance": {
-      "tip": "4e02227e5ece0857824650a03faf6cab98eae1a9",
-      "status": "UNMERGED identity; reviewed worker24tests/types, primary UNRUN."
-    },
+    "integrationAwaitingPrimaryAcceptance": null,
     "fiveHourAction": "Live36%; no new slice/worker/check70, checkpoint/yield80.",
     "resumeObservation": {
       "at": "2026-10-18T16:29:57.211840+00:00",
