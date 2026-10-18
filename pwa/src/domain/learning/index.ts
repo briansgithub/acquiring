@@ -4,3 +4,5 @@ export { auralFamilyUnlocked, auralSkillUnlocked, selectAuralBuiltinTarget, aura
 export type { AuralBuiltinSchedulerApi } from './scheduler-contracts';
 export { repairAuralSessionEnvelope, auralSessionEnvelopeApi } from './session-envelope';
 export type { AuralSessionEnvelopeRepair, AuralSessionEnvelopeApi } from './session-contracts';
+export { restoreAuralBuiltinCurrent, auralBuiltinCurrentApi } from './builtin-current';
+export type { AuralBuiltinCurrentProjection, AuralRestoredBuiltinExercise, AuralBuiltinCurrentApi } from './builtin-current-contracts';
