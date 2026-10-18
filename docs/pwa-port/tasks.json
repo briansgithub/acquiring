@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T16:34:58.734514+00:00",
+  "updated": "2026-10-18T16:40:14.067319+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1833,6 +1833,13 @@
         "path": ".artifacts/pwa-port/t12-timeline-native-readiness-window19.md",
         "sha256": "046ee8a9ff833af2bfee4307f2ee177081a96e79752323aa2fbed878d736a62c",
         "nextAction": "Use recorded exact frozen source ranges and missing scrub/inertia/renderer decisions before a bounded timeline contract; do not repeat inspected native geometry ranges."
+      },
+      "timelineAdditionalReadiness": {
+        "owner": "coordinator runtime unknown",
+        "path": ".artifacts/pwa-port/t12-timeline-additional-readiness-window20.md",
+        "sha256": "14be16c851c77dc39a5a5d9fc8fb6c59b98d798cffab2b0c25b3da5a4b5bf6c3",
+        "status": "READ-ONLY missing scrub/cancellation/staff availability inspected; no source/tests or timeline acceptance.",
+        "nextAction": "Use both saved readiness notes; freeze renderer/large-text/gesture/inertia contract before source. No repeat of inspected source or accepted audio evidence."
       }
     },
     {
@@ -2373,13 +2380,13 @@
         "pwa/src/domain/catalog/"
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "status": "in_progress",
+      "owner": "preview_owner gpt-6.1-sol/high; coordinator contracts/integration",
+      "branch": "codex/pwa-aural-query",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "d4d3caa12d39560c7c0146b3cc38231626ed3fa1",
+      "slice": "Pure constraint/query matcher; native oracle first before implementation. Full catalog SQL/ranking/groups/search/loops remain open.",
+      "nextAction": "Inspect exact clean existing sibling/branch absence/guards/PIDs, preserve prior refs, create requested codex/pwa-aural-query from frozen rootbase; capture bounded new native oracle first under guard, validate and commit named3paths then idle for root review. No phase2 implementation until explicit root followup.",
       "validation": [],
       "progress": [],
       "blocker": null,
@@ -2409,8 +2416,47 @@
         "ownedPaths": [
           "pwa/src/domain/catalog/query-contracts.ts"
         ],
-        "status": "Pre-edit intent; freeze typed pure query/constraint API then strict types, before oracle-first worker claim.",
+        "status": "Frozen d4d3caa12d39560c7c0146b3cc38231626ed3fa1; strict combined types FIRSTPASS window20-query-contract-types-20261018. Oracle-first only, no matcher implementation yet.",
         "scope": "Six pure functions; exact native query58lines/private corpus parser26..27/35..51, explicit browser bounds/snapshot discipline/equal root-label length. No SQL/runtime catalog/group/ranking/session/UI."
+      },
+      "queryAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-aural-query",
+        "baseCommit": "d4d3caa12d39560c7c0146b3cc38231626ed3fa1",
+        "priorBranch": "codex/pwa-builtin-initializer",
+        "priorTip": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/aural-progression-query.ts",
+          "pwa/src/domain/catalog/aural-progression-query.test.ts",
+          "pwa/src/domain/catalog/QUERY_WORKLOG.md",
+          "pwa/src/domain/catalog/fixtures/generate-query-native.py",
+          "pwa/src/domain/catalog/fixtures/native-query.json",
+          "pwa/src/domain/catalog/index.ts"
+        ],
+        "status": "ORACLE FIRST ASSIGNED; no matcher source/test/index before reviewed native checkpoint and root followup.",
+        "scope": "<=24NEW named native groups using unchanged WHOLE query plus corpus26..27/35..51 private parser including closing brace, pinned cached Kotlin2.2.10 and actual constraint/query serializers; retain native outputs/failures/extraction provenance. Phase1producer/fixture/WORKLOG only, no SQL/rank/groups/UI/other source/old capture.",
+        "nextAction": "Inspect exact clean existing sibling/branch absence/guards/PIDs, preserve prior refs, create requested codex/pwa-aural-query from frozen rootbase; capture bounded new native oracle first under guard, validate and commit named3paths then idle for root review. No phase2 implementation until explicit root followup."
+      },
+      "identityContractIntent": {
+        "owner": "coordinator runtime unknown",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/identity-contracts.ts"
+        ],
+        "status": "Pre-edit contract only, no worker assignment/capture/source. Current sole worker remains QUERY oracle only.",
+        "authority": "AuralCatalog.kt38..47 frozen801cf798",
+        "sourceSha256": "0a45254f630f9712fdd31c94b47e8907c8788813f8328e81925c06a20d4d1f33",
+        "scope": "Exact native stable pattern identity with SHA256/LE32/Int overflow; explicit UTF8 snapshot/safety bounds. No SQL/rank/stats/query/group/runtime/session/UI.",
+        "nextAction": "Validate and checkpoint contract. Do not assign identity worker before current query accepted and live capacity verified."
+      },
+      "catalogScalarReadiness": {
+        "owner": "coordinator runtime unknown",
+        "status": "Read-only native source inventory, no stats/source/tests/claim.",
+        "authority": "AuralCatalog.kt15..48,147..185, method-name index248..559; completed audit reused.",
+        "findings": "sourceMode15..18 is JSON primitive first-token metadata, popularity33..36 validates percent0..100 but bypasses score when null, identity38..47 nativeSHA/overflow, catalogBase48 log2; statsMatching155..184 counts global valid occurrences separately, then popularity eligibility and sorted nonoverlap effective cap4PER SONG, factor148..151 recent/favorites/popularity. No actual browser aural reader exists.",
+        "nextAction": "After query/identity kernels, bound exact readonly rank/SQL worker contract using actual range frontier and row-order547..558 before edits; no repeat of inspected prefix/stat ranges."
       }
     },
     {
@@ -2732,8 +2778,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T16:31:03.810102+00:00",
-    "sourceCommit": "af163aa64d8b3caa72e81aee32b1e898cd3aa9c1",
+    "date": "2026-10-18T16:35:57.807330+00:00",
+    "sourceCommit": "d4d3caa12d39560c7c0146b3cc38231626ed3fa1",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -2746,8 +2792,8 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 2,
-      "weeklyUsedPercent": 36
+      "fiveHourUsedPercent": 10,
+      "weeklyUsedPercent": 37
     },
     "fiveHourResetUnix": 1792358936,
     "weeklyResetUnix": 1792876817,
@@ -2761,8 +2807,8 @@
       "tip": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
       "status": "initializer accepted clean idle before read-only proposal"
     },
-    "nextAction": "Observe existing worker proposal; coordinator freezes next useful contract before any source/branch. No duplicate worker.",
-    "reason": "Initializer accepted; same Sol/high read-only catalog-query proposal while coordinator bounds playback timeline.",
+    "nextAction": "Inspect exact clean existing sibling/branch absence/guards/PIDs, preserve prior refs, create requested codex/pwa-aural-query from frozen rootbase; capture bounded new native oracle first under guard, validate and commit named3paths then idle for root review. No phase2 implementation until explicit root followup.",
+    "reason": "T15 oracle-first on sole preserved Sol/high worker after frozen query contract; root additional T12 readiness saved.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -2775,11 +2821,21 @@
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-builtin-initializer",
-      "baseCommit": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
-      "output": ".artifacts/pwa-port/t15-query-proposal-window20.md",
-      "status": "READ-ONLY ASSIGNED on existing clean branch/tree; no new branch/source/native capture/tests.",
-      "scope": "Bounded <=80line pure native constraint/query matcher proposal only. Reuse recorded readiness and frozen AuralProgressionQuery.kt/test/AuralCorpus26..50; identify semantics/defaults/public API/owned paths <=24 native cases and minimal actual Kotlin oracle extraction. No SQL/ranking/group/loop/runtime catalog implementation, old audit repeat, tracked edits/contracts or new branch. Coordinator freezes contract before source."
+      "branch": "codex/pwa-aural-query",
+      "baseCommit": "d4d3caa12d39560c7c0146b3cc38231626ed3fa1",
+      "priorBranch": "codex/pwa-builtin-initializer",
+      "priorTip": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
+      "ownedPaths": [
+        "pwa/src/domain/catalog/aural-progression-query.ts",
+        "pwa/src/domain/catalog/aural-progression-query.test.ts",
+        "pwa/src/domain/catalog/QUERY_WORKLOG.md",
+        "pwa/src/domain/catalog/fixtures/generate-query-native.py",
+        "pwa/src/domain/catalog/fixtures/native-query.json",
+        "pwa/src/domain/catalog/index.ts"
+      ],
+      "status": "ORACLE FIRST ASSIGNED; no matcher source/test/index before reviewed native checkpoint and root followup.",
+      "scope": "<=24NEW named native groups using unchanged WHOLE query plus corpus26..27/35..51 private parser including closing brace, pinned cached Kotlin2.2.10 and actual constraint/query serializers; retain native outputs/failures/extraction provenance. Phase1producer/fixture/WORKLOG only, no SQL/rank/groups/UI/other source/old capture.",
+      "nextAction": "Inspect exact clean existing sibling/branch absence/guards/PIDs, preserve prior refs, create requested codex/pwa-aural-query from frozen rootbase; capture bounded new native oracle first under guard, validate and commit named3paths then idle for root review. No phase2 implementation until explicit root followup."
     },
     "integrationAwaitingPrimaryAcceptance": null,
     "fiveHourAction": "Live2%; no new operations at70, checkpoint/yield80.",
