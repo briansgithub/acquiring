@@ -1,5 +1,6 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {ExtractedSection} from '../../contracts';
+import type {SpelledPitch} from '../../domain/music';
 import {getKeys,keyAtBeat} from '../../domain/data';
 import {doubleOrUndefined} from '../../domain/data/primitives';
 import {canonicalScaleName,getChordNotes,getDegreeLabelFromSpelling,getMidiNote,getRelativeIonianRomanSymbol,interpret,ionianContextDegreeLabel,ionianContextPreviewAudioNote,relativeIonianKey,resolveChordRoot,resolveScaleDegreePitch} from '../../domain/music';
@@ -7,7 +8,8 @@ import {nativeBooleanOrNull} from '../../domain/music/native-json';
 import {PreviewOwner,type PreviewState} from '../../audio/transport';
 import {RomanNumeral,ScaleDegree} from '../../ui/notation/Notation';
 import {romanNumeralDisplayFromChord} from '../../ui/notation/roman-numeral';
-import {buildMelodyPitchCards,melodyCurrentCardVerticalPosition,melodyPitchCardDisplayMode,PlaybackActiveEventIndex,showsRootOnlyPrevious} from './event-state';
+import {buildMelodyPitchCards,melodyCurrentCardVerticalPosition,melodyPitchCardDisplayMode,PlaybackActiveEventIndex,showsRootOnlyInterval,showsRootOnlyPrevious} from './event-state';
+import {cardIntervalPreviewRequest,renderCardPreview} from './card-preview';
 import {preparePlaybackSection} from './section-model';
 import type {PlaybackSettings} from './controller';
 
@@ -26,7 +28,7 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
   const owner=useRef<PreviewOwner|null>(null);
   const [preview,setPreview]=useState<PreviewState>({phase:'idle',revision:0,requestId:null});
   useEffect(()=>{
-    const current=new PreviewOwner();owner.current=current;const stop=()=>current.stop();stopPreview.current=stop;
+    const current=new PreviewOwner({render:renderCardPreview});owner.current=current;const stop=()=>current.stop();stopPreview.current=stop;
     const unsubscribe=current.subscribe(()=>setPreview(current.getSnapshot()));setPreview(current.getSnapshot());
     return ()=>{unsubscribe();if(stopPreview.current===stop)stopPreview.current=null;if(owner.current===current)owner.current=null;void current.release();};
   },[section,stopPreview]);
@@ -64,6 +66,15 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
     const freqs=notes.filter(note=>note>0).map(note=>440*2**((note+settings.transpose-69)/12));
     if(freqs.length)void owner.current?.play(id,{freqs,durationMs,waveform:settings.waveform,arpeggiate:false});
   }
+  function playInterval(id:string,previous:SpelledPitch,current:SpelledPitch){
+    try {
+      const request=cardIntervalPreviewRequest({previousAudioNote:previous.toAudioNoteNumber(),currentAudioNote:current.toAudioNoteNumber(),transpose:settings.transpose,waveform:settings.waveform});
+      void owner.current?.play(id,request);
+    } catch {
+      const currentOwner=owner.current;currentOwner?.stop();const snapshot=currentOwner?.getSnapshot();
+      setPreview({phase:'error',revision:snapshot?.revision??preview.revision,requestId:snapshot?.requestId??null,message:'This interval cannot be previewed.'});
+    }
+  }
   const scale=key.scale.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,first=>first.toLocaleUpperCase());
   return <section className="panel playback-cards" aria-label="At this beat" data-card-preview-phase={preview.phase}>
     <h2>At this beat</h2>
@@ -82,6 +93,9 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
         <button className="playback-card" aria-label={'Play current root '+rootLabel} onClick={()=>play('root',[rootMidi!])}>
           <ScaleDegree label={rootLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>{showsRootOnlyPrevious(root.previousIntervalPitch)&&<span>Current</span>}
         </button>
+        {root.previousIntervalPitch&&root.interval&&showsRootOnlyInterval(root.previousIntervalPitch,root.currentIntervalPitch,root.interval)&&<button className="playback-card playback-interval-card" aria-label={'Play root interval '+root.interval.spokenName} onClick={()=>playInterval('root-interval',root.previousIntervalPitch!,root.currentIntervalPitch)}>
+          <span className="playback-interval-card__symbol">{root.interval.shorthand}</span><span>Interval</span>
+        </button>}
       </div>:<p>No sounding root</p>}
     </div>:<>
       <div role="group" aria-label="Chord cards"><h3>Current chord</h3>
@@ -99,6 +113,9 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
         {melodyCards.map(card=>{const label=card.role==='PREVIOUS'?'Play previous melody '+card.scaleDegreeLabel:'Play melody '+card.scaleDegreeLabel;const midi=card.pitch.toAudioNoteNumber();return <button key={card.role} className={'playback-card playback-melody-card playback-melody-card--'+card.verticalPosition.toLowerCase()} data-card-role={card.role.toLowerCase()} data-vertical-position={card.verticalPosition} aria-label={label} onClick={()=>play(card.role==='PREVIOUS'?'previous-melody':'melody',[midi])}>
           <ScaleDegree label={card.scaleDegreeLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/><span>{card.role==='PREVIOUS'?'Previous':'Current'}</span>
         </button>;})}
+        {melodyInterval&&<button className="playback-card playback-interval-card" aria-label={'Play melody interval '+melodyInterval.interval.spokenName} onClick={()=>playInterval('melody-interval',melodyInterval.previous,melodyInterval.current)}>
+          <span className="playback-interval-card__symbol">{melodyInterval.interval.shorthand}</span><span>Interval</span>
+        </button>}
       </div>:<div className="playback-melody-cards" data-melody-card-mode="SINGLE"><button className="playback-card playback-melody-card playback-melody-card--center" data-card-role="current" data-vertical-position={melodyCurrentCardVerticalPosition(melodyMode)} aria-label={'Play melody '+melodyLabel} onClick={()=>play('melody',[melodyMidi!])}>
         <ScaleDegree label={melodyLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>
       </button></div>:<p>No sounding melody</p>}</div>
