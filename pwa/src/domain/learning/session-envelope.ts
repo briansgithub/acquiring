@@ -7,6 +7,8 @@ import type {AuralProgress} from './evidence-contracts';
 import type {AuralExampleSettings,AuralSourceExposure,AuralRepairedEnvelope,AuralRepairIssue,AuralRepairArea,AuralSessionEnvelopeRepair,AuralSessionEnvelopeApi} from './session-contracts';
 import {createAuralProgress,normalizeAuralProgress} from './aural-evidence';
 import {createAuralBuiltinTarget} from './aural-generator';
+import {restoreAuralBuiltinCurrent} from './builtin-current';
+import type {AuralBuiltinSessionInitialization,AuralInitialLessonState,AuralPlaybackReturnProjection,AuralBuiltinSessionInitializerApi} from './builtin-session-initializer-contracts';
 import type {AuralBuiltinCurrentProjection} from './builtin-current-contracts';
 import type {AuralBuiltinCurrentJsonResult,AuralBuiltinCurrentJsonApi} from './builtin-current-json-contracts';
 const LIMIT={bytes:1048576,depth:32,tokens:65536,collection:4096,cells:1024,string:65536};
@@ -231,3 +233,48 @@ export function decodeAuralBuiltinCurrentJson(currentRaw:string|null):AuralBuilt
  }
 }
 export const auralBuiltinCurrentJsonApi:AuralBuiltinCurrentJsonApi=Object.freeze({decodeAuralBuiltinCurrentJson});
+
+// Additive pure initialization from ORIGINAL envelope bytes; no writes/actions/navigation.
+function initializerSourcePassage(input:Item):JsonValue {passageDecoder(input);opaque(input,true);return input.value;}
+const initializerReturn=struct({exerciseId:req(text),draft:req(list(text)),heard:req(bool),answered:req(bool),guidanceVisible:req(bool),plays:req(int),attempts:req(int),assistance:req(list(text)),feedback:req(text),open:def(bool,yes),sourcePassage:def(nullable(initializerSourcePassage),no),fromSongs:def(bool,()=>false)});
+const initialLessonState=():AuralInitialLessonState=>({assistance:[],plays:0,attempts:0,heard:false,answered:false,guidanceVisible:false,feedback:''});
+
+export function initializeAuralBuiltinSession(raw:string|null):AuralBuiltinSessionInitialization {
+ const base=repairAuralSessionEnvelope(raw);
+ const issues=base.issues.filter(issue=>issue.code!=='deferred');
+ let current:AuralBuiltinSessionInitialization['saved']['current']=null;
+ let playbackReturn:AuralPlaybackReturnProjection|null=null;
+ let state=initialLessonState(),warning=base.warning;
+ const issue=(area:AuralRepairArea,field:string,reason:string)=>{
+  if(!issues.some(i=>i.area===area&&i.field===field&&i.code===reason))issues.push({area,field,code:reason});
+ };
+ const finish=():AuralBuiltinSessionInitialization=>freeze({saved:{...base.envelope,current,playbackReturn},state,warning,issues,originalRaw:raw});
+ // Pure dependency composition may skip intermediate regeneration when native final guard wins.
+ if(raw===null||base.issues.some(issue=>issue.area==='envelope'))return finish();
+ try{
+  const input=parse(raw),envelope=object(input);
+  if(Object.hasOwn(envelope,'playbackReturn')&&envelope.playbackReturn!==null)try{
+   const value=member(input,'playbackReturn');opaque(value,true);
+   playbackReturn=initializerReturn(value) as AuralPlaybackReturnProjection;
+  }catch(error){issue('metadata','playbackReturn',code(error));if(!warning)warning=METADATA;}
+  if(Object.hasOwn(envelope,'current')&&envelope.current!==null)try{
+   current=restoreAuralBuiltinCurrent(decodeBuiltinCurrentItem(member(input,'current')));
+  }catch(error){
+   issue('current','current',error instanceof DecodeError?error.code:'regeneration');
+   warning='The unfinished example could not be restored. Your learning progress has been kept.';
+  }
+  if(current){
+   state={...initialLessonState(),assistance:['resumed-example'],guidanceVisible:current.support===2,
+    feedback:'Resumed example. Listen again; this counts as supported practice.'};
+   if(playbackReturn&&playbackReturn.exerciseId===current.id&&playbackReturn.plays>=0&&playbackReturn.plays<=1000&&playbackReturn.attempts>=0&&playbackReturn.attempts<=1000){
+    state={assistance:[...playbackReturn.assistance,'source-playback'],plays:playbackReturn.plays,attempts:playbackReturn.attempts,
+     heard:playbackReturn.heard,answered:playbackReturn.answered,guidanceVisible:playbackReturn.guidanceVisible,feedback:playbackReturn.feedback};
+   }
+  }
+  return finish();
+ }catch(error){
+  issue('envelope','raw',code(error));
+  return freeze({saved:{...freshEnvelope(),current:null,playbackReturn:null},state:initialLessonState(),warning:FRESH,issues,originalRaw:raw});
+ }
+}
+export const auralBuiltinSessionInitializerApi:AuralBuiltinSessionInitializerApi=Object.freeze({initializeAuralBuiltinSession});
