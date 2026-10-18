@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T16:47:32.462319+00:00",
+  "updated": "2026-10-18T16:51:38.263720+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2381,13 +2381,20 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "preview_owner gpt-6.1-sol/high; coordinator contracts/integration",
+      "owner": "coordinator; query worker clean idle",
       "branch": "codex/pwa-aural-query",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "d4d3caa12d39560c7c0146b3cc38231626ed3fa1",
-      "slice": "Pure constraint/query matcher; native oracle first before implementation. Full catalog SQL/ranking/groups/search/loops remain open.",
-      "nextAction": "Implement frozen six-function query API in owned matcher/test/index/WORKLOG only, native oracle immutable. First focused24native+browser guard/snapshot/reentry/cap tests and strict scoped types; commit validated source then idle for root review/primary combined checks. No SQL/rank/groups/UI/native repeat or identity implementation.",
-      "validation": [],
+      "slice": "Pure constraint/query matcher accepted. Identity contract/native reference ready, source unassigned. Full SQL/ranking/groups/search/loops/runtime/browser remain open.",
+      "nextAction": "Do not repeat accepted query/native/typing evidence. Next independent identity source uses already validated native16groups55samples and frozen contract after prebranch intent/fresh capacity.",
+      "validation": [
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window20-query-combined-20261018 (primary, cwd pwa)",
+          "revision": "220fee3abda0076b5464482b18b5c2b5c6738e82",
+          "result": "FIRST PASS274tests/16files7.07s and strict combined types; actual child45396 observed exit0. Exact reviewed query source/exports and unchanged native oracle integrated. No App/build/browser/old native recapture."
+        }
+      ],
       "progress": [],
       "blocker": null,
       "dependencyGates": {
@@ -2436,9 +2443,9 @@
           "pwa/src/domain/catalog/fixtures/native-query.json",
           "pwa/src/domain/catalog/index.ts"
         ],
-        "status": "Native query oracle ACCEPTED normally integrated; same existing Sol/high SOURCE phase2 assigned on clean be4ade88 branch, contract unchanged.",
+        "status": "ACCEPTED pure constraint/query matcher after normal merge and first primary checks. SQL/ranking/groups/runtime catalog/UI remain open.",
         "scope": "<=24NEW named native groups using unchanged WHOLE query plus corpus26..27/35..51 private parser including closing brace, pinned cached Kotlin2.2.10 and actual constraint/query serializers; retain native outputs/failures/extraction provenance. Phase1producer/fixture/WORKLOG only, no SQL/rank/groups/UI/other source/old capture.",
-        "nextAction": "Implement frozen six-function query API in owned matcher/test/index/WORKLOG only, native oracle immutable. First focused24native+browser guard/snapshot/reentry/cap tests and strict scoped types; commit validated source then idle for root review/primary combined checks. No SQL/rank/groups/UI/native repeat or identity implementation.",
+        "nextAction": "Do not repeat accepted query/native/typing evidence. Next independent identity source uses already validated native16groups55samples and frozen contract after prebranch intent/fresh capacity.",
         "oracleCommit": "be4ade885fa7aa3604991a49a2351e865a515c64",
         "nativeValidation": {
           "command": "python -X utf8 pwa/src/domain/catalog/fixtures/generate-query-native.py --reuse-work .artifacts/pwa-port/t15-query-native/20261018T163819194604Z",
@@ -2449,7 +2456,33 @@
           "receiptSha256": "1192a4bc2d8eb3a7801d6cc72f704f0ebad4763ef28372242d88e474517776ec"
         },
         "referenceMergeCommit": "e42bb282c7477c59722644efd7b9a7cd5eb410bb",
-        "phase2BaseCommit": "be4ade885fa7aa3604991a49a2351e865a515c64"
+        "phase2BaseCommit": "be4ade885fa7aa3604991a49a2351e865a515c64",
+        "workerTip": "d7f903accffc738273d42277ccbd84b4026d8115",
+        "sha256": {
+          "aural-progression-query.ts": "a843789eb998bb91829e7750d8c3da679b1e6c597318c184d2a88621545b2296",
+          "aural-progression-query.test.ts": "2992841d689beb2b4d6be84c9f49c8f807e0c471acc687c4189903b76bb8b6bb",
+          "index.ts": "dc9837941602d4e6e66d5a12e1c7dacdc5899c3069e6a76a395f08e24ddb7a65"
+        },
+        "workerValidation": {
+          "commands": [
+            "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t15-query-vitest.config.mjs",
+            "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc -p ../.artifacts/pwa-port/t15-query-tsconfig.json"
+          ],
+          "guards": [
+            "t15-query-source-unit-20261018-18",
+            "t15-query-source-types-20261018-19"
+          ],
+          "result": "FIRST PASS31groups/1file741ms (24native70probes +7browser) and scoped strict types, exit0. Source failure cycles0; exact owned4paths; native source/fixture immutable.",
+          "receiptSha256": "8f2666be6b8bc8c07aa2797bea9d26fe957ed022f7999377d856af36573c7e95"
+        },
+        "mergeCommit": "220fee3abda0076b5464482b18b5c2b5c6738e82",
+        "testedRevision": "220fee3abda0076b5464482b18b5c2b5c6738e82",
+        "primaryValidation": {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window20-query-combined-20261018 (primary, cwd pwa)",
+          "revision": "220fee3abda0076b5464482b18b5c2b5c6738e82",
+          "result": "FIRST PASS274tests/16files7.07s and strict combined types; actual child45396 observed exit0. Exact reviewed query source/exports and unchanged native oracle integrated. No App/build/browser/old native recapture."
+        }
       },
       "identityContractIntent": {
         "owner": "coordinator runtime unknown",
@@ -2491,7 +2524,8 @@
           "nativeClassSha256": "f4db0315dfc5e8f519c8fdb5e519f9f1348ba5b00fc973dafe66a298c0b5a7e6"
         },
         "receipt": ".artifacts/pwa-port/t15-identity-native-validation-window20.json",
-        "receiptSha256": "e2bdf4a83cbbb6327baed8584fcebe550570afcdc4706e37e6b1af2dec376224"
+        "receiptSha256": "e2bdf4a83cbbb6327baed8584fcebe550570afcdc4706e37e6b1af2dec376224",
+        "referenceCommit": "a55cc708593f52b1e31152cb01e8d1375f9511cb"
       }
     },
     {
@@ -2813,8 +2847,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T16:43:21.372482+00:00",
-    "sourceCommit": "e42bb282c7477c59722644efd7b9a7cd5eb410bb",
+    "date": "2026-10-18T16:51:38.263720+00:00",
+    "sourceCommit": "220fee3abda0076b5464482b18b5c2b5c6738e82",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -2838,12 +2872,12 @@
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-builtin-initializer",
-      "tip": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
-      "status": "initializer accepted clean idle before read-only proposal"
+      "branch": "codex/pwa-aural-query",
+      "tip": "d7f903accffc738273d42277ccbd84b4026d8115",
+      "status": "accepted clean idle"
     },
-    "nextAction": "Implement frozen six-function query API in owned matcher/test/index/WORKLOG only, native oracle immutable. First focused24native+browser guard/snapshot/reentry/cap tests and strict scoped types; commit validated source then idle for root review/primary combined checks. No SQL/rank/groups/UI/native repeat or identity implementation.",
-    "reason": "Native query oracle reviewed/accepted; phase2 matcher source assigned to same Sol/high worker; identity contract prepared only.",
+    "nextAction": "Do not repeat accepted query/native/typing evidence. Next independent identity source uses already validated native16groups55samples and frozen contract after prebranch intent/fresh capacity.",
+    "reason": "Query matcher accepted274combined/types. Native identity reference ready55samples; next exact bounded identity implementation after dated prebranch claim.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -2851,38 +2885,7 @@
       "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
     },
     "usageAvailability": "Ordinary usage allowed at last observation. Five-hour70 no new work/80 checkpoint; weekly100 ordinary exhaustion. No credit/reset/model action.",
-    "activeWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-aural-query",
-      "baseCommit": "d4d3caa12d39560c7c0146b3cc38231626ed3fa1",
-      "priorBranch": "codex/pwa-builtin-initializer",
-      "priorTip": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
-      "ownedPaths": [
-        "pwa/src/domain/catalog/aural-progression-query.ts",
-        "pwa/src/domain/catalog/aural-progression-query.test.ts",
-        "pwa/src/domain/catalog/QUERY_WORKLOG.md",
-        "pwa/src/domain/catalog/fixtures/generate-query-native.py",
-        "pwa/src/domain/catalog/fixtures/native-query.json",
-        "pwa/src/domain/catalog/index.ts"
-      ],
-      "status": "Native query oracle ACCEPTED normally integrated; same existing Sol/high SOURCE phase2 assigned on clean be4ade88 branch, contract unchanged.",
-      "scope": "<=24NEW named native groups using unchanged WHOLE query plus corpus26..27/35..51 private parser including closing brace, pinned cached Kotlin2.2.10 and actual constraint/query serializers; retain native outputs/failures/extraction provenance. Phase1producer/fixture/WORKLOG only, no SQL/rank/groups/UI/other source/old capture.",
-      "nextAction": "Implement frozen six-function query API in owned matcher/test/index/WORKLOG only, native oracle immutable. First focused24native+browser guard/snapshot/reentry/cap tests and strict scoped types; commit validated source then idle for root review/primary combined checks. No SQL/rank/groups/UI/native repeat or identity implementation.",
-      "oracleCommit": "be4ade885fa7aa3604991a49a2351e865a515c64",
-      "nativeValidation": {
-        "command": "python -X utf8 pwa/src/domain/catalog/fixtures/generate-query-native.py --reuse-work .artifacts/pwa-port/t15-query-native/20261018T163819194604Z",
-        "guard": "t15-query-oracle-retained-check-20261018-11 (sibling --repo)",
-        "result": "PASS exit0, actual pinned Kotlin2.2.10/serialization1.8.1/two emitted serializers. First compile/runtime succeeded; one LF-only adapter correction validated retained byte-identical native/driver plus full input values, no compile/capture repeat. Producer/root review complete.",
-        "producerSha256": "f8a7a1dd551c4e0da2e3853e76c017e22ef2e8197d564cd999f350549b7ad5be",
-        "fixtureSha256": "dd86d17503f78a1b6f47063b4a96c70f597f52237b8072d6d18c0911eb726c5c",
-        "receiptSha256": "1192a4bc2d8eb3a7801d6cc72f704f0ebad4763ef28372242d88e474517776ec"
-      },
-      "referenceMergeCommit": "e42bb282c7477c59722644efd7b9a7cd5eb410bb",
-      "phase2BaseCommit": "be4ade885fa7aa3604991a49a2351e865a515c64"
-    },
+    "activeWorker": null,
     "integrationAwaitingPrimaryAcceptance": null,
     "fiveHourAction": "Live2%; no new operations at70, checkpoint/yield80.",
     "resumeObservation": {
