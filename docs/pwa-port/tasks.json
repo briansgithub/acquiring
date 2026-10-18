@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T03:00:28.331224+00:00",
+  "updated": "2026-10-18T03:09:57.610061+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1325,7 +1325,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
       "slice": "Current, previous, Home, Major context and interval previews accepted; visual timeline/defaults/position memory remain",
-      "nextAction": "No unchangedinterval/native/component/browser recapture. T12remainingvisualtimeline/defaults/routepositionmemory; globalMajorpreferenceT21 andsinging/tessituraT13 future. ContinueindependentT14builtin-currentproposal/contract whenready/livecapacity.",
+      "nextAction": "Interval previews/cards are accepted; do not repeat their native/component/browser checks. Remaining T12 visual timeline/defaults/route-position memory can follow an explicit bounded contract. Current T14 typed helper accepted; full saved-JSON/session integration remains open.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1801,7 +1801,7 @@
         ],
         "status": "ACCEPTED nativeintervalcards c49c4047 normallymerged; strictcombinedtypes/build8eb973ca54a5 andinitial7affectedactualChromePASS plusfinal2affectedlayoutchecksPASSaftervisualcardwidthrefinement. Root/melodyrawsource/sourcekey/Majorlabelonly/450ms3stagePCM/manualtransposeonce/currentpreset/static-intervalexclusivity/Reset/sectioncleanup/nativeunison/restvisibility/keyboard/44px/narrow200% proven. Errorboundaryrefusesunsupportedrequest viaexistingalert. FullT12/tessitura/singing/device gates remainopen.",
         "scope": "Frozenview-contracts finalcomment: oneexistingPreviewOwner renderCardPreview injection, intervalcard request rawpitches/settings/currentpreset/manualtransposeonce. Native rootintervalvisibility/writtenunison+melodyINTERVAL/restbarriers, visualshorthand/Interval label and exactspokenaria names. Existingallstaticcards/stopref/lifecycle/props unchanged. No rootcontracts/deps/audioDSP/controller/App/browser/tasks edits.",
-        "nextAction": "No unchangedinterval/native/component/browser recapture. T12remainingvisualtimeline/defaults/routepositionmemory; globalMajorpreferenceT21 andsinging/tessituraT13 future. ContinueindependentT14builtin-currentproposal/contract whenready/livecapacity.",
+        "nextAction": "Interval previews/cards are accepted; do not repeat their native/component/browser checks. Remaining T12 visual timeline/defaults/route-position memory can follow an explicit bounded contract. Current T14 typed helper accepted; full saved-JSON/session integration remains open.",
         "workerTip": "c49c4047d7daae3b7dc1d960b932f6a69eb0f8d0",
         "mergeCommit": "af8f065fbc2adbdc78035a932fcbb1c79375355a",
         "validation": [
@@ -1866,8 +1866,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "fb3f23b15a5bfe27fa473a7afcaf800441d0fdec",
-      "slice": "Pure assessment and evidence reducers integrated and validated; generator/scheduler/session repair open",
-      "nextAction": "Under own guard reuse cleanf9330517 sibling on new absent branch from exact frozenbase; preserve all priorbranches. Save small receipts and validated RNG/helper checkpoint thenidle/report; nophase2withoutrootfollowup. Newweekly100/fivehour70/80 policy applies, no credits/resets.",
+      "slice": "Generator, scheduler, envelope repair and typed builtin-current regeneration accepted. Full saved-JSON eligibility, session actions, persistence, corpus/pattern support and learning UI remain open.",
+      "nextAction": "After live capacity check, same idle Sol/high may make a bounded read-only proposal for complete builtin saved-current JSON eligibility, reusing the accepted envelope/raw recovery and14 native oldRaw cases without recapture. Root freezes a separate contract before edits. No deferred.current cast, session/storage activation, corpus/pattern support or fullT14 acceptance yet.",
       "validation": [
         {
           "command": "python pwa/src/domain/learning/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/domain/learning/pitch-assessment.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (node commands from pwa)",
@@ -1893,6 +1893,12 @@
           "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback src/features/details src/app/routes.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (pwa rootguard)",
           "revision": "8b4b49cc609aad0dce46eedbb252ae479a843a3a plus currentcardAssignment tree",
           "result": "PASS114combinedunitchecks/window13-builtin-card-combined-unit,combinedstrict types/build/window13-current-cards-build. Builtinworker c8a46052first32nativefullobjects/40focusedtests/scopedtypes alreadypassed, not recaptured. IncludesexactsignedLongseeds/extrema/hash/fingerprints/nativealiases/6families/7skills/support/4mics/transfer/override draws/octavelift/provenancereplay/frozenvalues/boundedvalidation/generic evidencebegin. Rootreview no materialfindings. PrivateUI currentcards actualbrowser stillpending; buildshell recordedseparately. No fullT14 scheduler/pattern/corpus/sessionrepair/audio/UI/deviceclaim."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window18-builtin-current-combined-20261018 (root guard, cwd pwa)",
+          "revision": "4d14a6e922d276a7cffa5372300f1ecda6bb320d",
+          "result": "PASS196checks/13files6.40s and strict combined types first attempt. Actual child27098 observed exit0; exact worker source hashes match integrated files. Pure helper unwired to App; production shell8eb973ca54a5 and accepted interval browser evidence unchanged, no unnecessary build/browser/native rerun."
         }
       ],
       "progress": [
@@ -1913,7 +1919,8 @@
         "2026-10-17T17:24:15.240008+00:00 Pre-integration: root3cd20c3fa9969fa03dfaf009bb00c0cf04c13ef6 withownedcurrentcarddirty paths, worker c8a46052clean/idle, bothguards0recovery; sixlearningpaths only, acceptedRNG unchanged. Source/provenance/nativeoracle reviewed, scalar-onlytargetsnapshot/deepfrozen independent outputs/nativeLongdraws/UTF16identities correct. No pendingapproval rejection; one testwrite timeoutneverexecuted thenexplicitlypermittedsmallerretry passed. Last25%/87%; weekly90checkpointthencontinue100. FullT14open.",
         "2026-10-17T17:29:34.067093+00:00 SoleSol/high read-only schedulerproposal claim onexistingclean c8a46052, builtinaccepted951e321c/root114checks/types/build. RootownsdisjointcurrentcardUI/cancellationproof pendingbrowser, dirtypaths preserved. No newbranch/tree/sourceassignment. Latest34%five-hour/89%weekly, at90checkpointthencontinue100; no credit/reset/modelaction.",
         "2026-10-17T17:45:30.506367+00:00 Builtin scheduler ACCEPTED normalmerge5508a0a03f090d750c62626394f4504d8e4c90a8: first24native/29focused/scopedtypes, root143combined/strict typesPASS. Exactnativehelperversion/cap/seedxor/order/ties/masteredreview/micshuffle/support/transfer. Initialrawbyteprovenanceassertion CRLFvsGitLF only, normalizedcomparison+gitdiffPASS, no source/testfailure. Oldfixtures/accepteddependencies unchanged.",
-        "2026-10-17T21:43:59.454140+00:00 Pureenvelope repair ACCEPTED normalmerge7f33ff0df0acb3b29fa62f69ab3c5e2498ddb25d:native16pluginprojections/worker27/root177combinedchecks/types. Firsttypecheckcontrolflownarrowingfix1 explicitneverfunction, thenstrict typesPASS; no source-rule testfailure. Rootreviewcaughtdeferredunsafeintegercopy; exactoriginalrawretained andaffecteddeferredcopyrefused, newregression/exactsourcechecksPASS. Unsafe/inexact Longexponent andresourcebounds explicitbrowserextensions; rawrecovery preserved, no encoder/autowrite/fullsessionclaim."
+        "2026-10-17T21:43:59.454140+00:00 Pureenvelope repair ACCEPTED normalmerge7f33ff0df0acb3b29fa62f69ab3c5e2498ddb25d:native16pluginprojections/worker27/root177combinedchecks/types. Firsttypecheckcontrolflownarrowingfix1 explicitneverfunction, thenstrict typesPASS; no source-rule testfailure. Rootreviewcaughtdeferredunsafeintegercopy; exactoriginalrawretained andaffecteddeferredcopyrefused, newregression/exactsourcechecksPASS. Unsafe/inexact Longexponent andresourcebounds explicitbrowserextensions; rawrecovery preserved, no encoder/autowrite/fullsessionclaim.",
+        "2026-10-18T03:09:40.360495+00:00 Typed builtin-current regeneration accepted d61fa954/normalmerge4d14a6e9:14 real native serializer cases,21 focused worker checks,196 combined primary checks and strict types first PASS. Full JSON eligibility and session/storage integration remain open."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -2151,9 +2158,39 @@
           "pwa/src/domain/learning/fixtures/native-builtin-current.json",
           "pwa/src/domain/learning/index.ts"
         ],
-        "status": "Datedclaimbeforebranchreuse: frozencontract890c8ef7/stricttypesPASS; rootowns pendingplayback.css160pxlayout andplayback.spec.ts producttest (initial7ChromePASS, final2layoutchecks pending). Sol5ebcleanidle, Lunac49cleanidle; allrefs/artifactspreserved. Live42%fivehour/18%weekly, soleSol/high oraclefirst.",
+        "status": "ACCEPTED pure typed builtin-current regeneration d61fa954 normally merged4d14a6e9. Root196 combined learning/playback tests/13files and strict combined types PASS first attempt. Worker21 focused/native14/scoped types first PASS. Top Long seed/version, flags, metadata, getter snapshots, aliases and unsupported-domain/resource boundaries match reviewed native semantics. No full JSON eligibility/activation/session/storage/UI/corpus/pattern claim.",
         "scope": "Frozenbuiltin-current-contracts.ts typedprojection helper ONLY, firstnativeoracle<=14NEWcases thenrootreviewbeforeimplementation. RealKotlin2.2.10plugin/typed oldAuralExercise decode/unchanged125..138 expression/realacceptedtheory+generator. Nativeoutputfullrestoredexerciseorfailure, exactLongcanonicaladapter. No oldnativecapture/envelopeJSONdecoder/activation/progress/storage/actions/UI/DSP/contracts/deps edits.",
-        "nextAction": "Underownguard newclaimedbranch EXACTbase inexistingcleansibling; persistintent, NEWnativeproducer+fixtures/worklog onlyfirstcheckpoint, verifyactualserializerclass/sourceprovenance/nativecases thencommit/idle. NO implementation before rootreview/followup. At70fivehournonew/check/worker,80yield; weekly100override."
+        "nextAction": "After live capacity check, same idle Sol/high may make a bounded read-only proposal for complete builtin saved-current JSON eligibility, reusing the accepted envelope/raw recovery and14 native oldRaw cases without recapture. Root freezes a separate contract before edits. No deferred.current cast, session/storage activation, corpus/pattern support or fullT14 acceptance yet.",
+        "oracleCommit": "762e6c07c71eab4a622fac6253ed27957c07c1f6",
+        "oracleReview": "Root reviewed complete158line producer, pinned real serializers/native125..138 and14cases/11fulloutputs/3expected failures; producer/fixture hashes and26field outputs verified. First capture passed; no recapture.",
+        "workerTip": "d61fa9548a17957cf9541f8336cef3b50c029996",
+        "mergeCommit": "4d14a6e922d276a7cffa5372300f1ecda6bb320d",
+        "testedRevision": "4d14a6e922d276a7cffa5372300f1ecda6bb320d",
+        "sha256": {
+          "pwa/src/domain/learning/builtin-current.ts": "9b2b8fa20c95c8f71106c3f731b42531c38ea5f63c9c44c244c02e49a6b795a9",
+          "pwa/src/domain/learning/builtin-current.test.ts": "4556d41a96486055e78acdeecd30a43cbfbbc2c238a34faad538b8f06643868a",
+          "pwa/src/domain/learning/index.ts": "69c04b8b41225c39f6a691d6f73ff4cb7b138e482b927c2e9ceb85a802c85bb7",
+          "pwa/src/domain/learning/fixtures/generate-builtin-current-native.py": "1bfc78838ab5c4a25107bcdd55658aaaad51ba2d1bb0580e69414c2d36c33606",
+          "pwa/src/domain/learning/fixtures/native-builtin-current.json": "15522f7b759a600ec726e5be48005ffa7aaf3793789df75c166b097957fa3677"
+        },
+        "validation": [
+          {
+            "command": "python -X utf8 pwa/src/domain/learning/fixtures/generate-builtin-current-native.py",
+            "guard": "t14-builtin-current-native-20261018-07 (sibling --repo)",
+            "result": "PASS first capture14NEW actual Kotlin serializer cases:11 full restored exercise outputs/3 expected native failures, pinned compiler/runtime/plugin2.2.10 and19 serializer classes. Producer/oracle unchanged after oracle762e6c07."
+          },
+          {
+            "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t14-builtin-current-vitest.config.mjs; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc -p ../.artifacts/pwa-port/t14-builtin-current-tsconfig.json",
+            "guard": "t14-builtin-current-phase2-tests-20261018-17 / types-20261018-18 (sibling --repo, cwd pwa)",
+            "result": "PASS21 focused/1.72s and scoped strict types first attempts; exact tested blobs committed d61fa954."
+          },
+          {
+            "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+            "guard": "window18-builtin-current-combined-20261018 (root guard, cwd pwa)",
+            "revision": "4d14a6e922d276a7cffa5372300f1ecda6bb320d",
+            "result": "PASS196checks/13files6.40s and strict combined types first attempt. Actual child27098 observed exit0; exact worker source hashes match integrated files. Pure helper unwired to App; production shell8eb973ca54a5 and accepted interval browser evidence unchanged, no unnecessary build/browser/native rerun."
+          }
+        ]
       }
     },
     {
@@ -2500,57 +2537,47 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-17T22:26:50.099088+00:00",
-    "sourceCommit": "67fe6f5aa327374e16ee908b7e8bcea1799e48b9",
-    "usageObserved": {
-      "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 11
-    },
-    "fiveHourResetUnix": 1792290016,
-    "weeklyResetUnix": 1792876816,
-    "unresolvedRuns": [],
-    "reason": "Window15 prepared boundedintervalaudio claim at69%, but freshpredelegation70% triggeredfivehour nonewstart. No worker/branch/source/check began. Claimcheckpoint67fe6f5a andacceptedproduct2a9eb1ce retained.",
-    "supersededWindowEvidence": "Thisheartbeat actual2026-10-17T21:20UTC live0/0 andnewresets1792290016/1792876816 superseded oldforecast1792275143/1792653278. No credits/resetactions taken; priorfutureforecast cannotblock ordinaryremainingallowance.",
-    "resumeObservation": {
-      "date": "2026-10-18T02:32:35.014988+00:00",
-      "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 12,
-      "fiveHourResetUnix": 1792308712,
-      "weeklyResetUnix": 1792876816,
-      "reason": "Livefivehourresetverified; savedunstartedclaim resumeswithoutduplicateworker. Exactpriorbranch/tip/preservation verified."
-    },
-    "activeWorker": null,
-    "completedWorker": {
-      "owner": "song_ui_review",
-      "model": "gpt-6-luna",
-      "thinking": "medium",
-      "branch": "codex/pwa-previous-cards",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
-      "tip": "4f50008608ce216e9fb4b77ab94150ea7ec507ba",
-      "status": "Normallyintegrated/accepted; cleanidle. Sol/high40194815 cleanidle afteraccepted sessionrepair +read-onlyintervalproposal."
-    },
-    "lastAcceptedProductCommit": "2a9eb1ceaff97428b734ad18f1b90241023ac6ca",
-    "integrationAwaitingPrimaryAcceptance": null,
-    "usageAvailability": "Ordinary allowed; fivehour70% cutoff, weekly11% used. No newwork untilapplicablefivehourcapacity<70. No credit/reset/modelchange.",
-    "nextAction": "Afterapplicablefivehourcapacity<70 andordinaryallowed, resume THIS exact3pathclaim frombasea34928ad inpreservedSol/highsibling; no duplicateworker/reproposal/nativecapture. Recheckbranch/state/guards beforebranchcreation. Currentcutoffreset1792290016; weeklyordinaryremaining89%doesnotblock.",
+    "date": "2026-10-18T03:09:57.610061+00:00",
+    "sourceCommit": "4d14a6e922d276a7cffa5372300f1ecda6bb320d",
+    "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
-      "baseCommit": "2a9eb1ceaff97428b734ad18f1b90241023ac6ca",
-      "shell": "6c7d8e82510b",
+      "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
+      "shell": "8eb973ca54a5",
       "task": "T12",
       "testedSha256": {
-        "pwa/src/features/playback/PlaybackCards.tsx": "0f9f1e2010dcf517239fcb2c105ae8c65b51057818a31eedb3f243eb43bbfd46",
-        "pwa/src/features/playback/playback.css": "f790b96c9ab31d48c5f418babdcc210a2e758e9cb1ec32245afbbe4eb21ac859",
-        "pwa/tests/browser/playback.spec.ts": "cd8904653dd219877ef1e973b05bac3c9b3dfccbd1e1d7d687e27483d1505c41",
-        "pwa/scripts/catalog/make-library-browser-fixture.py": "4f91f67020b75b3e6b66896f41d9a3a018f5a35987b9ea481704e30553217d08"
+        "pwa/src/features/playback/PlaybackCards.tsx": "d321d33b4cda1a0b3e53bb7a227ae81671c0899f9f445cbc8c9370d841328021",
+        "pwa/src/features/playback/playback.css": "e883799c4dcf00c3a5a36a52d89a72cbbd6612d3425c850501ad5cf70c6a48d5",
+        "pwa/tests/browser/playback.spec.ts": "d48e3ee139cf526ff8be584f537affc4313bf4abb349e3a088591a3cdb24dec5"
       }
     },
-    "deferredWorker": null,
+    "usageObserved": {
+      "fiveHourUsedPercent": 70,
+      "weeklyUsedPercent": 22
+    },
+    "fiveHourResetUnix": 1792308712,
+    "weeklyResetUnix": 1792876816,
+    "unresolvedRuns": [],
+    "worker": {
+      "owner": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "branch": "codex/pwa-builtin-current",
+      "tip": "d61fa9548a17957cf9541f8336cef3b50c029996",
+      "status": "accepted"
+    },
+    "nextAction": "After live capacity check, same idle Sol/high may make a bounded read-only proposal for complete builtin saved-current JSON eligibility, reusing the accepted envelope/raw recovery and14 native oldRaw cases without recapture. Root freezes a separate contract before edits. No deferred.current cast, session/storage activation, corpus/pattern support or fullT14 acceptance yet.",
+    "reason": "Interval component and product cards accepted with real Chrome PCM/lifecycle/layout proof. The pure typed builtin-current regeneration helper is accepted. Full JSON eligibility, session actions, persistence, corpus/pattern support and learning UI remain open.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
       "scope": "Preserve hourlyheartbeat/name/target/status/notificationsprompt; replace old combined70/80cutoff with separate fivehour70/80 andweekly100/ordinaryexhaustion, checkpointweekly90thencontinuing.",
       "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
-    }
+    },
+    "usageAvailability": "Ordinary usage allowed at last observation. Five-hour70 no new work/80 checkpoint; weekly100 ordinary exhaustion. No credit/reset/model action.",
+    "activeWorker": null,
+    "integrationAwaitingPrimaryAcceptance": null,
+    "fiveHourAction": "70% no-new-work boundary reached after covering checks passed; checkpoint and yield until live capacity returns below70. Next proposal is not assigned."
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",
   "usagePolicy": {
@@ -2564,13 +2591,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-17T21:22:18.142718+00:00",
-      "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 0,
+      "at": "2026-10-18T03:09:57.610061+00:00",
+      "fiveHourUsedPercent": 70,
+      "weeklyUsedPercent": 22,
       "ordinaryUsageAllowed": true,
-      "fiveHourResetsAt": 1792290016,
+      "fiveHourResetsAt": 1792308712,
       "weeklyResetsAt": 1792876816,
-      "action": "Both livewindows reset0/0 andtimestampschanged; supersedes oldfutureforecast1792275143/1792653278. Resume boundedwork, no credit/reset/modelaction."
+      "action": "Current live observations supersede earlier checkpoints; weekly future reset does not block remaining ordinary allowance."
     }
   }
 }
