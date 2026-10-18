@@ -1,0 +1,2260 @@
+{
+  "captureMode": "retained-successful-native-output",
+  "nativeStdoutSha256": "37d7fbb49cd7de56987f4d5956c204c24e4f143f1b52cc67aabc239271ad9833",
+  "nativeInputSha256": "4a276aadf47c700a0b2197052f97bc5b8cb953017a46e74b09d54b1e569b0077",
+  "serializerClassSha256": {
+    "AuralChordConstraint$$serializer.class": "f83686d2675e870b32f7bb9f9427dd3374cae46641aa8924c48c41dbe54e47ac",
+    "AuralProgressionQuery$$serializer.class": "813434629050a98abb603ce876bfc938927bc760b8f02d85ad61e34eccf8a93c"
+  },
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "kotlinVersion": "2.2.10",
+  "serializationVersion": "1.8.1",
+  "compilerVersion": "info: kotlinc-jvm 2.2.10 (JRE 25.0.3+-15898627-b508.16)",
+  "serializerClasses": [
+    "AuralChordConstraint$$serializer.class",
+    "AuralProgressionQuery$$serializer.class"
+  ],
+  "querySourceSha256": "bcf448a2408dd474950c9da9fac3721de1242a174f16389c04a6237ac6bc7bd8",
+  "corpusSourceSha256": "69c9676196c0bfe0b8e28a419810d56a7a63d2bb6a9181deec7d982c001e368f",
+  "startGroupDeclarationsSha256": "3706af4c0acd60453777971a9112de702648821ad55efcb76d2886175f293160",
+  "startGroupParserSha256": "32987b06cb2a50186f1c9e21a614109aa0667b3d5f14a0c00d788f24784dcbb9",
+  "extractedSourceSha256": {
+    "AuralProgressionQuery": "bcf448a2408dd474950c9da9fac3721de1242a174f16389c04a6237ac6bc7bd8",
+    "StartGroup": "021fff97928d27da86be854644c523c9c98ae9c5b3d1294aa621b7554fe01a1b",
+    "Driver": "61faffd583592d22a14bd7b1677b86c3c25f59fd4014197efe070669b3e72820"
+  },
+  "producerSha256": "f8a7a1dd551c4e0da2e3853e76c017e22ef2e8197d564cd999f350549b7ad5be",
+  "jars": [
+    {
+      "file": "kotlin-serialization-compiler-plugin-embeddable-2.2.10.jar",
+      "sha256": "c70a592804a59525ba1e314579c01a23ecc8566119fe21cd977f5a290d28bfa9"
+    },
+    {
+      "file": "kotlin-compiler-embeddable-2.2.10.jar",
+      "sha256": "79628fd5d64b4692a62f98962baab00e9076a37e2cffd6ace33cd0b7be7d1cdf"
+    },
+    {
+      "file": "kotlin-stdlib-2.2.10.jar",
+      "sha256": "9c67cc79efd6b9215b49d2a4308f5f3433537376c7c88e89bdd6729bd096e61a"
+    },
+    {
+      "file": "kotlin-script-runtime-2.2.10.jar",
+      "sha256": "c304a67dba6a61dde560e6310920bed746307c3854f6675c29ac29114731b6b0"
+    },
+    {
+      "file": "kotlin-daemon-embeddable-2.2.10.jar",
+      "sha256": "b31573d418961fa080760fedcfc90d68ad67a85eafa245c73fe3d551476777ba"
+    },
+    {
+      "file": "kotlinx-coroutines-core-jvm-1.9.0.jar",
+      "sha256": "ad89c2892235e670f222d819cb3d81188143cb19a05b59df9889ae4269f5c70a"
+    },
+    {
+      "file": "annotations-23.0.0.jar",
+      "sha256": "7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05"
+    },
+    {
+      "file": "kotlinx-serialization-json-jvm-1.8.1.jar",
+      "sha256": "8769e5647557e3700919c32d508f5c5dad53c5d8234cd10846354fbcff14aa24"
+    },
+    {
+      "file": "kotlinx-serialization-core-jvm-1.8.1.jar",
+      "sha256": "3565b6d4d789bf70683c45566944287fc1d8dc75c23d98bd87d01059cc76f2b3"
+    }
+  ],
+  "adapter": "Unchanged WHOLE frozen AuralProgressionQuery.kt plus AuralCorpus26..27/35..51 parser; real emitted serializers construct typed defaults/validate. JSON fixture adapter only; native canonical/display/match outputs and constructor failures; no TS expectations, SQL/runtime/groups or old fixture capture.",
+  "cases": [
+    {
+      "name": "empty-query",
+      "probes": [
+        {
+          "kind": "query",
+          "query": {},
+          "labels": [],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": []
+            },
+            "matches": true
+          }
+        },
+        {
+          "kind": "query",
+          "query": {
+            "version": 1,
+            "chords": []
+          },
+          "labels": [
+            "not a chord"
+          ],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": []
+            },
+            "matches": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "nonempty-query-empty-or-short",
+      "probes": [
+        {
+          "kind": "query",
+          "query": {
+            "version": 1,
+            "chords": [
+              {
+                "degree": 5
+              }
+            ]
+          },
+          "labels": [],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": [
+                {
+                  "degree": 5,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                }
+              ]
+            },
+            "matches": false
+          }
+        },
+        {
+          "kind": "query",
+          "query": {
+            "version": 1,
+            "chords": [
+              {
+                "degree": 5
+              },
+              {
+                "degree": 1
+              }
+            ]
+          },
+          "labels": [
+            "V"
+          ],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": [
+                {
+                  "degree": 5,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                }
+              ]
+            },
+            "matches": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "consecutive-offset",
+      "probes": [
+        {
+          "kind": "query",
+          "query": {
+            "version": 1,
+            "chords": [
+              {
+                "degree": 5
+              },
+              {
+                "degree": 1,
+                "family": "minor"
+              }
+            ]
+          },
+          "labels": [
+            "ii",
+            "V7",
+            "i9",
+            "IV"
+          ],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": [
+                {
+                  "degree": 5,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "minor",
+                  "exact": null,
+                  "inversion": null
+                }
+              ]
+            },
+            "matches": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "no-gap-subsequence-or-wrap",
+      "probes": [
+        {
+          "kind": "query",
+          "query": {
+            "version": 1,
+            "chords": [
+              {
+                "degree": 5
+              },
+              {
+                "degree": 1,
+                "family": "minor"
+              }
+            ]
+          },
+          "labels": [
+            "V7",
+            "IV",
+            "i9"
+          ],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": [
+                {
+                  "degree": 5,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "minor",
+                  "exact": null,
+                  "inversion": null
+                }
+              ]
+            },
+            "matches": false
+          }
+        },
+        {
+          "kind": "query",
+          "query": {
+            "version": 1,
+            "chords": [
+              {
+                "degree": 5
+              },
+              {
+                "degree": 1
+              }
+            ]
+          },
+          "labels": [
+            "I",
+            "V"
+          ],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": [
+                {
+                  "degree": 5,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                }
+              ]
+            },
+            "matches": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "multiple-window-starts",
+      "probes": [
+        {
+          "kind": "query",
+          "query": {
+            "version": 1,
+            "chords": [
+              {
+                "degree": 5
+              },
+              {
+                "degree": 1
+              }
+            ]
+          },
+          "labels": [
+            "V",
+            "ii",
+            "V7",
+            "I",
+            "V",
+            "I"
+          ],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": [
+                {
+                  "degree": 5,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                }
+              ]
+            },
+            "matches": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "nonexact-applied-refusal",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5
+          },
+          "checks": [
+            {
+              "label": "V/V"
+            },
+            {
+              "label": "V7/V"
+            },
+            {
+              "label": "V(foo/bar)"
+            },
+            {
+              "label": "V7"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "any",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V",
+            "matches": [
+              false,
+              false,
+              false,
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "exact-applied-form",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "exact": "V7/V"
+          },
+          "checks": [
+            {
+              "label": "V7/V"
+            },
+            {
+              "label": "V7"
+            },
+            {
+              "label": " V7/V "
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "any",
+              "exact": "V7/V",
+              "inversion": null
+            },
+            "label": "V7/V",
+            "matches": [
+              true,
+              false,
+              true
+            ]
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 2,
+            "exact": "ii\u00f87"
+          },
+          "checks": [
+            {
+              "label": "ii\u00f87"
+            },
+            {
+              "label": "iio7"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 2,
+              "accidental": "",
+              "family": "any",
+              "exact": "ii\u00f87",
+              "inversion": null
+            },
+            "label": "ii\u00f87",
+            "matches": [
+              true,
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "exact-root-distinct-inversion",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "exact": "V7"
+          },
+          "checks": [
+            {
+              "label": "V65",
+              "rootLabel": "V7"
+            },
+            {
+              "label": "V65",
+              "rootLabel": "V\u25b37"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "any",
+              "exact": "V7",
+              "inversion": null
+            },
+            "label": "V7",
+            "matches": [
+              true,
+              false
+            ]
+          }
+        },
+        {
+          "kind": "query",
+          "query": {
+            "version": 1,
+            "chords": [
+              {
+                "degree": 5,
+                "exact": "V7",
+                "inversion": "V65"
+              }
+            ]
+          },
+          "labels": [
+            "ii",
+            "V65"
+          ],
+          "rootLabels": [
+            "ii",
+            "V7"
+          ],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": [
+                {
+                  "degree": 5,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": "V7",
+                  "inversion": "V65"
+                }
+              ]
+            },
+            "matches": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "required-inversion-mismatch",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "exact": "V7",
+            "inversion": "V65"
+          },
+          "checks": [
+            {
+              "label": "V65",
+              "rootLabel": "V7"
+            },
+            {
+              "label": "V43",
+              "rootLabel": "V7"
+            },
+            {
+              "label": " V65 ",
+              "rootLabel": " V7 "
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "any",
+              "exact": "V7",
+              "inversion": "V65"
+            },
+            "label": "V65",
+            "matches": [
+              true,
+              false,
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "inversion-without-exact-ignored",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "inversion": "unrelated"
+          },
+          "checks": [
+            {
+              "label": "V43"
+            },
+            {
+              "label": "V"
+            },
+            {
+              "label": "IV"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "any",
+              "exact": null,
+              "inversion": "unrelated"
+            },
+            "label": "unrelated",
+            "matches": [
+              true,
+              true,
+              false
+            ]
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "inversion": "V7/V"
+          },
+          "checks": [
+            {
+              "label": "V7/V"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "any",
+              "exact": null,
+              "inversion": "V7/V"
+            },
+            "label": "V7/V",
+            "matches": [
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ascii-double-mixed-accidentals",
+      "probes": [
+        {
+          "kind": "canonical",
+          "label": " bVII13sus4 ",
+          "expected": {
+            "canonical": "\u266dVII13sus4"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "##IV",
+          "expected": {
+            "canonical": "\u266f\u266fIV"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "b#IV",
+          "expected": {
+            "canonical": "\u266d\u266fIV"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "bbVII",
+          "expected": {
+            "canonical": "\u266d\u266dVII"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "\u266d#IV",
+          "expected": {
+            "canonical": "\u266d\u266fIV"
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 7,
+            "accidental": "\u266d"
+          },
+          "checks": [
+            {
+              "label": "bVII13sus4"
+            },
+            {
+              "label": "\u266dVII13sus4"
+            },
+            {
+              "label": "VII"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 7,
+              "accidental": "\u266d",
+              "family": "any",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "\u266dVII",
+            "matches": [
+              true,
+              true,
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "internal-sharp-flat-digit-canonical",
+      "probes": [
+        {
+          "kind": "canonical",
+          "label": "V#11",
+          "expected": {
+            "canonical": "V\u266f11"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "Vb9",
+          "expected": {
+            "canonical": "V\u266d9"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "Vbb9",
+          "expected": {
+            "canonical": "Vb\u266d9"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "Bb9",
+          "expected": {
+            "canonical": "B\u266d9"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "IVb",
+          "expected": {
+            "canonical": "IVb"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "\u266dVIIb13",
+          "expected": {
+            "canonical": "\u266dVII\u266d13"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "V\ud834\udd2b9",
+          "expected": {
+            "canonical": "V\ud834\udd2b9"
+          }
+        }
+      ]
+    },
+    {
+      "name": "kotlin-whitespace-vs-feff-nel",
+      "probes": [
+        {
+          "kind": "canonical",
+          "label": "\u00a0\u2007V7\u202f",
+          "expected": {
+            "canonical": "V7"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "\u001cV7\u001f",
+          "expected": {
+            "canonical": "V7"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "\ufeffV7\ufeff",
+          "expected": {
+            "canonical": "\ufeffV7\ufeff"
+          }
+        },
+        {
+          "kind": "canonical",
+          "label": "\u0085V7\u0085",
+          "expected": {
+            "canonical": "\u0085V7\u0085"
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5
+          },
+          "checks": [
+            {
+              "label": "\u00a0V7\u3000"
+            },
+            {
+              "label": "\ufeffV7"
+            },
+            {
+              "label": "\u0085V7"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "any",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V",
+            "matches": [
+              true,
+              false,
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "mixed-invalid-roman-prefix",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 4
+          },
+          "checks": [
+            {
+              "label": "iVfoo"
+            },
+            {
+              "label": "IVfoo"
+            },
+            {
+              "label": "VIII"
+            },
+            {
+              "label": "VX"
+            },
+            {
+              "label": "IV(extra)"
+            },
+            {
+              "label": "IV nonsense"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 4,
+              "accidental": "",
+              "family": "any",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "IV",
+            "matches": [
+              true,
+              true,
+              false,
+              false,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 4,
+            "family": "minor"
+          },
+          "checks": [
+            {
+              "label": "iVfoo"
+            },
+            {
+              "label": "IVfoo"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 4,
+              "accidental": "",
+              "family": "minor",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "IV \u00b7 Minor",
+            "matches": [
+              false,
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "major-minor-extended-quality",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "family": "major"
+          },
+          "checks": [
+            {
+              "label": "V"
+            },
+            {
+              "label": "V7"
+            },
+            {
+              "label": "V9"
+            },
+            {
+              "label": "v9"
+            },
+            {
+              "label": "V+"
+            },
+            {
+              "label": "V\u00f87"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "major",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V \u00b7 Major",
+            "matches": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "family": "minor"
+          },
+          "checks": [
+            {
+              "label": "v"
+            },
+            {
+              "label": "v9"
+            },
+            {
+              "label": "V9"
+            },
+            {
+              "label": "v\u00b07"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "minor",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V \u00b7 Minor",
+            "matches": [
+              true,
+              true,
+              false,
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "any-diminished-halfdim-augmented",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 7
+          },
+          "checks": [
+            {
+              "label": "vii\u00b07"
+            },
+            {
+              "label": "vii\u00f87"
+            },
+            {
+              "label": "VII+"
+            },
+            {
+              "label": "viio"
+            },
+            {
+              "label": "VIIweird"
+            },
+            {
+              "label": "vii"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 7,
+              "accidental": "",
+              "family": "any",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "VII",
+            "matches": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 7,
+            "family": "minor"
+          },
+          "checks": [
+            {
+              "label": "vii\u00b07"
+            },
+            {
+              "label": "vii\u00f87"
+            },
+            {
+              "label": "VII+"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 7,
+              "accidental": "",
+              "family": "minor",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "VII \u00b7 Minor",
+            "matches": [
+              false,
+              false,
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "dominant-seventh-numeral-aliases",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "family": "7"
+          },
+          "checks": [
+            {
+              "label": "V7"
+            },
+            {
+              "label": "V9"
+            },
+            {
+              "label": "V11"
+            },
+            {
+              "label": "V13"
+            },
+            {
+              "label": "V65"
+            },
+            {
+              "label": "V43"
+            },
+            {
+              "label": "V42"
+            },
+            {
+              "label": "V6"
+            },
+            {
+              "label": "V64"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "7",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V \u00b7 7",
+            "matches": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "major-seventh-delta-triangle",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "family": "maj7"
+          },
+          "checks": [
+            {
+              "label": "V\u25b37"
+            },
+            {
+              "label": "V\u03949"
+            },
+            {
+              "label": "V7"
+            },
+            {
+              "label": "V\u25b3"
+            },
+            {
+              "label": "V\u039465"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "maj7",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V \u00b7 maj7",
+            "matches": [
+              true,
+              true,
+              false,
+              false,
+              true
+            ]
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "family": "7"
+          },
+          "checks": [
+            {
+              "label": "V\u25b37"
+            },
+            {
+              "label": "V\u03949"
+            },
+            {
+              "label": "V7"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "7",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V \u00b7 7",
+            "matches": [
+              false,
+              false,
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "minor-seventh-vs-halfdim",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 2,
+            "family": "m7"
+          },
+          "checks": [
+            {
+              "label": "ii7"
+            },
+            {
+              "label": "ii9"
+            },
+            {
+              "label": "ii65"
+            },
+            {
+              "label": "ii\u00f87"
+            },
+            {
+              "label": "ii\u00b07"
+            },
+            {
+              "label": "ii\u25b37"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 2,
+              "accidental": "",
+              "family": "m7",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "II \u00b7 m7",
+            "matches": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "add-sus-removal-literal-o-suffix",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "family": "7"
+          },
+          "checks": [
+            {
+              "label": "Vadd9"
+            },
+            {
+              "label": "Vsus4"
+            },
+            {
+              "label": "Vadd9sus4"
+            },
+            {
+              "label": "Vsus13"
+            },
+            {
+              "label": "V7sus4"
+            },
+            {
+              "label": "VADD9"
+            },
+            {
+              "label": "Vsolo7"
+            },
+            {
+              "label": "Vo7"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "7",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V \u00b7 7",
+            "matches": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              true,
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5
+          },
+          "checks": [
+            {
+              "label": "Vsolo7"
+            },
+            {
+              "label": "Vfoo"
+            },
+            {
+              "label": "V+7"
+            },
+            {
+              "label": "V\u00f87"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "any",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V",
+            "matches": [
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "display-null-empty-precedence",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 4,
+            "accidental": "\u266f",
+            "family": "major"
+          },
+          "checks": [],
+          "expected": {
+            "constraint": {
+              "degree": 4,
+              "accidental": "\u266f",
+              "family": "major",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "\u266fIV \u00b7 Major",
+            "matches": []
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 2,
+            "family": "minor"
+          },
+          "checks": [],
+          "expected": {
+            "constraint": {
+              "degree": 2,
+              "accidental": "",
+              "family": "minor",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "II \u00b7 Minor",
+            "matches": []
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "family": "7"
+          },
+          "checks": [],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "7",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V \u00b7 7",
+            "matches": []
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 5,
+            "family": "maj7"
+          },
+          "checks": [],
+          "expected": {
+            "constraint": {
+              "degree": 5,
+              "accidental": "",
+              "family": "maj7",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "V \u00b7 maj7",
+            "matches": []
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 2,
+            "family": "m7"
+          },
+          "checks": [],
+          "expected": {
+            "constraint": {
+              "degree": 2,
+              "accidental": "",
+              "family": "m7",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "II \u00b7 m7",
+            "matches": []
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 1,
+            "exact": ""
+          },
+          "checks": [],
+          "expected": {
+            "constraint": {
+              "degree": 1,
+              "accidental": "",
+              "family": "any",
+              "exact": "",
+              "inversion": null
+            },
+            "label": "",
+            "matches": []
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 1,
+            "exact": "I",
+            "inversion": ""
+          },
+          "checks": [],
+          "expected": {
+            "constraint": {
+              "degree": 1,
+              "accidental": "",
+              "family": "any",
+              "exact": "I",
+              "inversion": ""
+            },
+            "label": "",
+            "matches": []
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 1,
+            "exact": null,
+            "inversion": null
+          },
+          "checks": [],
+          "expected": {
+            "constraint": {
+              "degree": 1,
+              "accidental": "",
+              "family": "any",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "I",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "defaults-and-32-33-cap",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 1
+          },
+          "checks": [
+            {
+              "label": "I"
+            }
+          ],
+          "expected": {
+            "constraint": {
+              "degree": 1,
+              "accidental": "",
+              "family": "any",
+              "exact": null,
+              "inversion": null
+            },
+            "label": "I",
+            "matches": [
+              true
+            ]
+          }
+        },
+        {
+          "kind": "query",
+          "query": {},
+          "labels": [],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": []
+            },
+            "matches": true
+          }
+        },
+        {
+          "kind": "query",
+          "query": {
+            "version": 1,
+            "chords": [
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              }
+            ]
+          },
+          "labels": [
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I"
+          ],
+          "expected": {
+            "query": {
+              "version": 1,
+              "chords": [
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                },
+                {
+                  "degree": 1,
+                  "accidental": "",
+                  "family": "any",
+                  "exact": null,
+                  "inversion": null
+                }
+              ]
+            },
+            "matches": true
+          }
+        },
+        {
+          "kind": "query",
+          "query": {
+            "version": 1,
+            "chords": [
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              },
+              {
+                "degree": 1
+              }
+            ]
+          },
+          "labels": [
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I",
+            "I"
+          ],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        }
+      ]
+    },
+    {
+      "name": "invalid-constraint-constructor",
+      "probes": [
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 0
+          },
+          "checks": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 8
+          },
+          "checks": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": -1
+          },
+          "checks": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 1,
+            "accidental": "b"
+          },
+          "checks": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 1,
+            "accidental": "#"
+          },
+          "checks": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 1,
+            "accidental": "bb"
+          },
+          "checks": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 1,
+            "family": "Major"
+          },
+          "checks": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 1,
+            "family": "diminished"
+          },
+          "checks": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        },
+        {
+          "kind": "constraint",
+          "constraint": {
+            "degree": 1,
+            "family": "m"
+          },
+          "checks": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        }
+      ]
+    },
+    {
+      "name": "invalid-query-version",
+      "probes": [
+        {
+          "kind": "query",
+          "query": {
+            "version": 0,
+            "chords": []
+          },
+          "labels": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        },
+        {
+          "kind": "query",
+          "query": {
+            "version": 2,
+            "chords": []
+          },
+          "labels": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        },
+        {
+          "kind": "query",
+          "query": {
+            "version": -1,
+            "chords": []
+          },
+          "labels": [],
+          "expectFailure": true,
+          "expected": {
+            "failure": true,
+            "errorClass": "java.lang.IllegalArgumentException",
+            "errorMessage": "Failed requirement."
+          }
+        }
+      ]
+    }
+  ]
+}
