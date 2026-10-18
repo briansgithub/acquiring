@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T16:40:14.067319+00:00",
+  "updated": "2026-10-18T16:47:32.462319+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2386,7 +2386,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "baseCommit": "d4d3caa12d39560c7c0146b3cc38231626ed3fa1",
       "slice": "Pure constraint/query matcher; native oracle first before implementation. Full catalog SQL/ranking/groups/search/loops remain open.",
-      "nextAction": "Inspect exact clean existing sibling/branch absence/guards/PIDs, preserve prior refs, create requested codex/pwa-aural-query from frozen rootbase; capture bounded new native oracle first under guard, validate and commit named3paths then idle for root review. No phase2 implementation until explicit root followup.",
+      "nextAction": "Implement frozen six-function query API in owned matcher/test/index/WORKLOG only, native oracle immutable. First focused24native+browser guard/snapshot/reentry/cap tests and strict scoped types; commit validated source then idle for root review/primary combined checks. No SQL/rank/groups/UI/native repeat or identity implementation.",
       "validation": [],
       "progress": [],
       "blocker": null,
@@ -2436,16 +2436,27 @@
           "pwa/src/domain/catalog/fixtures/native-query.json",
           "pwa/src/domain/catalog/index.ts"
         ],
-        "status": "ORACLE FIRST ASSIGNED; no matcher source/test/index before reviewed native checkpoint and root followup.",
+        "status": "Native query oracle ACCEPTED normally integrated; same existing Sol/high SOURCE phase2 assigned on clean be4ade88 branch, contract unchanged.",
         "scope": "<=24NEW named native groups using unchanged WHOLE query plus corpus26..27/35..51 private parser including closing brace, pinned cached Kotlin2.2.10 and actual constraint/query serializers; retain native outputs/failures/extraction provenance. Phase1producer/fixture/WORKLOG only, no SQL/rank/groups/UI/other source/old capture.",
-        "nextAction": "Inspect exact clean existing sibling/branch absence/guards/PIDs, preserve prior refs, create requested codex/pwa-aural-query from frozen rootbase; capture bounded new native oracle first under guard, validate and commit named3paths then idle for root review. No phase2 implementation until explicit root followup."
+        "nextAction": "Implement frozen six-function query API in owned matcher/test/index/WORKLOG only, native oracle immutable. First focused24native+browser guard/snapshot/reentry/cap tests and strict scoped types; commit validated source then idle for root review/primary combined checks. No SQL/rank/groups/UI/native repeat or identity implementation.",
+        "oracleCommit": "be4ade885fa7aa3604991a49a2351e865a515c64",
+        "nativeValidation": {
+          "command": "python -X utf8 pwa/src/domain/catalog/fixtures/generate-query-native.py --reuse-work .artifacts/pwa-port/t15-query-native/20261018T163819194604Z",
+          "guard": "t15-query-oracle-retained-check-20261018-11 (sibling --repo)",
+          "result": "PASS exit0, actual pinned Kotlin2.2.10/serialization1.8.1/two emitted serializers. First compile/runtime succeeded; one LF-only adapter correction validated retained byte-identical native/driver plus full input values, no compile/capture repeat. Producer/root review complete.",
+          "producerSha256": "f8a7a1dd551c4e0da2e3853e76c017e22ef2e8197d564cd999f350549b7ad5be",
+          "fixtureSha256": "dd86d17503f78a1b6f47063b4a96c70f597f52237b8072d6d18c0911eb726c5c",
+          "receiptSha256": "1192a4bc2d8eb3a7801d6cc72f704f0ebad4763ef28372242d88e474517776ec"
+        },
+        "referenceMergeCommit": "e42bb282c7477c59722644efd7b9a7cd5eb410bb",
+        "phase2BaseCommit": "be4ade885fa7aa3604991a49a2351e865a515c64"
       },
       "identityContractIntent": {
         "owner": "coordinator runtime unknown",
         "ownedPaths": [
           "pwa/src/domain/catalog/identity-contracts.ts"
         ],
-        "status": "Pre-edit contract only, no worker assignment/capture/source. Current sole worker remains QUERY oracle only.",
+        "status": "Frozen f4ef4ac9; strict combined types FIRSTPASS window20-identity-contract-types-20261018. Identity native reference independently captured by coordinator; source not assigned.",
         "authority": "AuralCatalog.kt38..47 frozen801cf798",
         "sourceSha256": "0a45254f630f9712fdd31c94b47e8907c8788813f8328e81925c06a20d4d1f33",
         "scope": "Exact native stable pattern identity with SHA256/LE32/Int overflow; explicit UTF8 snapshot/safety bounds. No SQL/rank/stats/query/group/runtime/session/UI.",
@@ -2457,6 +2468,30 @@
         "authority": "AuralCatalog.kt15..48,147..185, method-name index248..559; completed audit reused.",
         "findings": "sourceMode15..18 is JSON primitive first-token metadata, popularity33..36 validates percent0..100 but bypasses score when null, identity38..47 nativeSHA/overflow, catalogBase48 log2; statsMatching155..184 counts global valid occurrences separately, then popularity eligibility and sorted nonoverlap effective cap4PER SONG, factor148..151 recent/favorites/popularity. No actual browser aural reader exists.",
         "nextAction": "After query/identity kernels, bound exact readonly rank/SQL worker contract using actual range frontier and row-order547..558 before edits; no repeat of inspected prefix/stat ranges."
+      },
+      "identityOracleAssignment": {
+        "owner": "coordinator runtime unknown unchanged",
+        "branch": "codex/pwa-foundation",
+        "baseCommit": "e42bb282c7477c59722644efd7b9a7cd5eb410bb",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/fixtures/generate-identity-native.py",
+          "pwa/src/domain/catalog/fixtures/native-identity.json",
+          "pwa/src/domain/catalog/IDENTITY_WORKLOG.md"
+        ],
+        "status": "Native identity REFERENCE VALIDATED first attempt,16groups55samples. No identity TypeScript implementation/tests/worker assigned.",
+        "scope": "<=16NEW JVM named identity groups, unchanged AuralCatalog38..47 with actual SHA256/ByteBuffer/Int overflow, cached pinned Kotlin2.2.10; exact inputs/outputs/source hashes. Producer/fixture/log only. No worker/model/dependency action/old capture/SQL/UI.",
+        "nextAction": "Checkpoint exact producer/fixture/log and recovery metadata. After query primary acceptance and fresh capacity, assign SAME Sol/high bounded identity implementation; no reference recapture.",
+        "validation": {
+          "command": "python -X utf8 pwa/src/domain/catalog/fixtures/generate-identity-native.py",
+          "guard": "window20-identity-native-first-20261018 (primary guard)",
+          "result": "FIRST compile/runtime PASS16groups55samples, actual child37532 exit0. Cached Kotlin2.2.10/JRE25.0.3/native SHA256/ByteBuffer/Int overflow; root verified whole/source body, producer, retained input/stdout/class hashes and all55 output IDs. No native stubs/TSexpected/old capture.",
+          "producerSha256": "5a791229ac08987f7340c7addd3e5f1f2a66cbdb5beb107b357d15950839e7b5",
+          "fixtureSha256": "fd6086518c9b139a9bc07f6039e7f6cafa550f0678933b5fc8c476e2864b8b73",
+          "nativeBodySha256": "0a45254f630f9712fdd31c94b47e8907c8788813f8328e81925c06a20d4d1f33",
+          "nativeClassSha256": "f4db0315dfc5e8f519c8fdb5e519f9f1348ba5b00fc973dafe66a298c0b5a7e6"
+        },
+        "receipt": ".artifacts/pwa-port/t15-identity-native-validation-window20.json",
+        "receiptSha256": "e2bdf4a83cbbb6327baed8584fcebe550570afcdc4706e37e6b1af2dec376224"
       }
     },
     {
@@ -2778,8 +2813,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T16:35:57.807330+00:00",
-    "sourceCommit": "d4d3caa12d39560c7c0146b3cc38231626ed3fa1",
+    "date": "2026-10-18T16:43:21.372482+00:00",
+    "sourceCommit": "e42bb282c7477c59722644efd7b9a7cd5eb410bb",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -2792,8 +2827,8 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 10,
-      "weeklyUsedPercent": 37
+      "fiveHourUsedPercent": 23,
+      "weeklyUsedPercent": 39
     },
     "fiveHourResetUnix": 1792358936,
     "weeklyResetUnix": 1792876817,
@@ -2807,8 +2842,8 @@
       "tip": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
       "status": "initializer accepted clean idle before read-only proposal"
     },
-    "nextAction": "Inspect exact clean existing sibling/branch absence/guards/PIDs, preserve prior refs, create requested codex/pwa-aural-query from frozen rootbase; capture bounded new native oracle first under guard, validate and commit named3paths then idle for root review. No phase2 implementation until explicit root followup.",
-    "reason": "T15 oracle-first on sole preserved Sol/high worker after frozen query contract; root additional T12 readiness saved.",
+    "nextAction": "Implement frozen six-function query API in owned matcher/test/index/WORKLOG only, native oracle immutable. First focused24native+browser guard/snapshot/reentry/cap tests and strict scoped types; commit validated source then idle for root review/primary combined checks. No SQL/rank/groups/UI/native repeat or identity implementation.",
+    "reason": "Native query oracle reviewed/accepted; phase2 matcher source assigned to same Sol/high worker; identity contract prepared only.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -2833,9 +2868,20 @@
         "pwa/src/domain/catalog/fixtures/native-query.json",
         "pwa/src/domain/catalog/index.ts"
       ],
-      "status": "ORACLE FIRST ASSIGNED; no matcher source/test/index before reviewed native checkpoint and root followup.",
+      "status": "Native query oracle ACCEPTED normally integrated; same existing Sol/high SOURCE phase2 assigned on clean be4ade88 branch, contract unchanged.",
       "scope": "<=24NEW named native groups using unchanged WHOLE query plus corpus26..27/35..51 private parser including closing brace, pinned cached Kotlin2.2.10 and actual constraint/query serializers; retain native outputs/failures/extraction provenance. Phase1producer/fixture/WORKLOG only, no SQL/rank/groups/UI/other source/old capture.",
-      "nextAction": "Inspect exact clean existing sibling/branch absence/guards/PIDs, preserve prior refs, create requested codex/pwa-aural-query from frozen rootbase; capture bounded new native oracle first under guard, validate and commit named3paths then idle for root review. No phase2 implementation until explicit root followup."
+      "nextAction": "Implement frozen six-function query API in owned matcher/test/index/WORKLOG only, native oracle immutable. First focused24native+browser guard/snapshot/reentry/cap tests and strict scoped types; commit validated source then idle for root review/primary combined checks. No SQL/rank/groups/UI/native repeat or identity implementation.",
+      "oracleCommit": "be4ade885fa7aa3604991a49a2351e865a515c64",
+      "nativeValidation": {
+        "command": "python -X utf8 pwa/src/domain/catalog/fixtures/generate-query-native.py --reuse-work .artifacts/pwa-port/t15-query-native/20261018T163819194604Z",
+        "guard": "t15-query-oracle-retained-check-20261018-11 (sibling --repo)",
+        "result": "PASS exit0, actual pinned Kotlin2.2.10/serialization1.8.1/two emitted serializers. First compile/runtime succeeded; one LF-only adapter correction validated retained byte-identical native/driver plus full input values, no compile/capture repeat. Producer/root review complete.",
+        "producerSha256": "f8a7a1dd551c4e0da2e3853e76c017e22ef2e8197d564cd999f350549b7ad5be",
+        "fixtureSha256": "dd86d17503f78a1b6f47063b4a96c70f597f52237b8072d6d18c0911eb726c5c",
+        "receiptSha256": "1192a4bc2d8eb3a7801d6cc72f704f0ebad4763ef28372242d88e474517776ec"
+      },
+      "referenceMergeCommit": "e42bb282c7477c59722644efd7b9a7cd5eb410bb",
+      "phase2BaseCommit": "be4ade885fa7aa3604991a49a2351e865a515c64"
     },
     "integrationAwaitingPrimaryAcceptance": null,
     "fiveHourAction": "Live2%; no new operations at70, checkpoint/yield80.",
@@ -2847,6 +2893,30 @@
       "fiveHourResetsAt": 1792358936,
       "weeklyResetsAt": 1792876817,
       "action": "Live five-hour reset verified; resume exact reviewed initializer integration then primary covering checks. No credit/reset/model action."
+    },
+    "rootSideWork": {
+      "owner": "coordinator runtime unknown unchanged",
+      "branch": "codex/pwa-foundation",
+      "baseCommit": "e42bb282c7477c59722644efd7b9a7cd5eb410bb",
+      "ownedPaths": [
+        "pwa/src/domain/catalog/fixtures/generate-identity-native.py",
+        "pwa/src/domain/catalog/fixtures/native-identity.json",
+        "pwa/src/domain/catalog/IDENTITY_WORKLOG.md"
+      ],
+      "status": "Native identity REFERENCE VALIDATED first attempt,16groups55samples. No identity TypeScript implementation/tests/worker assigned.",
+      "scope": "<=16NEW JVM named identity groups, unchanged AuralCatalog38..47 with actual SHA256/ByteBuffer/Int overflow, cached pinned Kotlin2.2.10; exact inputs/outputs/source hashes. Producer/fixture/log only. No worker/model/dependency action/old capture/SQL/UI.",
+      "nextAction": "Checkpoint exact producer/fixture/log and recovery metadata. After query primary acceptance and fresh capacity, assign SAME Sol/high bounded identity implementation; no reference recapture.",
+      "validation": {
+        "command": "python -X utf8 pwa/src/domain/catalog/fixtures/generate-identity-native.py",
+        "guard": "window20-identity-native-first-20261018 (primary guard)",
+        "result": "FIRST compile/runtime PASS16groups55samples, actual child37532 exit0. Cached Kotlin2.2.10/JRE25.0.3/native SHA256/ByteBuffer/Int overflow; root verified whole/source body, producer, retained input/stdout/class hashes and all55 output IDs. No native stubs/TSexpected/old capture.",
+        "producerSha256": "5a791229ac08987f7340c7addd3e5f1f2a66cbdb5beb107b357d15950839e7b5",
+        "fixtureSha256": "fd6086518c9b139a9bc07f6039e7f6cafa550f0678933b5fc8c476e2864b8b73",
+        "nativeBodySha256": "0a45254f630f9712fdd31c94b47e8907c8788813f8328e81925c06a20d4d1f33",
+        "nativeClassSha256": "f4db0315dfc5e8f519c8fdb5e519f9f1348ba5b00fc973dafe66a298c0b5a7e6"
+      },
+      "receipt": ".artifacts/pwa-port/t15-identity-native-validation-window20.json",
+      "receiptSha256": "e2bdf4a83cbbb6327baed8584fcebe550570afcdc4706e37e6b1af2dec376224"
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",

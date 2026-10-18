@@ -1,5 +1,7 @@
 # PWA implementation continuation
 
+2026-10-18T16:43:21.372482+00:00: Query native oraclebe4ade88 accepted/normally mergede42bb282c7477c59722644efd7b9a7cd5eb410bb;24groups/70probes/13native failures, actual serializers and frozen hashes independently checked. One LF adapter fix used retained successful output, no recapture. Same Sol/high phase2 matcher/test/index/log only on clean existing be4 branch; no source acceptance yet. Identity contractf4ef4ac9/typesPASS is future only. Rootunknownunchanged, Lunaidle, live23%/39%, fivehour70/80.
+
 2026-10-18T16:35:57.807330+00:00 prebranch: primaryd4d3caa12d39560c7c0146b3cc38231626ed3fa1 frozen67line query contract/strict types PASS; primary clean before claim; existing worker91a9877e cleanidle, Luna c49idle. Sole Sol/high reuses sibling on codex/pwa-aural-query from exactbase, prior refs/evidence preserved. ORACLE FIRST <=24NEW groups,3paths only, no implementation before root review/followup. Rootunknownunchanged; live10%/37% reset1792358936.
 
 Updated 2026-10-18T16:31:03.810102+00:00. Primary `codex/pwa-foundation` is at `af163aa64d8b3caa72e81aee32b1e898cd3aa9c1` before this documentation checkpoint. Coordinator runtime **unknown**, unchanged. This introduction and current tasks.json supersede historical next-action notes below. Preserve every worktree, branch, recovery file, native cache and ignored proof.
