@@ -17,7 +17,7 @@ test.beforeEach(async({context})=>{
 });
 async function instrument(page:Page){
   await page.addInitScript(()=>{
-    type Item={peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>;pcmHash:number};
+    type Item={peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>;pcmHash:number;intervalEnergy:Record<number,number>[]};
     const proof:{contexts:AudioContext[];items:Item[]}={contexts:[],items:[]};
     (window as unknown as {playbackProof:typeof proof}).playbackProof=proof;
     const Native=window.AudioContext;
@@ -25,7 +25,7 @@ async function instrument(page:Page){
       constructor(options?:AudioContextOptions){super(options);proof.contexts.push(this);}
       createBufferSource(){
         const source=super.createBufferSource(),start=source.start.bind(source),stop=source.stop.bind(source),context=this;
-        const item:Item={peak:0,scheduled:0,endedAt:null,stops:0,frames:0,hz:0,homeEnergy:{},pcmHash:0};
+        const item:Item={peak:0,scheduled:0,endedAt:null,stops:0,frames:0,hz:0,homeEnergy:{},pcmHash:0,intervalEnergy:[]};
         source.start=(when=0,offset=0,duration?:number)=>{
           const data=source.buffer?.getChannelData(0);if(data){item.frames=data.length;let crossings=0;for(let i=0;i<data.length;i++){item.peak=Math.max(item.peak,Math.abs(data[i]));if(i>0&&data[i-1]<=0&&data[i]>0)crossings++;}item.hz=crossings*context.sampleRate/Math.max(1,data.length-1);}
           if(data){let hash=2166136261;const bits=new Uint32Array(data.buffer,data.byteOffset,data.length);for(const word of bits)hash=Math.imul(hash^word,16777619);item.pcmHash=hash>>>0;}
@@ -33,6 +33,12 @@ async function instrument(page:Page){
             // Measure actual mixed PCM, independent of the requested notes or UI labels.
             const first=Math.floor(context.sampleRate*.08),last=Math.min(data.length,Math.floor(context.sampleRate*.35));
             for(const midi of [50,53,54,57,62,65,66,69]){let re=0,im=0;const omega=2*Math.PI*440*2**((midi-69)/12)/context.sampleRate;for(let i=first;i<last;i++){re+=data[i]*Math.cos(omega*i);im+=data[i]*Math.sin(omega*i);}item.homeEnergy[midi]=Math.hypot(re,im)/(last-first);}
+          }
+          if(data&&Math.abs(data.length/context.sampleRate-1.35)<.0001){
+            const size=Math.trunc(context.sampleRate*.45);
+            for(let stage=0;stage<3;stage++){const energies:Record<number,number>={},first=stage*size+Math.floor(context.sampleRate*.08),last=stage*size+Math.floor(context.sampleRate*.35);
+              for(const midi of [48,50,60,62,67,72,74]){let re=0,im=0;const omega=2*Math.PI*440*2**((midi-69)/12)/context.sampleRate;for(let i=first;i<last;i++){re+=data[i]*Math.cos(omega*i);im+=data[i]*Math.sin(omega*i);}energies[midi]=Math.hypot(re,im)/(last-first);}item.intervalEnergy.push(energies);
+            }
           }
           item.scheduled=when;proof.items.push(item);source.addEventListener('ended',()=>{item.endedAt=context.currentTime;});
           if(duration===undefined)start(when,offset);else start(when,offset,duration);
@@ -43,7 +49,7 @@ async function instrument(page:Page){
   });
 }
 async function audio(page:Page){return page.evaluate(()=>{
-  const p=(window as unknown as {playbackProof:{contexts:AudioContext[];items:{peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>;pcmHash:number}[]}}).playbackProof;
+  const p=(window as unknown as {playbackProof:{contexts:AudioContext[];items:{peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>;pcmHash:number;intervalEnergy:Record<number,number>[]}[]}}).playbackProof;
   return {contexts:p.contexts.map(context=>({rate:context.sampleRate,state:context.state,time:context.currentTime})),items:p.items};
 });}
 async function installAndOpen(page:Page){
@@ -276,4 +282,23 @@ test('previous pitch cards preserve event keys, written unison and rest barriers
   const geometry=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,overflow:[...document.querySelectorAll('body *')].map(e=>({tag:e.tagName,cls:e.className,r:e.getBoundingClientRect().right})).filter(e=>e.r>innerWidth)}));await mkdir(resolve(testInfo.outputPath('geometry.json'),'..'),{recursive:true});await writeFile(testInfo.outputPath('geometry.json'),JSON.stringify(geometry,null,2));
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await melody.getByRole('button').evaluateAll(elements=>elements.every(element=>{const r=element.getBoundingClientRect();return r.width>=44&&r.height>=44;}))).toBe(true);
   const path=testInfo.outputPath('previous-cards-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});await writeFile(testInfo.outputPath('previous-card-proof.json'),JSON.stringify(await audio(page),null,2));
+});
+
+test('interval cards play native three-stage written pitches with exclusive previews and lifecycle cleanup',async({page},testInfo)=>{
+ test.setTimeout(90_000);await instrument(page);await installAndOpen(page);
+ await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();await page.getByRole('button',{name:'Back',exact:true}).click();await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Playback_Context');await page.locator('[data-song-slug="playback-context"]').click();await page.getByRole('button',{name:'Play song',exact:true}).click();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+ const band=page.getByRole('region',{name:'At this beat',exact:true}),position=page.getByRole('slider',{name:'Position',exact:true}),melody=band.getByRole('group',{name:'Melody cards',exact:true});
+ async function seek(beat:number){await position.focus();await position.press('Home');for(let i=0;i<10&&Number(await position.inputValue())<beat;i++)await position.press('PageUp');expect(Number(await position.inputValue())).toBeGreaterThanOrEqual(beat);expect(Number(await position.inputValue())).toBeLessThan(beat+1);}
+ await page.getByRole('combobox',{name:'Instrument',exact:true}).selectOption('SINE');await expect(band.getByRole('button',{name:/Play .* interval /})).toHaveCount(0);await seek(2);
+ const interval=melody.getByRole('button',{name:'Play melody interval major second, descending',exact:true});await expect(interval).toBeVisible();expect((await audio(page)).contexts).toHaveLength(0);await interval.focus();await interval.press('Enter');await expect.poll(async()=>(await audio(page)).items.length).toBe(1);
+ let proof=await audio(page);const frames=Math.trunc(proof.contexts[0].rate*.45);expect(proof.items[0].frames).toBe(frames*3);const raw=proof.items[0].intervalEnergy;expect(raw).toHaveLength(3);expect(raw[0][62]).toBeGreaterThan(.05);expect(raw[1][60]).toBeGreaterThan(.05);expect(raw[2][62]).toBeGreaterThan(.05);expect(raw[2][60]).toBeGreaterThan(.05);expect(raw[0][50]).toBeLessThan(.02);
+ await band.getByRole('checkbox',{name:'Lock in Major',exact:true}).check();await interval.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(2);proof=await audio(page);expect(proof.items[1].pcmHash).toBe(proof.items[0].pcmHash);expect(proof.items[1].frames).toBe(frames*3);
+ await melody.getByRole('button',{name:'Play melody ♭7̂',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(3);await expect.poll(async()=>(await audio(page)).items[1].stops).toBeGreaterThan(0);expect((await audio(page)).items[2].frames).toBe(frames);
+ await interval.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(4);await expect.poll(async()=>(await audio(page)).items[2].stops).toBeGreaterThan(0);
+ await seek(2);await page.getByRole('checkbox',{name:'Root only',exact:true}).check();const roots=band.getByRole('group',{name:'Root cards',exact:true}),rootInterval=roots.getByRole('button',{name:'Play root interval major second, descending',exact:true});await expect(rootInterval).toBeVisible();await rootInterval.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(5);proof=await audio(page);const root=proof.items[4].intervalEnergy;expect(root[0][50]).toBeGreaterThan(.05);expect(root[1][48]).toBeGreaterThan(.05);expect(root[2][50]).toBeGreaterThan(.05);expect(root[2][48]).toBeGreaterThan(.05);expect(root[0][62]).toBeLessThan(.02);
+ const transpose=page.getByRole('slider',{name:'Transpose',exact:true});await transpose.focus();await transpose.press('End');await rootInterval.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(6);proof=await audio(page);expect(proof.items[5].intervalEnergy[0][62]).toBeGreaterThan(.05);expect(proof.items[5].intervalEnergy[1][60]).toBeGreaterThan(.05);expect(proof.items[5].intervalEnergy[0][74]).toBeLessThan(.02);
+ await page.getByRole('combobox',{name:'Instrument',exact:true}).selectOption('CLARINET');await rootInterval.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(7);proof=await audio(page);expect(proof.items[6].frames).toBe(frames*3);expect(proof.items[6].pcmHash).not.toBe(proof.items[5].pcmHash);await page.getByRole('button',{name:'Reset',exact:true}).click();await expect.poll(async()=>(await audio(page)).items[6].stops).toBeGreaterThan(0);await expect(roots.getByRole('button',{name:/Play root interval /})).toHaveCount(0);
+ await seek(3);await expect(roots.getByRole('button',{name:/Play previous root/})).toHaveCount(1);await expect(roots.getByRole('button',{name:/Play root interval /})).toHaveCount(0);await page.getByRole('checkbox',{name:'Root only',exact:true}).uncheck();await seek(4);await expect(melody.getByRole('button',{name:/Play melody interval /})).toHaveCount(0);await seek(6);await expect(melody.getByRole('button',{name:/Play melody interval /})).toHaveCount(0);
+ await seek(2);await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';scrollTo(0,0);});await expect(interval).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await band.getByRole('button').evaluateAll(elements=>elements.every(e=>{const r=e.getBoundingClientRect();return r.width>=44&&r.height>=44;}))).toBe(true);const image=testInfo.outputPath('interval-cards-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
+ await interval.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(8);await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');await expect.poll(async()=>(await audio(page)).items[7].stops).toBeGreaterThan(0);expect((await audio(page)).contexts).toHaveLength(1);await writeFile(testInfo.outputPath('interval-card-proof.json'),JSON.stringify(await audio(page),null,2));
 });

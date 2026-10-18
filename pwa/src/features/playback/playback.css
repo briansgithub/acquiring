@@ -37,5 +37,5 @@
 .playback-melody-card--top { align-self: flex-start; }
 .playback-melody-card--bottom { align-self: flex-end; }
 .playback-melody-card--center { align-self: center; }
-.playback-interval-card { flex: 0 1 100px; }
+.playback-interval-card { flex: 0 1 160px; }
 .playback-interval-card__symbol { font-size: 1.5rem; line-height: 1.2; }

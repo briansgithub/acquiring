@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T02:58:21.216723+00:00",
+  "updated": "2026-10-18T03:00:28.331224+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1324,8 +1324,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Previous pitch cards accepted; interval sequence audio is the next bounded slice",
-      "nextAction": "Implement frozen interval-audio-contracts.ts purebuilder/onebuffer renderer under nextlivecapacity, then separatelyarbitrate two stableborrowers/UI/actualChrome bothrates. Proposal reviewed, nativeplan accepted; no duplicateworker. Remaining T12 timeline/defaults/positionmemory and T13 singing separate; Libraryscrollapproval pending.",
+      "slice": "Current, previous, Home, Major context and interval previews accepted; visual timeline/defaults/position memory remain",
+      "nextAction": "No unchangedinterval/native/component/browser recapture. T12remainingvisualtimeline/defaults/routepositionmemory; globalMajorpreferenceT21 andsinging/tessituraT13 future. ContinueindependentT14builtin-currentproposal/contract whenready/livecapacity.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1387,7 +1387,8 @@
         "2026-10-17T17:28:34.239741+00:00 Currentcardfirstbrowser:4PASSincl actualpreviewframes32016(667ms)/21600(450ms), SINEtone131.117Hz->262.234Hz exactlyoneoctavetranspose/onecontext/sectionrelease/narrowcards. Existingunsupportedcombinedtestfailed Library->hardnavigation BUSY ownership, error-context/trace preserved browser-first. No storage/Libraryscroll investigation orruntimechange. Firstharnessfix splits initialrecover/unmount andlaterinvalid into independent contexts, sameassertions; noRetry/assertionrelaxation. NativePlaybackViewbeginScrubbing explicitstopPreview foundread-only; wire synchronousborrowedpreviewStop for scrub/Reset andaddproof, preserve streamintent. Covering6Chrome next, atmost2fix/retestcycles per failure.",
         "2026-10-17T17:32:17.952864+00:00 Firstcurrentcards accepted, checkpointatlive39%fivehour/90%weekly, ordinarytrue. Rootsourceownedpaths only, allpriorproofs/refs preserved; Solread-onlyschedulerproposal no trackedchanges, Lunaidle. Weekly90intensifiedcheckpointbutcontinue100, fivehour70/80unchanged. No nativeexpectedchanges or acceptedcatalogrecapture.",
         "2026-10-17T21:58:14.591077+00:00 Previouscards accepted: normalmerge4f500086/cda3bb07, stricttypes/build6c7d8e82510b andinitial5ChromePASS/focusedpreviousfix1PASS. Actual48000Hz written pitches, nativeunison/restbarriers/geometry/keyboard/Reset/onecontext; exactproof under playback-previous/browser-fix1; firstfailuretrace retained browser-first. No fullT12/intervalsequence/device acceptance.",
-        "2026-10-18T02:46:50.910462+00:00 Intervalaudio component ACCEPTED: worker5ebdba23 normallymerged2b41da48,14focused/93rootcoveringchecks/strictcombinedtypes/build6c7d8e82510b;6actualChrome afterfixture-readinessfix1. One59535/64800framebuffer,3PCM/livegraphstages/actualclock/unison/rawtranspose/cancellation/staleheldrender/sharedborrower/trustednavigation. Singleimmutabletag throughONEexistingowner removesextraarbitration, no owner/DSP/APIchange. Firstfailuretrace retained browser-first; finalproofs interval-audio/browser-fix1. AppUI/producttest unrun, nofullT12/physical/Safariclaim."
+        "2026-10-18T02:46:50.910462+00:00 Intervalaudio component ACCEPTED: worker5ebdba23 normallymerged2b41da48,14focused/93rootcoveringchecks/strictcombinedtypes/build6c7d8e82510b;6actualChrome afterfixture-readinessfix1. One59535/64800framebuffer,3PCM/livegraphstages/actualclock/unison/rawtranspose/cancellation/staleheldrender/sharedborrower/trustednavigation. Singleimmutabletag throughONEexistingowner removesextraarbitration, no owner/DSP/APIchange. Firstfailuretrace retained browser-first; finalproofs interval-audio/browser-fix1. AppUI/producttest unrun, nofullT12/physical/Safariclaim.",
+        "2026-10-18T03:00:28.331224+00:00 Nativeintervalcards ACCEPTED: c49c4047 normallymerged, strictcombinedtypes/Appbuild8eb973ca54a5 andinitial7ChromePASS/final2affectedlayoutChromePASS. Actual3stage1350ms/rawwrittenpitches/Majorlabelonly/manualtransposeonce/currentpreset/staticintervalmutualcancellation/Reset/sectioncleanup/nativeunison/restvisibility/keyboard/44px/320px200% image reviewed. Oneexistingowner/context; pure/component93checks+6Chrome retained withoutrecapture. FullT12visualtimeline/defaults/positionmemory andT13/T21/device gates open."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -1782,7 +1783,7 @@
           "pwa/tests/browser/playback.spec.ts"
         ],
         "scope": "ActualPWA intervalcard acceptance: nativevisibility/keyboard/rawsourceper-eventregisters/fixedMajorlabelonly/450ms3stages/manualtransposeonce/currentpreset, static-intervalsequence mutualcancellation, Reset/sectioncleanup/narrow44px. Extend existingPCM instrumentation with segment spectralmeasurements onlyfor1350msbuffers. UIimplementation remainsseparateLunaclaim aftersequencecomponentacceptance; no Libraryscroll/productioncatalog/nativecapture.",
-        "status": "Initial7productChrome PASS3.0m on046ed9544582. Fullpage320px200%image hasnooverflow butnew100pxintervalcard splits M2 quality/number andcaption awkwardly. Onefocusedvisualrefinement widensnewintervalbasis160px; no audio/visibility/sourcefixture change. Finalbuild/types and2affectedinterval/previouslayoutcases next; firstproductproof retained."
+        "status": "ACCEPTED initial7ChromePASS3.0m on046ed9544582 plusfinal2affectedlayoutChromePASSon8eb973ca54a5 after160pxintervalcardrefinement. Final320px200%fullpageimage visuallyreviewed, M2quality+number andcaption legible/nooverflow. No audio/sourcefixture/assertion changes."
       },
       "intervalCardUiAssignment": {
         "owner": "song_ui_review",
@@ -1798,10 +1799,33 @@
           "pwa/src/features/playback/playback.css",
           "pwa/src/features/playback/INTERVAL_CARDS_WORKLOG.md"
         ],
-        "status": "Worker c49c4047 completeclean/idle, scopedtypes/diffcheckPASS. Rootreviewed complete21linebinding+2styles: oneexistingowner, nativehelpers/rawpitches/labels, refusalstopsowner+existingalert. Exact3assignedpaths only, primaryrootproducttest remainsowneddirty. Normalmerge/build/7affectedChrome acceptance next.",
+        "status": "ACCEPTED nativeintervalcards c49c4047 normallymerged; strictcombinedtypes/build8eb973ca54a5 andinitial7affectedactualChromePASS plusfinal2affectedlayoutchecksPASSaftervisualcardwidthrefinement. Root/melodyrawsource/sourcekey/Majorlabelonly/450ms3stagePCM/manualtransposeonce/currentpreset/static-intervalexclusivity/Reset/sectioncleanup/nativeunison/restvisibility/keyboard/44px/narrow200% proven. Errorboundaryrefusesunsupportedrequest viaexistingalert. FullT12/tessitura/singing/device gates remainopen.",
         "scope": "Frozenview-contracts finalcomment: oneexistingPreviewOwner renderCardPreview injection, intervalcard request rawpitches/settings/currentpreset/manualtransposeonce. Native rootintervalvisibility/writtenunison+melodyINTERVAL/restbarriers, visualshorthand/Interval label and exactspokenaria names. Existingallstaticcards/stopref/lifecycle/props unchanged. No rootcontracts/deps/audioDSP/controller/App/browser/tasks edits.",
-        "nextAction": "Normalmerge exactc49c4047 thenstrictcombinedtypes/build and actualproductinterval+previous/Major/Home/current/offline7Chrome. No unchangedpure/native/componentbrowser repetition; no Libraryscrollgate.",
-        "workerTip": "c49c4047d7daae3b7dc1d960b932f6a69eb0f8d0"
+        "nextAction": "No unchangedinterval/native/component/browser recapture. T12remainingvisualtimeline/defaults/routepositionmemory; globalMajorpreferenceT21 andsinging/tessituraT13 future. ContinueindependentT14builtin-currentproposal/contract whenready/livecapacity.",
+        "workerTip": "c49c4047d7daae3b7dc1d960b932f6a69eb0f8d0",
+        "mergeCommit": "af8f065fbc2adbdc78035a932fcbb1c79375355a",
+        "validation": [
+          {
+            "command": "node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build",
+            "guard": "window18-interval-layout-build-20261018",
+            "result": "PASSstrictcombinedtypes/finalAppproductionbuild8eb973ca54a5 after160pxcardwidthrefinement; no audio/visibilitychange."
+          },
+          {
+            "command": "node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --project chrome --grep 'interval cards|previous pitch cards|Major|musical home|current cards|playback reloads' --output .artifacts/pwa-port/playback-interval/browser-first",
+            "guard": "window18-interval-product-browser-first-20261018",
+            "result": "PASS7actualChrome firstproductattempt; exactPCM/spectral/rawregister/transposeonce/preset/onecontext/cancellation/nativevisibility/keyboard/narrow44px. No Libraryscroll, physicalhearing/Safariclaim."
+          },
+          {
+            "command": "node node_modules/@playwright/test/cli.js test tests/browser/playback.spec.ts --project chrome --grep 'interval cards|previous pitch cards' --output .artifacts/pwa-port/playback-interval/final-layout",
+            "guard": "window18-interval-product-final-layout-20261018",
+            "result": "PASS2affectedChrome aftervisualrefinement; sameaudio/visibility/assertions, nativeM2symbol+Intervalcaptionremainlegible at320px200% with44px/nooverflow. Finalimage/proofs retained final-layout; initial7PASS3.0m retained browser-first."
+          }
+        ],
+        "sha256": {
+          "pwa/src/features/playback/PlaybackCards.tsx": "d321d33b4cda1a0b3e53bb7a227ae81671c0899f9f445cbc8c9370d841328021",
+          "pwa/src/features/playback/playback.css": "e883799c4dcf00c3a5a36a52d89a72cbbd6612d3425c850501ad5cf70c6a48d5",
+          "pwa/tests/browser/playback.spec.ts": "d48e3ee139cf526ff8be584f537affc4313bf4abb349e3a088591a3cdb24dec5"
+        }
       }
     },
     {
