@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T02:46:50.910462+00:00",
+  "updated": "2026-10-18T02:47:28.430071+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1783,6 +1783,24 @@
         ],
         "scope": "ActualPWA intervalcard acceptance: nativevisibility/keyboard/rawsourceper-eventregisters/fixedMajorlabelonly/450ms3stages/manualtransposeonce/currentpreset, static-intervalsequence mutualcancellation, Reset/sectioncleanup/narrow44px. Extend existingPCM instrumentation with segment spectralmeasurements onlyfor1350msbuffers. UIimplementation remainsseparateLunaclaim aftersequencecomponentacceptance; no Libraryscroll/productioncatalog/nativecapture.",
         "status": "Intentbeforetests; run onlyaftervalidatedUIintegration."
+      },
+      "intervalCardUiAssignment": {
+        "owner": "song_ui_review",
+        "model": "gpt-6-luna",
+        "thinking": "medium",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-ui-shell",
+        "branch": "codex/pwa-interval-cards",
+        "baseCommit": "79a96b47c7896ec07a2165c95182e472b3562ee6",
+        "priorBranch": "codex/pwa-previous-cards",
+        "priorTip": "4f50008608ce216e9fb4b77ab94150ea7ec507ba",
+        "ownedPaths": [
+          "pwa/src/features/playback/PlaybackCards.tsx",
+          "pwa/src/features/playback/playback.css",
+          "pwa/src/features/playback/INTERVAL_CARDS_WORKLOG.md"
+        ],
+        "status": "Prebranchclaim: primary79a96b47 componentaccepted93checks/types/build+6realChrome; onlyrootplayback.spec.ts dirty (ownedfutureUIacceptance). UI4f500086clean/idle, Sol5ebdba23clean/idle; soleLuna/medium next, alloldrefs/artifactspreserved. Live24%fivehour/15%weekly.",
+        "scope": "Frozenview-contracts finalcomment: oneexistingPreviewOwner renderCardPreview injection, intervalcard request rawpitches/settings/currentpreset/manualtransposeonce. Native rootintervalvisibility/writtenunison+melodyINTERVAL/restbarriers, visualshorthand/Interval label and exactspokenaria names. Existingallstaticcards/stopref/lifecycle/props unchanged. No rootcontracts/deps/audioDSP/controller/App/browser/tasks edits.",
+        "nextAction": "Underown guard createclaimedbranch fromexactbase inSAMEpreservedUIsibling; persistownintent thenbounded3pathedit, scopedtypes/diffreview/commit andidle. RootownsactualAppbrowseracceptance; no physical/Safarisingingclaim. Fivehour70nonew/80yield,weekly100override."
       }
     },
     {
