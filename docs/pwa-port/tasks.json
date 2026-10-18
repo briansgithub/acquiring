@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T12:04:55.897773+00:00",
+  "updated": "2026-10-18T16:31:03.810102+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1869,12 +1869,12 @@
       ],
       "acceptance": "Deterministic Android cases; supported/independent/transfer rules; corrupt-state recovery",
       "status": "in_progress",
-      "owner": "coordinator; initializer worker clean idle",
+      "owner": "coordinator; learning worker idle",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "fb3f23b15a5bfe27fa473a7afcaf800441d0fdec",
-      "slice": "Generator/scheduler/envelope repair, typed builtin regeneration and full builtin JSON fragment eligibility accepted. Native initializer oracle accepted; web initializer worker validated but unmerged. Session actions/persistence/corpus/pattern/UI remain open.",
-      "nextAction": "After live five-hour usage is below70% and recovery inspection is clear, coordinator reviews exact unmerged initializer91a9877e against baseba324379, normally integrates it and runs primary learning/playback tests plus strict types under a NEW guard. Worker95tests/scoped types passed; primary integration/checks UNRUN. Do not repeat accepted native or fragment evidence. No new worker or source slice before acceptance.",
+      "slice": "Pure builtin initializer accepted: saved current/return metadata, lesson-state/warning/fresh ordering. Generator/scheduler/envelope repair and exact JSON/typed restore remain accepted. Actions/persistence/corpus/pattern/UI remain open.",
+      "nextAction": "Do not repeat accepted initializer/decoder/native evidence. Future learning work requires a bounded session-action/view proposal and frozen contract; no new T14 source assigned.",
       "validation": [
         {
           "command": "python pwa/src/domain/learning/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/domain/learning/pitch-assessment.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (node commands from pwa)",
@@ -1912,6 +1912,12 @@
           "guard": "window19-builtin-json-combined-20261018 (root guard, cwd pwa)",
           "revision": "f8b3f002dc54368d605bb00a8d85fcb0413ac299",
           "result": "PASS221tests/14files7.77s then strict combined types first attempt. Child97162 observed exit0; exact integrated hashes match tested worker. No production build/browser/native recapture; App shell8eb973ca54a5 unchanged."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window20-initializer-combined-20261018 (primary guard, cwd pwa)",
+          "revision": "af163aa64d8b3caa72e81aee32b1e898cd3aa9c1",
+          "result": "FIRST PASS243tests/15files9.25s and strict combined types; actual child26204 observed exit0. No App/build/browser/native changes or unnecessary recapture. Worker tested blobs match exact integrated source."
         }
       ],
       "progress": [
@@ -2304,9 +2310,9 @@
           "pwa/src/domain/learning/fixtures/native-initializer.json",
           "pwa/src/domain/learning/index.ts"
         ],
-        "status": "WORKER VALIDATED, clean idle, UNMERGED; pending primary integration/acceptance after five-hour reset.",
+        "status": "ACCEPTED pure builtin initialization after normal integration and first primary covering checks. No session actions/persistence/UI/unsupported domain acceptance.",
         "scope": "Pure builtin whole-session initialization projection only; additive private return schema and initializer in session-envelope.ts, dedicated tests, exports and WORKLOG. No existing decoder/repair/generator behavior changes, native fixture changes, actions/storage/UI/audio/credit/source navigation/corpus/pattern implementation.",
-        "nextAction": "After live five-hour usage is below70% and recovery inspection is clear, coordinator reviews exact unmerged initializer91a9877e against baseba324379, normally integrates it and runs primary learning/playback tests plus strict types under a NEW guard. Worker95tests/scoped types passed; primary integration/checks UNRUN. Do not repeat accepted native or fragment evidence. No new worker or source slice before acceptance.",
+        "nextAction": "Do not repeat accepted initializer/decoder/native evidence. Future learning work requires a bounded session-action/view proposal and frozen contract; no new T14 source assigned.",
         "contractAmendment": {
           "date": "2026-10-18T11:47:29.036519+00:00",
           "status": "Comment-only correction committed and delivered before native capture; types unchanged, prefix assertion/diffcheck PASS.",
@@ -2345,6 +2351,14 @@
           },
           "receipt": ".artifacts/pwa-port/t14-initializer-phase2-validation.json",
           "receiptSha256": "6607f0ec6b89e756f6e6baafbfa0a10167864f22d31693b1e11867064c9c9a3c"
+        },
+        "mergeCommit": "af163aa64d8b3caa72e81aee32b1e898cd3aa9c1",
+        "testedRevision": "af163aa64d8b3caa72e81aee32b1e898cd3aa9c1",
+        "primaryValidation": {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window20-initializer-combined-20261018 (primary guard, cwd pwa)",
+          "revision": "af163aa64d8b3caa72e81aee32b1e898cd3aa9c1",
+          "result": "FIRST PASS243tests/15files9.25s and strict combined types; actual child26204 observed exit0. No App/build/browser/native changes or unnecessary recapture. Worker tested blobs match exact integrated source."
         }
       }
     },
@@ -2377,6 +2391,17 @@
         "status": "Read-only source readiness; no implementation/capture/tests/claim.",
         "authority": "801cf798 AuralProgressionQuery.kt entire source and AuralProgressionQueryTest.kt; AuralCorpus26..50 start-group parser/order. Completed audit findings-aural.md reused.",
         "nextAction": "Small pure constraint/query matcher contract can precede worker SQL pages. Preserve separate rootLabels/exact+optional inversion, family aliases/grouping semantics, queryversion1/chords<=32 and explicit native-vs-browser bounds; no aural SQL/runtime reader exists yet. Do not repeat inspected source; deeper SQL/rank/group evidence remains to inspect."
+      },
+      "queryProposalAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-builtin-initializer",
+        "baseCommit": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
+        "output": ".artifacts/pwa-port/t15-query-proposal-window20.md",
+        "status": "READ-ONLY ASSIGNED on existing clean branch/tree; no new branch/source/native capture/tests.",
+        "scope": "Bounded <=80line pure native constraint/query matcher proposal only. Reuse recorded readiness and frozen AuralProgressionQuery.kt/test/AuralCorpus26..50; identify semantics/defaults/public API/owned paths <=24 native cases and minimal actual Kotlin oracle extraction. No SQL/ranking/group/loop/runtime catalog implementation, old audit repeat, tracked edits/contracts or new branch. Coordinator freezes contract before source."
       }
     },
     {
@@ -2698,8 +2723,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T12:04:55.897773+00:00",
-    "sourceCommit": "ba32437921a254bf87f0febad45a3b58d118793f",
+    "date": "2026-10-18T16:31:03.810102+00:00",
+    "sourceCommit": "af163aa64d8b3caa72e81aee32b1e898cd3aa9c1",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -2712,11 +2737,11 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 77,
-      "weeklyUsedPercent": 35
+      "fiveHourUsedPercent": 2,
+      "weeklyUsedPercent": 36
     },
-    "fiveHourResetUnix": 1792340548,
-    "weeklyResetUnix": 1792876816,
+    "fiveHourResetUnix": 1792358936,
+    "weeklyResetUnix": 1792876817,
     "unresolvedRuns": [],
     "worker": {
       "owner": "preview_owner",
@@ -2725,10 +2750,10 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "branch": "codex/pwa-builtin-initializer",
       "tip": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
-      "status": "clean idle; worker validated, UNMERGED pending primary acceptance"
+      "status": "initializer accepted clean idle before read-only proposal"
     },
-    "nextAction": "After live five-hour usage is below70% and recovery inspection is clear, coordinator reviews exact unmerged initializer91a9877e against baseba324379, normally integrates it and runs primary learning/playback tests plus strict types under a NEW guard. Worker95tests/scoped types passed; primary integration/checks UNRUN. Do not repeat accepted native or fragment evidence. No new worker or source slice before acceptance.",
-    "reason": "Five-hour70% no-new-work threshold reached; save tested unmerged initializer and yield. Last live77%/35%.",
+    "nextAction": "Observe existing worker proposal; coordinator freezes next useful contract before any source/branch. No duplicate worker.",
+    "reason": "Initializer accepted; same Sol/high read-only catalog-query proposal while coordinator bounds playback timeline.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -2736,47 +2761,27 @@
       "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
     },
     "usageAvailability": "Ordinary usage allowed at last observation. Five-hour70 no new work/80 checkpoint; weekly100 ordinary exhaustion. No credit/reset/model action.",
-    "activeWorker": null,
-    "integrationAwaitingPrimaryAcceptance": {
+    "activeWorker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "branch": "codex/pwa-builtin-initializer",
-      "tip": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
-      "status": "clean idle; worker validated, UNMERGED pending primary acceptance",
-      "baseCommit": "ba32437921a254bf87f0febad45a3b58d118793f",
-      "validation": {
-        "revision": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
-        "baseCommit": "ba32437921a254bf87f0febad45a3b58d118793f",
-        "guards": [
-          "t14-initializer-phase2-tests-20261018-17",
-          "t14-initializer-phase2-types-20261018-18"
-        ],
-        "commands": [
-          "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t14-initializer-vitest.config.mjs",
-          "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc -p ../.artifacts/pwa-port/t14-initializer-tsconfig.json"
-        ],
-        "result": "FIRST PASS95tests/4files1.58s (16native+6browser initializer groups and73unchanged checks), scoped strict types PASS. All owned children exited0; worker clean idle. Root reviewed entire additive source/tests/exports; primary combined checks UNRUN.",
-        "sha256": {
-          "session-envelope.ts": "f407891385350ee85084d1994e43d9f41e3540e4e4832a4976b8a261b84a6314",
-          "builtin-session-initializer.test.ts": "fe71c7e01e848cde165229777da59ca0392e17d15d2b8b6bbb41e9387e36ce82",
-          "index.ts": "2564e31785aa74aa9a3f73adbed52a01c7fb73b591b905934ea232edef23331c"
-        },
-        "receipt": ".artifacts/pwa-port/t14-initializer-phase2-validation.json",
-        "receiptSha256": "6607f0ec6b89e756f6e6baafbfa0a10167864f22d31693b1e11867064c9c9a3c"
-      },
-      "primaryValidation": "UNRUN; source not integrated into primary."
+      "baseCommit": "91a9877e36d10e0c815b3579dc8898130b5de9eb",
+      "output": ".artifacts/pwa-port/t15-query-proposal-window20.md",
+      "status": "READ-ONLY ASSIGNED on existing clean branch/tree; no new branch/source/native capture/tests.",
+      "scope": "Bounded <=80line pure native constraint/query matcher proposal only. Reuse recorded readiness and frozen AuralProgressionQuery.kt/test/AuralCorpus26..50; identify semantics/defaults/public API/owned paths <=24 native cases and minimal actual Kotlin oracle extraction. No SQL/ranking/group/loop/runtime catalog implementation, old audit repeat, tracked edits/contracts or new branch. Coordinator freezes contract before source."
     },
-    "fiveHourAction": "No new slice/worker/integration/expensive check. Recovery documentation checkpoint only, then yield until applicable five-hour reset1792340548.",
+    "integrationAwaitingPrimaryAcceptance": null,
+    "fiveHourAction": "Live2%; no new operations at70, checkpoint/yield80.",
     "resumeObservation": {
-      "at": "2026-10-18T11:23:34.092999+00:00",
+      "at": "2026-10-18T16:29:57.211840+00:00",
       "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 23,
+      "weeklyUsedPercent": 35,
       "ordinaryUsageAllowed": true,
-      "fiveHourResetsAt": 1792340548,
-      "weeklyResetsAt": 1792876816,
-      "action": "Live fivehour reset verified; resume bounded saved-current eligibility proposal, no credit/reset/model action."
+      "fiveHourResetsAt": 1792358936,
+      "weeklyResetsAt": 1792876817,
+      "action": "Live five-hour reset verified; resume exact reviewed initializer integration then primary covering checks. No credit/reset/model action."
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",
@@ -2791,13 +2796,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-18T12:04:55.897773+00:00",
-      "fiveHourUsedPercent": 77,
+      "at": "2026-10-18T16:29:57.211840+00:00",
+      "fiveHourUsedPercent": 0,
       "weeklyUsedPercent": 35,
       "ordinaryUsageAllowed": true,
-      "fiveHourResetsAt": 1792340548,
-      "weeklyResetsAt": 1792876816,
-      "action": "Recovery documentation only then yield; no new integration/check. Weekly ordinary allowance remains available."
+      "fiveHourResetsAt": 1792358936,
+      "weeklyResetsAt": 1792876817,
+      "action": "Live five-hour reset verified; resume exact reviewed initializer integration then primary covering checks. No credit/reset/model action."
     }
   }
 }
