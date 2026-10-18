@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T23:00:54.143370+00:00",
+  "updated": "2026-10-18T23:18:41.070585+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2381,12 +2381,12 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "coordinator; sole Sol/high pure target codec",
+      "owner": "coordinator; both workers idle",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
-      "slice": "Pure constraint/query matcher, stable pattern identity and loop/retained-children kernels accepted. Full SQL/eligibility/ranking/groups/search/pages/runtime/browser remain open.",
-      "nextAction": "Same Sol/high finishes exact pure codec; root reviews/normal integrates then primary covering tests. Target SQL row reader accepted. Only then compose actual target RPC and tiny-WASM/browser target proof.",
+      "baseCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
+      "slice": "Accepted pure query/identity/loop kernels plus bounded header/suffix/selected-run SQL/full typed codec/native target RPC. Global eligibility/matching/statistics/ranking/groups/paging/UI/fullcatalog budgets remain open.",
+      "nextAction": "Do not repeat accepted target/header/native/2GB evidence. After fresh five-hour capacity select next smallest stats/ranking/eligibility or membership kernel from existing readiness/dependency graph, freeze contract/reference before source; keep actual fullcatalog budgets/device acceptance open.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -2493,6 +2493,22 @@
             "pwa/src/storage/catalog/aural-target-query.ts": "2183eaf37e7d712724540cc8abfc8bc8eec62943aaad9299770789edfbc5b9de",
             "pwa/src/storage/catalog/aural-target-query.test.ts": "b28216cb67a661094d01dc09e80e5aa7952d18f6da74b7eb54d210dc28e14ac7"
           }
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window21-codec-combined-20261019",
+          "revision": "59300a12da8e4493493cb9148a3983452e5359e7",
+          "result": "FIRST PASS409tests/27files11.56s and strict full types; actual session36721 exit0. Exact reviewed pure codec integrated normally; no native/oldbrowser/fullcatalog recapture. Header runtime prior3Chrome accepted separately."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/aural-target-query.test.ts ; node node_modules/typescript/bin/tsc --noEmit ; node node_modules/vite/bin/vite.js build ; node scripts/build-shell.mjs ; node node_modules/@playwright/test/cli.js test tests/browser/aural-read.spec.ts tests/browser/aural-target.spec.ts --project=chrome --output=.artifacts/pwa-port/aural-read/target-window21-first",
+          "guards": [
+            "window21-target-runtime-checks-first-20261019",
+            "window21-target-runtime-build-first-20261019",
+            "window21-target-browser-first-20261019"
+          ],
+          "result": "FIRST PASS11target-query regressions/644ms, strict full types, production bundle/shell1754514ffe74, then FIRST executed7actual desktop development-Chrome/WASM/OPFS/WebLock/IDB tests21.0s (session45366 exit0). All7proof JSON parsed/hash recorded. Three successful native target outputs/2native failure paths transported through real tiny SQLite+gzip+typed codec+actual WebCrypto. No source/assertion failure cycle. Production bundle built; browser test entry uses development worker, NOT new production fullcatalog/cold device acceptance.",
+          "validationReference": "T15.targetRuntimeAssignment.validation"
         }
       ],
       "progress": [],
@@ -2962,7 +2978,8 @@
           "pwa/scripts/catalog/make-aural-read-browser-fixture.py": "ad33ce0be904350c40b1c1b49735eaec56a82b27256744deda756e0bfbac812f",
           "pwa/tests/browser/catalog-worker-harness.ts": "679d6d6cd89ae73c6147e1c73411b1820196ffb863c4addebe9bd13eb0aa7f38",
           "pwa/tests/browser/aural-read.spec.ts": "479210c9873add4a37de5bc4c009297d949fe8f62df55acc0c3c90f743cb8c42"
-        }
+        },
+        "latestRegressionValidation": "T15.targetRuntimeAssignment.validation: shared DB lifetime helper/header tests rerun among7actualChromechecks, passed."
       },
       "targetCodecAssignment": {
         "owner": "preview_owner",
@@ -2979,13 +2996,47 @@
           "pwa/src/storage/catalog/AURAL_TARGET_WORKLOG.md"
         ],
         "contract": "pwa/src/storage/catalog/aural-target-contracts.ts",
-        "status": "ASSIGNED same Sol/high after contract6060eea9 and FIRST strict types PASS; native reference reviewed and merged. Source only3ownedpaths; no recapture.",
+        "status": "ACCEPTED pure complete typed run codec/target builder after normal merge+primary covering checks; actual target RPC not yet accepted",
         "scope": "Pure full typed run gzip decoder and native target builder only, exact12group/40native outcomes plus meaningful byte/input/snapshot/budget cases. Frozen public API, accepted native reference and actual identity. No SQL/RPC/client/root state/contracts/deps or further native capture.",
         "validationPlan": "Focused exact native target codec tests then scoped strict types, return hashes/checkpoints; root reviews source, normal merges then primary covering checks. At most2diagnose cycles; no absent browser/device claim.",
         "contractValidation": "window21-target-contract-types-20261018 strict full TypeScript exit0",
         "lastObservedUsage": {
           "fiveHourUsedPercent": 33,
           "weeklyUsedPercent": 53
+        },
+        "workerTip": "6df29c543a3bc50ec2b3dc51b6b7ab9d7ea91ab6",
+        "testedSha256": {
+          "pwa/src/storage/catalog/aural-target-codec.ts": "6de9a36a54740307d1d2b149bda765512d3c46054740b7a6215b4aab3f7f2fb4",
+          "pwa/src/storage/catalog/aural-target-codec.test.ts": "baf7a1f38238ff00f741bc8dce4bfaf528ad0a86ae74b4d3b71032f5739cfb5b",
+          "pwa/src/storage/catalog/AURAL_TARGET_WORKLOG.md": "aa0e9860bc03fd40f11749cb148d916c31946bfadefad41bcc236a0b38b1950d"
+        },
+        "workerValidation": {
+          "base": "6060eea9ac2b490d798b372fa9a173bc28545562",
+          "branch": "codex/pwa-aural-target-codec",
+          "focusedUnits": "PASS19groups/1file/2.72s;native40+7browser",
+          "strictScopedTypes": "PASS exit0",
+          "implementationFailureCycles": 0,
+          "preparationHelperCorrection": 1,
+          "unitGuard": "t15-target-codec-final-unit-20261019-65",
+          "typesGuard": "t15-target-codec-final-types-20261019-66",
+          "sourceHashes": {
+            "pwa/src/storage/catalog/aural-target-codec.ts": "6de9a36a54740307d1d2b149bda765512d3c46054740b7a6215b4aab3f7f2fb4",
+            "pwa/src/storage/catalog/aural-target-codec.test.ts": "baf7a1f38238ff00f741bc8dce4bfaf528ad0a86ae74b4d3b71032f5739cfb5b",
+            "pwa/src/storage/catalog/AURAL_TARGET_WORKLOG.md": "aa0e9860bc03fd40f11749cb148d916c31946bfadefad41bcc236a0b38b1950d"
+          },
+          "nativeAndOtherSourceUnchanged": true,
+          "primaryReview": "Full source/tests reviewed by root; no blocker",
+          "next": "Idle for root normal integration/primary covering checks"
+        },
+        "receipt": "../Acquiring-pwa-data-compat/.artifacts/pwa-port/t15-target-codec-validation.json",
+        "receiptSha256": "789a3718e8164fb2f351c069149e842cb2e33c12a1922e0395589e1e8075d592",
+        "review": "Root full source/tests review +finalchanged whitespace/decode-order ranges; exact hashes match. Ordered known duplicates, strict native String, signed64 lexical Int, direct Java hex IEEE rounding, before-await byte/input snapshots, full both-key validation, independent slice bounds and identity RangeError propagation reviewed; no blocker. No native/oldcapture repeat.",
+        "integrationCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
+        "primaryValidation": {
+          "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window21-codec-combined-20261019",
+          "revision": "59300a12da8e4493493cb9148a3983452e5359e7",
+          "result": "FIRST PASS409tests/27files11.56s and strict full types; actual session36721 exit0. Exact reviewed pure codec integrated normally; no native/oldbrowser/fullcatalog recapture. Header runtime prior3Chrome accepted separately."
         }
       },
       "targetQueryAssignment": {
@@ -3018,7 +3069,103 @@
           "pwa/src/storage/catalog/aural-target-query-contracts.ts": "17a9715bc1d7001b78137c9942581ea1923653fa86463e9a38e5b67ad6c2ce2d",
           "pwa/src/storage/catalog/aural-target-query.ts": "2183eaf37e7d712724540cc8abfc8bc8eec62943aaad9299770789edfbc5b9de",
           "pwa/src/storage/catalog/aural-target-query.test.ts": "b28216cb67a661094d01dc09e80e5aa7952d18f6da74b7eb54d210dc28e14ac7"
-        }
+        },
+        "runtimeCompositionValidation": "T15.targetRuntimeAssignment.validation: extracted capture helper/SQL regression11+fulltypes and7actualChromechecks passed with current source hashes."
+      },
+      "targetRuntimeAssignment": {
+        "owner": "coordinator runtime unknown unchanged",
+        "branch": "codex/pwa-foundation",
+        "baseCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
+        "status": "ACCEPTED bounded one-command target RPC foundation with actual desktop tiny-SQLite browser evidence; T15 incomplete",
+        "ownedPaths": [
+          "pwa/src/storage/catalog/aural-target-query-contracts.ts",
+          "pwa/src/storage/catalog/aural-target-query.ts",
+          "pwa/src/storage/catalog/catalog-worker.ts",
+          "pwa/src/storage/catalog/protocol.ts",
+          "pwa/src/storage/catalog/client.ts",
+          "pwa/scripts/catalog/make-aural-target-browser-fixture.py",
+          "pwa/tests/browser/catalog-worker-harness.ts",
+          "pwa/tests/browser/aural-target.spec.ts",
+          "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
+        ],
+        "prepared": {
+          ".artifacts/pwa-port/window21-target-runtime-wire.py": "4de8ce8568d263da3527a827cdb9caa35d958272a8210dc589fd64a8a558d2ee",
+          ".artifacts/pwa-port/window21-target-fixture.py": "343c35cdd222cca9c90ad525952c7e3ab3a0a42742b75be78083ba736955f075",
+          ".artifacts/pwa-port/window21-aural-target.spec.ts": "0a5cc2bdc90a314f6442e0d04a60b7e193d410c0eb10fbc4c0c2308843b7a633",
+          ".artifacts/pwa-port/window21-target-browser-source.py": "e1599face218a5364743862a5dbf237da9a4208854fa5d1d12cadb99ae6c3129"
+        },
+        "scope": "Compose accepted snapshot SQL row reader +native fullrun decoder+actual identity target under one awaited readonly DB/serialized command. Extract snapshot query capture before journal awaits. Header shares same lifecycle helper; no persistent lease/per-request SQL cancellation.30s wholeclient timeout remains. Tiny native-probe SQLite/WASM targets preserve id/view/tokens/labels/span, only fixture installed snapshot envelope changes. User/outbox/files preservation, stalequery, invalidnativekeys/slices, request-startcut/newworker recovery and queuedclose; no mid-decode/device/fullcatalog claim.",
+        "validationPlan": "After codec acceptance, apply guarded candidates; target-query regression11/strict full types, production worker build; actual Chrome header3+target4 with NEW output target-window21-first and permitted localhost escalation. At70 no new check/slice, preserve candidates/partial source, checkpoint/yield80.",
+        "startedAt": "2026-10-18T23:13:42.014406+00:00",
+        "nextAction": "Do not repeat accepted target/header/native/2GB evidence. After fresh five-hour capacity select next smallest stats/ranking/eligibility or membership kernel from existing readiness/dependency graph, freeze contract/reference before source; keep actual fullcatalog budgets/device acceptance open.",
+        "validation": {
+          "commands": [
+            "node node_modules/vitest/vitest.mjs run src/storage/catalog/aural-target-query.test.ts",
+            "node node_modules/typescript/bin/tsc --noEmit",
+            "node node_modules/vite/bin/vite.js build",
+            "node scripts/build-shell.mjs",
+            "node node_modules/@playwright/test/cli.js test tests/browser/aural-read.spec.ts tests/browser/aural-target.spec.ts --project=chrome --output=.artifacts/pwa-port/aural-read/target-window21-first"
+          ],
+          "guards": [
+            "window21-target-runtime-checks-first-20261019",
+            "window21-target-runtime-build-first-20261019",
+            "window21-target-browser-first-20261019"
+          ],
+          "baseCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
+          "testedSha256": {
+            "pwa/src/storage/catalog/aural-target-query-contracts.ts": "c0107e50cf5c1b3030e2ae732e2dc44ca9568d64fc6d764736ea94797ce3d8e3",
+            "pwa/src/storage/catalog/aural-target-query.ts": "98b797d912f5b71503a139154c623f0a6b718523c08abb91f0398cd2e9023813",
+            "pwa/src/storage/catalog/catalog-worker.ts": "945c437e3ff5c80938139be96d2f55a673dc9d5e1b25db9e749db7622532d1a3",
+            "pwa/src/storage/catalog/protocol.ts": "e71e75424fc868a90ec3b70194a609ee1e762a1cbe678fed697431c9678a0ce3",
+            "pwa/src/storage/catalog/client.ts": "98cbf3205cdba86313f5b0e560ac4260dc166f5d05c2b7758cdbc6fd020a0878",
+            "pwa/scripts/catalog/make-aural-target-browser-fixture.py": "96da008427e55cbccc90f9a1838a68832510f813bacc71b9dcc6d44742fab8be",
+            "pwa/tests/browser/catalog-worker-harness.ts": "5d9805f2f4533cc80ad2d5cfd3c95974546adb8bedede38adc3009df6888fed4",
+            "pwa/tests/browser/aural-target.spec.ts": "7ea42c8d7995d3053ef3720eb7b369e293c7b4fe3bf3ec51420a994caf7e6b56"
+          },
+          "result": "FIRST PASS11target-query regressions/644ms, strict full types, production bundle/shell1754514ffe74, then FIRST executed7actual desktop development-Chrome/WASM/OPFS/WebLock/IDB tests21.0s (session45366 exit0). All7proof JSON parsed/hash recorded. Three successful native target outputs/2native failure paths transported through real tiny SQLite+gzip+typed codec+actual WebCrypto. No source/assertion failure cycle. Production bundle built; browser test entry uses development worker, NOT new production fullcatalog/cold device acceptance.",
+          "proofs": [
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/target-window21-first/aural-read-actual-WASM-hea-62dc4-cks-active-snapshot-updates-chrome/proof.json",
+              "sha256": "d594a70026127b2a8fdafd3f3581de663e050ce4519f02a309ac811f3299068b"
+            },
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/target-window21-first/aural-read-header-read-kee-e15df-se-allows-the-next-real-tab-chrome/proof.json",
+              "sha256": "0120966954465aa28d4a433a172673a118c896bdece73fefffa7b0db1e2c4089"
+            },
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/target-window21-first/aural-read-malformed-array-095f1-nstalled-files-or-user-data-chrome/proof.json",
+              "sha256": "36fab35b975a35b3defed8bbd13c7c531f2d6785cb2eb329d1b8097c9949a643"
+            },
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/target-window21-first/aural-target-actual-WASM-r-cd1ec-ree-roman-and-empty-targets-chrome/proof.json",
+              "sha256": "b3d9ec485fc813fc0c31a55879217d895771e9f8a1388680b4c82a5a3336e18c"
+            },
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/target-window21-first/aural-target-native-key-an-50060-users-and-allow-valid-retry-chrome/proof.json",
+              "sha256": "30242123b71b8305ce3760052d00319710e286a9a3e2da93201a4fe59116041b"
+            },
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/target-window21-first/aural-target-request-start-6482f-adable-catalog-after-reopen-chrome/proof.json",
+              "sha256": "59a9039ef5a82a441d3c1fd69fb711018e89a34e6d70b697bb67c479c40274e6"
+            },
+            {
+              "path": "pwa/.artifacts/pwa-port/aural-read/target-window21-first/aural-target-stale-rank-re-6e7c8-never-rebind-to-new-catalog-chrome/proof.json",
+              "sha256": "a4a001a63426165e3be7c77410b6a7b76c260a0a6b38d02193cda3264327d482"
+            }
+          ],
+          "coverage": "Header/new-worker offline query/active update/error-preserving retry/real next-tab owner; exact degree/roman/zero targets, stale request never rebound, modern BOTHkey validation and independent array slice failures, files+ten user stores/outbox unchanged, same-tick request-start termination rejects pending client/new-worker recovery, queued close awaits earlier target. No mid-decode/digest or physical-device interruption claim."
+        },
+        "testedSha256": {
+          "pwa/src/storage/catalog/aural-target-query-contracts.ts": "c0107e50cf5c1b3030e2ae732e2dc44ca9568d64fc6d764736ea94797ce3d8e3",
+          "pwa/src/storage/catalog/aural-target-query.ts": "98b797d912f5b71503a139154c623f0a6b718523c08abb91f0398cd2e9023813",
+          "pwa/src/storage/catalog/catalog-worker.ts": "945c437e3ff5c80938139be96d2f55a673dc9d5e1b25db9e749db7622532d1a3",
+          "pwa/src/storage/catalog/protocol.ts": "e71e75424fc868a90ec3b70194a609ee1e762a1cbe678fed697431c9678a0ce3",
+          "pwa/src/storage/catalog/client.ts": "98cbf3205cdba86313f5b0e560ac4260dc166f5d05c2b7758cdbc6fd020a0878",
+          "pwa/scripts/catalog/make-aural-target-browser-fixture.py": "96da008427e55cbccc90f9a1838a68832510f813bacc71b9dcc6d44742fab8be",
+          "pwa/tests/browser/catalog-worker-harness.ts": "5d9805f2f4533cc80ad2d5cfd3c95974546adb8bedede38adc3009df6888fed4",
+          "pwa/tests/browser/aural-target.spec.ts": "7ea42c8d7995d3053ef3720eb7b369e293c7b4fe3bf3ec51420a994caf7e6b56"
+        },
+        "finishedAt": "2026-10-18T23:18:41.070585+00:00"
       }
     },
     {
@@ -3340,8 +3487,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T22:36:51.175216+00:00",
-    "sourceCommit": "36fda59932961ada204c90cbd112d2df7a9bec86",
+    "date": "2026-10-18T23:18:41.070585+00:00",
+    "sourceCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -3354,8 +3501,8 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 40,
-      "weeklyUsedPercent": 54
+      "fiveHourUsedPercent": 70,
+      "weeklyUsedPercent": 59
     },
     "fiveHourResetUnix": 1792380961,
     "weeklyResetUnix": 1792876816,
@@ -3366,44 +3513,21 @@
       "thinking": "high",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
       "branch": "codex/pwa-aural-target-codec",
-      "tip": "6060eea9ac2b490d798b372fa9a173bc28545562",
-      "status": "source intent saved before newbranch; prior referencee6a9 clean preserved"
+      "tip": "6df29c543a3bc50ec2b3dc51b6b7ab9d7ea91ab6",
+      "status": "clean idle; accepted normally at59300a12"
     },
-    "nextAction": "Same Sol/high finishes exact pure codec; root reviews/normal integrates then primary covering tests. Target SQL row reader accepted. Only then compose actual target RPC and tiny-WASM/browser target proof.",
-    "reason": "Header actual runtime accepted; native target reference reviewed/merged. Pure decoder contract before source.",
+    "nextAction": "Do not repeat accepted target/header/native/2GB evidence. After fresh five-hour capacity select next smallest stats/ranking/eligibility or membership kernel from existing readiness/dependency graph, freeze contract/reference before source; keep actual fullcatalog budgets/device acceptance open.",
+    "reason": "Five-hour70% no-new-work boundary reached after target/browser acceptance. Save current source/evidence checkpoint and yield; no new slice/worker/expensive check.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
       "scope": "Preserve hourlyheartbeat/name/target/status/notificationsprompt; replace old combined70/80cutoff with separate fivehour70/80 andweekly100/ordinaryexhaustion, checkpointweekly90thencontinuing.",
       "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
     },
-    "usageAvailability": "Ordinary allowance available; actual0%fivehour/48%weekly at entry.",
-    "activeWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "branch": "codex/pwa-aural-target-codec",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "6060eea9ac2b490d798b372fa9a173bc28545562",
-      "priorBranch": "codex/pwa-aural-target-reference",
-      "priorTip": "e6a9d16608e2de85ff6e33e3c8d605d90da3f794",
-      "ownedPaths": [
-        "pwa/src/storage/catalog/aural-target-codec.ts",
-        "pwa/src/storage/catalog/aural-target-codec.test.ts",
-        "pwa/src/storage/catalog/AURAL_TARGET_WORKLOG.md"
-      ],
-      "contract": "pwa/src/storage/catalog/aural-target-contracts.ts",
-      "status": "ASSIGNED same Sol/high after contract6060eea9 and FIRST strict types PASS; native reference reviewed and merged. Source only3ownedpaths; no recapture.",
-      "scope": "Pure full typed run gzip decoder and native target builder only, exact12group/40native outcomes plus meaningful byte/input/snapshot/budget cases. Frozen public API, accepted native reference and actual identity. No SQL/RPC/client/root state/contracts/deps or further native capture.",
-      "validationPlan": "Focused exact native target codec tests then scoped strict types, return hashes/checkpoints; root reviews source, normal merges then primary covering checks. At most2diagnose cycles; no absent browser/device claim.",
-      "contractValidation": "window21-target-contract-types-20261018 strict full TypeScript exit0",
-      "lastObservedUsage": {
-        "fiveHourUsedPercent": 33,
-        "weeklyUsedPercent": 53
-      }
-    },
+    "usageAvailability": "Weekly ordinary allowance remains. Wait for five-hour capacity; future weekly reset alone never blocks remaining allowance. No credit/reset/model action.",
+    "activeWorker": null,
     "integrationAwaitingPrimaryAcceptance": null,
-    "fiveHourAction": "Capacity returned; five-hour70 no new work,80 checkpoint/yield; weekly100 ordinary exhaustion. No credit/reset/model action.",
+    "fiveHourAction": "Observed70%fivehour/59%weekly ordinary allowed. Finish recovery docs/commit only, yield before80 until applicable five-hour capacity returns.",
     "resumeObservation": {
       "at": "2026-10-18T22:36:51.175216+00:00",
       "fiveHourUsedPercent": 0,
@@ -3415,58 +3539,30 @@
     },
     "rootSideWork": {
       "owner": "coordinator runtime unknown unchanged",
-      "branch": "codex/pwa-foundation",
-      "baseCommit": "6060eea9ac2b490d798b372fa9a173bc28545562",
-      "ownedPaths": [
-        "pwa/src/storage/catalog/aural-target-query-contracts.ts",
-        "pwa/src/storage/catalog/aural-target-query.ts",
-        "pwa/src/storage/catalog/aural-target-query.test.ts",
-        "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
-      ],
-      "status": "ACCEPTED synchronous bounded row-query milestone only; no typed target/RPC yet",
-      "scope": "Synchronous snapshot4request fields, exact snapshot gate, bounded header/suffix/run row load matching native121..132. SQL materialization guards and legacy missingcolumn fallback, no typed decode/ID here. Real node:sqlite tests with existing native fixture bytes; no new native/capture/browser/fullcatalog/deps or RPC changes. End copied signedInt inclnegative; zero length accepted.",
-      "validationPlan": "Focused real-SQLite target-query tests and strict full types; only then checkpoint. Later combine with accepted actual native codec and actual worker browser proof in separate slice.",
-      "validation": {
-        "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/aural-target-query.test.ts; node node_modules/typescript/bin/tsc --noEmit",
-        "guards": [
-          "window21-target-query-tests-first-20261018",
-          "window21-target-query-types-first-20261018"
-        ],
-        "result": "FIRST PASS11real node:sqlite tests/1file797ms and strict full types, exact native fixture BLOBs transported unchanged. Snapshot before SQL/getter capture, schema1 absent source column, invalid spans/missingrun/types/UTF8key and metadata bounds/oversize BLOB CASE exclusion. No decoder, target identity or actual WASM target RPC acceptance yet.",
-        "testedSha256": {
-          "pwa/src/storage/catalog/aural-target-query-contracts.ts": "17a9715bc1d7001b78137c9942581ea1923653fa86463e9a38e5b67ad6c2ce2d",
-          "pwa/src/storage/catalog/aural-target-query.ts": "2183eaf37e7d712724540cc8abfc8bc8eec62943aaad9299770789edfbc5b9de",
-          "pwa/src/storage/catalog/aural-target-query.test.ts": "b28216cb67a661094d01dc09e80e5aa7952d18f6da74b7eb54d210dc28e14ac7"
-        }
-      },
-      "testedSha256": {
-        "pwa/src/storage/catalog/aural-target-query-contracts.ts": "17a9715bc1d7001b78137c9942581ea1923653fa86463e9a38e5b67ad6c2ce2d",
-        "pwa/src/storage/catalog/aural-target-query.ts": "2183eaf37e7d712724540cc8abfc8bc8eec62943aaad9299770789edfbc5b9de",
-        "pwa/src/storage/catalog/aural-target-query.test.ts": "b28216cb67a661094d01dc09e80e5aa7952d18f6da74b7eb54d210dc28e14ac7"
-      }
+      "task": "T15",
+      "status": "current bounded target runtime accepted; recovery documentation/checkpoint only",
+      "validationReference": "T15.targetRuntimeAssignment.validation"
     },
     "priorDocumentationCheckpoint": "67b589ffd8f0e8b84a77d5ccb6ce950e5247fce9",
     "recoveryState": {
-      "at": "2026-10-18T17:21:11.841800+00:00",
-      "primary": "clean67b589ff before this documentation-only checkpoint",
-      "previewOwner": "completed/idle; clean codex/pwa-aural-loops6add84a2",
-      "songUiReview": "completed/idle; clean codex/pwa-interval-cardsc49c4047",
-      "processes": "No python/python3/node/java processes found immediately before this recovery helper. All named source/check children previously exited0; inspect current run-control receipt on resumption.",
-      "proposal": "PARTIAL, not an accepted implementation contract",
-      "preservation": "All worktrees/branches/ignored catalogs/native tooling/browser profiles/archives preserved; no cleanup or publication."
+      "at": "2026-10-18T23:18:41.070585+00:00",
+      "primary": "Root59300a12 plus exact reviewed/tested target runtime source paths before this coherent checkpoint; no unrelated changes/index work.",
+      "previewOwner": "completed idle, clean codex/pwa-aural-target-codec6df29c54",
+      "songUiReview": "completed idle, clean codex/pwa-interval-cardsc49c4047",
+      "processes": "Root status after checks: recoveryRequired empty; combined/checks/build/browser actual exits0. Elevated process inspection found none of stored coordinator/child/Playwright/server IDs, test ports4173/5173 listeners0. Restricted enumeration alone is not liveness evidence.",
+      "preservation": "All worktrees/branches/native tools/archives/fullcatalog profiles/chunks/ignored failures and successful proofs retained; no cleanup/publication.",
+      "nextAction": "Do not repeat accepted target/header/native/2GB evidence. After fresh five-hour capacity select next smallest stats/ranking/eligibility or membership kernel from existing readiness/dependency graph, freeze contract/reference before source; keep actual fullcatalog budgets/device acceptance open."
     },
     "latestRuntimeBuild": {
-      "shell": "7d81ece23bf8",
-      "status": "Production worker/header build and tiny real-WASM Chrome3tests accepted; App presentation unchanged, no fullcatalog/device claim",
-      "testedSha256": {
-        "pwa/src/storage/catalog/catalog-worker.ts": "725ec874c3365f418a9aa99b1ac4d70e876df5a71fbdcfcf1a118f446399e59e",
-        "pwa/src/storage/catalog/protocol.ts": "e37919aefaf089a04992b50b0d03978b61e6e0716f62cab069ccf139a50030c7",
-        "pwa/src/storage/catalog/client.ts": "bf25dfa5938a155b78e7dbd0a56dfa6f7479faf6592a7410087756cfb9d5819b",
-        "pwa/src/storage/catalog/client.test.ts": "f5ceae28218da77e55adfe9b3964e4d9ee6b8f6128709d60bb6849442057e53e",
-        "pwa/scripts/catalog/make-aural-read-browser-fixture.py": "ad33ce0be904350c40b1c1b49735eaec56a82b27256744deda756e0bfbac812f",
-        "pwa/tests/browser/catalog-worker-harness.ts": "679d6d6cd89ae73c6147e1c73411b1820196ffb863c4addebe9bd13eb0aa7f38",
-        "pwa/tests/browser/aural-read.spec.ts": "479210c9873add4a37de5bc4c009297d949fe8f62df55acc0c3c90f743cb8c42"
-      }
+      "shell": "1754514ffe74",
+      "validationReference": "T15.targetRuntimeAssignment.validation",
+      "status": "Production bundle PASS;7development-worker actualChrome tests PASS; no production fullcatalog/device inference."
+    },
+    "latestAcceptedRuntimeTree": {
+      "baseCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
+      "validationReference": "T15.targetRuntimeAssignment.validation",
+      "shell": "1754514ffe74",
+      "status": "Reviewed current working source hashes; this checkpoint commits exact tested runtime tree. App presentation5336ad4e unchanged."
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",
@@ -3481,13 +3577,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-18T22:36:51.175216+00:00",
-      "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 48,
+      "at": "2026-10-18T23:18:41.070585+00:00",
+      "fiveHourUsedPercent": 70,
+      "weeklyUsedPercent": 59,
       "ordinaryUsageAllowed": true,
       "fiveHourResetsAt": 1792380961,
       "weeklyResetsAt": 1792876816,
-      "action": "Live five-hour reset verified; resume saved minimal catalog runtime slice without repeating accepted evidence."
+      "action": "Five-hour70% no-new-work boundary reached after target/browser acceptance. Save current source/evidence checkpoint and yield; no new slice/worker/expensive check."
     }
   }
 }

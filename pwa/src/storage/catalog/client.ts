@@ -1,5 +1,7 @@
 import type { SongPageRequest, SongPage } from './library-queries';
 import type { SongPayload } from './detail-query';
+import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
+import type {AuralCatalogPatternTarget} from './aural-target-contracts';
 import type { AuralCatalogHeader } from './aural-read-contracts';
 import type { CatalogManifest } from './manifest';
 import { CatalogError, type CatalogCommand, type ActiveCatalog, type InstallStatus, type CatalogInfo, type CatalogInspection, type CatalogProgress, type CatalogRequest, type CatalogResponse } from './protocol';
@@ -42,6 +44,7 @@ export class CatalogWorkerClient {
   }
   songPayload(slug: string): Promise<SongPayload|null> { return this.request({ kind: 'songPayload', slug }, 5000); }
   songPage(query: SongPageRequest): Promise<SongPage> { return this.request({ kind: 'songPage', query }); }
+  auralTarget(query:AuralCatalogTargetQuery):Promise<AuralCatalogPatternTarget> {return this.request({kind:'auralTarget',query},30_000);}
   auralHeader(): Promise<AuralCatalogHeader> { return this.request({ kind: 'auralHeader' }, 30_000); }
   info(): Promise<CatalogInfo> { return this.request({ kind: 'info' }); }
   stage(attemptId: string, manifest: CatalogManifest, baseUrl: string): Promise<CatalogInspection> { return this.request({ kind: 'stage', attemptId, manifest, baseUrl }); }

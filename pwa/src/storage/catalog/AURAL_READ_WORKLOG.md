@@ -29,3 +29,12 @@ FIRST real node:sqlite tests11/797ms and strict full TypeScript PASS, guards win
 - pwa/src/storage/catalog/aural-target-query.test.ts: b28216cb67a661094d01dc09e80e5aa7952d18f6da74b7eb54d210dc28e14ac7
 
 No native recapture or actual WASM target/decoder/RPC/rank/group/UI/fullcatalog/device claim. Root contracts/query/source ownership remains disjoint from sole worker pure codec.
+
+## 2026-10-18T23:18:41.070585+00:00 — composed target worker runtime
+auralTarget captures/validates4scalar request fields before journal awaits. Existing single command resolves immutable active attempt, opens readonly DB, reads bounded header/suffix/run then awaits full native codec and accepted real identity before finally closing. Same helper now serves header; no persistent lease, write or per-request SQL cancellation. End remains signedInt copy; zero lengths/native independent bounds preserved.
+
+Current exact source: target-query regressions11/644ms+strict full types PASS, production bundle shell1754514ffe74 PASS, actual development Chrome/WASM7tests/21.0s PASS, guard window21-target-browser-first-20261019/session45366 actual exit0. Includes3successful native targets+2native failure paths via real tiny SQLite/gzip/typed decoder/WebCrypto; header regressions, stalequery rejection, preservation of files/users/outbox, request-start cut/newworker recovery and queuedclose. All7proof files are parsed/hashed in T15.targetRuntimeAssignment.validation; directory pwa/.artifacts/pwa-port/aural-read/target-window21-first. Source/API/query/client/generator/harness/tests full diffs reviewed. Zero source/assertion failure cycles. Initial earlier header sandbox-only failure remains a failure receipt, not relabeled passed.
+
+Combined409tests/27files11.56s+fulltypes PASS at pure-codec normal merge59300a12 (window21-codec-combined-20261019), BEFORE subsequent runtime composition. Current runtime source has separate11regressions/types/build/7browser evidence above; do not conflate revisions. Native reference12groups40probes captured once, source6df29c54 normally integrated and exact hashes preserved. No original2GB/song/browser/native proof repeated, no actual fullcatalog query budgets/production-browser/mid-decode/device/account/UI/release acceptance inferred.
+
+Both workers idle, all named checks exited0; elevated audit found no stored owned process IDs and0listeners4173/5173. At five-hour70% save checkpoint/yield; next after reset: existing saved stats/ranking/eligibility/membership readiness -> smallest frozen contract/oracle. T15 remains in_progress.

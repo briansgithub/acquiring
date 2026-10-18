@@ -3,9 +3,15 @@ import {readSongDetails} from '../../src/features/details/reader';
 import { openUserDatabase, USER_STORES } from '../../src/storage/user';
 import type { CatalogManifest } from '../../src/storage/catalog/manifest';
 const clients = new Map<string, CatalogWorkerClient>();
+let targetRead:{done:boolean;value?:unknown;code?:string}={done:false};
 let progress: import('../../src/storage/catalog/protocol').CatalogProgress | null = null;
 let preparation: { done: boolean; error?: string } = { done: false };
 export const catalogHarness = {
+  auralTarget(name:string,query:import('../../src/storage/catalog/aural-target-query-contracts').AuralCatalogTargetQuery){return clients.get(name)!.auralTarget(query);},
+  beginAuralTarget(name:string,query:import('../../src/storage/catalog/aural-target-query-contracts').AuralCatalogTargetQuery){
+    targetRead={done:false};void clients.get(name)!.auralTarget(query).then(value=>{targetRead={done:true,value};},(error:{code?:string})=>{targetRead={done:true,code:error.code};});
+  },
+  auralTargetState(){return targetRead;},
   beginPrepare(name: string, attempt: string, manifest: CatalogManifest, base: string) {
     preparation = { done: false };
     void clients.get(name)!.prepare(attempt, manifest, base).then(() => { preparation = { done: true }; }, error => { preparation = { done: true, error: String(error) }; });

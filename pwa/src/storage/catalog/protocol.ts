@@ -1,3 +1,4 @@
+import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
 import type { SongPageRequest } from './library-queries';
 export type { AuralCatalogHeader } from './aural-read-contracts';
 import type { CatalogManifest } from './manifest';
@@ -15,7 +16,8 @@ export type CatalogCommand =
   | { kind: 'status'; attemptId: string }
   | { kind: 'songPage'; query: SongPageRequest }
   | { kind: 'songPayload'; slug: string }
-  | { kind: 'auralHeader' };
+  | { kind: 'auralHeader' }
+  | { kind: 'auralTarget'; query: AuralCatalogTargetQuery };
 export interface ActiveCatalog { pointer: CatalogPointer; inspection: CatalogInspection; recovered: boolean }
 export type InstallStatus = CatalogInstall | null;
 export interface CatalogRequest { id: string; command: CatalogCommand }

@@ -1,3 +1,6 @@
+import {captureAuralTargetQuery,readAuralTargetRow} from './aural-target-query';
+import {decodeAuralCatalogRun,createAuralCatalogTarget} from './aural-target-codec';
+import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
 import {readAuralHeader} from './aural-header';
 import { songPageQuery, type SongPageRequest, type SongPage } from './library-queries';
 import {songDetailQuery,songPayloadRecord,readSongComplexity,type SongPayload} from './detail-query';
@@ -212,8 +215,8 @@ async function songPage(request:SongPageRequest):Promise<SongPage> {
   } catch(error){confirmedSongRead=null;throw error;}
   finally {db?.close();}
 }
-/** Active validation/recovery once per immutable attempt, then one bounded readonly command. */
-async function auralHeader() {
+/** One immutable attempt/readonly handle for the entire awaited command. */
+async function withAuralDatabase<T>(read:(db:InstanceType<Sqlite3Static['oo1']['DB']>,source:{id:string;sourceSnapshot:string})=>T|Promise<T>):Promise<T> {
   let db:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
   try {
     const pointer=await journal!.pointer('aural');
@@ -226,15 +229,25 @@ async function auralHeader() {
     }
     const source=confirmedAuralRead!;
     db=new sqlite!.oo1.DB(stagedPath(source.id,'aural-catalog.db'),'r',owner().vfsName);
-    return readAuralHeader(db,source.sourceSnapshot);
+    return await read(db,source);
   } catch(error){confirmedAuralRead=null;throw error;}
   finally {db?.close();}
+}
+function auralHeader(){return withAuralDatabase((db,source)=>readAuralHeader(db,source.sourceSnapshot));}
+function auralTarget(query:AuralCatalogTargetQuery){
+  const captured=captureAuralTargetQuery(query);
+  return withAuralDatabase(async(db,source)=>{
+    const row=readAuralTargetRow(db,source.sourceSnapshot,captured);
+    const run=await decodeAuralCatalogRun(row.runInput);
+    return createAuralCatalogTarget(run,row.span);
+  });
 }
 async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'init') { await acquire(); return info(); }
   if (command.kind === 'close') { releaseOwnership?.(); await ownershipTask; releaseOwnership = undefined; ownershipTask = undefined; return null; }
   owner();
   if (command.kind === 'info') return info();
+  if (command.kind === 'auralTarget') return auralTarget(command.query);
   if (command.kind === 'auralHeader') return auralHeader();
   if (command.kind === 'songPage') return songPage(command.query);
   if (command.kind === 'songPayload') return songPayload(command.slug);

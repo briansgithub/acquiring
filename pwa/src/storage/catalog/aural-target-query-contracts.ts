@@ -11,6 +11,8 @@ export interface AuralTargetRow {
   readonly span: AuralTargetSpan;
 }
 export interface AuralTargetQueryApi {
+  /** Capture/validate once before worker ownership/journal awaits; no data lookup. */
+  captureAuralTargetQuery(query:AuralCatalogTargetQuery):AuralCatalogTargetQuery;
   /** Snapshot all4request fields before SQL callbacks; request snapshot must equal trusted
    * installed SHA256 snapshot before any read. Header+one8byte suffix+one bounded run row.
    * start is a valid suffix rank; end ANY signedInt copied per native; length0..10000.

@@ -23,10 +23,15 @@ function value(row:Record<string,unknown>,field:Field):string|Uint8Array {
 }
 
 /** One native suffix location and run, SQL-bounded before async typed decoding. */
-export function readAuralTargetRow(db:AuralReadDatabase,expectedSnapshot:string,query:AuralCatalogTargetQuery):AuralTargetRow {
-  if(typeof expectedSnapshot!=='string'||!HASH.test(expectedSnapshot)||!query||typeof query!=='object'||Array.isArray(query))throw new CatalogError('INVALID_REQUEST','Invalid aural target request');
+export function captureAuralTargetQuery(query:AuralCatalogTargetQuery):AuralCatalogTargetQuery {
+  if(!query||typeof query!=='object'||Array.isArray(query))throw new CatalogError('INVALID_REQUEST','Invalid aural target request');
   const {sourceSnapshot,start,end,length}=query;
   if(typeof sourceSnapshot!=='string'||!HASH.test(sourceSnapshot)||!int(start)||start<0||!int(end)||!int(length)||length<0||length>10000)throw new CatalogError('INVALID_REQUEST','Invalid aural target span');
+  return Object.freeze({sourceSnapshot,start,end,length});
+}
+export function readAuralTargetRow(db:AuralReadDatabase,expectedSnapshot:string,query:AuralCatalogTargetQuery):AuralTargetRow {
+  if(typeof expectedSnapshot!=='string'||!HASH.test(expectedSnapshot))throw new CatalogError('INVALID_REQUEST','Invalid aural target snapshot');
+  const {sourceSnapshot,start,end,length}=captureAuralTargetQuery(query);
   if(sourceSnapshot!==expectedSnapshot)throw new CatalogError('STALE_SNAPSHOT','Aural catalog snapshot changed');
   const header=readAuralHeader(db,expectedSnapshot),location=readAuralSuffixLocation(db,header,start);
   // These identifiers are constants; request values are always bound parameters.
@@ -42,4 +47,4 @@ export function readAuralTargetRow(db:AuralReadDatabase,expectedSnapshot:string,
     supportsModeAnalysis:header.supportsModeAnalysis,tokens:captured[5] as Uint8Array,positions:captured[6] as Uint8Array,keyJson:captured[7] as string,sourceKeyJson:captured[8] as string});
   return Object.freeze({runInput,span:Object.freeze({offset:location.offset,length,start,end,snapshotId:header.sourceSnapshot})});
 }
-export const auralTargetQueryApi:AuralTargetQueryApi=Object.freeze({readAuralTargetRow});
+export const auralTargetQueryApi:AuralTargetQueryApi=Object.freeze({captureAuralTargetQuery,readAuralTargetRow});
