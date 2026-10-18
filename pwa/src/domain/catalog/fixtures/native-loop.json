@@ -1,0 +1,874 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "kotlinVersion": "2.2.10",
+  "serializationVersion": "1.8.1",
+  "compilerVersion": "info: kotlinc-jvm 2.2.10 (JRE 25.0.3+-15898627-b508.16)",
+  "version": "unique-transitions-1",
+  "nativeSourceSha256": "74c2691e14b62cba789fea293b997821f81bd1505750cc700f3cec29f081bd43",
+  "driverSha256": "28bd951ac1ac7866e711434ee15f81bfff4ba8b3dc4ce9c0311514822f083ad5",
+  "producerSha256": "5787c8f9dad0916b3005ca20e881adfe4b79d232a2c3fd11b784a442866465ea",
+  "sharedSourcePath": "tooling/aural-corpus/fixtures/loop-reduction.json",
+  "sharedSourceSha256": "d37bb125de674a8e48531698128ab83a3a4af549d7b6844206ffd18f2dedd23a",
+  "sharedCases": [
+    {
+      "tokens": [],
+      "redundant": false,
+      "start": 0,
+      "length": 0
+    },
+    {
+      "tokens": [
+        "I",
+        "V"
+      ],
+      "redundant": false,
+      "start": 0,
+      "length": 2
+    },
+    {
+      "tokens": [
+        "I",
+        "V",
+        "I"
+      ],
+      "redundant": false,
+      "start": 0,
+      "length": 3
+    },
+    {
+      "tokens": [
+        "I",
+        "V",
+        "I",
+        "V"
+      ],
+      "redundant": true,
+      "start": 0,
+      "length": 3
+    },
+    {
+      "tokens": [
+        "I",
+        "V",
+        "I",
+        "V",
+        "I"
+      ],
+      "redundant": true,
+      "start": 0,
+      "length": 3
+    },
+    {
+      "tokens": [
+        "I",
+        "V",
+        "vi",
+        "IV",
+        "I",
+        "V",
+        "vi",
+        "IV",
+        "I",
+        "V"
+      ],
+      "redundant": true,
+      "start": 0,
+      "length": 5
+    },
+    {
+      "tokens": [
+        "X",
+        "I",
+        "V",
+        "I",
+        "V",
+        "Y"
+      ],
+      "redundant": false,
+      "start": 0,
+      "length": 6
+    },
+    {
+      "tokens": [
+        "A",
+        "B",
+        "C",
+        "A",
+        "B"
+      ],
+      "redundant": false,
+      "start": 0,
+      "length": 5
+    },
+    {
+      "tokens": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "redundant": true,
+      "start": 1,
+      "length": 5
+    },
+    {
+      "tokens": [
+        "I",
+        "V7",
+        "I",
+        "V\u25b37"
+      ],
+      "redundant": false,
+      "start": 0,
+      "length": 4
+    },
+    {
+      "tokens": [
+        "I",
+        "V65",
+        "I",
+        "V43"
+      ],
+      "redundant": false,
+      "start": 0,
+      "length": 4
+    },
+    {
+      "tokens": [
+        "I",
+        "\u266dVII",
+        "I",
+        "VII"
+      ],
+      "redundant": false,
+      "start": 0,
+      "length": 4
+    },
+    {
+      "tokens": [
+        "I-major",
+        "V-major",
+        "I-minor",
+        "V-minor"
+      ],
+      "redundant": false,
+      "start": 0,
+      "length": 4
+    },
+    {
+      "tokens": [
+        "a|b",
+        "c",
+        "a",
+        "b|c"
+      ],
+      "redundant": false,
+      "start": 0,
+      "length": 4
+    },
+    {
+      "tokens": [
+        "A",
+        "A",
+        "A"
+      ],
+      "redundant": true,
+      "start": 0,
+      "length": 2
+    }
+  ],
+  "nativeInputSha256": "5b049be32836a938e1d95304bb21d63c4c9a1193e1b8eb66e76afa08609a4507",
+  "nativeStdoutSha256": "859b05bb64d82aca0678726a8236356a1e808b6fc9203f148178e5cc72071d30",
+  "nativeClassSha256": {
+    "LoopsKt.class": "2d48a2a0530e6c02e94a0288bd891edd938f6b607b4506d21cd003de5c967366",
+    "AuralLoopReduction.class": "2d8e010fa14cd92995e7c22b1674c0482a8da6cc273522933f967a9ec6943705"
+  },
+  "jars": [
+    {
+      "file": "kotlin-compiler-embeddable-2.2.10.jar",
+      "sha256": "79628fd5d64b4692a62f98962baab00e9076a37e2cffd6ace33cd0b7be7d1cdf"
+    },
+    {
+      "file": "kotlin-stdlib-2.2.10.jar",
+      "sha256": "9c67cc79efd6b9215b49d2a4308f5f3433537376c7c88e89bdd6729bd096e61a"
+    },
+    {
+      "file": "kotlin-script-runtime-2.2.10.jar",
+      "sha256": "c304a67dba6a61dde560e6310920bed746307c3854f6675c29ac29114731b6b0"
+    },
+    {
+      "file": "kotlin-daemon-embeddable-2.2.10.jar",
+      "sha256": "b31573d418961fa080760fedcfc90d68ad67a85eafa245c73fe3d551476777ba"
+    },
+    {
+      "file": "kotlinx-coroutines-core-jvm-1.9.0.jar",
+      "sha256": "ad89c2892235e670f222d819cb3d81188143cb19a05b59df9889ae4269f5c70a"
+    },
+    {
+      "file": "annotations-23.0.0.jar",
+      "sha256": "7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05"
+    },
+    {
+      "file": "kotlinx-serialization-json-jvm-1.8.1.jar",
+      "sha256": "8769e5647557e3700919c32d508f5c5dad53c5d8234cd10846354fbcff14aa24"
+    },
+    {
+      "file": "kotlinx-serialization-core-jvm-1.8.1.jar",
+      "sha256": "3565b6d4d789bf70683c45566944287fc1d8dc75c23d98bd87d01059cc76f2b3"
+    }
+  ],
+  "adapter": "Unchanged WHOLE frozen native module.16NEW JVM groups actual reduction/ordered retained children;15shared authority cases copied UNCHANGED, not executed/recaptured; JSON adapter only, no TS expectations.",
+  "cases": [
+    {
+      "name": "single",
+      "tokens": [
+        "Q"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": false,
+          "start": 0,
+          "length": 1
+        },
+        "children": []
+      }
+    },
+    {
+      "name": "two-equal",
+      "tokens": [
+        "Q",
+        "Q"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": false,
+          "start": 0,
+          "length": 2
+        },
+        "children": []
+      }
+    },
+    {
+      "name": "unary-four",
+      "tokens": [
+        "Q",
+        "Q",
+        "Q",
+        "Q"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 2
+        },
+        "children": [
+          [
+            "Q",
+            "Q"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "period2-even",
+      "tokens": [
+        "D",
+        "A",
+        "D",
+        "A",
+        "D",
+        "A"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 3
+        },
+        "children": [
+          [
+            "D",
+            "A",
+            "D"
+          ],
+          [
+            "A",
+            "D",
+            "A"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "period2-odd",
+      "tokens": [
+        "D",
+        "A",
+        "D",
+        "A",
+        "D",
+        "A",
+        "D"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 3
+        },
+        "children": [
+          [
+            "D",
+            "A",
+            "D"
+          ],
+          [
+            "A",
+            "D",
+            "A"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "period3-full",
+      "tokens": [
+        "D",
+        "G",
+        "A",
+        "D",
+        "G",
+        "A",
+        "D",
+        "G",
+        "A"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 4
+        },
+        "children": [
+          [
+            "D",
+            "G",
+            "A",
+            "D",
+            "G"
+          ],
+          [
+            "G",
+            "A",
+            "D",
+            "G",
+            "A"
+          ],
+          [
+            "A",
+            "D",
+            "G",
+            "A",
+            "D"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "period3-partial",
+      "tokens": [
+        "D",
+        "G",
+        "A",
+        "D",
+        "G",
+        "A",
+        "D",
+        "G",
+        "A",
+        "D",
+        "G"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 4
+        },
+        "children": [
+          [
+            "D",
+            "G",
+            "A",
+            "D",
+            "G"
+          ],
+          [
+            "G",
+            "A",
+            "D",
+            "G",
+            "A"
+          ],
+          [
+            "A",
+            "D",
+            "G",
+            "A",
+            "D"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "near-period-border",
+      "tokens": [
+        "D",
+        "G",
+        "A",
+        "D",
+        "G",
+        "Z"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": false,
+          "start": 0,
+          "length": 6
+        },
+        "children": [
+          [
+            "D",
+            "G",
+            "A",
+            "D",
+            "G"
+          ],
+          [
+            "G",
+            "A",
+            "D",
+            "G",
+            "Z"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "both-endpoint-branches",
+      "tokens": [
+        "Z",
+        "D",
+        "A",
+        "D",
+        "A"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": false,
+          "start": 0,
+          "length": 5
+        },
+        "children": [
+          [
+            "Z",
+            "D",
+            "A",
+            "D"
+          ],
+          [
+            "D",
+            "A",
+            "D"
+          ],
+          [
+            "A",
+            "D",
+            "A"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "retained-several-levels",
+      "tokens": [
+        "D",
+        "A",
+        "D",
+        "A",
+        "D",
+        "A",
+        "D",
+        "A"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 3
+        },
+        "children": [
+          [
+            "D",
+            "A",
+            "D"
+          ],
+          [
+            "A",
+            "D",
+            "A"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "nested-cycle-transitions",
+      "tokens": [
+        "D",
+        "A",
+        "D",
+        "G",
+        "D",
+        "A",
+        "D",
+        "G",
+        "D",
+        "A",
+        "D",
+        "G"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 5
+        },
+        "children": [
+          [
+            "D",
+            "A",
+            "D",
+            "G",
+            "D",
+            "A",
+            "D"
+          ],
+          [
+            "A",
+            "D",
+            "G",
+            "D",
+            "A",
+            "D",
+            "G"
+          ],
+          [
+            "D",
+            "G",
+            "D",
+            "A",
+            "D",
+            "G",
+            "D"
+          ],
+          [
+            "G",
+            "D",
+            "A",
+            "D",
+            "G",
+            "D",
+            "A"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "pair-delimiter-collisions",
+      "tokens": [
+        "a|b",
+        "c",
+        "a",
+        "b|c",
+        "a|b",
+        "c",
+        "a",
+        "b|c"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 5
+        },
+        "children": [
+          [
+            "a|b",
+            "c",
+            "a",
+            "b|c",
+            "a|b",
+            "c",
+            "a"
+          ],
+          [
+            "c",
+            "a",
+            "b|c",
+            "a|b",
+            "c",
+            "a",
+            "b|c"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "pair-nul-collisions",
+      "tokens": [
+        "a\u0000b",
+        "c",
+        "a",
+        "b\u0000c",
+        "a\u0000b",
+        "c",
+        "a",
+        "b\u0000c"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 5
+        },
+        "children": [
+          [
+            "a\u0000b",
+            "c",
+            "a",
+            "b\u0000c",
+            "a\u0000b",
+            "c",
+            "a"
+          ],
+          [
+            "c",
+            "a",
+            "b\u0000c",
+            "a\u0000b",
+            "c",
+            "a",
+            "b\u0000c"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "exact-unicode-case",
+      "tokens": [
+        "\u266dVII",
+        "VII",
+        "i",
+        "I",
+        "\u266dVII",
+        "VII",
+        "i",
+        "I"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 5
+        },
+        "children": [
+          [
+            "\u266dVII",
+            "VII",
+            "i",
+            "I",
+            "\u266dVII",
+            "VII",
+            "i"
+          ],
+          [
+            "VII",
+            "i",
+            "I",
+            "\u266dVII",
+            "VII",
+            "i",
+            "I"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "empty-tokens",
+      "tokens": [
+        "",
+        "Q",
+        "",
+        "Q",
+        "",
+        "Q"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 3
+        },
+        "children": [
+          [
+            "",
+            "Q",
+            ""
+          ],
+          [
+            "Q",
+            "",
+            "Q"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "longer-periodic",
+      "tokens": [
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C",
+        "D",
+        "A",
+        "G",
+        "C"
+      ],
+      "version": "unique-transitions-1",
+      "expected": {
+        "reduction": {
+          "redundant": true,
+          "start": 0,
+          "length": 5
+        },
+        "children": [
+          [
+            "D",
+            "A",
+            "G",
+            "C",
+            "D",
+            "A",
+            "G"
+          ],
+          [
+            "A",
+            "G",
+            "C",
+            "D",
+            "A",
+            "G",
+            "C"
+          ],
+          [
+            "G",
+            "C",
+            "D",
+            "A",
+            "G",
+            "C",
+            "D"
+          ],
+          [
+            "C",
+            "D",
+            "A",
+            "G",
+            "C",
+            "D",
+            "A"
+          ]
+        ]
+      }
+    }
+  ]
+}

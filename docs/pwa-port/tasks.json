@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T16:58:21.544147+00:00",
+  "updated": "2026-10-18T17:02:51.115792+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2542,16 +2542,29 @@
           "pwa/src/domain/catalog/IDENTITY_WORKLOG.md",
           "pwa/src/domain/catalog/index.ts"
         ],
-        "status": "SOURCE ASSIGNED after root frozen contract f4ef4ac9/types and validated native reference a55cc708. Query accepted274combined/types.",
+        "status": "Worker validated clean idle; root reviewed complete45line source/121line tests/exports, no material finding. UNMERGED; primary acceptance pending.",
         "scope": "One pure asynchronous stable pattern ID API exactly identity-contracts.ts; actual WebCrypto SHA256 + exact LE32/Int overflow, all UTF8 input bytes captured before first await, independent local guards and no cache. Reuse immutable native16groups55samples. No producer/fixture/query/SQL/stats/rank/runtime/session/UI/deps/contracts/tasks edits.",
-        "nextAction": "Inspect clean existing sibling/guards/PIDs and branch absence, preserve query refs, create codex/pwa-aural-identity from exact accepted primarybase; implement bounded source/test/narrow exports/WORKLOG only. First focused actual WebCrypto native55 comparisons plus browser-boundary/mutation/getter/reentry tests and scoped strict types. Commit validated4paths and idle for primary review/checks; no reference recapture."
+        "nextAction": "Inspect clean existing sibling/guards/PIDs and branch absence, preserve query refs, create codex/pwa-aural-identity from exact accepted primarybase; implement bounded source/test/narrow exports/WORKLOG only. First focused actual WebCrypto native55 comparisons plus browser-boundary/mutation/getter/reentry tests and scoped strict types. Commit validated4paths and idle for primary review/checks; no reference recapture.",
+        "workerTip": "4e02227e5ece0857824650a03faf6cab98eae1a9",
+        "workerValidation": {
+          "commands": [
+            "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t15-identity-vitest.config.mjs",
+            "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc -p ../.artifacts/pwa-port/t15-identity-tsconfig.json"
+          ],
+          "guards": [
+            "t15-identity-unit-20261018-26",
+            "t15-identity-types-20261018-27"
+          ],
+          "result": "FIRST PASS24groups/1file1.93s (16native55actual WebCrypto IDs+8browser), strict scoped types exit0, source failure cycles0. No actualChrome claim.",
+          "receiptSha256": "945b45a9c020c155997e9e68a14aeb33b0145a543557225beba4e3bb805b4ccc"
+        }
       },
       "loopContractIntent": {
         "owner": "coordinator runtime unknown unchanged",
         "ownedPaths": [
           "pwa/src/domain/catalog/loop-contracts.ts"
         ],
-        "status": "Pre-edit frozen native pure-loop contract, no worker source assignment. Sole Sol/high continues disjoint identity source.",
+        "status": "Frozen b0934dc60c7a51ef2eedc1f3a5251c7ce85d4d54; strict combined types FIRSTPASS window20-loop-contract-types-20261018. No loop worker/source implementation.",
         "scope": "Exact whole native KMP/redundant/unique directed transitions and BFS retained children/order/dedupe, version literal and explicit bounded browser work guards. Reuse15shared expected cases unchanged and <=16NEW actual native groups only.",
         "nextAction": "Validate/checkpoint contract, coordinator native oracle first on disjoint new paths; do not assign loop source until identity primary acceptance and live capacity."
       },
@@ -2561,6 +2574,30 @@
         "authority": "801cf798 AuralCatalog66..119/345..424/547..562 plus earlier15..48/147..185; PWA catalog protocol entire current file.",
         "findings": "Native supports schema1..3; current artifact3. Suffix LE32 pairs chunked1MiB from catalog_array/suffix_locations; catalog_run ids MUST contiguous0-based and paged2048. Optional popularity snapshot/version. Browse defaults invalidsort mostSongs, while rowOrder default/else recommended (distinct!). Range frontier splits inclusive length low/high, SQL order differs bysort; globalSongs/globalOccurrences drive mostSongs, popularity only eligibility/stat matching. Exact-root query uses rootLabels only harmony_bass. Loop reduction required before stats. Current PWA worker has songPage/songPayload only, no aural commands.",
         "nextAction": "After query/identity/loop kernels, freeze readonly worker/lease/cancellation/array/rank contract; inspect remaining eligibleRankBits/matchingBuckets/run/target/rootLabels and actual schema/cursor adapters only. No repeat of saved prefix/stats/frontier ranges or unchanged2GB proof."
+      },
+      "loopOracleAssignment": {
+        "owner": "coordinator runtime unknown unchanged",
+        "branch": "codex/pwa-foundation",
+        "baseCommit": "b0934dc60c7a51ef2eedc1f3a5251c7ce85d4d54",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/fixtures/generate-loop-native.py",
+          "pwa/src/domain/catalog/fixtures/native-loop.json",
+          "pwa/src/domain/catalog/LOOP_WORKLOG.md"
+        ],
+        "status": "Native loop REFERENCE VALIDATED FIRST compile/runtime16NEWgroups +15shared unchanged authority cases (not recaptured). No loop implementation/worker assigned.",
+        "scope": "Whole unchanged native45line module on cached pinned JVM, <=16NEW groups with reduction+retained children;15shared authority cases copied unchanged without native recapture. No query/identity producer changes/deps/source/SQL/UI.",
+        "nextAction": "Commit exact producer/fixture/log and recovery metadata. Only after identity primary acceptance/fresh capacity, same Sol/high may implement frozen loop API without recapture.",
+        "validation": {
+          "command": "python -X utf8 pwa/src/domain/catalog/fixtures/generate-loop-native.py",
+          "guard": "window20-loop-native-first-20261018 (primary guard)",
+          "result": "FIRST PASS actual child84686 exit0, pinned cached Kotlin2.2.10/whole unchanged native module. Root verified exact frozen module/shared source values, producer/raw input/stdout/both actual classes and all16 reduction+orderedchildren outputs. No old recapture or source stubs/TSexpected.",
+          "producerSha256": "5787c8f9dad0916b3005ca20e881adfe4b79d232a2c3fd11b784a442866465ea",
+          "fixtureSha256": "37d5db7bd26ef0d50621c2c90e20347cd89839381a71f05c1c3fc8b218f06d67",
+          "nativeSourceSha256": "74c2691e14b62cba789fea293b997821f81bd1505750cc700f3cec29f081bd43",
+          "sharedSourceSha256": "d37bb125de674a8e48531698128ab83a3a4af549d7b6844206ffd18f2dedd23a"
+        },
+        "receipt": ".artifacts/pwa-port/t15-loop-native-validation-window20.json",
+        "receiptSha256": "3147eb9539573302da65082687f648fd1d255d30233f63b8e29bfb9030271f1c"
       }
     },
     {
@@ -2882,8 +2919,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T16:53:03.354126+00:00",
-    "sourceCommit": "e4ef86ecb812f2f9bca297f435287c1bbcba540b",
+    "date": "2026-10-18T17:02:51.115792+00:00",
+    "sourceCommit": "b0934dc60c7a51ef2eedc1f3a5251c7ce85d4d54",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -2907,11 +2944,11 @@
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-aural-query",
-      "tip": "d7f903accffc738273d42277ccbd84b4026d8115",
-      "status": "accepted clean idle"
+      "branch": "codex/pwa-aural-identity",
+      "tip": "4e02227e5ece0857824650a03faf6cab98eae1a9",
+      "status": "clean idle; worker identity validated, primary acceptance pending"
     },
-    "nextAction": "Inspect clean existing sibling/guards/PIDs and branch absence, preserve query refs, create codex/pwa-aural-identity from exact accepted primarybase; implement bounded source/test/narrow exports/WORKLOG only. First focused actual WebCrypto native55 comparisons plus browser-boundary/mutation/getter/reentry tests and scoped strict types. Commit validated4paths and idle for primary review/checks; no reference recapture.",
+    "nextAction": "Checkpoint loop native reference; normally integrate exact reviewed identity4e02227e then primary catalog/learning/playback+strict types; no new worker before acceptance.",
     "reason": "Query accepted; same sole Sol/high bounded identity source after frozen native reference, no capture repeat.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
@@ -2920,26 +2957,11 @@
       "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
     },
     "usageAvailability": "Ordinary usage allowed at last observation. Five-hour70 no new work/80 checkpoint; weekly100 ordinary exhaustion. No credit/reset/model action.",
-    "activeWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-aural-identity",
-      "baseCommit": "e4ef86ecb812f2f9bca297f435287c1bbcba540b",
-      "priorBranch": "codex/pwa-aural-query",
-      "priorTip": "d7f903accffc738273d42277ccbd84b4026d8115",
-      "ownedPaths": [
-        "pwa/src/domain/catalog/catalog-identity.ts",
-        "pwa/src/domain/catalog/catalog-identity.test.ts",
-        "pwa/src/domain/catalog/IDENTITY_WORKLOG.md",
-        "pwa/src/domain/catalog/index.ts"
-      ],
-      "status": "SOURCE ASSIGNED after root frozen contract f4ef4ac9/types and validated native reference a55cc708. Query accepted274combined/types.",
-      "scope": "One pure asynchronous stable pattern ID API exactly identity-contracts.ts; actual WebCrypto SHA256 + exact LE32/Int overflow, all UTF8 input bytes captured before first await, independent local guards and no cache. Reuse immutable native16groups55samples. No producer/fixture/query/SQL/stats/rank/runtime/session/UI/deps/contracts/tasks edits.",
-      "nextAction": "Inspect clean existing sibling/guards/PIDs and branch absence, preserve query refs, create codex/pwa-aural-identity from exact accepted primarybase; implement bounded source/test/narrow exports/WORKLOG only. First focused actual WebCrypto native55 comparisons plus browser-boundary/mutation/getter/reentry tests and scoped strict types. Commit validated4paths and idle for primary review/checks; no reference recapture."
+    "activeWorker": null,
+    "integrationAwaitingPrimaryAcceptance": {
+      "tip": "4e02227e5ece0857824650a03faf6cab98eae1a9",
+      "status": "UNMERGED identity; reviewed worker24tests/types, primary UNRUN."
     },
-    "integrationAwaitingPrimaryAcceptance": null,
     "fiveHourAction": "Live36%; no new slice/worker/check70, checkpoint/yield80.",
     "resumeObservation": {
       "at": "2026-10-18T16:29:57.211840+00:00",
@@ -2953,26 +2975,26 @@
     "rootSideWork": {
       "owner": "coordinator runtime unknown unchanged",
       "branch": "codex/pwa-foundation",
-      "baseCommit": "e42bb282c7477c59722644efd7b9a7cd5eb410bb",
+      "baseCommit": "b0934dc60c7a51ef2eedc1f3a5251c7ce85d4d54",
       "ownedPaths": [
-        "pwa/src/domain/catalog/fixtures/generate-identity-native.py",
-        "pwa/src/domain/catalog/fixtures/native-identity.json",
-        "pwa/src/domain/catalog/IDENTITY_WORKLOG.md"
+        "pwa/src/domain/catalog/fixtures/generate-loop-native.py",
+        "pwa/src/domain/catalog/fixtures/native-loop.json",
+        "pwa/src/domain/catalog/LOOP_WORKLOG.md"
       ],
-      "status": "Native identity REFERENCE VALIDATED first attempt,16groups55samples. No identity TypeScript implementation/tests/worker assigned.",
-      "scope": "<=16NEW JVM named identity groups, unchanged AuralCatalog38..47 with actual SHA256/ByteBuffer/Int overflow, cached pinned Kotlin2.2.10; exact inputs/outputs/source hashes. Producer/fixture/log only. No worker/model/dependency action/old capture/SQL/UI.",
-      "nextAction": "Checkpoint exact producer/fixture/log and recovery metadata. After query primary acceptance and fresh capacity, assign SAME Sol/high bounded identity implementation; no reference recapture.",
+      "status": "Native loop REFERENCE VALIDATED FIRST compile/runtime16NEWgroups +15shared unchanged authority cases (not recaptured). No loop implementation/worker assigned.",
+      "scope": "Whole unchanged native45line module on cached pinned JVM, <=16NEW groups with reduction+retained children;15shared authority cases copied unchanged without native recapture. No query/identity producer changes/deps/source/SQL/UI.",
+      "nextAction": "Commit exact producer/fixture/log and recovery metadata. Only after identity primary acceptance/fresh capacity, same Sol/high may implement frozen loop API without recapture.",
       "validation": {
-        "command": "python -X utf8 pwa/src/domain/catalog/fixtures/generate-identity-native.py",
-        "guard": "window20-identity-native-first-20261018 (primary guard)",
-        "result": "FIRST compile/runtime PASS16groups55samples, actual child37532 exit0. Cached Kotlin2.2.10/JRE25.0.3/native SHA256/ByteBuffer/Int overflow; root verified whole/source body, producer, retained input/stdout/class hashes and all55 output IDs. No native stubs/TSexpected/old capture.",
-        "producerSha256": "5a791229ac08987f7340c7addd3e5f1f2a66cbdb5beb107b357d15950839e7b5",
-        "fixtureSha256": "fd6086518c9b139a9bc07f6039e7f6cafa550f0678933b5fc8c476e2864b8b73",
-        "nativeBodySha256": "0a45254f630f9712fdd31c94b47e8907c8788813f8328e81925c06a20d4d1f33",
-        "nativeClassSha256": "f4db0315dfc5e8f519c8fdb5e519f9f1348ba5b00fc973dafe66a298c0b5a7e6"
+        "command": "python -X utf8 pwa/src/domain/catalog/fixtures/generate-loop-native.py",
+        "guard": "window20-loop-native-first-20261018 (primary guard)",
+        "result": "FIRST PASS actual child84686 exit0, pinned cached Kotlin2.2.10/whole unchanged native module. Root verified exact frozen module/shared source values, producer/raw input/stdout/both actual classes and all16 reduction+orderedchildren outputs. No old recapture or source stubs/TSexpected.",
+        "producerSha256": "5787c8f9dad0916b3005ca20e881adfe4b79d232a2c3fd11b784a442866465ea",
+        "fixtureSha256": "37d5db7bd26ef0d50621c2c90e20347cd89839381a71f05c1c3fc8b218f06d67",
+        "nativeSourceSha256": "74c2691e14b62cba789fea293b997821f81bd1505750cc700f3cec29f081bd43",
+        "sharedSourceSha256": "d37bb125de674a8e48531698128ab83a3a4af549d7b6844206ffd18f2dedd23a"
       },
-      "receipt": ".artifacts/pwa-port/t15-identity-native-validation-window20.json",
-      "receiptSha256": "e2bdf4a83cbbb6327baed8584fcebe550570afcdc4706e37e6b1af2dec376224"
+      "receipt": ".artifacts/pwa-port/t15-loop-native-validation-window20.json",
+      "receiptSha256": "3147eb9539573302da65082687f648fd1d255d30233f63b8e29bfb9030271f1c"
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",
