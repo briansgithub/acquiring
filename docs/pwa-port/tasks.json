@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T02:47:28.430071+00:00",
+  "updated": "2026-10-18T02:57:35.663453+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1782,7 +1782,7 @@
           "pwa/tests/browser/playback.spec.ts"
         ],
         "scope": "ActualPWA intervalcard acceptance: nativevisibility/keyboard/rawsourceper-eventregisters/fixedMajorlabelonly/450ms3stages/manualtransposeonce/currentpreset, static-intervalsequence mutualcancellation, Reset/sectioncleanup/narrow44px. Extend existingPCM instrumentation with segment spectralmeasurements onlyfor1350msbuffers. UIimplementation remainsseparateLunaclaim aftersequencecomponentacceptance; no Libraryscroll/productioncatalog/nativecapture.",
-        "status": "Intentbeforetests; run onlyaftervalidatedUIintegration."
+        "status": "Initial7productChrome PASS3.0m on046ed9544582. Fullpage320px200%image hasnooverflow butnew100pxintervalcard splits M2 quality/number andcaption awkwardly. Onefocusedvisualrefinement widensnewintervalbasis160px; no audio/visibility/sourcefixture change. Finalbuild/types and2affectedinterval/previouslayoutcases next; firstproductproof retained."
       },
       "intervalCardUiAssignment": {
         "owner": "song_ui_review",
@@ -1798,9 +1798,10 @@
           "pwa/src/features/playback/playback.css",
           "pwa/src/features/playback/INTERVAL_CARDS_WORKLOG.md"
         ],
-        "status": "Prebranchclaim: primary79a96b47 componentaccepted93checks/types/build+6realChrome; onlyrootplayback.spec.ts dirty (ownedfutureUIacceptance). UI4f500086clean/idle, Sol5ebdba23clean/idle; soleLuna/medium next, alloldrefs/artifactspreserved. Live24%fivehour/15%weekly.",
+        "status": "Worker c49c4047 completeclean/idle, scopedtypes/diffcheckPASS. Rootreviewed complete21linebinding+2styles: oneexistingowner, nativehelpers/rawpitches/labels, refusalstopsowner+existingalert. Exact3assignedpaths only, primaryrootproducttest remainsowneddirty. Normalmerge/build/7affectedChrome acceptance next.",
         "scope": "Frozenview-contracts finalcomment: oneexistingPreviewOwner renderCardPreview injection, intervalcard request rawpitches/settings/currentpreset/manualtransposeonce. Native rootintervalvisibility/writtenunison+melodyINTERVAL/restbarriers, visualshorthand/Interval label and exactspokenaria names. Existingallstaticcards/stopref/lifecycle/props unchanged. No rootcontracts/deps/audioDSP/controller/App/browser/tasks edits.",
-        "nextAction": "Underown guard createclaimedbranch fromexactbase inSAMEpreservedUIsibling; persistownintent thenbounded3pathedit, scopedtypes/diffreview/commit andidle. RootownsactualAppbrowseracceptance; no physical/Safarisingingclaim. Fivehour70nonew/80yield,weekly100override."
+        "nextAction": "Normalmerge exactc49c4047 thenstrictcombinedtypes/build and actualproductinterval+previous/Major/Home/current/offline7Chrome. No unchangedpure/native/componentbrowser repetition; no Libraryscrollgate.",
+        "workerTip": "c49c4047d7daae3b7dc1d960b932f6a69eb0f8d0"
       }
     },
     {
@@ -2087,6 +2088,27 @@
           "producer": "ab4e33f29994dc1299cd04bc5ffd19106007a67db1b9f58e7c615b78de43e052",
           "native": "9957d120a959fd491c3cc0b50cc0ffedfd8ba33803debd706170bb9af98d28c1"
         }
+      },
+      "builtinCurrentProposalAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-interval-preview-audio",
+        "baseCommit": "5ebdba237b4182dd67b9332ec8ce6990797472f9",
+        "status": "COMPLETE reviewed74lineproposal; no tracked edits/capture/branch. Sol5ebdba23clean/idle.",
+        "scope": "<=80lineignoredproposal only fornext smallestbuiltin-current restoration seam, beyondalreadyaccepted enveloperepair. FrozenAuralSession125..143 regenerates fromold.provenance.target+old.seed, checksold.generatorVersion only, sets exposureflags, copyoldcorpus.settings/exampleSettings+fallback. Evaluate narrowtypedprojection helper vsfullJSONdecode gate; corpus/pattern unsupported explicit/deferred. Reuseacceptedbuiltin/RNG/evidence/envelopesafeparser, new<=16independentnativecases withoutoldcapture. No implementation/storage/sessionactions/UI/contracts/deps edits.",
+        "nextAction": "Underown guard readnarrowanchors/currentcontracts, saveignoredproposal+SHA andcleangit/liveusage, idle. Rootfreezeslatercontract; fivehour70nonew/80yield, weekly100override.",
+        "path": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t14-builtin-current-proposal-window18.md",
+        "sha256": "537da79d326c7d9ca1e066efb538e52e855d0d40e5d9a6e996759627df6bca89"
+      },
+      "builtinCurrentContractIntent": {
+        "owner": "coordinator runtime unknown",
+        "ownedPaths": [
+          "pwa/src/domain/learning/builtin-current-contracts.ts"
+        ],
+        "scope": "One typedbuiltin regeneration projection only after futurefullJSONeligibility, neverrawdeferredcurrent. Existingfactory/RNG/progress/envelope unchanged; exacttopseed/version/flags/metadata semantics andnative14casecap. No storage/UI/actions/corpus/pattern support.",
+        "status": "Frozen types/comments only; strictcombinedtypes pending, sourceworker notassigned."
       }
     },
     {
