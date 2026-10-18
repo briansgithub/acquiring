@@ -1,0 +1,2150 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "kotlinVersion": "2.2.10",
+  "serializationVersion": "1.8.1",
+  "compilerVersion": "info: kotlinc-jvm 2.2.10 (JRE 25.0.3+-15898627-b508.16)",
+  "serializerClasses": [
+    "AuralCatalogPosition$$serializer.class",
+    "AuralPatternTarget$$serializer.class",
+    "KeyInfo$$serializer.class"
+  ],
+  "classSha256": {
+    "AuralCatalogPosition$$serializer.class": "327c398349d587da926cfc37e64d8b3653a298a16a87e853514a79f322a0da80",
+    "AuralCatalogPosition$Companion.class": "78ae23d8be95db43bc9e03b83da8ac246552a904ef193ed169c24bd3ef4bae97",
+    "AuralCatalogPosition.class": "30fbe423e7c33bde430c1c65129b1b3a541610503b1f11156d834757f1d1e860",
+    "AuralCatalogRun.class": "4b3cdd3067c11a06ad6eb31464a763a06116b608fcdd838899aa7c3f9a288554",
+    "AuralPatternTarget$$serializer.class": "6fc92686e432ef7517206e562f77084e252f01f210e77b47fc327e495f506dad",
+    "AuralPatternTarget$Companion.class": "aff68dec30e2e8d331405c50a24e0189e0a72316c574c2b8ee0062ab1ffffd25",
+    "AuralPatternTarget.class": "3fe1786ea68b391843ff698c06771db8a17016070a6eb1b7abad1687702158d1",
+    "DriverKt.class": "21ab8970a00d5b92b30091659d33683fe4b801fab50e8367ab2fb559251aa348",
+    "KeyInfo$$serializer.class": "8d5ff471514f758420b8c066dc211f8d3c74e963cafcaa0ba98e03a66158082e",
+    "KeyInfo$Companion.class": "6046de36bdfbe6a0a1bdfdf02b418757b6ff5fca9dd0a3f22d6d232a84e66324",
+    "KeyInfo.class": "dbe7c670ff04486f4ef9fdd0e83c9053a02f6b39dc29b9256988dc376c75b997",
+    "NativeKt.class": "f0e03c0d2e3e46d8099dc14997729c558682c302df18b158da97efe365362de0",
+    "NativeRowDecoder.class": "33fe63bbb555123603df51d7b61f7843e105007a58351e6a916742621ab852e8",
+    "NativeTargetHost.class": "4a3594e10785f1df8c03f4c2f4b8fc028b761bb9575747386b5a3010144a5a1e"
+  },
+  "catalogSourceSha256": "5a2bf50be38fe2e73705f54c0af3766bdfc4034418712eb6555eb1981e5dabbd",
+  "musicSourceSha256": "46af5e1e502ba2e1e67e3cba4d2d227cea1061454fd7f5285b2a033925de98ca",
+  "sliceSha256": {
+    "targetDeclaration": "b986b1257321c1ce302fe3fab3e720d9f724f5c60b88976815869b25610d9941",
+    "positionRunDeclarations": "b0333fb8f1057161ea7d6d93ac736a332b608535a22f4d98b4c9713fe9175aad",
+    "keyDeclaration": "28176484ab00da6299027d5be011e642479c15cee9024625e0a1ea12c865e3d9",
+    "jsonConfiguration": "be9f89ac5142eee8b9ac9e08f1a7d409b1a2ac013e3b129d61a3746683050201",
+    "gzipUnpack": "e6a1d8ed47b09ffea22956d7611daeb83128f289a1263eea1a5c349ece4e776a",
+    "runDecodeExpression": "c6a25c26c2c6f8bb26472b20954a240f9de94455f4fbd5ada51a50db13bad91b",
+    "targetFunction": "0021ab26f1593578be3ceb677ea258643c0aa1afbc6b32e7d58353cea80c1eb1",
+    "identityFunction": "0a45254f630f9712fdd31c94b47e8907c8788813f8328e81925c06a20d4d1f33"
+  },
+  "mappedRunDecoderSha256": "2e41de2de9960c86565567dade81ce8cd94469d1f8aba0f3c013cf7278f660a6",
+  "extractedSourceSha256": {
+    "Native": "3aac927df29b1e54ad05c08d5dd767ab54d12bceb5a4ef727979f125de235bf7",
+    "Adapter": "7e7d6a461ad21e47d62814462273a44f3136173dffced6c0f90f60a3da125712",
+    "Driver": "b7dddd6e1901bd7bda3f64d5e38ce00b9bf6a38500ffd0ca732b835b14d3e204"
+  },
+  "producerSha256": "f78d010b8560f89dd2991a8f5a6c649ae9b2fcf55bd45e0c4cab105b2d24b93d",
+  "nativeInputSha256": "b7d36d93ab6f84029973782a85ede2e453804a06cf65ff7d39a31a83cfa9aeb2",
+  "nativeStdoutSha256": "860428aa49c805a3cc32244511e9755c99fc66fa333fb2e55a9e4bbf1045e7c9",
+  "jars": [
+    {
+      "file": "kotlin-serialization-compiler-plugin-embeddable-2.2.10.jar",
+      "sha256": "c70a592804a59525ba1e314579c01a23ecc8566119fe21cd977f5a290d28bfa9"
+    },
+    {
+      "file": "kotlin-compiler-embeddable-2.2.10.jar",
+      "sha256": "79628fd5d64b4692a62f98962baab00e9076a37e2cffd6ace33cd0b7be7d1cdf"
+    },
+    {
+      "file": "kotlin-stdlib-2.2.10.jar",
+      "sha256": "9c67cc79efd6b9215b49d2a4308f5f3433537376c7c88e89bdd6729bd096e61a"
+    },
+    {
+      "file": "kotlin-script-runtime-2.2.10.jar",
+      "sha256": "c304a67dba6a61dde560e6310920bed746307c3854f6675c29ac29114731b6b0"
+    },
+    {
+      "file": "kotlin-daemon-embeddable-2.2.10.jar",
+      "sha256": "b31573d418961fa080760fedcfc90d68ad67a85eafa245c73fe3d551476777ba"
+    },
+    {
+      "file": "kotlinx-coroutines-core-jvm-1.9.0.jar",
+      "sha256": "ad89c2892235e670f222d819cb3d81188143cb19a05b59df9889ae4269f5c70a"
+    },
+    {
+      "file": "annotations-23.0.0.jar",
+      "sha256": "7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05"
+    },
+    {
+      "file": "kotlinx-serialization-json-jvm-1.8.1.jar",
+      "sha256": "8769e5647557e3700919c32d508f5c5dad53c5d8234cd10846354fbcff14aa24"
+    },
+    {
+      "file": "kotlinx-serialization-core-jvm-1.8.1.jar",
+      "sha256": "3565b6d4d789bf70683c45566944287fc1d8dc75c23d98bd87d01059cc76f2b3"
+    }
+  ],
+  "adapter": "Actual serializer classes decode native complete tokens/positions/BOTH keys from actual gzip/uncompressed JSON; run column access only mapped to fixture row inputs and schema1/source-key capability binding. Native target128..133 and identity38..47 unchanged, run lookup fixture map only. No Android SQLite behavior/cache/header simulation or TS expected output. All original raw JSON lexemes preserved; no old fixture recapture.",
+  "unproven": "No corrupt/multimember gzip, malformed UTF8, every scalar lexical variant/null/duplicate ordering, start-rank Int-overflow or real SQL/header/snapshot/runtime/browser behavior claim.",
+  "cases": [
+    {
+      "name": "minimal-default-unknown-and-odd-typed",
+      "probes": [
+        {
+          "name": "default-varyingBass",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "id": "p_b94b13070d99_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "diagnostic_harmony",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "V7"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        },
+        {
+          "name": "explicit-varyingBass",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60,\"varyingBass\":true}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKMQvCMBDF8e/y5iAVNIUbuzm4upQOKTlKBi9wOcUifvcmduj4+783flEsqN0k8gfUObDEA/9t4GBVp33cdW6KvCgzCI8eDpqfQRr8tUqycQGNvnP+4nw/tUO2e4oJVCPmUMqhd9A1yTLUCDJ98W/aAAaRGu2bAAAA",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": true
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "id": "p_b94b13070d99_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "diagnostic_harmony",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "V7"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        },
+        {
+          "name": "unknown-fields-odd-values",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":-7,\"endIndex\":-9,\"startBeat\":3.0,\"endBeat\":-2.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":-999,\"bassMidi\":999,\"unknown\":{\"ignored\":null}}]",
+          "keyRaw": "{\"tonic\":\"not-a-tonic\",\"scale\":\"not-a-mode\",\"unknown\":17}",
+          "sourceKeyRaw": "{\"tonic\":\"C\",\"scale\":\"major\",\"unknown\":false}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/zXMvQrDIBiF4Xs5symhP0ocu3Xo2iVksPgRpOknqKGBkHuPRjo+nMPbr4jJhPRgSwt0owSI7V+dqOudTIK+nNpjrWrOhZbGQASNl4JA8F/DBfKWxT5RhO5lK+RVSDWUg09PZ11pd7n+NjFWH5z5w/6XCyvcyD6QheZ5mrZt2AHErNfYqQAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": -7,
+                  "endIndex": -9,
+                  "startBeat": 3.0,
+                  "endBeat": -2.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": -999,
+                  "bassMidi": 999,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "not-a-tonic",
+                "scale": "not-a-mode"
+              },
+              "sourceKey": {
+                "tonic": "C",
+                "scale": "major"
+              }
+            },
+            "target": {
+              "id": "p_b94b13070d99_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "diagnostic_harmony",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "V7"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "every-required-position-field",
+      "probes": [
+        {
+          "name": "missing-startIndex",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/zXKsQqAIBSF4Xc5s0RBGTi2NbS2iIPhJRpS0DsE0bt3JRq//xx7g2KYY6ALplUo7DNP5FnUiGX81FUF2jMRDNYRCjmdPlboQRQTU4GxulW6V3p09ZB4OcIBIxGbL+XX417XsGjneQAAAA==",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'startIndex' is required for type with serial name 'com.acquiring.android.AuralCatalogPosition', but it was missing at path: $[0]"
+          }
+        },
+        {
+          "name": "missing-endIndex",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/zXKsQqAIBRG4Xf5Z4mCMnBsa2htCQfDSzSk4L1DEL17ijR+h7M9YHFJ5uDphmlV5UROsppsCr6qK/J0JCIYrCMUUrxcKNBDVohCDLPpVule6dGWIcpy+hMmR+yO+ddrPyk/gR97AAAA",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'endIndex' is required for type with serial name 'com.acquiring.android.AuralCatalogPosition', but it was missing at path: $[0]"
+          }
+        },
+        {
+          "name": "missing-startBeat",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0HhOKUmlihZGeoBeSmp6UWpqUpWSmHmSjpKRfm5iXkgjpkpkJeXX5JarGQVbWagY2aiY2YeC1KQX+KbmZKpZAUUVEpKLC6G8WpjARnUXqt4AAAA",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'startBeat' is required for type with serial name 'com.acquiring.android.AuralCatalogPosition', but it was missing at path: $[0]"
+          }
+        },
+        {
+          "name": "missing-endBeat",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s4RDGTi2NbS2iIPhJRxS0DsE0bunQTR+/znmQmGXeY6eTmgpQNH/eLeJHFd11Z72TASNdYRAToeLDWqoiompQBslheqFGm07JF6CD9A1YnOlfLrtA8RvwMx6AAAA",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'endBeat' is required for type with serial name 'com.acquiring.android.AuralCatalogPosition', but it was missing at path: $[0]"
+          }
+        },
+        {
+          "name": "missing-degree",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0FwwHJOqYklQJ4eRBLCMwTxivJzE/OUrJTCzEyVdJTy8ktSi5Wsos0MdMxMdMzMY0EK8kt8M1MylayAgkpJicXFMF5tLAAzDl4/egAAAA==",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'degree' is required for type with serial name 'com.acquiring.android.AuralCatalogPosition', but it was missing at path: $[0]"
+          }
+        },
+        {
+          "name": "missing-roman",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0FwwHJOqYklQJ4eRBLCMwTxUlLTi1JTlayUwsyVdJTy8ktSi5Wsos0MdMxMdMzMY3WUivLzS3wzUzKVrICCSkmJxcUwXm0sAIBxFfF6AAAA",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'roman' is required for type with serial name 'com.acquiring.android.AuralCatalogPosition', but it was missing at path: $[0]"
+          }
+        },
+        {
+          "name": "missing-notes",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0FwwHJOqYklQJ4eRBLCMwTxUlLTi1JTlayUwsyVdJSK8nMT80AcM1MwL7/ENzMlU8nKDKgyKbG4GMarjQUA+i3D2HUAAAA=",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'notes' is required for type with serial name 'com.acquiring.android.AuralCatalogPosition', but it was missing at path: $[0]"
+          }
+        },
+        {
+          "name": "missing-rootMidi",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XJsQqAIBQF0H+58yMM6gWObQ2tLeFg+IiGDNQhiP49raHxcOYLMdmQBu/khFYE8e7He73YlFV9+akucrIGEWhMHQjh2K0v4DbLH0ki9MyKuCHuDGGxMY6b26BZ3eYBvMGPkXoAAAA=",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'rootMidi' is required for type with serial name 'com.acquiring.android.AuralCatalogPosition', but it was missing at path: $[0]"
+          }
+        },
+        {
+          "name": "missing-bassMidi",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0FwwHJOqYklQJ4eRBLCMwTxUlLTi1JTlayUwsyVdJSK8nMT80AcM1MgLy+/JLVYySrazEDHzETHzDwWpCC/xDczJVPJysygNhYAnkTyLXoAAAA=",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'bassMidi' is required for type with serial name 'com.acquiring.android.AuralCatalogPosition', but it was missing at path: $[0]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "both-keys-required-fields",
+      "probes": [
+        {
+          "name": "missing-keyRaw-tonic",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'tonic' is required for type with serial name 'com.acquiring.android.KeyInfo', but it was missing at path: $"
+          }
+        },
+        {
+          "name": "missing-keyRaw-scale",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'scale' is required for type with serial name 'com.acquiring.android.KeyInfo', but it was missing at path: $"
+          }
+        },
+        {
+          "name": "missing-sourceKeyRaw-tonic",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"scale\":\"major\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'tonic' is required for type with serial name 'com.acquiring.android.KeyInfo', but it was missing at path: $"
+          }
+        },
+        {
+          "name": "missing-sourceKeyRaw-scale",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"C\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.MissingFieldException",
+            "errorMessage": "Field 'scale' is required for type with serial name 'com.acquiring.android.KeyInfo', but it was missing at path: $"
+          }
+        }
+      ]
+    },
+    {
+      "name": "schema1-key-fallback-vs-modern",
+      "probes": [
+        {
+          "name": "legacy-ignores-invalid-source-key",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 1,
+          "supportsModeAnalysis": false,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "not json",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "C",
+                "scale": "major"
+              }
+            },
+            "target": {
+              "id": "p_b94b13070d99_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "diagnostic_harmony",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "V7"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        },
+        {
+          "name": "modern-decodes-invalid-source-key",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "not json",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.json.internal.JsonDecodingException",
+            "errorMessage": "Unexpected JSON token at offset 0: Expected start of the object '{', but had 'n' instead at path: $\nJSON input: not json"
+          }
+        }
+      ]
+    },
+    {
+      "name": "raw-numeric-and-boolean-string-fields",
+      "probes": [
+        {
+          "name": "tokens-numeric-lexemes",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[1.0,1e2,-0]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60},{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60},{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 3,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4s21DPQMUw10tE1iAUAfy2FkwwAAAA=",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0FwwHJOqYklQJ4eRBLCMwTxUlLTi1JTlayUwsyVdJSK8nMT80AcM1MgLy+/JLVYySrazEDHzETHzDwWpCC/xDczJVPJCiiolJRYXAzj1eqMOgPJGbEADo26RJYBAAA=",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.json.internal.JsonDecodingException",
+            "errorMessage": "Unexpected JSON token at offset 1: Expected quotation mark '\"', but had '1' instead at path: $[0]\nJSON input: [1.0,1e2,-0]"
+          }
+        },
+        {
+          "name": "tokens-boolean-primitives",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[true,false]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60},{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 2,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4suKSpN1UlLzClOjQUAt6mx8AwAAAA=",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0FwwHJOqYklQJ4eRBLCMwTxUlLTi1JTlayUwsyVdJSK8nMT80AcM1MgLy+/JLVYySrazEDHzETHzDwWpCC/xDczJVPJCiiolJRYXAzj1eoMDmfEAgDY7kg8DwEAAA==",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.json.internal.JsonDecodingException",
+            "errorMessage": "Unexpected JSON token at offset 1: Expected quotation mark '\"', but had 't' instead at path: $[0]\nJSON input: [true,false]"
+          }
+        },
+        {
+          "name": "degree-numeric-lexeme",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":1e2,\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKMQqAMBBE0btMvYiKRkhpZ2FrIxaRLGJhAskWgnh3oyKWb/6MB6KYIJ2zvEPnBHb2x9NaNpKUvfFVccvyEpgTuCQEvxkHjUHVIDgvHKFHlZOqSDXTffDSr3aFTiNmE+Onc7oAJeKb2YcAAAA=",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.json.internal.JsonDecodingException",
+            "errorMessage": "Unexpected JSON token at offset 69: Expected quotation mark '\"', but had '1' instead at path: $[0].degree\nJSON input: [{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":1e2,\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]"
+          }
+        },
+        {
+          "name": "key-string-numeric-lexeme",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":1.0,\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.json.internal.JsonDecodingException",
+            "errorMessage": "Unexpected JSON token at offset 9: Expected quotation mark '\"', but had '1' instead at path: $.tonic\nJSON input: {\"tonic\":1.0,\"scale\":\"major\"}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "int-numeric-quoted-and-boundaries",
+      "probes": [
+        {
+          "name": "numeric-decimal-int",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":1.0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/zXKvQqAIBiF4Xs5s0RBGTi2NbS2hIPhRzikoN8QRPee9jM+57zLicQm8ugtHVBNVQuQtx8znncgw1nf+epJLW2RCApzD4EYduMLZJflA1OCWmQtZCtkr0sQeHLWQeURq0np16VvGUYMxooAAAA=",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.json.internal.JsonDecodingException",
+            "errorMessage": "Unexpected JSON token at offset 15: Unexpected symbol '.' in numeric literal at path: $[0].startIndex\nJSON input: [{\"startIndex\":1.0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]"
+          }
+        },
+        {
+          "name": "numeric-exponent-int",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":1e2,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/zXKsQqDMBSF4Xc580WiaAIZuzl0dRGHlFxKhiaQ3KEgvruJtuN3/rPuKOKyzNHzF7bngcDR/6jorg92UtWpK97qmzy/MzMsFgNCTh8XG/RUFZNwgV21Ij2SNls7JHkGH2DriJcr5a9jOwFPHprqigAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 100,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "id": "p_b94b13070d99_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "diagnostic_harmony",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "V7"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        },
+        {
+          "name": "quoted-exponent-and-int-extrema",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":\"1e2\",\"endIndex\":\"2147483647\",\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":\"-2147483648\",\"bassMidi\":\"0\"}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/z3Nuw7DIAxA0X/xTCtIiYkYu3Xo2iXKQIQVZQhI4CFS1X+vSR/jtY/l8QmVQ+FbirSDB0MdKKAUf4POWGeHC1on84NeKTB4fdaH+5RpFWkpRHLzaLbkLaQW2EulzFTBj6gVWoVuaiDzfY2rmNP/yyB2DrV+Fxpe0xtGEA/DowAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 100,
+                  "endIndex": 2147483647,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": -2147483648,
+                  "bassMidi": 0,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "id": "p_b94b13070d99_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "diagnostic_harmony",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "V7"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        },
+        {
+          "name": "notes-int-overflow",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[2147483648],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0FwwHJOqYklQJ4eRBLCMwTxUlLTi1JTlayUwsyVdJSK8nMT80AcM1MgLy+/JLVYySrayNDE3MTC2MzEIhakJL/ENzMlU8nKDKg9KbG4GMarjQUAo9p+U4oAAAA=",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.json.internal.JsonDecodingException",
+            "errorMessage": "Unexpected JSON token at offset 107: Failed to parse int for input '2147483648' at path: $[0].notes[0]\nJSON input: [{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[2147483648],\"rootMidi\":60,\"bassMidi\":60}]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "quoted-double-bool-and-nonfinite",
+      "probes": [
+        {
+          "name": "quoted-hex-and-suffixed-double",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":\"0x1.8p1\",\"endBeat\":\" 1.5D \",\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0FwwHJOqYklSlZKBhWGehYFhkpgJVAxBUM9UxcFoFBKanpRaipQJMwcyCvKz03MA3HMTIG8vPyS1GIlq2gzAx0zEx0z81iQgvwS38yUTCUroKBSUmJxMYxXGwsAjz01MZMAAAA=",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 3.0,
+                  "endBeat": 1.5,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "id": "p_b94b13070d99_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "diagnostic_harmony",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "V7"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        },
+        {
+          "name": "quoted-case-boolean",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60,\"varyingBass\":\"TrUe\"}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XMMQvCMBAF4P/y5iAVNIWM3RzctEvpcJKjZPACl0OU4n83sUPH773Hm1YUI7WLRH4jdA4scce/G5is6rCVm45NkRdlRsDYw0Hzk6TBn6skGxeEyXfOn5zv5zbIdk0xIdQQDypl14v0k2QZalgvbnpnfOcfh//AVp0AAAA=",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": true
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "id": "p_b94b13070d99_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "diagnostic_harmony",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "V7"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        },
+        {
+          "name": "nonfinite-double-exponent",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":1e309,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKMQtCIRTF8e9yZnkYvZTu2NbQ2iIOhpdwSEHvEDzed0+laPyd/3EbmoQq1xz5DdIKnOMfs104COjAR32e+eul98jPygzC3UKhllfIA+bUlYtwAzmjlVmVsX4citxSTKA+4hFa+2n3H5mC9xuKAAAA",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.json.internal.JsonDecodingException",
+            "errorMessage": "Unexpected JSON token at offset 47: Unexpected special floating-point value Infinity. By default, non-finite floating point values are prohibited because they do not conform JSON specification at path: $[0].startBeat\nIt is possible to deserialize them using 'JsonBuilder.allowSpecialFloatingPointValues = true'\nJSON input: [{\"startIndex\":0,\"endIndex\":0,\"startBeat\":1e309,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "known-null-fields",
+      "probes": [
+        {
+          "name": "null-degree",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":null,\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0FwwHJOqYklQJ4eRBLCMwTxUlLTi1JTlazySnNydJSK8nMT85SslMLMTJV0lPLyS1KLlayizQx0zEx0zMxjQQryS3wzUzKVrICCSkmJxcUwXm0sAODrf3SIAAAA",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.json.internal.JsonDecodingException",
+            "errorMessage": "Unexpected JSON token at offset 69: Expected string literal but 'null' literal was found at path: $[0].degree\nUse 'coerceInputValues = true' in 'Json {}' builder to coerce nulls if property has a default value.\nJSON input: [{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":null,\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]"
+          }
+        },
+        {
+          "name": "null-key-object",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "null",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "failure": true,
+            "stage": "decode",
+            "errorClass": "kotlinx.serialization.json.internal.JsonDecodingException",
+            "errorMessage": "Unexpected JSON token at offset 0: Expected start of the object '{', but had 'n' instead at path: $\nJSON input: null"
+          }
+        }
+      ]
+    },
+    {
+      "name": "duplicate-known-field-order",
+      "probes": [
+        {
+          "name": "duplicate-degree-and-varyingBass",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"old\",\"degree\":\"new\",\"varyingBass\":true,\"varyingBass\":false,\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/13LPQvCQAwG4P+S+ZAKesKN3RxcXUqHSGI5qDnIxS/E/25qEcXxeT+6B1RDta0Q3yA1AVjoi3fXMpprMZezlpOIB2WGBGUk+KHw1XlBvWcZWqwVkumZ/6IjjtUzLScUP+3j2k9SjL3rYhPiKsRNPw2K7TJlSB7Cwb8fPfsXMM1Wdr8AAAA=",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "new",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "id": "p_b94b13070d99_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "diagnostic_harmony",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "new"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "zero-slice-and-independent-array-bounds",
+      "probes": [
+        {
+          "name": "zero-length-unchecked-end",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            1
+          ],
+          "start": 0,
+          "end": -99,
+          "length": 0,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "id": "p_b94b13070d99_0_00000000000000000000000000000000",
+              "view": "diagnostic_harmony",
+              "tokens": [],
+              "labels": [],
+              "start": 0,
+              "end": -99,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        },
+        {
+          "name": "positions-shorter-than-tokens",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\",\"target-native-B\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            1
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VNJBE3FSigUAMM27YCUAAAA=",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A",
+                "target-native-B"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "failure": true,
+              "stage": "target",
+              "errorClass": "java.lang.IndexOutOfBoundsException",
+              "errorMessage": "toIndex = 2"
+            }
+          }
+        },
+        {
+          "name": "tokens-shorter-than-positions",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60},{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            1
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/4uuViouSSwq8cxLSa1QsjLQUUrNS0FwwHJOqYklQJ4eRBLCMwTxUlLTi1JTlayUwsyVdJSK8nMT80AcM1MgLy+/JLVYySrazEDHzETHzDwWpCC/xDczJVPJCiiolJRYXAzj1eoMDmfEAgDY7kg8DwEAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                },
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "failure": true,
+              "stage": "target",
+              "errorClass": "java.lang.IndexOutOfBoundsException",
+              "errorMessage": "toIndex = 2"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "native-offset-length-bounds",
+      "probes": [
+        {
+          "name": "negative-offset",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            -1
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "failure": true,
+              "stage": "target",
+              "errorClass": "java.lang.IndexOutOfBoundsException",
+              "errorMessage": "fromIndex = -1"
+            }
+          }
+        },
+        {
+          "name": "negative-length",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            1
+          ],
+          "start": 0,
+          "end": 77,
+          "length": -1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "failure": true,
+              "stage": "target",
+              "errorClass": "java.lang.IllegalArgumentException",
+              "errorMessage": "fromIndex(1) > toIndex(0)"
+            }
+          }
+        },
+        {
+          "name": "span-past-both-arrays",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "diagnostic_harmony",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 2,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "diagnostic_harmony",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "failure": true,
+              "stage": "target",
+              "errorClass": "java.lang.IndexOutOfBoundsException",
+              "errorMessage": "toIndex = 2"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "actual-view-suffix-label-choice",
+      "probes": [
+        {
+          "name": "bass-view-roman",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "relative_harmony_bass",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "relative_harmony_bass",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "id": "p_436855e8f058_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "relative_harmony_bass",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "V65"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        },
+        {
+          "name": "non-suffix-degree",
+          "rowId": 0,
+          "stableId": "target-reference-run",
+          "view": "harmony_bass_extra",
+          "song": "fixture-song",
+          "section": "fixture-section",
+          "revision": "revision",
+          "schemaVersion": 3,
+          "supportsModeAnalysis": true,
+          "tokensRaw": "[\"target-native-A\"]",
+          "positionsRaw": "[{\"startIndex\":0,\"endIndex\":0,\"startBeat\":0.0,\"endBeat\":1.0,\"degree\":\"V7\",\"roman\":\"V65\",\"notes\":[60,64,67],\"rootMidi\":60,\"bassMidi\":60}]",
+          "keyRaw": "{\"tonic\":\"C\",\"scale\":\"major\"}",
+          "sourceKeyRaw": "{\"tonic\":\"D\",\"scale\":\"minor\"}",
+          "suffix": [
+            0,
+            0
+          ],
+          "start": 0,
+          "end": 77,
+          "length": 1,
+          "snapshotId": "target-reference-snapshot",
+          "tokensGzip": "H4sIAAAAAAAC/4tWKkksSk8t0c1LLMksS9V1VIoFAF4mI2cTAAAA",
+          "positionsGzip": "H4sIAAAAAAAC/0XKsQqAIBSF4Xc5s0RBGTi2NbS2RIPhJRxS0DsE0bunSTR+5z/Lhcg68OgMnVC1ADnz420DaU6qSixqsgztgQgKcw+B4A/tMmSX5DxThFpkLWQrZL/mg+fJGguVRmw6xk/3+gBfqdLXiAAAAA==",
+          "expected": {
+            "run": {
+              "id": 0,
+              "stableId": "target-reference-run",
+              "view": "harmony_bass_extra",
+              "song": "fixture-song",
+              "section": "fixture-section",
+              "revision": "revision",
+              "tokens": [
+                "target-native-A"
+              ],
+              "positions": [
+                {
+                  "startIndex": 0,
+                  "endIndex": 0,
+                  "startBeat": 0.0,
+                  "endBeat": 1.0,
+                  "degree": "V7",
+                  "roman": "V65",
+                  "notes": [
+                    60,
+                    64,
+                    67
+                  ],
+                  "rootMidi": 60,
+                  "bassMidi": 60,
+                  "varyingBass": false
+                }
+              ],
+              "key": {
+                "tonic": "C",
+                "scale": "major"
+              },
+              "sourceKey": {
+                "tonic": "D",
+                "scale": "minor"
+              }
+            },
+            "target": {
+              "id": "p_ce19ad73d630_1_0bfdef8710c019bc245a41216ea250cc",
+              "view": "harmony_bass_extra",
+              "tokens": [
+                "target-native-A"
+              ],
+              "labels": [
+                "V7"
+              ],
+              "start": 0,
+              "end": 77,
+              "snapshotId": "target-reference-snapshot"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
