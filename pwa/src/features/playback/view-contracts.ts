@@ -38,3 +38,27 @@
 export interface PlaybackScreenProps {
   readonly slug:string;readonly onBack:()=>void;readonly onHome:()=>void;readonly onDownload:()=>void;
 }
+
+/** Interval integration boundary: one stable PreviewOwner with renderCardPreview injection.
+ * Untagged requests use unchanged static rendering; immutable cardPreviewKind=interval
+ * invokes the pure3stage renderer. Existing owner snapshots preserve the tag; actualChrome
+ * must prove propagation, mutual cancellation, stale-held render refusal and lifecycle.
+ * This supersedes the earlier two-borrower proposal and avoids additional arbitration.
+ * No App interval button before sequence acceptance; raw written pitches/currentpreset/
+ * manualtransposeonce, tessitura0 pendingT13. Root/melody visibility uses accepted helpers.
+ */
+
+/** Next bounded UI binding (only after actual sequence audio acceptance):
+ * Keep the ONE existing per-section PreviewOwner and stop ref/subscription/cleanup;
+ * instantiate it with renderCardPreview. Static taps stay unchanged. Interval taps
+ * synchronously call owner.play with cardIntervalPreviewRequest({raw source pitches,
+ * settings.transpose/settings.waveform}); no await/timers/new audio context.
+ * Root-only button exists iff showsRootOnlyInterval(previousIntervalPitch,
+ * currentIntervalPitch, interval); melody button only for INTERVAL mode/state.
+ * Root written-unison keeps previous note but hides interval; melody rest/unison
+ * rules remain unchanged. Use accepted NamedInterval.shorthand visibly and
+ * aria-label Play root interval <spokenName> / Play melody interval <spokenName>.
+ * Label the visible action Interval; preserve every existing card name/action.
+ * RelativeMajor relabels pitch cards only; interval audio stays written/raw.
+ * Reuse 44px targets/320px200% wrapping; no singing/doubletap/persistence/API changes.
+ */

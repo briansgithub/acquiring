@@ -25,6 +25,8 @@ export interface RootIntervalAudioApi {
  * -12..12, valid preset. Reuse rootIntervalPreviewSteps(...,450) unchanged; convert
  * shifted notes with the existing 440*2**((note-69)/12) convention exactly once.
  * Reject nonfinite/nonpositive results; freeze request and pair, retain unison pair.
+ * Refuse distinct shifted notes whose converted frequencies collide in browser Double
+ * precision; this representability refusal prevents silently deduplicating distinct notes.
  * Render: snapshot known options and copy pair before work; exactly two finite positive
  * frequencies, duration450, arpeggiate explicitly false, actual integer output rate
  * within accepted static bounds, optional stepMs absent/80 only. Preserve gain/random
