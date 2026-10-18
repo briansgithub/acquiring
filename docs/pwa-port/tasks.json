@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T02:57:35.663453+00:00",
+  "updated": "2026-10-18T02:58:21.216723+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2108,7 +2108,28 @@
           "pwa/src/domain/learning/builtin-current-contracts.ts"
         ],
         "scope": "One typedbuiltin regeneration projection only after futurefullJSONeligibility, neverrawdeferredcurrent. Existingfactory/RNG/progress/envelope unchanged; exacttopseed/version/flags/metadata semantics andnative14casecap. No storage/UI/actions/corpus/pattern support.",
-        "status": "Frozen types/comments only; strictcombinedtypes pending, sourceworker notassigned."
+        "status": "Frozen typedcontract890c8ef7; strictcombinedtypesPASS window18-builtin-current-contract-types-20261018. Sourceworker oraclefirst, no implementation/JSONactivation claim."
+      },
+      "builtinCurrentAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-builtin-current",
+        "baseCommit": "890c8ef74830f2953fed677df5d6e0d1895ab6f6",
+        "priorBranch": "codex/pwa-interval-preview-audio",
+        "priorTip": "5ebdba237b4182dd67b9332ec8ce6990797472f9",
+        "ownedPaths": [
+          "pwa/src/domain/learning/builtin-current.ts",
+          "pwa/src/domain/learning/builtin-current.test.ts",
+          "pwa/src/domain/learning/BUILTIN_CURRENT_WORKLOG.md",
+          "pwa/src/domain/learning/fixtures/generate-builtin-current-native.py",
+          "pwa/src/domain/learning/fixtures/native-builtin-current.json",
+          "pwa/src/domain/learning/index.ts"
+        ],
+        "status": "Datedclaimbeforebranchreuse: frozencontract890c8ef7/stricttypesPASS; rootowns pendingplayback.css160pxlayout andplayback.spec.ts producttest (initial7ChromePASS, final2layoutchecks pending). Sol5ebcleanidle, Lunac49cleanidle; allrefs/artifactspreserved. Live42%fivehour/18%weekly, soleSol/high oraclefirst.",
+        "scope": "Frozenbuiltin-current-contracts.ts typedprojection helper ONLY, firstnativeoracle<=14NEWcases thenrootreviewbeforeimplementation. RealKotlin2.2.10plugin/typed oldAuralExercise decode/unchanged125..138 expression/realacceptedtheory+generator. Nativeoutputfullrestoredexerciseorfailure, exactLongcanonicaladapter. No oldnativecapture/envelopeJSONdecoder/activation/progress/storage/actions/UI/DSP/contracts/deps edits.",
+        "nextAction": "Underownguard newclaimedbranch EXACTbase inexistingcleansibling; persistintent, NEWnativeproducer+fixtures/worklog onlyfirstcheckpoint, verifyactualserializerclass/sourceprovenance/nativecases thencommit/idle. NO implementation before rootreview/followup. At70fivehournonew/check/worker,80yield; weekly100override."
       }
     },
     {
