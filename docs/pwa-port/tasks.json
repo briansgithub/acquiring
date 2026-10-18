@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T03:09:57.610061+00:00",
+  "updated": "2026-10-18T11:37:18.577739+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -1826,6 +1826,13 @@
           "pwa/src/features/playback/playback.css": "e883799c4dcf00c3a5a36a52d89a72cbbd6612d3425c850501ad5cf70c6a48d5",
           "pwa/tests/browser/playback.spec.ts": "d48e3ee139cf526ff8be584f537affc4313bf4abb349e3a088591a3cdb24dec5"
         }
+      },
+      "timelineReadiness": {
+        "owner": "coordinator runtime unknown",
+        "status": "Read-only native/current-source readiness note only; no source, fixtures, tests or timeline UI acceptance.",
+        "path": ".artifacts/pwa-port/t12-timeline-native-readiness-window19.md",
+        "sha256": "046ee8a9ff833af2bfee4307f2ee177081a96e79752323aa2fbed878d736a62c",
+        "nextAction": "Use recorded exact frozen source ranges and missing scrub/inertia/renderer decisions before a bounded timeline contract; do not repeat inspected native geometry ranges."
       }
     },
     {
@@ -1866,8 +1873,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "fb3f23b15a5bfe27fa473a7afcaf800441d0fdec",
-      "slice": "Generator, scheduler, envelope repair and typed builtin-current regeneration accepted. Full saved-JSON eligibility, session actions, persistence, corpus/pattern support and learning UI remain open.",
-      "nextAction": "After live capacity check, same idle Sol/high may make a bounded read-only proposal for complete builtin saved-current JSON eligibility, reusing the accepted envelope/raw recovery and14 native oldRaw cases without recapture. Root freezes a separate contract before edits. No deferred.current cast, session/storage activation, corpus/pattern support or fullT14 acceptance yet.",
+      "slice": "Generator/scheduler/envelope repair, typed builtin regeneration and full builtin JSON fragment eligibility accepted. Whole-envelope restore, playbackReturn, actions/persistence/corpus/pattern/UI remain open.",
+      "nextAction": "Read-only bounded proposal for whole builtin saved-session INITIALIZATION, including playbackReturn typed eligibility and current/metadata/history/fresh warning ordering, reusing unchanged accepted decoders/generator. Root freezes next contract before implementation; no session actions/storage/UI.",
       "validation": [
         {
           "command": "python pwa/src/domain/learning/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/domain/learning/pitch-assessment.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (node commands from pwa)",
@@ -1899,6 +1906,12 @@
           "guard": "window18-builtin-current-combined-20261018 (root guard, cwd pwa)",
           "revision": "4d14a6e922d276a7cffa5372300f1ecda6bb320d",
           "result": "PASS196checks/13files6.40s and strict combined types first attempt. Actual child27098 observed exit0; exact worker source hashes match integrated files. Pure helper unwired to App; production shell8eb973ca54a5 and accepted interval browser evidence unchanged, no unnecessary build/browser/native rerun."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+          "guard": "window19-builtin-json-combined-20261018 (root guard, cwd pwa)",
+          "revision": "f8b3f002dc54368d605bb00a8d85fcb0413ac299",
+          "result": "PASS221tests/14files7.77s then strict combined types first attempt. Child97162 observed exit0; exact integrated hashes match tested worker. No production build/browser/native recapture; App shell8eb973ca54a5 unchanged."
         }
       ],
       "progress": [
@@ -1920,7 +1933,8 @@
         "2026-10-17T17:29:34.067093+00:00 SoleSol/high read-only schedulerproposal claim onexistingclean c8a46052, builtinaccepted951e321c/root114checks/types/build. RootownsdisjointcurrentcardUI/cancellationproof pendingbrowser, dirtypaths preserved. No newbranch/tree/sourceassignment. Latest34%five-hour/89%weekly, at90checkpointthencontinue100; no credit/reset/modelaction.",
         "2026-10-17T17:45:30.506367+00:00 Builtin scheduler ACCEPTED normalmerge5508a0a03f090d750c62626394f4504d8e4c90a8: first24native/29focused/scopedtypes, root143combined/strict typesPASS. Exactnativehelperversion/cap/seedxor/order/ties/masteredreview/micshuffle/support/transfer. Initialrawbyteprovenanceassertion CRLFvsGitLF only, normalizedcomparison+gitdiffPASS, no source/testfailure. Oldfixtures/accepteddependencies unchanged.",
         "2026-10-17T21:43:59.454140+00:00 Pureenvelope repair ACCEPTED normalmerge7f33ff0df0acb3b29fa62f69ab3c5e2498ddb25d:native16pluginprojections/worker27/root177combinedchecks/types. Firsttypecheckcontrolflownarrowingfix1 explicitneverfunction, thenstrict typesPASS; no source-rule testfailure. Rootreviewcaughtdeferredunsafeintegercopy; exactoriginalrawretained andaffecteddeferredcopyrefused, newregression/exactsourcechecksPASS. Unsafe/inexact Longexponent andresourcebounds explicitbrowserextensions; rawrecovery preserved, no encoder/autowrite/fullsessionclaim.",
-        "2026-10-18T03:09:40.360495+00:00 Typed builtin-current regeneration accepted d61fa954/normalmerge4d14a6e9:14 real native serializer cases,21 focused worker checks,196 combined primary checks and strict types first PASS. Full JSON eligibility and session/storage integration remain open."
+        "2026-10-18T03:09:40.360495+00:00 Typed builtin-current regeneration accepted d61fa954/normalmerge4d14a6e9:14 real native serializer cases,21 focused worker checks,196 combined primary checks and strict types first PASS. Full JSON eligibility and session/storage integration remain open.",
+        "2026-10-18T11:37:18.577739+00:00 Complete builtin-current JSON fragment eligibility accepted984f96da/normalmergef8b3f002:52focused/221combined/strict types firstPASS; native14oldRaw reused and original envelope implementation unchanged."
       ],
       "blocker": null,
       "proposalAssignment": {
@@ -2189,6 +2203,66 @@
             "guard": "window18-builtin-current-combined-20261018 (root guard, cwd pwa)",
             "revision": "4d14a6e922d276a7cffa5372300f1ecda6bb320d",
             "result": "PASS196checks/13files6.40s and strict combined types first attempt. Actual child27098 observed exit0; exact worker source hashes match integrated files. Pure helper unwired to App; production shell8eb973ca54a5 and accepted interval browser evidence unchanged, no unnecessary build/browser/native rerun."
+          }
+        ]
+      },
+      "builtinJsonProposalAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-builtin-current",
+        "baseCommit": "d61fa9548a17957cf9541f8336cef3b50c029996",
+        "output": ".artifacts/pwa-port/t14-builtin-json-proposal-window19.md",
+        "status": "COMPLETE root reviewed80line proposal; no tracked worker edit/test/capture/branch.",
+        "scope": "Bounded <=80line read-only proposal for complete builtin saved-current JSON eligibility before accepted typed regeneration. Reuse accepted envelope/raw preservation, native14 oldRaw cases/real serializers and existing strict decoder leaves. No tracked source/contract/test/fixture edits, native capture, full session/storage/UI/credit/pattern/corpus implementation or new branch/tree. Identify exact native required/default/nullable shape gates, Long decoding/resource bounds/failure precedence, minimal API/owned paths and meaningful cases. Root freezes contract before source.",
+        "sha256": "ecad9e2ec966e31a48f441d698d40d152032f51bc389ab4b900bccdbf28353d9"
+      },
+      "builtinJsonContractIntent": {
+        "owner": "coordinator runtime unknown",
+        "ownedPaths": [
+          "pwa/src/domain/learning/builtin-current-json-contracts.ts"
+        ],
+        "status": "Frozen f92a3d81; combined strict types PASS window19-builtin-json-contract-types-20261018. No runtime/API implementation yet.",
+        "scope": "Full26field builtin JSON eligibility only; unchanged private session decoder reuse, exact raw recovery/bounds/Long browser policy; no full envelope restoration or generation/activation/storage/UI."
+      },
+      "builtinJsonAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-builtin-current-json",
+        "baseCommit": "f92a3d81c63a390cce20e713b3a552729cb89c85",
+        "priorBranch": "codex/pwa-builtin-current",
+        "priorTip": "d61fa9548a17957cf9541f8336cef3b50c029996",
+        "ownedPaths": [
+          "pwa/src/domain/learning/session-envelope.ts",
+          "pwa/src/domain/learning/builtin-current-json.test.ts",
+          "pwa/src/domain/learning/BUILTIN_CURRENT_JSON_WORKLOG.md",
+          "pwa/src/domain/learning/index.ts"
+        ],
+        "scope": "Frozen builtin-current-json-contracts.ts fragment API only. Add complete26field builtin Item schema/private decoder/public wrapper in existing session-envelope.ts, reuse private leaves unchanged. No old API semantic changes/refactor, new generic parser/codec exports, old fixtures/capture/generator/RNG, whole-envelope composition/session/actions/storage/UI/audio/credit/corpus/pattern support.",
+        "status": "ACCEPTED fragment eligibility984f96da normally mergedf8b3f002. First52focused checks (25new/27unchanged envelope) and scoped types; root221combined learning/playback checks/14files and strict combined types first PASS. Complete native26field/nested/default/nullable validation, exact raw/Long/unsupported/resource semantics; original decoder/repair bodies and all native fixtures unchanged. No full envelope/session/activation/storage/UI claim.",
+        "nextAction": "No unchanged decoder/native/type evidence repeat. Read-only bounded proposal for whole builtin saved-session INITIALIZATION, including playbackReturn typed eligibility and current/metadata/history/fresh warning ordering, reusing unchanged accepted decoders/generator. Root freezes next contract before implementation; no session actions/storage/UI.",
+        "workerTip": "984f96dae147b46b68a348b2303a002fefe800c9",
+        "mergeCommit": "f8b3f002dc54368d605bb00a8d85fcb0413ac299",
+        "testedRevision": "f8b3f002dc54368d605bb00a8d85fcb0413ac299",
+        "sha256": {
+          "pwa/src/domain/learning/session-envelope.ts": "7a7a3310b40d0e24ef3a627446ae7b6d5ee1733cc8ae15590e9f38fd59886346",
+          "pwa/src/domain/learning/builtin-current-json.test.ts": "dcb62c0ca5439e65bb904eac15965651374f9dd6ef5ac4449626672c63bc6710",
+          "pwa/src/domain/learning/index.ts": "7032daad9ef4456c7212b3b2291146576008b8163324589a5ae4840de8c2681a"
+        },
+        "validation": [
+          {
+            "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t14-builtin-json-vitest.config.mjs; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc -p ../.artifacts/pwa-port/t14-builtin-json-tsconfig.json",
+            "guard": "t14-builtin-json-tests-20261018-05 / types-20261018-06 (sibling --repo, cwd pwa)",
+            "result": "PASS52tests/2files3.27s (25new+27unchanged old envelope) and scoped strict types first attempts. Old14native oldRaw/output cases reused; lexical seed quoting only, no capture. Child3581 actual exit0."
+          },
+          {
+            "command": "node node_modules/vitest/vitest.mjs run src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
+            "guard": "window19-builtin-json-combined-20261018 (root guard, cwd pwa)",
+            "revision": "f8b3f002dc54368d605bb00a8d85fcb0413ac299",
+            "result": "PASS221tests/14files7.77s then strict combined types first attempt. Child97162 observed exit0; exact integrated hashes match tested worker. No production build/browser/native recapture; App shell8eb973ca54a5 unchanged."
           }
         ]
       }
@@ -2537,8 +2611,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T03:09:57.610061+00:00",
-    "sourceCommit": "4d14a6e922d276a7cffa5372300f1ecda6bb320d",
+    "date": "2026-10-18T11:37:18.577739+00:00",
+    "sourceCommit": "f8b3f002dc54368d605bb00a8d85fcb0413ac299",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -2551,10 +2625,10 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 22
+      "fiveHourUsedPercent": 27,
+      "weeklyUsedPercent": 27
     },
-    "fiveHourResetUnix": 1792308712,
+    "fiveHourResetUnix": 1792340548,
     "weeklyResetUnix": 1792876816,
     "unresolvedRuns": [],
     "worker": {
@@ -2562,12 +2636,12 @@
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-builtin-current",
-      "tip": "d61fa9548a17957cf9541f8336cef3b50c029996",
-      "status": "accepted"
+      "branch": "codex/pwa-builtin-current-json",
+      "tip": "984f96dae147b46b68a348b2303a002fefe800c9",
+      "status": "accepted clean idle"
     },
-    "nextAction": "After live capacity check, same idle Sol/high may make a bounded read-only proposal for complete builtin saved-current JSON eligibility, reusing the accepted envelope/raw recovery and14 native oldRaw cases without recapture. Root freezes a separate contract before edits. No deferred.current cast, session/storage activation, corpus/pattern support or fullT14 acceptance yet.",
-    "reason": "Interval component and product cards accepted with real Chrome PCM/lifecycle/layout proof. The pure typed builtin-current regeneration helper is accepted. Full JSON eligibility, session actions, persistence, corpus/pattern support and learning UI remain open.",
+    "nextAction": "Read-only bounded proposal for whole builtin saved-session INITIALIZATION, including playbackReturn typed eligibility and current/metadata/history/fresh warning ordering, reusing unchanged accepted decoders/generator. Root freezes next contract before implementation; no session actions/storage/UI.",
+    "reason": "Builtin JSON fragment decoder accepted; no full-session/UI claim.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -2577,7 +2651,16 @@
     "usageAvailability": "Ordinary usage allowed at last observation. Five-hour70 no new work/80 checkpoint; weekly100 ordinary exhaustion. No credit/reset/model action.",
     "activeWorker": null,
     "integrationAwaitingPrimaryAcceptance": null,
-    "fiveHourAction": "70% no-new-work boundary reached after covering checks passed; checkpoint and yield until live capacity returns below70. Next proposal is not assigned."
+    "fiveHourAction": "Live reset verified; capacity below70 permits new bounded work.",
+    "resumeObservation": {
+      "at": "2026-10-18T11:23:34.092999+00:00",
+      "fiveHourUsedPercent": 0,
+      "weeklyUsedPercent": 23,
+      "ordinaryUsageAllowed": true,
+      "fiveHourResetsAt": 1792340548,
+      "weeklyResetsAt": 1792876816,
+      "action": "Live fivehour reset verified; resume bounded saved-current eligibility proposal, no credit/reset/model action."
+    }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",
   "usagePolicy": {
@@ -2591,13 +2674,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-18T03:09:57.610061+00:00",
-      "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 22,
+      "at": "2026-10-18T11:37:18.577739+00:00",
+      "fiveHourUsedPercent": 27,
+      "weeklyUsedPercent": 27,
       "ordinaryUsageAllowed": true,
-      "fiveHourResetsAt": 1792308712,
+      "fiveHourResetsAt": 1792340548,
       "weeklyResetsAt": 1792876816,
-      "action": "Current live observations supersede earlier checkpoints; weekly future reset does not block remaining ordinary allowance."
+      "action": "Accepted decoder; continue bounded whole-session initializer proposal. Fivehour70/80 and weekly100 override unchanged."
     }
   }
 }
