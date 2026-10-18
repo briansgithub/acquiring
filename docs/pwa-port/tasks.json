@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T16:51:38.263720+00:00",
+  "updated": "2026-10-18T16:58:21.544147+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2381,12 +2381,12 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "coordinator; query worker clean idle",
-      "branch": "codex/pwa-aural-query",
+      "owner": "preview_owner gpt-6.1-sol/high; coordinator integration",
+      "branch": "codex/pwa-aural-identity",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "d4d3caa12d39560c7c0146b3cc38231626ed3fa1",
-      "slice": "Pure constraint/query matcher accepted. Identity contract/native reference ready, source unassigned. Full SQL/ranking/groups/search/loops/runtime/browser remain open.",
-      "nextAction": "Do not repeat accepted query/native/typing evidence. Next independent identity source uses already validated native16groups55samples and frozen contract after prebranch intent/fresh capacity.",
+      "baseCommit": "e4ef86ecb812f2f9bca297f435287c1bbcba540b",
+      "slice": "Pure query matcher accepted. Stable pattern identity SOURCE assigned after validated native reference; full SQL/ranks/groups/browser remain open.",
+      "nextAction": "Inspect clean existing sibling/guards/PIDs and branch absence, preserve query refs, create codex/pwa-aural-identity from exact accepted primarybase; implement bounded source/test/narrow exports/WORKLOG only. First focused actual WebCrypto native55 comparisons plus browser-boundary/mutation/getter/reentry tests and scoped strict types. Commit validated4paths and idle for primary review/checks; no reference recapture.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -2526,6 +2526,41 @@
         "receipt": ".artifacts/pwa-port/t15-identity-native-validation-window20.json",
         "receiptSha256": "e2bdf4a83cbbb6327baed8584fcebe550570afcdc4706e37e6b1af2dec376224",
         "referenceCommit": "a55cc708593f52b1e31152cb01e8d1375f9511cb"
+      },
+      "identityAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-aural-identity",
+        "baseCommit": "e4ef86ecb812f2f9bca297f435287c1bbcba540b",
+        "priorBranch": "codex/pwa-aural-query",
+        "priorTip": "d7f903accffc738273d42277ccbd84b4026d8115",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/catalog-identity.ts",
+          "pwa/src/domain/catalog/catalog-identity.test.ts",
+          "pwa/src/domain/catalog/IDENTITY_WORKLOG.md",
+          "pwa/src/domain/catalog/index.ts"
+        ],
+        "status": "SOURCE ASSIGNED after root frozen contract f4ef4ac9/types and validated native reference a55cc708. Query accepted274combined/types.",
+        "scope": "One pure asynchronous stable pattern ID API exactly identity-contracts.ts; actual WebCrypto SHA256 + exact LE32/Int overflow, all UTF8 input bytes captured before first await, independent local guards and no cache. Reuse immutable native16groups55samples. No producer/fixture/query/SQL/stats/rank/runtime/session/UI/deps/contracts/tasks edits.",
+        "nextAction": "Inspect clean existing sibling/guards/PIDs and branch absence, preserve query refs, create codex/pwa-aural-identity from exact accepted primarybase; implement bounded source/test/narrow exports/WORKLOG only. First focused actual WebCrypto native55 comparisons plus browser-boundary/mutation/getter/reentry tests and scoped strict types. Commit validated4paths and idle for primary review/checks; no reference recapture."
+      },
+      "loopContractIntent": {
+        "owner": "coordinator runtime unknown unchanged",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/loop-contracts.ts"
+        ],
+        "status": "Pre-edit frozen native pure-loop contract, no worker source assignment. Sole Sol/high continues disjoint identity source.",
+        "scope": "Exact whole native KMP/redundant/unique directed transitions and BFS retained children/order/dedupe, version literal and explicit bounded browser work guards. Reuse15shared expected cases unchanged and <=16NEW actual native groups only.",
+        "nextAction": "Validate/checkpoint contract, coordinator native oracle first on disjoint new paths; do not assign loop source until identity primary acceptance and live capacity."
+      },
+      "sqlReadiness": {
+        "owner": "coordinator runtime unknown",
+        "status": "READ-ONLY future runtime readiness; no SQL/frontier source, tests or acceptance.",
+        "authority": "801cf798 AuralCatalog66..119/345..424/547..562 plus earlier15..48/147..185; PWA catalog protocol entire current file.",
+        "findings": "Native supports schema1..3; current artifact3. Suffix LE32 pairs chunked1MiB from catalog_array/suffix_locations; catalog_run ids MUST contiguous0-based and paged2048. Optional popularity snapshot/version. Browse defaults invalidsort mostSongs, while rowOrder default/else recommended (distinct!). Range frontier splits inclusive length low/high, SQL order differs bysort; globalSongs/globalOccurrences drive mostSongs, popularity only eligibility/stat matching. Exact-root query uses rootLabels only harmony_bass. Loop reduction required before stats. Current PWA worker has songPage/songPayload only, no aural commands.",
+        "nextAction": "After query/identity/loop kernels, freeze readonly worker/lease/cancellation/array/rank contract; inspect remaining eligibleRankBits/matchingBuckets/run/target/rootLabels and actual schema/cursor adapters only. No repeat of saved prefix/stats/frontier ranges or unchanged2GB proof."
       }
     },
     {
@@ -2847,8 +2882,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T16:51:38.263720+00:00",
-    "sourceCommit": "220fee3abda0076b5464482b18b5c2b5c6738e82",
+    "date": "2026-10-18T16:53:03.354126+00:00",
+    "sourceCommit": "e4ef86ecb812f2f9bca297f435287c1bbcba540b",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -2861,8 +2896,8 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 23,
-      "weeklyUsedPercent": 39
+      "fiveHourUsedPercent": 36,
+      "weeklyUsedPercent": 41
     },
     "fiveHourResetUnix": 1792358936,
     "weeklyResetUnix": 1792876817,
@@ -2876,8 +2911,8 @@
       "tip": "d7f903accffc738273d42277ccbd84b4026d8115",
       "status": "accepted clean idle"
     },
-    "nextAction": "Do not repeat accepted query/native/typing evidence. Next independent identity source uses already validated native16groups55samples and frozen contract after prebranch intent/fresh capacity.",
-    "reason": "Query matcher accepted274combined/types. Native identity reference ready55samples; next exact bounded identity implementation after dated prebranch claim.",
+    "nextAction": "Inspect clean existing sibling/guards/PIDs and branch absence, preserve query refs, create codex/pwa-aural-identity from exact accepted primarybase; implement bounded source/test/narrow exports/WORKLOG only. First focused actual WebCrypto native55 comparisons plus browser-boundary/mutation/getter/reentry tests and scoped strict types. Commit validated4paths and idle for primary review/checks; no reference recapture.",
+    "reason": "Query accepted; same sole Sol/high bounded identity source after frozen native reference, no capture repeat.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -2885,9 +2920,27 @@
       "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
     },
     "usageAvailability": "Ordinary usage allowed at last observation. Five-hour70 no new work/80 checkpoint; weekly100 ordinary exhaustion. No credit/reset/model action.",
-    "activeWorker": null,
+    "activeWorker": {
+      "owner": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "branch": "codex/pwa-aural-identity",
+      "baseCommit": "e4ef86ecb812f2f9bca297f435287c1bbcba540b",
+      "priorBranch": "codex/pwa-aural-query",
+      "priorTip": "d7f903accffc738273d42277ccbd84b4026d8115",
+      "ownedPaths": [
+        "pwa/src/domain/catalog/catalog-identity.ts",
+        "pwa/src/domain/catalog/catalog-identity.test.ts",
+        "pwa/src/domain/catalog/IDENTITY_WORKLOG.md",
+        "pwa/src/domain/catalog/index.ts"
+      ],
+      "status": "SOURCE ASSIGNED after root frozen contract f4ef4ac9/types and validated native reference a55cc708. Query accepted274combined/types.",
+      "scope": "One pure asynchronous stable pattern ID API exactly identity-contracts.ts; actual WebCrypto SHA256 + exact LE32/Int overflow, all UTF8 input bytes captured before first await, independent local guards and no cache. Reuse immutable native16groups55samples. No producer/fixture/query/SQL/stats/rank/runtime/session/UI/deps/contracts/tasks edits.",
+      "nextAction": "Inspect clean existing sibling/guards/PIDs and branch absence, preserve query refs, create codex/pwa-aural-identity from exact accepted primarybase; implement bounded source/test/narrow exports/WORKLOG only. First focused actual WebCrypto native55 comparisons plus browser-boundary/mutation/getter/reentry tests and scoped strict types. Commit validated4paths and idle for primary review/checks; no reference recapture."
+    },
     "integrationAwaitingPrimaryAcceptance": null,
-    "fiveHourAction": "Live2%; no new operations at70, checkpoint/yield80.",
+    "fiveHourAction": "Live36%; no new slice/worker/check70, checkpoint/yield80.",
     "resumeObservation": {
       "at": "2026-10-18T16:29:57.211840+00:00",
       "fiveHourUsedPercent": 0,
@@ -2934,13 +2987,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-18T16:29:57.211840+00:00",
-      "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 35,
+      "at": "2026-10-18T16:53:03.354126+00:00",
+      "fiveHourUsedPercent": 36,
+      "weeklyUsedPercent": 41,
       "ordinaryUsageAllowed": true,
       "fiveHourResetsAt": 1792358936,
-      "weeklyResetsAt": 1792876817,
-      "action": "Live five-hour reset verified; resume exact reviewed initializer integration then primary covering checks. No credit/reset/model action."
+      "weeklyResetsAt": 1792876816,
+      "action": "Query accepted; same sole Sol/high bounded identity source after frozen native reference, no capture repeat."
     }
   }
 }
