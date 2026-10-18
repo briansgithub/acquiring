@@ -6,3 +6,5 @@ export { repairAuralSessionEnvelope, auralSessionEnvelopeApi } from './session-e
 export type { AuralSessionEnvelopeRepair, AuralSessionEnvelopeApi } from './session-contracts';
 export { restoreAuralBuiltinCurrent, auralBuiltinCurrentApi } from './builtin-current';
 export type { AuralBuiltinCurrentProjection, AuralRestoredBuiltinExercise, AuralBuiltinCurrentApi } from './builtin-current-contracts';
+export { decodeAuralBuiltinCurrentJson, auralBuiltinCurrentJsonApi } from './session-envelope';
+export type { AuralBuiltinCurrentJsonResult, AuralBuiltinCurrentJsonApi } from './builtin-current-json-contracts';

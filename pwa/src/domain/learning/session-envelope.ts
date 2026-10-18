@@ -6,6 +6,9 @@ import type {JsonValue,JsonObject} from '../../contracts';
 import type {AuralProgress} from './evidence-contracts';
 import type {AuralExampleSettings,AuralSourceExposure,AuralRepairedEnvelope,AuralRepairIssue,AuralRepairArea,AuralSessionEnvelopeRepair,AuralSessionEnvelopeApi} from './session-contracts';
 import {createAuralProgress,normalizeAuralProgress} from './aural-evidence';
+import {createAuralBuiltinTarget} from './aural-generator';
+import type {AuralBuiltinCurrentProjection} from './builtin-current-contracts';
+import type {AuralBuiltinCurrentJsonResult,AuralBuiltinCurrentJsonApi} from './builtin-current-json-contracts';
 const LIMIT={bytes:1048576,depth:32,tokens:65536,collection:4096,cells:1024,string:65536};
 const MIN=-9223372036854775808n,MAX=9223372036854775807n,SAFE=9007199254740991n;
 const FRESH='Saved progress could not be read. Starting fresh for this session.';
@@ -187,3 +190,44 @@ export function repairAuralSessionEnvelope(raw:string|null):AuralSessionEnvelope
  }catch(error){issue('envelope',phase,code(error));return finish(freshEnvelope(),FRESH);}
 }
 export const auralSessionEnvelopeApi:AuralSessionEnvelopeApi=Object.freeze({repairAuralSessionEnvelope});
+
+// Additive builtin-current fragment eligibility; existing envelope repair remains unchanged.
+class UnsupportedBuiltinCurrent extends DecodeError {
+ constructor(domain:string){super('unsupported-'+domain);}
+}
+const builtinNull=(domain:string):Decoder=>input=>{
+ if(input.value!==null)throw new UnsupportedBuiltinCurrent(domain);return null;
+};
+const builtinCurrentOption=struct({id:req(text),label:req(text),degrees:req(list(text))});
+const builtinCurrentAnswer=struct({degrees:req(list(text)),optionId:def(nullable(text),no),targetMidis:def(list(int),empty)});
+const builtinCurrentTask=struct({kind:req(text),label:req(text),eventIndices:req(list(int)),targetMidis:req(list(int)),scaleDegree:def(nullable(int),no)});
+const builtinCurrentTarget=struct({familyId:req(text),skillId:req(text),support:def(int,()=>2),transfer:def(bool,()=>false),reason:def(text,()=>''),microphoneKind:def(nullable(text),no),variantId:def(nullable(text),no),instrumentOverride:def(nullable(text),no),octaveShift:def(int,zero),pattern:def(builtinNull('pattern'),no)});
+const builtinCurrentProvenance=struct({generatorVersion:req(text),seed:req(input=>long(input).toString()),target:req(builtinCurrentTarget),variantId:req(text),keyTonic:req(text),tempo:req(int),instrument:req(text),inversions:req(list(int)),register:req(int),spreads:req(list(bool)),contextDegrees:req(list(text)),corpus:def(builtinNull('corpus'),no),exampleSettings:def(nullable(settingsDecoder),no),fallbackReason:def(nullable(text),no)});
+const builtinCurrentExercise=struct({id:req(text),familyId:req(text),variantId:req(text),skillId:req(text),support:req(int),transfer:req(bool),seed:req(input=>long(input).toString()),generatorVersion:req(text),keyTonic:req(text),tempo:req(int),instrument:req(text),events:req(list(eventDecoder)),context:req(list(eventDecoder)),fullDegrees:req(list(text)),gapIndex:req(nullable(int)),options:req(list(builtinCurrentOption)),answer:req(builtinCurrentAnswer),responseType:req(text),microphoneTask:req(nullable(builtinCurrentTask)),fingerprint:req(text),prompt:req(text),referenceRequired:req(bool),guidance:req(text),provenance:req(builtinCurrentProvenance),previouslyExposed:def(bool,()=>false),exposureRegistered:def(bool,()=>false)});
+
+/** Complete native typed shape first, then the accepted factory narrows the builtin target.
+ * Private Item entry retains numeric lexemes for a FUTURE original-envelope caller. */
+function decodeBuiltinCurrentItem(input:Item):AuralBuiltinCurrentProjection {
+ opaque(input,true);
+ // The temporary schema result is not returned as a narrowed projection until target validation.
+ const decoded=builtinCurrentExercise(input) as AuralBuiltinCurrentProjection;
+ const rawTarget=decoded.provenance.target;
+ let target:AuralBuiltinCurrentProjection['provenance']['target'];
+ try{target=createAuralBuiltinTarget(rawTarget.familyId,rawTarget.skillId,rawTarget);}catch{fail('target-domain');}
+ return freeze({seed:decoded.seed,generatorVersion:decoded.generatorVersion,
+  provenance:{target,corpus:null,exampleSettings:decoded.provenance.exampleSettings,fallbackReason:decoded.provenance.fallbackReason}});
+}
+
+/** JSON CURRENT FRAGMENT only; never stringify rounded deferred data or activate a session. */
+export function decodeAuralBuiltinCurrentJson(currentRaw:string|null):AuralBuiltinCurrentJsonResult {
+ if(currentRaw!==null&&typeof currentRaw!=='string')throw new TypeError('Expected current JSON fragment text or null');
+ if(currentRaw===null)return freeze({status:'absent',originalRaw:currentRaw});
+ try{
+  const input=parse(currentRaw);
+  if(input.value===null)return freeze({status:'absent',originalRaw:currentRaw});
+  return freeze({status:'eligible',projection:decodeBuiltinCurrentItem(input),originalRaw:currentRaw});
+ }catch(error){
+  return freeze({status:'refused',reason:error instanceof UnsupportedBuiltinCurrent?'unsupported':'invalid',code:code(error),originalRaw:currentRaw});
+ }
+}
+export const auralBuiltinCurrentJsonApi:AuralBuiltinCurrentJsonApi=Object.freeze({decodeAuralBuiltinCurrentJson});
