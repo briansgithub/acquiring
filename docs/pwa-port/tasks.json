@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T22:51:47.456504+00:00",
+  "updated": "2026-10-18T22:54:48.847211+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2386,7 +2386,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
       "slice": "Pure constraint/query matcher, stable pattern identity and loop/retained-children kernels accepted. Full SQL/eligibility/ranking/groups/search/pages/runtime/browser remain open.",
-      "nextAction": "Review/integrate sole worker native target reference e6a9d166; freeze exact bounded typed decoder/target contract before any target implementation. Header runtime accepted; do not repeat unchanged browser/native/fullcatalog evidence.",
+      "nextAction": "Freeze/checkpoint reviewed target codec contract; after fresh usage assign SAME Sol/high three owned source/test/log paths. Root alone owns SQL/RPC integration.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -2832,10 +2832,21 @@
           "pwa/src/domain/catalog/fixtures/native-target.json",
           "pwa/src/domain/catalog/TARGET_WORKLOG.md"
         ],
-        "status": "INTENT before new branch/reference edits. Same sole Sol/high; root owns disjoint header/contracts/state/runtime.",
+        "status": "REFERENCE ACCEPTED normal merge; original3paths exact hashes verified; no recapture/test rerun needed",
         "scope": "<=12groups/40probes NEW actual JVM typed run decoding+unchanged target128..132 with actual serializers/plugin, KeyInfo/position/target declarations and identity38..47. GZIP and row input adapter only; no Android SQLite stub/production source/deps or full catalog work. All native required position fields/both keys/unknown-key/default/scalar/zero-length/both-array bounds/view suffix/end copied cases, explicit unresolved quirks. Do not repeat accepted native captures.",
         "validationPlan": "Pinned cached Kotlin2.2.10/JRE/native serialization1.8.1 compiler/runtime first pass; exact extracted source/producer/input/stdout/emitted serializers hashes. Guard every mutation/check/commit, max2diagnose cycles; after reference commit return receipts+clean status then idle.",
-        "recovery": "Primaryfe9fa before root-owned dirty docs/newheadercontract (all known root ownership); existing sibling clean6add. Preserve all previous branches/artifacts. No concurrent source paths; normal integration after root review."
+        "recovery": "Primaryfe9fa before root-owned dirty docs/newheadercontract (all known root ownership); existing sibling clean6add. Preserve all previous branches/artifacts. No concurrent source paths; normal integration after root review.",
+        "workerTip": "e6a9d16608e2de85ff6e33e3c8d605d90da3f794",
+        "validationReceipt": "../Acquiring-pwa-data-compat/.artifacts/pwa-port/t15-target-reference-validation.json",
+        "validationReceiptSha256": "d8101f2c2ad0e8c62251cd15dc1882289967786667546b74eb72b990c66274a0",
+        "review": "Root read complete152line producer and all40native outcomes; independent whole frozen sources/input/stdout/3extractedsources/16emittedclasses/gzip inputs match.12native targets,23decodefailures,5slicefailures. FIRST actual compile/runtime PASS guard50 exit0; only pre-mutation helper quote correction, no native retry. No old capture repeated.",
+        "nativeWork": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t15-target-native/20261018T224609112865Z",
+        "sourceHashes": {
+          "pwa/src/domain/catalog/fixtures/generate-target-native.py": "f78d010b8560f89dd2991a8f5a6c649ae9b2fcf55bd45e0c4cab105b2d24b93d",
+          "pwa/src/domain/catalog/fixtures/native-target.json": "d76de0eb4738a19474d50f557d2d89b1847605a6f366440b0635c476a4674b62",
+          "pwa/src/domain/catalog/TARGET_WORKLOG.md": "22d84137486235e35004618dcf661871e57d53681879f12d159129e18ead3f92"
+        },
+        "integrationCommit": "9628d152d64a99d48894b1e148e809c9cb03fab2"
       },
       "headerRuntimeAssignment": {
         "owner": "coordinator runtime unknown unchanged",
@@ -2939,6 +2950,25 @@
           "pwa/tests/browser/catalog-worker-harness.ts": "679d6d6cd89ae73c6147e1c73411b1820196ffb863c4addebe9bd13eb0aa7f38",
           "pwa/tests/browser/aural-read.spec.ts": "479210c9873add4a37de5bc4c009297d949fe8f62df55acc0c3c90f743cb8c42"
         }
+      },
+      "targetCodecAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-aural-target-codec",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "TO_BE_SET_TO_FROZEN_CONTRACT_CHECKPOINT",
+        "priorBranch": "codex/pwa-aural-target-reference",
+        "priorTip": "e6a9d16608e2de85ff6e33e3c8d605d90da3f794",
+        "ownedPaths": [
+          "pwa/src/storage/catalog/aural-target-codec.ts",
+          "pwa/src/storage/catalog/aural-target-codec.test.ts",
+          "pwa/src/storage/catalog/AURAL_TARGET_WORKLOG.md"
+        ],
+        "contract": "pwa/src/storage/catalog/aural-target-contracts.ts",
+        "status": "CONTRACT INTENT before source assignment; same worker idle until root commit/fresh capacity",
+        "scope": "Pure full typed run gzip decoder and native target builder only, exact12group/40native outcomes plus meaningful byte/input/snapshot/budget cases. Frozen public API, accepted native reference and actual identity. No SQL/RPC/client/root state/contracts/deps or further native capture.",
+        "validationPlan": "Focused exact native target codec tests then scoped strict types, return hashes/checkpoints; root reviews source, normal merges then primary covering checks. At most2diagnose cycles; no absent browser/device claim."
       }
     },
     {
@@ -3261,7 +3291,7 @@
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
     "date": "2026-10-18T22:36:51.175216+00:00",
-    "sourceCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
+    "sourceCommit": "36fda599",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -3285,12 +3315,12 @@
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-aural-loops",
-      "tip": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
-      "status": "idle; accepted loop branch6add84a2 clean; partial read-only proposal saved with hash in T15.runtimeProposalAssignment"
+      "branch": "codex/pwa-aural-target-reference",
+      "tip": "e6a9d16608e2de85ff6e33e3c8d605d90da3f794",
+      "status": "idle clean; reviewed target reference awaiting normal merge"
     },
-    "nextAction": "Review/integrate sole worker native target reference e6a9d166; freeze exact bounded typed decoder/target contract before any target implementation. Header runtime accepted; do not repeat unchanged browser/native/fullcatalog evidence.",
-    "reason": "Bounded header RPC accepted actual desktop runtime; next is native target decoder reference review.",
+    "nextAction": "Freeze/checkpoint reviewed target codec contract; after fresh usage assign SAME Sol/high three owned source/test/log paths. Root alone owns SQL/RPC integration.",
+    "reason": "Header actual runtime accepted; native target reference reviewed/merged. Pure decoder contract before source.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -3298,25 +3328,7 @@
       "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
     },
     "usageAvailability": "Ordinary allowance available; actual0%fivehour/48%weekly at entry.",
-    "activeWorker": {
-      "owner": "preview_owner",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "branch": "codex/pwa-aural-target-reference",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "fe9fa2af47d27143adcca3cfe31df5d6f4cf9025",
-      "priorBranch": "codex/pwa-aural-loops",
-      "priorTip": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
-      "ownedPaths": [
-        "pwa/src/domain/catalog/fixtures/generate-target-native.py",
-        "pwa/src/domain/catalog/fixtures/native-target.json",
-        "pwa/src/domain/catalog/TARGET_WORKLOG.md"
-      ],
-      "status": "INTENT before new branch/reference edits. Same sole Sol/high; root owns disjoint header/contracts/state/runtime.",
-      "scope": "<=12groups/40probes NEW actual JVM typed run decoding+unchanged target128..132 with actual serializers/plugin, KeyInfo/position/target declarations and identity38..47. GZIP and row input adapter only; no Android SQLite stub/production source/deps or full catalog work. All native required position fields/both keys/unknown-key/default/scalar/zero-length/both-array bounds/view suffix/end copied cases, explicit unresolved quirks. Do not repeat accepted native captures.",
-      "validationPlan": "Pinned cached Kotlin2.2.10/JRE/native serialization1.8.1 compiler/runtime first pass; exact extracted source/producer/input/stdout/emitted serializers hashes. Guard every mutation/check/commit, max2diagnose cycles; after reference commit return receipts+clean status then idle.",
-      "recovery": "Primaryfe9fa before root-owned dirty docs/newheadercontract (all known root ownership); existing sibling clean6add. Preserve all previous branches/artifacts. No concurrent source paths; normal integration after root review."
-    },
+    "activeWorker": null,
     "integrationAwaitingPrimaryAcceptance": null,
     "fiveHourAction": "Capacity returned; five-hour70 no new work,80 checkpoint/yield; weekly100 ordinary exhaustion. No credit/reset/model action.",
     "resumeObservation": {
