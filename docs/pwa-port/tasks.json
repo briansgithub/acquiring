@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T22:36:51.175216+00:00",
+  "updated": "2026-10-18T22:43:42.208250+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2386,7 +2386,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
       "slice": "Pure constraint/query matcher, stable pattern identity and loop/retained-children kernels accepted. Full SQL/eligibility/ranking/groups/search/pages/runtime/browser remain open.",
-      "nextAction": "Root inspects worker read/import/cleanup lifetime; same worker fills only missing native codec/typed target details. Freeze smallest one-command snapshot or justified lease API before implementation.",
+      "nextAction": "Implement/test frozen header and8-byte suffix reader while sole worker finishes missing native codec note. Then exact native target decoder contract/oracle before source.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -2405,6 +2405,19 @@
           "guard": "window20-loop-combined-20261018 (primary,cwd pwa)",
           "revision": "c005ac5f06075b332bdd16a09a544372c23325ac",
           "result": "FIRST PASS336tests/18files8.24s and strict combined types; actual child50292 exit0. Exact reviewed loop source31native/shared comparisons+7browser groups, raw structural pair/trie/BFS semantics. No old native/App/build/browser/fullcatalog/device rerun or acceptance."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/aural-header.test.ts; node node_modules/typescript/bin/tsc --noEmit",
+          "guards": [
+            "window21-header-first-tests-cwd-20261018",
+            "window21-header-first-types-20261018"
+          ],
+          "testedSha256": {
+            "pwa/src/storage/catalog/aural-read-contracts.ts": "02664e55364590a375991a8aba0d26d994e0301b31ea90781d7ecc51fc8e8aae",
+            "pwa/src/storage/catalog/aural-header.ts": "52f6fb3845e8b41f04a682f862ba48289a952d5403d4db577068677feab8c9fe",
+            "pwa/src/storage/catalog/aural-header.test.ts": "7dccf40fab2ee1da983e658b1e755c3a7fc0bb63633140b5e78128f7c088e337"
+          },
+          "result": "FIRST EXECUTED PASS15tests/1file668ms against real node:sqlite SQLite3.50.4 on Node24.11.1; strict full TypeScript PASS. Prior launch window21-header-first-tests-20261018 failed before tests (guard default rootcwd); explicit --cwd pwa corrected launcher only. No source fix/retest needed. No WASM/browser/fullcatalog validation or RPC/target acceptance yet."
         }
       ],
       "progress": [],
@@ -2703,9 +2716,64 @@
         "branch": "codex/pwa-aural-loops",
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "baseCommit": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
-        "status": "READ-ONLY assigned; existing worker/branch, no mutation or new native/runtime checks",
+        "status": "COMPLETE READ-ONLY70line note saved, worker idle/clean6add; no runtime/native/SQL execution",
         "output": ".artifacts/pwa-port/t15-codec-readiness-window21.md",
-        "scope": "Finish only missing native codec/DTO/target extraction findings using frozen801cf798 and saved window20 proposal. Inspect actual compression/positions/key/source-key/native constructor/target bounds and exporter encoding; <=70line actionable note with exact paths/ranges. No lease/import review (root), source/branch/contracts/deps/SQL/native/browser/capture/full-data operations. No repeat accepted query/identity/loop evidence. Save partial at70%fivehour, idle by80."
+        "scope": "Finish only missing native codec/DTO/target extraction findings using frozen801cf798 and saved window20 proposal. Inspect actual compression/positions/key/source-key/native constructor/target bounds and exporter encoding; <=70line actionable note with exact paths/ranges. No lease/import review (root), source/branch/contracts/deps/SQL/native/browser/capture/full-data operations. No repeat accepted query/identity/loop evidence. Save partial at70%fivehour, idle by80.",
+        "sha256": "a61a27ffed67561e302429188eb4f294ad8f6722a4d672eb347cac4d4b6bc2a7",
+        "guard": "worker save45 exit0"
+      },
+      "headerAssignment": {
+        "owner": "coordinator runtime unknown unchanged",
+        "branch": "codex/pwa-foundation",
+        "worktree": "H:/Desktop/Acquiring/Acquiring",
+        "baseCommit": "fe9fa2af47d27143adcca3cfe31df5d6f4cf9025",
+        "ownedPaths": [
+          "pwa/src/storage/catalog/aural-read-contracts.ts",
+          "pwa/src/storage/catalog/aural-header.ts",
+          "pwa/src/storage/catalog/aural-header.test.ts",
+          "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
+        ],
+        "status": "VALIDATED bounded header/suffix foundation only; source reviewed, real SQLite15tests and strict types passed",
+        "scope": "Freeze and implement native header capability flags and bounded8-byte suffix location reads. Real in-memory node:sqlite tests; no full-array materialization, catalog scans, target decoder, RPC/UI or full-data checks yet. Runtime RPC integration/actual WASM browser proof separate bounded slice after checks.",
+        "validationPlan": "node node_modules/vitest/vitest.mjs run src/storage/catalog/aural-header.test.ts; node node_modules/typescript/bin/tsc --noEmit",
+        "lifetimeDecision": "One serialized command resolves active immutable attempt, opens readonly DB, snapshots exact expected sourceSnapshot, holds DB and worker Web Lock across awaits, finally closes. Existing queue prevents prepare/activate/close interleaving; protected active/previous attempts cannot be overwritten, no cleanup operation exists. No persistent public lease. Stale snapshot rejected; whole-client timeout/termination aborts ownership without file removal; no per-request SQL cancellation claim.",
+        "testedSha256": {
+          "pwa/src/storage/catalog/aural-read-contracts.ts": "02664e55364590a375991a8aba0d26d994e0301b31ea90781d7ecc51fc8e8aae",
+          "pwa/src/storage/catalog/aural-header.ts": "52f6fb3845e8b41f04a682f862ba48289a952d5403d4db577068677feab8c9fe",
+          "pwa/src/storage/catalog/aural-header.test.ts": "7dccf40fab2ee1da983e658b1e755c3a7fc0bb63633140b5e78128f7c088e337"
+        },
+        "validation": {
+          "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/aural-header.test.ts; node node_modules/typescript/bin/tsc --noEmit",
+          "guards": [
+            "window21-header-first-tests-cwd-20261018",
+            "window21-header-first-types-20261018"
+          ],
+          "testedSha256": {
+            "pwa/src/storage/catalog/aural-read-contracts.ts": "02664e55364590a375991a8aba0d26d994e0301b31ea90781d7ecc51fc8e8aae",
+            "pwa/src/storage/catalog/aural-header.ts": "52f6fb3845e8b41f04a682f862ba48289a952d5403d4db577068677feab8c9fe",
+            "pwa/src/storage/catalog/aural-header.test.ts": "7dccf40fab2ee1da983e658b1e755c3a7fc0bb63633140b5e78128f7c088e337"
+          },
+          "result": "FIRST EXECUTED PASS15tests/1file668ms against real node:sqlite SQLite3.50.4 on Node24.11.1; strict full TypeScript PASS. Prior launch window21-header-first-tests-20261018 failed before tests (guard default rootcwd); explicit --cwd pwa corrected launcher only. No source fix/retest needed. No WASM/browser/fullcatalog validation or RPC/target acceptance yet."
+        }
+      },
+      "targetOracleAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-aural-target-reference",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "fe9fa2af47d27143adcca3cfe31df5d6f4cf9025",
+        "priorBranch": "codex/pwa-aural-loops",
+        "priorTip": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/fixtures/generate-target-native.py",
+          "pwa/src/domain/catalog/fixtures/native-target.json",
+          "pwa/src/domain/catalog/TARGET_WORKLOG.md"
+        ],
+        "status": "INTENT before new branch/reference edits. Same sole Sol/high; root owns disjoint header/contracts/state/runtime.",
+        "scope": "<=12groups/40probes NEW actual JVM typed run decoding+unchanged target128..132 with actual serializers/plugin, KeyInfo/position/target declarations and identity38..47. GZIP and row input adapter only; no Android SQLite stub/production source/deps or full catalog work. All native required position fields/both keys/unknown-key/default/scalar/zero-length/both-array bounds/view suffix/end copied cases, explicit unresolved quirks. Do not repeat accepted native captures.",
+        "validationPlan": "Pinned cached Kotlin2.2.10/JRE/native serialization1.8.1 compiler/runtime first pass; exact extracted source/producer/input/stdout/emitted serializers hashes. Guard every mutation/check/commit, max2diagnose cycles; after reference commit return receipts+clean status then idle.",
+        "recovery": "Primaryfe9fa before root-owned dirty docs/newheadercontract (all known root ownership); existing sibling clean6add. Preserve all previous branches/artifacts. No concurrent source paths; normal integration after root review."
       }
     },
     {
@@ -3041,8 +3109,8 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 48
+      "fiveHourUsedPercent": 14,
+      "weeklyUsedPercent": 50
     },
     "fiveHourResetUnix": 1792380961,
     "weeklyResetUnix": 1792876816,
@@ -3056,7 +3124,7 @@
       "tip": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
       "status": "idle; accepted loop branch6add84a2 clean; partial read-only proposal saved with hash in T15.runtimeProposalAssignment"
     },
-    "nextAction": "Root inspects worker read/import/cleanup lifetime; same worker fills only missing native codec/typed target details. Freeze smallest one-command snapshot or justified lease API before implementation.",
+    "nextAction": "Commit bounded header/SQL tests and retain separate native target oracle in flight. After reference review freeze native decoder/target contract and assign same worker only.",
     "reason": "Live five-hour reset verified; resume saved minimal catalog runtime slice without repeating accepted evidence.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
@@ -3069,12 +3137,20 @@
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
-      "branch": "codex/pwa-aural-loops",
+      "branch": "codex/pwa-aural-target-reference",
       "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "baseCommit": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
-      "status": "READ-ONLY assigned; existing worker/branch, no mutation or new native/runtime checks",
-      "output": ".artifacts/pwa-port/t15-codec-readiness-window21.md",
-      "scope": "Finish only missing native codec/DTO/target extraction findings using frozen801cf798 and saved window20 proposal. Inspect actual compression/positions/key/source-key/native constructor/target bounds and exporter encoding; <=70line actionable note with exact paths/ranges. No lease/import review (root), source/branch/contracts/deps/SQL/native/browser/capture/full-data operations. No repeat accepted query/identity/loop evidence. Save partial at70%fivehour, idle by80."
+      "baseCommit": "fe9fa2af47d27143adcca3cfe31df5d6f4cf9025",
+      "priorBranch": "codex/pwa-aural-loops",
+      "priorTip": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
+      "ownedPaths": [
+        "pwa/src/domain/catalog/fixtures/generate-target-native.py",
+        "pwa/src/domain/catalog/fixtures/native-target.json",
+        "pwa/src/domain/catalog/TARGET_WORKLOG.md"
+      ],
+      "status": "INTENT before new branch/reference edits. Same sole Sol/high; root owns disjoint header/contracts/state/runtime.",
+      "scope": "<=12groups/40probes NEW actual JVM typed run decoding+unchanged target128..132 with actual serializers/plugin, KeyInfo/position/target declarations and identity38..47. GZIP and row input adapter only; no Android SQLite stub/production source/deps or full catalog work. All native required position fields/both keys/unknown-key/default/scalar/zero-length/both-array bounds/view suffix/end copied cases, explicit unresolved quirks. Do not repeat accepted native captures.",
+      "validationPlan": "Pinned cached Kotlin2.2.10/JRE/native serialization1.8.1 compiler/runtime first pass; exact extracted source/producer/input/stdout/emitted serializers hashes. Guard every mutation/check/commit, max2diagnose cycles; after reference commit return receipts+clean status then idle.",
+      "recovery": "Primaryfe9fa before root-owned dirty docs/newheadercontract (all known root ownership); existing sibling clean6add. Preserve all previous branches/artifacts. No concurrent source paths; normal integration after root review."
     },
     "integrationAwaitingPrimaryAcceptance": null,
     "fiveHourAction": "Capacity returned; five-hour70 no new work,80 checkpoint/yield; weekly100 ordinary exhaustion. No credit/reset/model action.",
@@ -3089,8 +3165,37 @@
     },
     "rootSideWork": {
       "owner": "coordinator runtime unknown unchanged",
-      "status": "READ-ONLY worker ownership/import/cleanup lifetime review; no new source yet",
-      "ownedPaths": []
+      "branch": "codex/pwa-foundation",
+      "worktree": "H:/Desktop/Acquiring/Acquiring",
+      "baseCommit": "fe9fa2af47d27143adcca3cfe31df5d6f4cf9025",
+      "ownedPaths": [
+        "pwa/src/storage/catalog/aural-read-contracts.ts",
+        "pwa/src/storage/catalog/aural-header.ts",
+        "pwa/src/storage/catalog/aural-header.test.ts",
+        "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
+      ],
+      "status": "VALIDATED bounded header/suffix foundation only; source reviewed, real SQLite15tests and strict types passed",
+      "scope": "Freeze and implement native header capability flags and bounded8-byte suffix location reads. Real in-memory node:sqlite tests; no full-array materialization, catalog scans, target decoder, RPC/UI or full-data checks yet. Runtime RPC integration/actual WASM browser proof separate bounded slice after checks.",
+      "validationPlan": "node node_modules/vitest/vitest.mjs run src/storage/catalog/aural-header.test.ts; node node_modules/typescript/bin/tsc --noEmit",
+      "lifetimeDecision": "One serialized command resolves active immutable attempt, opens readonly DB, snapshots exact expected sourceSnapshot, holds DB and worker Web Lock across awaits, finally closes. Existing queue prevents prepare/activate/close interleaving; protected active/previous attempts cannot be overwritten, no cleanup operation exists. No persistent public lease. Stale snapshot rejected; whole-client timeout/termination aborts ownership without file removal; no per-request SQL cancellation claim.",
+      "testedSha256": {
+        "pwa/src/storage/catalog/aural-read-contracts.ts": "02664e55364590a375991a8aba0d26d994e0301b31ea90781d7ecc51fc8e8aae",
+        "pwa/src/storage/catalog/aural-header.ts": "52f6fb3845e8b41f04a682f862ba48289a952d5403d4db577068677feab8c9fe",
+        "pwa/src/storage/catalog/aural-header.test.ts": "7dccf40fab2ee1da983e658b1e755c3a7fc0bb63633140b5e78128f7c088e337"
+      },
+      "validation": {
+        "command": "node node_modules/vitest/vitest.mjs run src/storage/catalog/aural-header.test.ts; node node_modules/typescript/bin/tsc --noEmit",
+        "guards": [
+          "window21-header-first-tests-cwd-20261018",
+          "window21-header-first-types-20261018"
+        ],
+        "testedSha256": {
+          "pwa/src/storage/catalog/aural-read-contracts.ts": "02664e55364590a375991a8aba0d26d994e0301b31ea90781d7ecc51fc8e8aae",
+          "pwa/src/storage/catalog/aural-header.ts": "52f6fb3845e8b41f04a682f862ba48289a952d5403d4db577068677feab8c9fe",
+          "pwa/src/storage/catalog/aural-header.test.ts": "7dccf40fab2ee1da983e658b1e755c3a7fc0bb63633140b5e78128f7c088e337"
+        },
+        "result": "FIRST EXECUTED PASS15tests/1file668ms against real node:sqlite SQLite3.50.4 on Node24.11.1; strict full TypeScript PASS. Prior launch window21-header-first-tests-20261018 failed before tests (guard default rootcwd); explicit --cwd pwa corrected launcher only. No source fix/retest needed. No WASM/browser/fullcatalog validation or RPC/target acceptance yet."
+      }
     },
     "priorDocumentationCheckpoint": "67b589ffd8f0e8b84a77d5ccb6ce950e5247fce9",
     "recoveryState": {
