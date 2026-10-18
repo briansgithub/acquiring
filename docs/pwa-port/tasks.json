@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T17:21:11.841800+00:00",
+  "updated": "2026-10-18T22:36:51.175216+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2381,12 +2381,12 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "coordinator; workers idle",
+      "owner": "coordinator; sole Sol/high readonly codec review",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
       "slice": "Pure constraint/query matcher, stable pattern identity and loop/retained-children kernels accepted. Full SQL/eligibility/ranking/groups/search/pages/runtime/browser remain open.",
-      "nextAction": "After fresh five-hour capacity, read this partial proposal once; inspect only missing lease/import/cleanup lifetime and existing codec adapters, then freeze the smallest useful contract before source ownership or runtime checks.",
+      "nextAction": "Root inspects worker read/import/cleanup lifetime; same worker fills only missing native codec/typed target details. Freeze smallest one-command snapshot or justified lease API before implementation.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -2695,6 +2695,17 @@
         },
         "findings": "Native run121..132, eligibleRankBits186..194, matchingBuckets248..313, rootLabels335..341 gathered. Provisional readonly header/single-target operation before stats/rank; root label map missing token yields empty string. Persistent lease vs one-command snapshot, installed header/DDL, codecs and typed bounds remain unverified.",
         "nextAction": "After fresh five-hour capacity, read this partial proposal once; inspect only missing lease/import/cleanup lifetime and existing codec adapters, then freeze the smallest useful contract before source ownership or runtime checks."
+      },
+      "codecReadinessAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "branch": "codex/pwa-aural-loops",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
+        "status": "READ-ONLY assigned; existing worker/branch, no mutation or new native/runtime checks",
+        "output": ".artifacts/pwa-port/t15-codec-readiness-window21.md",
+        "scope": "Finish only missing native codec/DTO/target extraction findings using frozen801cf798 and saved window20 proposal. Inspect actual compression/positions/key/source-key/native constructor/target bounds and exporter encoding; <=70line actionable note with exact paths/ranges. No lease/import review (root), source/branch/contracts/deps/SQL/native/browser/capture/full-data operations. No repeat accepted query/identity/loop evidence. Save partial at70%fivehour, idle by80."
       }
     },
     {
@@ -3016,7 +3027,7 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T17:21:11.841800+00:00",
+    "date": "2026-10-18T22:36:51.175216+00:00",
     "sourceCommit": "c005ac5f06075b332bdd16a09a544372c23325ac",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
@@ -3030,10 +3041,10 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 74,
-      "weeklyUsedPercent": 47
+      "fiveHourUsedPercent": 0,
+      "weeklyUsedPercent": 48
     },
-    "fiveHourResetUnix": 1792358936,
+    "fiveHourResetUnix": 1792380961,
     "weeklyResetUnix": 1792876816,
     "unresolvedRuns": [],
     "worker": {
@@ -3045,50 +3056,41 @@
       "tip": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
       "status": "idle; accepted loop branch6add84a2 clean; partial read-only proposal saved with hash in T15.runtimeProposalAssignment"
     },
-    "nextAction": "After fresh five-hour capacity, read this partial proposal once; inspect only missing lease/import/cleanup lifetime and existing codec adapters, then freeze the smallest useful contract before source ownership or runtime checks.",
-    "reason": "Five-hour no-new-work boundary reached; partial runtime proposal and all accepted source evidence checkpointed. No new slice/check/worker. Yield pending applicable five-hour reset.",
+    "nextAction": "Root inspects worker read/import/cleanup lifetime; same worker fills only missing native codec/typed target details. Freeze smallest one-command snapshot or justified lease API before implementation.",
+    "reason": "Live five-hour reset verified; resume saved minimal catalog runtime slice without repeating accepted evidence.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
       "scope": "Preserve hourlyheartbeat/name/target/status/notificationsprompt; replace old combined70/80cutoff with separate fivehour70/80 andweekly100/ordinaryexhaustion, checkpointweekly90thencontinuing.",
       "promptSha256": "309928febeb3ce27fc4f5b77ff78398cf2f8b5a046007363f916bb8ad12aeadd"
     },
-    "usageAvailability": "Ordinary allowance remains; five-hour safeguard requires yield. Weekly future reset does not block work when five-hour capacity returns. No credit/reset/model action.",
-    "activeWorker": null,
+    "usageAvailability": "Ordinary allowance available; actual0%fivehour/48%weekly at entry.",
+    "activeWorker": {
+      "owner": "preview_owner",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "branch": "codex/pwa-aural-loops",
+      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+      "baseCommit": "6add84a2ad66afd2f4949c7191e944cefb6327fb",
+      "status": "READ-ONLY assigned; existing worker/branch, no mutation or new native/runtime checks",
+      "output": ".artifacts/pwa-port/t15-codec-readiness-window21.md",
+      "scope": "Finish only missing native codec/DTO/target extraction findings using frozen801cf798 and saved window20 proposal. Inspect actual compression/positions/key/source-key/native constructor/target bounds and exporter encoding; <=70line actionable note with exact paths/ranges. No lease/import review (root), source/branch/contracts/deps/SQL/native/browser/capture/full-data operations. No repeat accepted query/identity/loop evidence. Save partial at70%fivehour, idle by80."
+    },
     "integrationAwaitingPrimaryAcceptance": null,
-    "fiveHourAction": "Live74%five-hour/47%weekly ordinary allowed; only recovery documentation completed after70. Yield now; no source/check/investigation until applicable five-hour capacity returns.",
+    "fiveHourAction": "Capacity returned; five-hour70 no new work,80 checkpoint/yield; weekly100 ordinary exhaustion. No credit/reset/model action.",
     "resumeObservation": {
-      "at": "2026-10-18T16:29:57.211840+00:00",
+      "at": "2026-10-18T22:36:51.175216+00:00",
       "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 35,
+      "weeklyUsedPercent": 48,
       "ordinaryUsageAllowed": true,
-      "fiveHourResetsAt": 1792358936,
-      "weeklyResetsAt": 1792876817,
-      "action": "Live five-hour reset verified; resume exact reviewed initializer integration then primary covering checks. No credit/reset/model action."
+      "fiveHourResetsAt": 1792380961,
+      "weeklyResetsAt": 1792876816,
+      "action": "Capacity reset; primary77e0cc10/sibling6add clean, agents idle, no owned python/node/java process or unresolved root guard. Preserve all recovery trees."
     },
     "rootSideWork": {
       "owner": "coordinator runtime unknown unchanged",
-      "branch": "codex/pwa-foundation",
-      "baseCommit": "b0934dc60c7a51ef2eedc1f3a5251c7ce85d4d54",
-      "ownedPaths": [
-        "pwa/src/domain/catalog/fixtures/generate-loop-native.py",
-        "pwa/src/domain/catalog/fixtures/native-loop.json",
-        "pwa/src/domain/catalog/LOOP_WORKLOG.md"
-      ],
-      "status": "Native loop REFERENCE VALIDATED FIRST compile/runtime16NEWgroups +15shared unchanged authority cases (not recaptured). No loop implementation/worker assigned.",
-      "scope": "Whole unchanged native45line module on cached pinned JVM, <=16NEW groups with reduction+retained children;15shared authority cases copied unchanged without native recapture. No query/identity producer changes/deps/source/SQL/UI.",
-      "nextAction": "Commit exact producer/fixture/log and recovery metadata. Only after identity primary acceptance/fresh capacity, same Sol/high may implement frozen loop API without recapture.",
-      "validation": {
-        "command": "python -X utf8 pwa/src/domain/catalog/fixtures/generate-loop-native.py",
-        "guard": "window20-loop-native-first-20261018 (primary guard)",
-        "result": "FIRST PASS actual child84686 exit0, pinned cached Kotlin2.2.10/whole unchanged native module. Root verified exact frozen module/shared source values, producer/raw input/stdout/both actual classes and all16 reduction+orderedchildren outputs. No old recapture or source stubs/TSexpected.",
-        "producerSha256": "5787c8f9dad0916b3005ca20e881adfe4b79d232a2c3fd11b784a442866465ea",
-        "fixtureSha256": "37d5db7bd26ef0d50621c2c90e20347cd89839381a71f05c1c3fc8b218f06d67",
-        "nativeSourceSha256": "74c2691e14b62cba789fea293b997821f81bd1505750cc700f3cec29f081bd43",
-        "sharedSourceSha256": "d37bb125de674a8e48531698128ab83a3a4af549d7b6844206ffd18f2dedd23a"
-      },
-      "receipt": ".artifacts/pwa-port/t15-loop-native-validation-window20.json",
-      "receiptSha256": "3147eb9539573302da65082687f648fd1d255d30233f63b8e29bfb9030271f1c"
+      "status": "READ-ONLY worker ownership/import/cleanup lifetime review; no new source yet",
+      "ownedPaths": []
     },
     "priorDocumentationCheckpoint": "67b589ffd8f0e8b84a77d5ccb6ce950e5247fce9",
     "recoveryState": {
@@ -3113,13 +3115,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-18T17:21:11.841800+00:00",
-      "fiveHourUsedPercent": 74,
-      "weeklyUsedPercent": 47,
+      "at": "2026-10-18T22:36:51.175216+00:00",
+      "fiveHourUsedPercent": 0,
+      "weeklyUsedPercent": 48,
       "ordinaryUsageAllowed": true,
-      "fiveHourResetsAt": 1792358936,
+      "fiveHourResetsAt": 1792380961,
       "weeklyResetsAt": 1792876816,
-      "action": "Five-hour no-new-work boundary reached; partial runtime proposal and all accepted source evidence checkpointed. No new slice/check/worker. Yield pending applicable five-hour reset."
+      "action": "Live five-hour reset verified; resume saved minimal catalog runtime slice without repeating accepted evidence."
     }
   }
 }
