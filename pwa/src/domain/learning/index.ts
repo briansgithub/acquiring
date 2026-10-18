@@ -8,3 +8,5 @@ export { restoreAuralBuiltinCurrent, auralBuiltinCurrentApi } from './builtin-cu
 export type { AuralBuiltinCurrentProjection, AuralRestoredBuiltinExercise, AuralBuiltinCurrentApi } from './builtin-current-contracts';
 export { decodeAuralBuiltinCurrentJson, auralBuiltinCurrentJsonApi } from './session-envelope';
 export type { AuralBuiltinCurrentJsonResult, AuralBuiltinCurrentJsonApi } from './builtin-current-json-contracts';
+export { initializeAuralBuiltinSession, auralBuiltinSessionInitializerApi } from './session-envelope';
+export type { AuralBuiltinSessionInitialization, AuralPlaybackReturnProjection, AuralInitialLessonState, AuralBuiltinSessionInitializerApi } from './builtin-session-initializer-contracts';
