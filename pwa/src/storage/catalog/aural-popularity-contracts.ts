@@ -15,7 +15,9 @@ export interface AuralPopularityReadApi {
  * caller iterator/constructor/unknown getters; <=10000entries, each<=4096UTF16,
  * aggregate<=8MiUTF16. Duplicate input IDs allowed; dedupe only owned snapshot.
  * Empty list => fresh frozen[] without SQL. Inputs wrong shape/type=>INVALID_REQUEST,
- * input budgets=>LIMIT. No coercion/normalization of strings, NUL/BOM meaningful.
+ * input budgets=>LIMIT. Reject ill-formed UTF16 input IDs as INVALID_REQUEST
+ * BEFORE SQL binding (binders replace lone surrogates); no silent reinterpretation.
+ * No coercion/normalization of valid strings, NUL/BOM/pairs meaningful.
  * Query <=128 IDs/batch, bound parameters/LIMIT129; filter score IS NOT NULL before
  * duplicate checks. Read song_id as SQL-bounded16KiB UTF8 BLOB, fatal exact decode/
  * <=4096UTF16; numeric typeof aliases plus CAST(score/confidence AS REAL) preserve
