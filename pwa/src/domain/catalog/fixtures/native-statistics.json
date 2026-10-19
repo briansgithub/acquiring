@@ -1,0 +1,4833 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "kotlinVersion": "2.2.10",
+  "serializationVersion": "1.8.1",
+  "compilerVersion": "info: kotlinc-jvm 2.2.10 (JRE 25.0.3+-15898627-b508.16)",
+  "serializerClasses": [
+    "AuralExampleSettings$$serializer.class",
+    "AuralPatternTarget$$serializer.class"
+  ],
+  "wholeCatalogSha256": "5a2bf50be38fe2e73705f54c0af3766bdfc4034418712eb6555eb1981e5dabbd",
+  "wholeCorpusSha256": "69c9676196c0bfe0b8e28a419810d56a7a63d2bb6a9181deec7d982c001e368f",
+  "sliceSha256": {
+    "targetDeclaration": "b986b1257321c1ce302fe3fab3e720d9f724f5c60b88976815869b25610d9941",
+    "rowDeclaration": "ff5ab2b213baef2c520350a0113c81aa492602cb95189b408b14b80cd861a8c3",
+    "minimumPopularity": "a781cbebb4fea174c6850e49e116fae988c21ea62eb0da1a7a6a26c1c205e913",
+    "base": "c5f17002672a448cb229598cb3555e3da3281745d20d34ede18988ba1e0db40e",
+    "statsFactor": "03ecfddd4fb23da627334778fd72750f35460f2c0f4338f30d47faec1633879f",
+    "comparator": "58743f93416b0d7d47038eea8406302c346a20751b4c2399897d10ec9d8d07dc",
+    "settingsDeclaration": "4ad4129db96aa70504a43cce7740a38e6baa8dd8eb61cedc70812c2d4090994b",
+    "popularityDeclaration": "9e44d7829677d9130e4c7769cbde451c70045ccbcbfd0cd24980d148365684b3"
+  },
+  "extractedSourceSha256": {
+    "Native": "37321f3632392a37e6937a39ae7ccebaf2a172f5d6ed3d7aeff1675eddf25982",
+    "Adapter": "66592452f5b0bc0b7f64ca32c3d60a89ad58d3748329a4a078536a0edc17d4ce",
+    "Driver": "9e3f6a704a9fade05e4842c3fe190b6bbc2176f7dd94b619daa588eb28c983ba"
+  },
+  "producerSha256": "d3b266b2f0fde8dbbf0dfedcab672ce784c7d754a5c9e815c350d096b6802194",
+  "nativeInputSha256": "f6ac5800e3683f1c664d6d4564c6dae1efc5868e088fc3d6c6fbaa10d500cfe3",
+  "nativeStdoutSha256": "a6b5bfa027e1472dde92400814a1c8132fa446025f6663ad64bc360929901147",
+  "nativeClassSha256": {
+    "AuralCatalogRow.class": "eb87e4650cbdef404562786bed939b997e0e134f5e6c4fcf3dbc7403d79cba21",
+    "AuralExampleSettings$$serializer.class": "004009966811af3449c2c6775ba2ed524ad4ecd1cea232a6639b841509dec41b",
+    "AuralExampleSettings$Companion.class": "94499c3f4d0ea3ba7d65cc53e928405dd80e42c5de7b92e26b7d72d21a627f5a",
+    "AuralExampleSettings.class": "5c557e8125d59a9d8a9a7f2229008cbbd4c6cd72965cd9f26edff53aa396318e",
+    "AuralPatternTarget$$serializer.class": "3fbdb818997ce35ee04234f87a2e7834478de19da8870351de90d8c83ca6dd2d",
+    "AuralPatternTarget$Companion.class": "2e631598d5d95073a57e859674a04b64ae5f43b52a0e3aa9c6b57591d74fc42c",
+    "AuralPatternTarget.class": "b73fbe712ea060ec15e8d8646a3a134d4bb98cca06f786e0276cafa2bf71c519",
+    "AuralPopularity.class": "1efd0a617d55f5899fae565d9fa711e3362ba98900744f8a92f459143f015d53",
+    "DriverKt.class": "fd95e467d584242f42fcad3f0da888dedf5ba4baea3187f2542f6b27ee78bf2d",
+    "NativeKt.class": "59b30372d1bb4942b3c2782ae9e728d23d307ea64351adc8db8d2a41d4a684c4",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$compareBy$1.class": "78d3615e299fa772899c632a9cbefa076cc2c3577064b464bdf931730c011bda",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$compareByDescending$1.class": "2f970a9dc61281a47ec67b441d361f02548bb077dd3d6646feb62144d6ae9d82",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$compareByDescending$2.class": "bcb56cba9c1a0cb33bc06e5122b245f0d9c2cda77b52127df05d2e5e6940db8f",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$compareByDescending$3.class": "9be885e77901be3f5aa5f8902106d7f79997433ab6594f95df87b912739cfafb",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenBy$1.class": "9e1b668d7a0bffb8761bdcf26e5876292a56087b60f7d4cd94fc6323a6603d33",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenBy$2.class": "a86457e8a1daddc464f2b4632f4e6ac6c849c4ca1f397f832062a07b85d2ffaf",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenBy$3.class": "9a2a3eceaa3b8aa784c65356ca4db81e7663e9bc7bc206f0af79e6747de1785b",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenBy$4.class": "24d63c688d955a03cfca35dcd5a843c6dd4510f8a96499b24d65a50c5ce8a375",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenByDescending$1.class": "df0120364b22c40cbc3c2d3888327e0051ee95de9a140c834330b813f1e41adb",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenByDescending$2.class": "7fe1dda50e20c1c81a474ed26e221e3c78f9820f7ac82ec70116b58ed0d79dad",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenByDescending$3.class": "beb4d1d48682eb7fc4494c3f9b45012af86fae371c7d8f039fa0ab01891ea648",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenByDescending$4.class": "3ec59ef8a8fc67bb64e6194a4790742fc532a8dea56d0f3f99944c29ec5d303c",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenByDescending$5.class": "6ff0f50092e6b18274ca0c8988c39f9f33665d2a749c702a8cac6d30a354b6cf",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenByDescending$6.class": "30357f486025ff17a92352881e15c10db16b76168f1aebca27b9c82655cebf14",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenByDescending$7.class": "a3839357cd65fdc5f919fddd561560b81ea6c4c636fa7eefde59e46e49f050c8",
+    "NativeStatisticsHost$Companion$rowOrder$$inlined$thenByDescending$8.class": "c3184f7e8103ee7311532865c4f1cded7b5eff63910ed02039ae42d21ac2e573",
+    "NativeStatisticsHost$Companion.class": "9a79a0ce18d4435399125b3c52269dd7a55feec05aec4b90a374b187d7a2d644",
+    "NativeStatisticsHost$statsMatching$lambda$4$$inlined$compareBy$1.class": "5012a6c75a836baea5e3a05e5c9bd38faded7297f1348897b6affb9440b21469",
+    "NativeStatisticsHost$statsMatching$lambda$4$$inlined$thenBy$1.class": "c9bfee30216cdef3e5c18a71f61516ecdeab4e478d0d37ed7caf703ffb0556f1",
+    "NativeStatisticsHost.class": "7febd0c718432a76c4585d4e8da65224fa7cfc5039346a425726a4a0ec60fb04"
+  },
+  "jars": [
+    {
+      "file": "kotlin-serialization-compiler-plugin-embeddable-2.2.10.jar",
+      "sha256": "c70a592804a59525ba1e314579c01a23ecc8566119fe21cd977f5a290d28bfa9"
+    },
+    {
+      "file": "kotlin-compiler-embeddable-2.2.10.jar",
+      "sha256": "79628fd5d64b4692a62f98962baab00e9076a37e2cffd6ace33cd0b7be7d1cdf"
+    },
+    {
+      "file": "kotlin-stdlib-2.2.10.jar",
+      "sha256": "9c67cc79efd6b9215b49d2a4308f5f3433537376c7c88e89bdd6729bd096e61a"
+    },
+    {
+      "file": "kotlin-script-runtime-2.2.10.jar",
+      "sha256": "c304a67dba6a61dde560e6310920bed746307c3854f6675c29ac29114731b6b0"
+    },
+    {
+      "file": "kotlin-daemon-embeddable-2.2.10.jar",
+      "sha256": "b31573d418961fa080760fedcfc90d68ad67a85eafa245c73fe3d551476777ba"
+    },
+    {
+      "file": "kotlinx-coroutines-core-jvm-1.9.0.jar",
+      "sha256": "ad89c2892235e670f222d819cb3d81188143cb19a05b59df9889ae4269f5c70a"
+    },
+    {
+      "file": "annotations-23.0.0.jar",
+      "sha256": "7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05"
+    },
+    {
+      "file": "kotlinx-serialization-json-jvm-1.8.1.jar",
+      "sha256": "8769e5647557e3700919c32d508f5c5dad53c5d8234cd10846354fbcff14aa24"
+    },
+    {
+      "file": "kotlinx-serialization-core-jvm-1.8.1.jar",
+      "sha256": "3565b6d4d789bf70683c45566944287fc1d8dc75c23d98bd87d01059cc76f2b3"
+    }
+  ],
+  "adapter": "Unchanged complete native factor/stats/statsMatching/base/popularity/comparator and declarations. Selected suffix pairs, array song/section lookup, valid-song set and popularity map are input bindings only; no SQLite behavior, replacement arithmetic, TS expectations or old capture. Native comparator output includes all pair signs and stable ordered input indices. Browser numeric/resource domain refusals separate.",
+  "cases": [
+    {
+      "name": "empty-invalid-and-wrapper",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "empty",
+          "targetLength": 3,
+          "occurrences": [],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": null
+        },
+        {
+          "name": "invalid-song",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": null
+        },
+        {
+          "name": "empty-wrapper",
+          "targetLength": 3,
+          "occurrences": [],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "statsWrapper": true,
+          "expected": {
+            "failure": "java.lang.IllegalArgumentException"
+          }
+        }
+      ]
+    },
+    {
+      "name": "duplicates-valid-and-global",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "duplicate-offsets",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 3
+            },
+            {
+              "runId": 0,
+              "offset": 3
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 4,
+            "sections": 1,
+            "effective": 2,
+            "score": 2.5121061286922615,
+            "globalSongs": 1,
+            "globalOccurrences": 4
+          }
+        },
+        {
+          "name": "valid-and-invalid",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            },
+            {
+              "id": 1,
+              "songId": "B",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 2,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.5849625007211563,
+            "globalSongs": 1,
+            "globalOccurrences": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "threshold-boundaries-and-null",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "threshold-None",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 3,
+              "offset": 0
+            },
+            {
+              "runId": 4,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            },
+            {
+              "id": 1,
+              "songId": "B",
+              "sectionId": "section"
+            },
+            {
+              "id": 2,
+              "songId": "C",
+              "sectionId": "section"
+            },
+            {
+              "id": 3,
+              "songId": "D",
+              "sectionId": "section"
+            },
+            {
+              "id": 4,
+              "songId": "E",
+              "sectionId": "section"
+            },
+            {
+              "id": 5,
+              "songId": "F",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.499999999999,
+              "confidence": 1
+            },
+            {
+              "songId": "B",
+              "score": 0.5,
+              "confidence": 1
+            },
+            {
+              "songId": "C",
+              "score": 1,
+              "confidence": 1
+            },
+            {
+              "songId": "D",
+              "score": null,
+              "confidence": 1
+            },
+            {
+              "songId": "E",
+              "score": 1.1,
+              "confidence": 1
+            },
+            {
+              "songId": "F",
+              "score": -0.1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 6,
+            "occurrences": 6,
+            "sections": 1,
+            "effective": 6,
+            "score": 13.532428528325601,
+            "globalSongs": 6,
+            "globalOccurrences": 6
+          }
+        },
+        {
+          "name": "threshold-0",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 3,
+              "offset": 0
+            },
+            {
+              "runId": 4,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            },
+            {
+              "id": 1,
+              "songId": "B",
+              "sectionId": "section"
+            },
+            {
+              "id": 2,
+              "songId": "C",
+              "sectionId": "section"
+            },
+            {
+              "id": 3,
+              "songId": "D",
+              "sectionId": "section"
+            },
+            {
+              "id": 4,
+              "songId": "E",
+              "sectionId": "section"
+            },
+            {
+              "id": 5,
+              "songId": "F",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.499999999999,
+              "confidence": 1
+            },
+            {
+              "songId": "B",
+              "score": 0.5,
+              "confidence": 1
+            },
+            {
+              "songId": "C",
+              "score": 1,
+              "confidence": 1
+            },
+            {
+              "songId": "D",
+              "score": null,
+              "confidence": 1
+            },
+            {
+              "songId": "E",
+              "score": 1.1,
+              "confidence": 1
+            },
+            {
+              "songId": "F",
+              "score": -0.1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": 0,
+          "expected": {
+            "songs": 3,
+            "occurrences": 3,
+            "sections": 1,
+            "effective": 3,
+            "score": 7.396491670029949,
+            "globalSongs": 6,
+            "globalOccurrences": 6
+          }
+        },
+        {
+          "name": "threshold-50",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 3,
+              "offset": 0
+            },
+            {
+              "runId": 4,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            },
+            {
+              "id": 1,
+              "songId": "B",
+              "sectionId": "section"
+            },
+            {
+              "id": 2,
+              "songId": "C",
+              "sectionId": "section"
+            },
+            {
+              "id": 3,
+              "songId": "D",
+              "sectionId": "section"
+            },
+            {
+              "id": 4,
+              "songId": "E",
+              "sectionId": "section"
+            },
+            {
+              "id": 5,
+              "songId": "F",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.499999999999,
+              "confidence": 1
+            },
+            {
+              "songId": "B",
+              "score": 0.5,
+              "confidence": 1
+            },
+            {
+              "songId": "C",
+              "score": 1,
+              "confidence": 1
+            },
+            {
+              "songId": "D",
+              "score": null,
+              "confidence": 1
+            },
+            {
+              "songId": "E",
+              "score": 1.1,
+              "confidence": 1
+            },
+            {
+              "songId": "F",
+              "score": -0.1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": 50,
+          "expected": {
+            "songs": 2,
+            "occurrences": 2,
+            "sections": 1,
+            "effective": 2,
+            "score": 4.976992514761287,
+            "globalSongs": 6,
+            "globalOccurrences": 6
+          }
+        },
+        {
+          "name": "threshold-100",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 3,
+              "offset": 0
+            },
+            {
+              "runId": 4,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            },
+            {
+              "id": 1,
+              "songId": "B",
+              "sectionId": "section"
+            },
+            {
+              "id": 2,
+              "songId": "C",
+              "sectionId": "section"
+            },
+            {
+              "id": 3,
+              "songId": "D",
+              "sectionId": "section"
+            },
+            {
+              "id": 4,
+              "songId": "E",
+              "sectionId": "section"
+            },
+            {
+              "id": 5,
+              "songId": "F",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.499999999999,
+              "confidence": 1
+            },
+            {
+              "songId": "B",
+              "score": 0.5,
+              "confidence": 1
+            },
+            {
+              "songId": "C",
+              "score": 1,
+              "confidence": 1
+            },
+            {
+              "songId": "D",
+              "score": null,
+              "confidence": 1
+            },
+            {
+              "songId": "E",
+              "score": 1.1,
+              "confidence": 1
+            },
+            {
+              "songId": "F",
+              "score": -0.1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": 100,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 2.3774437510817346,
+            "globalSongs": 6,
+            "globalOccurrences": 6
+          }
+        }
+      ]
+    },
+    {
+      "name": "global-counts-before-filter",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "all-filtered",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 3
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": 60,
+          "expected": null
+        },
+        {
+          "name": "global-songs-and-occurrences",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 3,
+              "offset": 0
+            },
+            {
+              "runId": 4,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            },
+            {
+              "id": 1,
+              "songId": "B",
+              "sectionId": "section"
+            },
+            {
+              "id": 2,
+              "songId": "C",
+              "sectionId": "section"
+            },
+            {
+              "id": 3,
+              "songId": "D",
+              "sectionId": "section"
+            },
+            {
+              "id": 4,
+              "songId": "E",
+              "sectionId": "section"
+            },
+            {
+              "id": 5,
+              "songId": "F",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.9,
+              "confidence": 1
+            },
+            {
+              "songId": "B",
+              "score": 0.1,
+              "confidence": 1
+            },
+            {
+              "songId": "C",
+              "score": 0.1,
+              "confidence": 1
+            },
+            {
+              "songId": "D",
+              "score": 0.1,
+              "confidence": 1
+            },
+            {
+              "songId": "E",
+              "score": 0.1,
+              "confidence": 1
+            },
+            {
+              "songId": "F",
+              "score": 0.1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": 75,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 2.2189475010096187,
+            "globalSongs": 6,
+            "globalOccurrences": 8
+          }
+        }
+      ]
+    },
+    {
+      "name": "overlap-touch-sort-and-length",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "unsorted-touch",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 6
+            },
+            {
+              "runId": 0,
+              "offset": 2
+            },
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 3
+            },
+            {
+              "runId": 0,
+              "offset": 1
+            },
+            {
+              "runId": 0,
+              "offset": 3
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 6,
+            "sections": 1,
+            "effective": 3,
+            "score": 3.1699250014423126,
+            "globalSongs": 1,
+            "globalOccurrences": 6
+          }
+        },
+        {
+          "name": "length2",
+          "targetLength": 2,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 1
+            },
+            {
+              "runId": 0,
+              "offset": 2
+            },
+            {
+              "runId": 0,
+              "offset": 3
+            },
+            {
+              "runId": 0,
+              "offset": 4
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 5,
+            "sections": 1,
+            "effective": 3,
+            "score": 2.0,
+            "globalSongs": 1,
+            "globalOccurrences": 5
+          }
+        },
+        {
+          "name": "long-overlap",
+          "targetLength": 10000,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 1
+            },
+            {
+              "runId": 0,
+              "offset": 2
+            },
+            {
+              "runId": 0,
+              "offset": 9999
+            },
+            {
+              "runId": 0,
+              "offset": 10000
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 5,
+            "sections": 1,
+            "effective": 2,
+            "score": 21.060525841954163,
+            "globalSongs": 1,
+            "globalOccurrences": 5
+          }
+        }
+      ]
+    },
+    {
+      "name": "run-change-retains-song-cap",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "reset-on-run",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "s0"
+            },
+            {
+              "id": 1,
+              "songId": "A",
+              "sectionId": "s1"
+            },
+            {
+              "id": 2,
+              "songId": "A",
+              "sectionId": "s2"
+            },
+            {
+              "id": 3,
+              "songId": "A",
+              "sectionId": "s3"
+            },
+            {
+              "id": 4,
+              "songId": "A",
+              "sectionId": "s4"
+            },
+            {
+              "id": 5,
+              "songId": "A",
+              "sectionId": "s5"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 3,
+            "sections": 3,
+            "effective": 3,
+            "score": 3.1699250014423126,
+            "globalSongs": 1,
+            "globalOccurrences": 3
+          }
+        },
+        {
+          "name": "six-runs-cap-four",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 3,
+              "offset": 0
+            },
+            {
+              "runId": 4,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "s0"
+            },
+            {
+              "id": 1,
+              "songId": "A",
+              "sectionId": "s1"
+            },
+            {
+              "id": 2,
+              "songId": "A",
+              "sectionId": "s2"
+            },
+            {
+              "id": 3,
+              "songId": "A",
+              "sectionId": "s3"
+            },
+            {
+              "id": 4,
+              "songId": "A",
+              "sectionId": "s4"
+            },
+            {
+              "id": 5,
+              "songId": "A",
+              "sectionId": "s5"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 6,
+            "sections": 6,
+            "effective": 4,
+            "score": 3.680168959767384,
+            "globalSongs": 1,
+            "globalOccurrences": 6
+          }
+        }
+      ]
+    },
+    {
+      "name": "two-songs-cap-four-each",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "per-song-not-global",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 3
+            },
+            {
+              "runId": 0,
+              "offset": 6
+            },
+            {
+              "runId": 0,
+              "offset": 9
+            },
+            {
+              "runId": 0,
+              "offset": 12
+            },
+            {
+              "runId": 0,
+              "offset": 15
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 3
+            },
+            {
+              "runId": 1,
+              "offset": 6
+            },
+            {
+              "runId": 1,
+              "offset": 9
+            },
+            {
+              "runId": 1,
+              "offset": 12
+            },
+            {
+              "runId": 1,
+              "offset": 15
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            },
+            {
+              "id": 1,
+              "songId": "B",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A",
+            "B"
+          ],
+          "popularity": [],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 2,
+            "occurrences": 12,
+            "sections": 1,
+            "effective": 8,
+            "score": 7.963188023618059,
+            "globalSongs": 2,
+            "globalOccurrences": 12
+          }
+        }
+      ]
+    },
+    {
+      "name": "sections-count-even-after-cap",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "all-six-sections",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 3,
+              "offset": 0
+            },
+            {
+              "runId": 4,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "s0"
+            },
+            {
+              "id": 1,
+              "songId": "A",
+              "sectionId": "s1"
+            },
+            {
+              "id": 2,
+              "songId": "A",
+              "sectionId": "s2"
+            },
+            {
+              "id": 3,
+              "songId": "A",
+              "sectionId": "s3"
+            },
+            {
+              "id": 4,
+              "songId": "A",
+              "sectionId": "s4"
+            },
+            {
+              "id": 5,
+              "songId": "A",
+              "sectionId": "s5"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 6,
+            "sections": 6,
+            "effective": 4,
+            "score": 3.680168959767384,
+            "globalSongs": 1,
+            "globalOccurrences": 6
+          }
+        },
+        {
+          "name": "sectionid-alone",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "same"
+            },
+            {
+              "id": 1,
+              "songId": "B",
+              "sectionId": "same"
+            }
+          ],
+          "validSongIds": [
+            "A",
+            "B"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 2,
+            "occurrences": 2,
+            "sections": 1,
+            "effective": 2,
+            "score": 3.9815940118090296,
+            "globalSongs": 2,
+            "globalOccurrences": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "popularity-clamps",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "clamp-0",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": -2,
+              "confidence": 2
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 0.7924812503605781,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "clamp-1",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 2,
+              "confidence": 2
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 2.3774437510817346,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "clamp-2",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1,
+              "confidence": -1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.5849625007211563,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "clamp-3",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0,
+              "confidence": 3
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 0.7924812503605781,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "clamp-4",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.25,
+              "confidence": 0.4
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.4264662506490406,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "clamp-5",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": null,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.5849625007211563,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "factor-all-toggle-combinations",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "flags-0",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": false,
+            "variety": false,
+            "favorites": false
+          },
+          "recentSongIds": [
+            "A"
+          ],
+          "favoriteSongIds": [
+            "A"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.5849625007211563,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "flags-1",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": false,
+            "favorites": false
+          },
+          "recentSongIds": [
+            "A"
+          ],
+          "favoriteSongIds": [
+            "A"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 2.3774437510817346,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "flags-2",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": false,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [
+            "A"
+          ],
+          "favoriteSongIds": [
+            "A"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 0.3962406251802891,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "flags-3",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [
+            "A"
+          ],
+          "favoriteSongIds": [
+            "A"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 0.5943609377704336,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "flags-4",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": false,
+            "variety": false,
+            "favorites": true
+          },
+          "recentSongIds": [
+            "A"
+          ],
+          "favoriteSongIds": [
+            "A"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 2.3774437510817346,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "flags-5",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": false,
+            "favorites": true
+          },
+          "recentSongIds": [
+            "A"
+          ],
+          "favoriteSongIds": [
+            "A"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 3.5661656266226016,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "flags-6",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": false,
+            "variety": true,
+            "favorites": true
+          },
+          "recentSongIds": [
+            "A"
+          ],
+          "favoriteSongIds": [
+            "A"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 0.5943609377704336,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "flags-7",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": true
+          },
+          "recentSongIds": [
+            "A"
+          ],
+          "favoriteSongIds": [
+            "A"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 0.8915414066556504,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "recency-first-index-boundaries",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "recent-0",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [
+            "A",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "A"
+          ],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 0.3962406251802891,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "recent-2",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [
+            "x",
+            "x",
+            "A",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "A"
+          ],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 0.3962406251802891,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "recent-3",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [
+            "x",
+            "x",
+            "x",
+            "A",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "A"
+          ],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 0.9509775004326937,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "recent-9",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "A",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "A"
+          ],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 0.9509775004326937,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "recent-10",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "A",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "x",
+            "A"
+          ],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.5849625007211563,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "favorites-and-no-popularity",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "favorite-duplicates",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": true
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [
+            "A",
+            "A"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 2.3774437510817346,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "missing-popularity",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.5849625007211563,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "null-popularity",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": null,
+              "confidence": 10
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.5849625007211563,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "first-seen-factor-sum",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "forward",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 3,
+              "offset": 0
+            },
+            {
+              "runId": 4,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            },
+            {
+              "runId": 6,
+              "offset": 0
+            },
+            {
+              "runId": 7,
+              "offset": 0
+            },
+            {
+              "runId": 8,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "s0",
+              "sectionId": "section"
+            },
+            {
+              "id": 1,
+              "songId": "s1",
+              "sectionId": "section"
+            },
+            {
+              "id": 2,
+              "songId": "s2",
+              "sectionId": "section"
+            },
+            {
+              "id": 3,
+              "songId": "s3",
+              "sectionId": "section"
+            },
+            {
+              "id": 4,
+              "songId": "s4",
+              "sectionId": "section"
+            },
+            {
+              "id": 5,
+              "songId": "s5",
+              "sectionId": "section"
+            },
+            {
+              "id": 6,
+              "songId": "s6",
+              "sectionId": "section"
+            },
+            {
+              "id": 7,
+              "songId": "s7",
+              "sectionId": "section"
+            },
+            {
+              "id": 8,
+              "songId": "s8",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "s0",
+            "s1",
+            "s2",
+            "s3",
+            "s4",
+            "s5",
+            "s6",
+            "s7",
+            "s8"
+          ],
+          "popularity": [
+            {
+              "songId": "s0",
+              "score": 0.123456789,
+              "confidence": 0.43210987
+            },
+            {
+              "songId": "s1",
+              "score": 1,
+              "confidence": 0.9
+            },
+            {
+              "songId": "s2",
+              "score": 0.7,
+              "confidence": 0.2
+            },
+            {
+              "songId": "s3",
+              "score": 0.123456789,
+              "confidence": 0.43210987
+            },
+            {
+              "songId": "s4",
+              "score": 1,
+              "confidence": 0.9
+            },
+            {
+              "songId": "s5",
+              "score": 0.7,
+              "confidence": 0.2
+            },
+            {
+              "songId": "s6",
+              "score": 0.123456789,
+              "confidence": 0.43210987
+            },
+            {
+              "songId": "s7",
+              "score": 1,
+              "confidence": 0.9
+            },
+            {
+              "songId": "s8",
+              "score": 0.7,
+              "confidence": 0.2
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": true
+          },
+          "recentSongIds": [
+            "s4",
+            "s8"
+          ],
+          "favoriteSongIds": [
+            "s1"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 9,
+            "occurrences": 9,
+            "sections": 1,
+            "effective": 9,
+            "score": 17.178235000404513,
+            "globalSongs": 9,
+            "globalOccurrences": 9
+          }
+        },
+        {
+          "name": "reverse",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 8,
+              "offset": 0
+            },
+            {
+              "runId": 7,
+              "offset": 0
+            },
+            {
+              "runId": 6,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            },
+            {
+              "runId": 4,
+              "offset": 0
+            },
+            {
+              "runId": 3,
+              "offset": 0
+            },
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "s0",
+              "sectionId": "section"
+            },
+            {
+              "id": 1,
+              "songId": "s1",
+              "sectionId": "section"
+            },
+            {
+              "id": 2,
+              "songId": "s2",
+              "sectionId": "section"
+            },
+            {
+              "id": 3,
+              "songId": "s3",
+              "sectionId": "section"
+            },
+            {
+              "id": 4,
+              "songId": "s4",
+              "sectionId": "section"
+            },
+            {
+              "id": 5,
+              "songId": "s5",
+              "sectionId": "section"
+            },
+            {
+              "id": 6,
+              "songId": "s6",
+              "sectionId": "section"
+            },
+            {
+              "id": 7,
+              "songId": "s7",
+              "sectionId": "section"
+            },
+            {
+              "id": 8,
+              "songId": "s8",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "s0",
+            "s1",
+            "s2",
+            "s3",
+            "s4",
+            "s5",
+            "s6",
+            "s7",
+            "s8"
+          ],
+          "popularity": [
+            {
+              "songId": "s0",
+              "score": 0.123456789,
+              "confidence": 0.43210987
+            },
+            {
+              "songId": "s1",
+              "score": 1,
+              "confidence": 0.9
+            },
+            {
+              "songId": "s2",
+              "score": 0.7,
+              "confidence": 0.2
+            },
+            {
+              "songId": "s3",
+              "score": 0.123456789,
+              "confidence": 0.43210987
+            },
+            {
+              "songId": "s4",
+              "score": 1,
+              "confidence": 0.9
+            },
+            {
+              "songId": "s5",
+              "score": 0.7,
+              "confidence": 0.2
+            },
+            {
+              "songId": "s6",
+              "score": 0.123456789,
+              "confidence": 0.43210987
+            },
+            {
+              "songId": "s7",
+              "score": 1,
+              "confidence": 0.9
+            },
+            {
+              "songId": "s8",
+              "score": 0.7,
+              "confidence": 0.2
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": true
+          },
+          "recentSongIds": [
+            "s4",
+            "s8"
+          ],
+          "favoriteSongIds": [
+            "s1"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 9,
+            "occurrences": 9,
+            "sections": 1,
+            "effective": 9,
+            "score": 17.178235000404516,
+            "globalSongs": 9,
+            "globalOccurrences": 9
+          }
+        },
+        {
+          "name": "interleaved",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 4,
+              "offset": 0
+            },
+            {
+              "runId": 8,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 7,
+              "offset": 0
+            },
+            {
+              "runId": 3,
+              "offset": 0
+            },
+            {
+              "runId": 1,
+              "offset": 0
+            },
+            {
+              "runId": 6,
+              "offset": 0
+            },
+            {
+              "runId": 2,
+              "offset": 0
+            },
+            {
+              "runId": 5,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "s0",
+              "sectionId": "section"
+            },
+            {
+              "id": 1,
+              "songId": "s1",
+              "sectionId": "section"
+            },
+            {
+              "id": 2,
+              "songId": "s2",
+              "sectionId": "section"
+            },
+            {
+              "id": 3,
+              "songId": "s3",
+              "sectionId": "section"
+            },
+            {
+              "id": 4,
+              "songId": "s4",
+              "sectionId": "section"
+            },
+            {
+              "id": 5,
+              "songId": "s5",
+              "sectionId": "section"
+            },
+            {
+              "id": 6,
+              "songId": "s6",
+              "sectionId": "section"
+            },
+            {
+              "id": 7,
+              "songId": "s7",
+              "sectionId": "section"
+            },
+            {
+              "id": 8,
+              "songId": "s8",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "s0",
+            "s1",
+            "s2",
+            "s3",
+            "s4",
+            "s5",
+            "s6",
+            "s7",
+            "s8"
+          ],
+          "popularity": [
+            {
+              "songId": "s0",
+              "score": 0.123456789,
+              "confidence": 0.43210987
+            },
+            {
+              "songId": "s1",
+              "score": 1,
+              "confidence": 0.9
+            },
+            {
+              "songId": "s2",
+              "score": 0.7,
+              "confidence": 0.2
+            },
+            {
+              "songId": "s3",
+              "score": 0.123456789,
+              "confidence": 0.43210987
+            },
+            {
+              "songId": "s4",
+              "score": 1,
+              "confidence": 0.9
+            },
+            {
+              "songId": "s5",
+              "score": 0.7,
+              "confidence": 0.2
+            },
+            {
+              "songId": "s6",
+              "score": 0.123456789,
+              "confidence": 0.43210987
+            },
+            {
+              "songId": "s7",
+              "score": 1,
+              "confidence": 0.9
+            },
+            {
+              "songId": "s8",
+              "score": 0.7,
+              "confidence": 0.2
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": true
+          },
+          "recentSongIds": [
+            "s4",
+            "s8"
+          ],
+          "favoriteSongIds": [
+            "s1"
+          ],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 9,
+            "occurrences": 9,
+            "sections": 1,
+            "effective": 9,
+            "score": 17.178235000404513,
+            "globalSongs": 9,
+            "globalOccurrences": 9
+          }
+        }
+      ]
+    },
+    {
+      "name": "safe-native-end-and-max-length",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "int-end-boundary",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 2147483645
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.5849625007211563,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "max-length-end",
+          "targetLength": 10000,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 2147473648
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 13.28771237954945,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "signedzero-popularity",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": -0.0,
+              "confidence": -0.0
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.5849625007211563,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "section-and-song-text-identity",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "empty-section",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": ""
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 1.5849625007211563,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        },
+        {
+          "name": "prototype-and-nul",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "__proto__",
+              "sectionId": "s\u0000x"
+            }
+          ],
+          "validSongIds": [
+            "__proto__"
+          ],
+          "popularity": [
+            {
+              "songId": "__proto__",
+              "score": 1,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 1,
+            "sections": 1,
+            "effective": 1,
+            "score": 2.3774437510817346,
+            "globalSongs": 1,
+            "globalOccurrences": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "duplicate-valid-and-missing-population",
+      "kind": "stats",
+      "probes": [
+        {
+          "name": "duplicate-valid-list",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            },
+            {
+              "runId": 0,
+              "offset": 3
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A",
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5,
+              "confidence": 1
+            }
+          ],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": null,
+          "expected": {
+            "songs": 1,
+            "occurrences": 2,
+            "sections": 1,
+            "effective": 2,
+            "score": 2.5121061286922615,
+            "globalSongs": 1,
+            "globalOccurrences": 2
+          }
+        },
+        {
+          "name": "null-vs-missing-threshold",
+          "targetLength": 3,
+          "occurrences": [
+            {
+              "runId": 0,
+              "offset": 0
+            }
+          ],
+          "runs": [
+            {
+              "id": 0,
+              "songId": "A",
+              "sectionId": "section"
+            }
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [],
+          "settings": {
+            "popularity": true,
+            "variety": true,
+            "favorites": false
+          },
+          "recentSongIds": [],
+          "favoriteSongIds": [],
+          "minimumPopularityPercent": 0,
+          "expected": null
+        }
+      ]
+    },
+    {
+      "name": "recommended-default-unknown-hierarchy",
+      "kind": "compare",
+      "probes": [
+        {
+          "name": "recommended",
+          "rows": [
+            {
+              "id": "base",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "score",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 3,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "songs",
+              "length": 3,
+              "songs": 2,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "length",
+              "length": 4,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "a",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "z",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            }
+          ],
+          "orders": [
+            null,
+            "recommended",
+            "unknown",
+            "MOSTSONGS"
+          ],
+          "expected": [
+            {
+              "order": null,
+              "sortedIndices": [
+                1,
+                2,
+                3,
+                4,
+                0,
+                5
+              ],
+              "signs": [
+                [
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  -1
+                ],
+                [
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  0,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  1,
+                  1,
+                  0,
+                  -1
+                ],
+                [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  0
+                ]
+              ]
+            },
+            {
+              "order": "recommended",
+              "sortedIndices": [
+                1,
+                2,
+                3,
+                4,
+                0,
+                5
+              ],
+              "signs": [
+                [
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  -1
+                ],
+                [
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  0,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  1,
+                  1,
+                  0,
+                  -1
+                ],
+                [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  0
+                ]
+              ]
+            },
+            {
+              "order": "unknown",
+              "sortedIndices": [
+                1,
+                2,
+                3,
+                4,
+                0,
+                5
+              ],
+              "signs": [
+                [
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  -1
+                ],
+                [
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  0,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  1,
+                  1,
+                  0,
+                  -1
+                ],
+                [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  0
+                ]
+              ]
+            },
+            {
+              "order": "MOSTSONGS",
+              "sortedIndices": [
+                1,
+                2,
+                3,
+                4,
+                0,
+                5
+              ],
+              "signs": [
+                [
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  -1
+                ],
+                [
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  0,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  1,
+                  1,
+                  0,
+                  -1
+                ],
+                [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  0
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "mostsongs-global-hierarchy",
+      "kind": "compare",
+      "probes": [
+        {
+          "name": "mostsongs",
+          "rows": [
+            {
+              "id": "base",
+              "length": 3,
+              "songs": 100,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "globalSongs",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 2,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "globalOccurrences",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 3
+            },
+            {
+              "id": "length",
+              "length": 4,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "a",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "z",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            }
+          ],
+          "orders": [
+            "mostSongs"
+          ],
+          "expected": [
+            {
+              "order": "mostSongs",
+              "sortedIndices": [
+                1,
+                2,
+                3,
+                4,
+                0,
+                5
+              ],
+              "signs": [
+                [
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  -1
+                ],
+                [
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  0,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  1,
+                  1,
+                  0,
+                  -1
+                ],
+                [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  0
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "longest-shortest-hierarchy",
+      "kind": "compare",
+      "probes": [
+        {
+          "name": "lengths",
+          "rows": [
+            {
+              "id": "base",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "long",
+              "length": 4,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "short",
+              "length": 2,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "globalSongs",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 2,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "globalOccurrences",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 3
+            },
+            {
+              "id": "a",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "z",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            }
+          ],
+          "orders": [
+            "longest",
+            "shortest"
+          ],
+          "expected": [
+            {
+              "order": "longest",
+              "sortedIndices": [
+                1,
+                3,
+                4,
+                5,
+                0,
+                6,
+                2
+              ],
+              "signs": [
+                [
+                  0,
+                  1,
+                  -1,
+                  1,
+                  1,
+                  1,
+                  -1
+                ],
+                [
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  1,
+                  1,
+                  0,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  1,
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  -1,
+                  1,
+                  0,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  1,
+                  -1,
+                  1,
+                  1,
+                  0,
+                  -1
+                ],
+                [
+                  1,
+                  1,
+                  -1,
+                  1,
+                  1,
+                  1,
+                  0
+                ]
+              ]
+            },
+            {
+              "order": "shortest",
+              "sortedIndices": [
+                2,
+                3,
+                4,
+                5,
+                0,
+                6,
+                1
+              ],
+              "signs": [
+                [
+                  0,
+                  -1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  -1
+                ],
+                [
+                  1,
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  0,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  1,
+                  0,
+                  -1
+                ],
+                [
+                  1,
+                  -1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  0
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "utf16-signedzero-and-stable-ties",
+      "kind": "compare",
+      "probes": [
+        {
+          "name": "utf16",
+          "rows": [
+            {
+              "id": "\ue000",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "\ud83d\ude00",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "a",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "A",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "\u00e9",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "e\u0301",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "a\u0000b",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "a",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 2.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            }
+          ],
+          "orders": [
+            null,
+            "mostSongs",
+            "longest",
+            "shortest"
+          ],
+          "expected": [
+            {
+              "order": null,
+              "sortedIndices": [
+                3,
+                2,
+                7,
+                6,
+                5,
+                4,
+                1,
+                0
+              ],
+              "signs": [
+                [
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  -1,
+                  -1,
+                  -1,
+                  0
+                ],
+                [
+                  -1,
+                  -1,
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  0,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  -1,
+                  0,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  -1,
+                  -1,
+                  0,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  -1,
+                  -1,
+                  -1,
+                  0
+                ]
+              ]
+            },
+            {
+              "order": "mostSongs",
+              "sortedIndices": [
+                3,
+                2,
+                7,
+                6,
+                5,
+                4,
+                1,
+                0
+              ],
+              "signs": [
+                [
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  -1,
+                  -1,
+                  -1,
+                  0
+                ],
+                [
+                  -1,
+                  -1,
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  0,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  -1,
+                  0,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  -1,
+                  -1,
+                  0,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  -1,
+                  -1,
+                  -1,
+                  0
+                ]
+              ]
+            },
+            {
+              "order": "longest",
+              "sortedIndices": [
+                3,
+                2,
+                7,
+                6,
+                5,
+                4,
+                1,
+                0
+              ],
+              "signs": [
+                [
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  -1,
+                  -1,
+                  -1,
+                  0
+                ],
+                [
+                  -1,
+                  -1,
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  0,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  -1,
+                  0,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  -1,
+                  -1,
+                  0,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  -1,
+                  -1,
+                  -1,
+                  0
+                ]
+              ]
+            },
+            {
+              "order": "shortest",
+              "sortedIndices": [
+                3,
+                2,
+                7,
+                6,
+                5,
+                4,
+                1,
+                0
+              ],
+              "signs": [
+                [
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  0,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  -1,
+                  -1,
+                  -1,
+                  0
+                ],
+                [
+                  -1,
+                  -1,
+                  -1,
+                  0,
+                  -1,
+                  -1,
+                  -1,
+                  -1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  0,
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  -1,
+                  0,
+                  1,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  -1,
+                  -1,
+                  0,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  -1,
+                  -1,
+                  -1,
+                  0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "name": "signedzero",
+          "rows": [
+            {
+              "id": "positive-zero",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 0.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "negative-zero",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": -0.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "negative",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": -1.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            },
+            {
+              "id": "positive",
+              "length": 3,
+              "songs": 1,
+              "occurrences": 2,
+              "sections": 1,
+              "effective": 1,
+              "score": 1.0,
+              "globalSongs": 1,
+              "globalOccurrences": 2
+            }
+          ],
+          "orders": [
+            "recommended"
+          ],
+          "expected": [
+            {
+              "order": "recommended",
+              "sortedIndices": [
+                3,
+                0,
+                1,
+                2
+              ],
+              "signs": [
+                [
+                  0,
+                  -1,
+                  -1,
+                  1
+                ],
+                [
+                  1,
+                  0,
+                  -1,
+                  1
+                ],
+                [
+                  1,
+                  1,
+                  0,
+                  1
+                ],
+                [
+                  -1,
+                  -1,
+                  -1,
+                  0
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
