@@ -9,17 +9,22 @@ function bad(message:string):never {throw new CatalogError('INTEGRITY',message);
 function int(value:unknown):value is number {return typeof value==='number'&&Number.isInteger(value)&&value>=-2147483648&&value<=2147483647;}
 type Field=readonly[column:string,alias:string,type:'text'|'blob',limit:number,utf8?:boolean];
 function columns(field:Field):string {
-  const [column,alias,type,limit,utf8]=field,size=`length(${utf8?`CAST(${column} AS BLOB)`:column})`;
-  return `typeof(${column}) AS ${alias}Type,${size} AS ${alias}Size,CASE WHEN typeof(${column})='${type}' AND ${size}<=${limit} THEN ${column} END AS ${alias}`;
+  const [column,alias,type,limit,utf8]=field,raw=type==='text'?`CAST(${column} AS BLOB)`:column,size=`length(${raw})`,bytes=type==='text'&&!utf8?limit*4:limit;
+  return `typeof(${column}) AS ${alias}Type,${size} AS ${alias}Size,CASE WHEN typeof(${column})='${type}' AND ${size}<=${bytes} THEN ${raw} END AS ${alias}`;
 }
 function value(row:Record<string,unknown>,field:Field):string|Uint8Array {
-  const [,alias,type,limit]=field,kind=row[alias+'Type'],size=row[alias+'Size'],data=row[alias];
+  const [,alias,type,limit,utf8]=field,kind=row[alias+'Type'],size=row[alias+'Size'],data=row[alias],bytes=type==='text'&&!utf8?limit*4:limit;
   if(kind!==type||typeof size!=='number'||!Number.isSafeInteger(size)||size<0)bad('Invalid aural run column type or length');
-  if(size>limit)throw new CatalogError('LIMIT','Aural run value exceeds the browser limit');
+  if(size>bytes)throw new CatalogError('LIMIT','Aural run value exceeds the browser limit');
+  if(!(data instanceof Uint8Array)||data.byteLength!==size)bad('Missing or truncated aural run value');
   if(type==='text'){
-    if(typeof data!=='string')bad('Missing aural run text');return data;
+    let decoded:string;
+    try {decoded=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(data);}
+    catch {return bad('Invalid aural run UTF8');}
+    if(!utf8&&decoded.length>limit)throw new CatalogError('LIMIT','Aural run text exceeds the browser limit');
+    return decoded;
   }
-  if(!(data instanceof Uint8Array)||data.byteLength!==size)bad('Missing or truncated aural run blob');return data;
+  return data;
 }
 
 /** One native suffix location and run, SQL-bounded before async typed decoding. */

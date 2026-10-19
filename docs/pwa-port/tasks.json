@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T03:56:49.664919+00:00",
+  "updated": "2026-10-19T04:12:12.164612+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2385,8 +2385,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
-      "slice": "Accepted pure query/identity/loop kernels plus bounded header/suffix/selected-run SQL/full typed codec/native target RPC. Global eligibility/matching/statistics/ranking/groups/paging/UI/fullcatalog budgets remain open.",
-      "nextAction": "Do not repeat accepted target/header/native/2GB evidence. After fresh five-hour capacity select next smallest stats/ranking/eligibility or membership kernel from existing readiness/dependency graph, freeze contract/reference before source; keep actual fullcatalog budgets/device acceptance open.",
+      "slice": "Accepted pure query/identity/loop/rank-bit kernels and header/target RPC foundation; bounded scalar stats-facts SQL unit-proven. Native statistics oracle integrated, production statistics draft pending approval-service validation. Global eligibility/buckets/ranking/pages/UI/fullcatalog budgets remain open.",
+      "nextAction": "Resume exact saved approval-blocked validations when service recovers; do not repeat accepted captures/root443tests unless source/integration changes. Then stats integration and bounded facts/runtime composition, global eligibility/query buckets/frontier/pages/UI; all fullcatalog/device gates remain open.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -2511,8 +2511,14 @@
           "validationReference": "T15.targetRuntimeAssignment.validation"
         }
       ],
-      "progress": [],
-      "blocker": null,
+      "progress": [
+        {
+          "at": "2026-10-19T04:10:00.307393+00:00",
+          "milestone": "Window22 rank native12groups/258queries and17puretests accepted; new stats native20groups/56probes reviewed/integrated03fcde73. Root exactbyteSQL32tests +orderedfacts11tests and443combined/types pass; production shellbad6 built. New browser/worker validation blocked by approval service, drafts/hashrecovery preserved.",
+          "validation": "rankEligibilityAssignment/statisticsOracleAssignment/statisticsAssignment/metadataBoundAssignment/statisticsFactsAssignment"
+        }
+      ],
+      "blocker": "Temporary external approval-review service model capacity blocks8actualChrome checks and worker assertion correction/types/retest. No action executed/no bypass. Root continued independent rank/SQL foundations; automation remains ACTIVE.",
       "dependencyGates": {
         "T05": "desktop-catalog-runtime"
       },
@@ -3252,21 +3258,107 @@
           "receiptSha256": "952fa76d72bac5cfbe6fc90401f5192b97304d84db197b68c413602902a2a46f",
           "nativeCheck": "t15-statistics-reference-native-fix1-20261019-77 exit0; one compile assembly fix cycle, failed first compiler products retained; actual capture not repeated",
           "review": "Root entire124line producer, unchanged8native slices/whole source, all56rawinput/output probes and30class hashes independently verified. Firstseen sum order and signedzero exact pair comparisons captured. Empty stats() wrapper failure retained separately, public compute follows nullable statsMatching. No production source/JS arithmetic claim."
-        }
+        },
+        "integrationCommit": "03fcde73a95b4dcecf523c2906cd6b5d81756c6e"
       },
       "metadataBoundAssignment": {
         "owner": "coordinator runtime unknown unchanged",
         "at": "2026-10-19T03:56:49.664919+00:00",
-        "status": "inspection-only finding, bounded reproduction/fix intent saved before check",
+        "status": "source+32SQLite tests/fulltypes/build accepted; NEW actual WASM regression remains unexecuted due approval review service capacity",
         "ownedPaths": [
           "pwa/src/storage/catalog/aural-header.ts",
           "pwa/src/storage/catalog/aural-header.test.ts",
           "pwa/src/storage/catalog/aural-target-query.ts",
           "pwa/src/storage/catalog/aural-target-query.test.ts",
+          "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md",
+          "pwa/src/storage/catalog/aural-read-contracts.ts",
+          "pwa/src/storage/catalog/aural-target-query-contracts.ts",
+          "pwa/scripts/catalog/make-aural-target-browser-fixture.py",
+          "pwa/tests/browser/aural-target.spec.ts"
+        ],
+        "nextAction": "After approval service recovers and usage permits, inspect absence of oldguard/output and request SAME permitted localhost/process route for8actualChrome header/target tests. Unique output pwa/.artifacts/pwa-port/aural-read/metadata-window22-first (not created). No permission downgrade/bypass/fullcatalog/native repeat.",
+        "expectedCheck": "Actual SQLite reproduction; focused header/target query regression tests+types; browser regressions only if changed runtime SQL path warrants.",
+        "finding": "First diagnostic assertion incorrectly assumed binding retained full NUL TEXT; actual nodeSQLite truncates it. Corrected probe checks SQL byte size and exact BLOB decode, one diagnostic correction. Source now SQL-bounds TEXT bytes and decodes BLOB preserving NUL/BOM; fatal invalidUTF8 explicit browser refusal.",
+        "validation": {
+          "probe": "window22-metadata-probe-fix1-20261019 exit0: actual SQLite3.50.4 NUL TEXT length0, UTF8bytes20001, binding decoded0, exact BLOB20001; first assertion correction retained",
+          "sqlUnits": "window22-metadata-tests-first-20261019:32tests/2files727ms FIRSTPASS, including6new NUL/UTF8/UTF16/beforematerialization cases",
+          "types": "window22-metadata-types-first-20261019 fullstrict types FIRSTPASS",
+          "pending": "Current browser fixture/spec source now changed; fulltypes/build/8actualChrome planned BEFORE acceptance. Three new browser refusal/transport fixtures are not new native expected captures; default native fixture unchanged.",
+          "build": "window22-metadata-build-first-20261019: fullstrict types+vitebuild+shell build PASS, shellbad6a686e07c. Source runtime hash map below. Latest facts helper is unreferenced by bundle; separately typechecked/tested.",
+          "browser": "window22-metadata-browser-first-20261019 toolcall rejected BEFORE process/guard launch: automatic approval review Selected model is at capacity, not unsafe determination.8actualChrome tests UNRUN, no outputs/PID/receipt. Prior7actualChrome1754514ffe74 evidence retained, not claimed for new SQL representation.",
+          "testedSha256": {
+            "pwa/src/storage/catalog/aural-header.ts": "edf8ea2b2c1edb6f4cb474ac2308063122722f0f96b6606132bfb10377b44577",
+            "pwa/src/storage/catalog/aural-target-query.ts": "072f78ebb52e135c1e01829e5a70d9d81fe265c6335722a6cefb2e5f3cd31099",
+            "pwa/src/storage/catalog/aural-read-contracts.ts": "775288df00a5a6157da5e175c595d17cd006e1151c185124c027970d7186014a",
+            "pwa/src/storage/catalog/aural-target-query-contracts.ts": "fa537ed50c7d327979e64207977f9a8b139dee9c9277671a1182913f2474ce9e",
+            "pwa/src/storage/catalog/aural-header.test.ts": "b28514717e01176b2886d6d89c0a58626878f29f2ce9c002c3b0b2bcfd984eb6",
+            "pwa/src/storage/catalog/aural-target-query.test.ts": "f949078f5e08716f488e1628b7ebe4dab64357ac004806c882db6fa52a24eb33",
+            "pwa/scripts/catalog/make-aural-target-browser-fixture.py": "4c513c6f46fe04bb62504164e25d06581bfa3ffe19eb0a2a74764bcbf1a1f3e6",
+            "pwa/tests/browser/aural-target.spec.ts": "6b48fcb28a0a10e8cbd236a89a5841e64105c84f861ca4ad398d6df70817e36c"
+          },
+          "fixtureSyntax": "Current maintained browser fixture Python AST parse PASS; actual new fixture/browser execution still UNRUN."
+        }
+      },
+      "statisticsAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "at": "2026-10-19T03:57:25.379460+00:00",
+        "status": "draft source UNVALIDATED; automatic approval service capacity blocks exact test correction/typecheck/retest; existing worker idle",
+        "baseCommit": "03fcde73a95b4dcecf523c2906cd6b5d81756c6e",
+        "branch": "codex/pwa-aural-statistics",
+        "previousBranch": "codex/pwa-aural-statistics-reference",
+        "previousTip": "1d2e3d75c3cdd78fbff8d4b85dc663f8bb8df894",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/catalog-statistics.ts",
+          "pwa/src/domain/catalog/catalog-statistics.test.ts",
+          "pwa/src/domain/catalog/STATISTICS_WORKLOG.md"
+        ],
+        "nextAction": "When automatic approval service can complete its review AND live five-hour<70, reuse SAME worker/tree/route. Reconcile3owned dirty files/hashes first; apply exactly Array(20).fill(1)->Array(18).fill(1) at getter test, append truthfullog, run first scopedtypes+unitfix1 under same approved route; commit3paths then root review/normal integration/combined acceptance. Do not use another route/model to bypass rejection or recapture oracle.",
+        "expectedCheck": "First focused native parity/browser-domain unit groups + scoped strict types; exact hashes/receipts. Two fix cycles maximum.",
+        "validation": {
+          "firstUnits": "t15-statistics-source-unit-20261019-84:26/27PASS; all20nativegroups PASS. Only browser getter-count assertion20vs18 fails. No production source fix required by observed failure.",
+          "notExecuted": [
+            "t15-statistics-source-types-20261019-85",
+            "t15-statistics-source-test-fix1-20261019-86",
+            "t15-statistics-source-test-fix1-review-retry-20261019-87"
+          ],
+          "rejection": "Automatic approval review failed: Selected model is at capacity. Action NOT EXECUTED, review could not complete; not unsafe determination. No child/receipt from these3launches. Root entire source/tests reviewed and authorized ONE same require_escalated retry, also unexecuted. No permission downgrade/modelchange/bypass.",
+          "sourceHashes": {
+            "catalog-statistics.ts": "45322c2b99005836a2699f175293e40074c6b51f48af957e6b97f3b5149771bc",
+            "catalog-statistics.test.ts": "5f636a2325290c39c565e1a44c09c644c96c0be6fd04b934dde1d90ecfca7e28",
+            "STATISTICS_WORKLOG.md": "a6935545a0f5dfe3cbb8433e8641f162f2b034d911e9684d023f525b8e32e045"
+          },
+          "recoveryCopy": "H:\\Desktop\\Acquiring\\Acquiring\\.artifacts\\pwa-port\\statistics-source-recovery-window22",
+          "review": "Root read entire134line source/156line tests; no arithmetic blocker found, but draft not integrated/accepted. First native score/count/comparator checks pass; browser boundary failure uncorrected.",
+          "unproven": "Scoped/full types and27/27retest; no worker source checkpoint/merge/browser/runtime acceptance."
+        }
+      },
+      "statisticsFactsAssignment": {
+        "owner": "coordinator runtime unknown unchanged",
+        "at": "2026-10-19T04:06:30.665434+00:00",
+        "status": "bounded ordered scalar SQL foundation accepted in actual nodeSQLite/fullstrict types; no RPC/WASM/global/fullcatalog claim",
+        "ownedPaths": [
+          "pwa/src/storage/catalog/aural-statistics-query-contracts.ts",
+          "pwa/src/storage/catalog/aural-statistics-query.ts",
+          "pwa/src/storage/catalog/aural-statistics-query.test.ts",
           "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
         ],
-        "nextAction": "Use one tiny actual SQLite probe to check length(text) with embedded NUL vs CAST BLOB bytes. If confirmed, enforce SQL byte bounds before known metadata/run text materialization, retaining UTF16 limits after fetch. Relevant existing/new realSQLite tests/types/build/browser only; no data scan/capture or pending Library test.",
-        "expectedCheck": "Actual SQLite reproduction; focused header/target query regression tests+types; browser regressions only if changed runtime SQL path warrants."
+        "nextAction": "Future compose scalar facts with accepted statistics kernel only after worker validation/integration and runtime request/cancellation/snapshot contract; actual WASM proof needed before runtime milestone.",
+        "expectedCheck": "Actual SQLite3.50.4 and production strict types only; WASM/runtime composition remains explicitly pending approval service recovery.",
+        "validation": {
+          "firstUnits": "window22-facts-unit-first-20261019:11tests/1file704ms FIRSTPASS; actual SQLite3.50.4 readonly schemas1..3, exact NUL input, ordered duplicatepairs/membership,128bound batches, missing/duplicate/type/UTF8/byte/UTF16/aggregate/negative/overflow/truncated refusals.",
+          "firstTypes": "window22-facts-types-first-20261019 fullstrict types FIRSTPASS",
+          "combined": "window22-current-root-combined-20261019:443tests/29files13.44s +fullstrict types PASS on current ROOT source; does NOT include unmerged statistics worker draft.",
+          "testedSha256": {
+            "pwa/src/storage/catalog/aural-statistics-query-contracts.ts": "7da868322e20c083c60a9c75e06b8b457236b99809a6d1d16cb54ad15978e564",
+            "pwa/src/storage/catalog/aural-statistics-query.ts": "034a2d45e7069d57b05e0af642e7be91ff916cea9c740c41d3388e4af49ff4b8",
+            "pwa/src/storage/catalog/aural-statistics-query.test.ts": "a1c7d928f4e19fb070bbf037d0ba7c8fa694a08c0cebe7fdf0d33abc394ffb08"
+          },
+          "unproven": "No WASM/RPC/global valid-song/rank predicate/build pipeline, fullcatalog spans/coldwarm/device/UI. <=10000selectedpairs is explicit refusal boundary, no partial total silently returned.",
+          "finalRecovery": "Source/check hashes and frozen Android diff verified; outside-guard root recoveryRequired[]. Final verifier baseline-field/self-incomplete-status preparation errors retained, no product tests/source failure."
+        }
       }
     },
     {
@@ -3588,8 +3680,8 @@
   ],
   "authorizationEvidence": "2026-10-14 owner: Begin with PWA implementation; assign sub-agents appropriate Codex Models and Thinking Levels",
   "lastCheckpoint": {
-    "date": "2026-10-18T23:18:41.070585+00:00",
-    "sourceCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
+    "date": "2026-10-19T04:10:00.307393+00:00",
+    "sourceCommit": "03fcde73a95b4dcecf523c2906cd6b5d81756c6e",
     "lastAcceptedProductCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
     "latestAcceptedProductTree": {
       "baseCommit": "5336ad4e9b42b15730aabb650a24291534ba8a01",
@@ -3602,23 +3694,23 @@
       }
     },
     "usageObserved": {
-      "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 59
+      "fiveHourUsedPercent": 40,
+      "weeklyUsedPercent": 67
     },
-    "fiveHourResetUnix": 1792380961,
+    "fiveHourResetUnix": 1792399327,
     "weeklyResetUnix": 1792876816,
     "unresolvedRuns": [],
     "worker": {
       "owner": "preview_owner",
       "model": "gpt-6.1-sol",
       "thinking": "high",
-      "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-      "branch": "codex/pwa-aural-target-codec",
-      "tip": "6df29c543a3bc50ec2b3dc51b6b7ab9d7ea91ab6",
-      "status": "clean idle; accepted normally at59300a12"
+      "worktree": "H:\\Desktop\\Acquiring\\Acquiring-pwa-data-compat",
+      "branch": "codex/pwa-aural-statistics",
+      "tip": "03fcde73a95b4dcecf523c2906cd6b5d81756c6e",
+      "status": "IDLE3owned dirty/untracked files; draft UNVALIDATED, hashes/recovery copy saved"
     },
-    "nextAction": "Do not repeat accepted target/header/native/2GB evidence. After fresh five-hour capacity select next smallest stats/ranking/eligibility or membership kernel from existing readiness/dependency graph, freeze contract/reference before source; keep actual fullcatalog budgets/device acceptance open.",
-    "reason": "Five-hour70% no-new-work boundary reached after target/browser acceptance. Save current source/evidence checkpoint and yield; no new slice/worker/expensive check.",
+    "nextAction": "Resume exact saved approval-blocked validations when service recovers; do not repeat accepted captures/root443tests unless source/integration changes. Then stats integration and bounded facts/runtime composition, global eligibility/query buckets/frontier/pages/UI; all fullcatalog/device gates remain open.",
+    "reason": "Temporary external automatic approval-review service failure; ordinary allowance remains. Save precise blocked source/check state; no permission downgrade/model change or bypass. Continue scheduled resume when review availability returns.",
     "automationPolicyUpdate": {
       "id": "resume-acquiring-pwa-audit",
       "status": "PASS updated by automation_update and verified savedTOML; hourlyheartbeat/name/target/ACTIVE preserved.",
@@ -3641,29 +3733,28 @@
     "rootSideWork": {
       "owner": "coordinator runtime unknown unchanged",
       "task": "T15",
-      "status": "current bounded target runtime accepted; recovery documentation/checkpoint only",
-      "validationReference": "T15.targetRuntimeAssignment.validation"
+      "status": "rank+exactmetadata+boundedfacts checkpoint; browser acceptance pending approval service",
+      "validationReference": "T15 metadataBoundAssignment/statisticsFactsAssignment"
     },
     "priorDocumentationCheckpoint": "67b589ffd8f0e8b84a77d5ccb6ce950e5247fce9",
     "recoveryState": {
-      "at": "2026-10-18T23:18:41.070585+00:00",
-      "primary": "Root59300a12 plus exact reviewed/tested target runtime source paths before this coherent checkpoint; no unrelated changes/index work.",
-      "previewOwner": "completed idle, clean codex/pwa-aural-target-codec6df29c54",
-      "songUiReview": "completed idle, clean codex/pwa-interval-cardsc49c4047",
-      "processes": "Root status after checks: recoveryRequired empty; combined/checks/build/browser actual exits0. Elevated process inspection found none of stored coordinator/child/Playwright/server IDs, test ports4173/5173 listeners0. Restricted enumeration alone is not liveness evidence.",
-      "preservation": "All worktrees/branches/native tools/archives/fullcatalog profiles/chunks/ignored failures and successful proofs retained; no cleanup/publication.",
-      "nextAction": "Do not repeat accepted target/header/native/2GB evidence. After fresh five-hour capacity select next smallest stats/ranking/eligibility or membership kernel from existing readiness/dependency graph, freeze contract/reference before source; keep actual fullcatalog budgets/device acceptance open."
+      "at": "2026-10-19T04:10:00.307393+00:00",
+      "primary": "Base03fcde73 plus this named validated rank/SQL/docs checkpoint; no unrelated changes/index work. CurrentGit supplies exact checkpointcommit.",
+      "previewOwner": "IDLE codex/pwa-aural-statistics at03fcde73; dirtylog+untrackedsource/test, exact3hashes and root ignored recovery copy saved;20->18testfix UNSAVED;26/27units;types/retest unexecuted.",
+      "songUiReview": "completed idle clean c49c4047 unchanged",
+      "processes": "All ACTUAL named root checks/native/compiler/build and workerfirstunit observed terminal exit0/1; requested rootbrowser +worker85/86/87 NEVER executed and have no child IDs/receipts. Live elevated process inspection cannot be repeated while approval service unavailable; restricted empty enumeration is not liveness proof. Run-control final reconciliation still required before commit. Read-only run-control status OUTSIDE guard after completion confirms recoveryRequired[]. Final verifier first assumed baseline object (actual string); next inside-guard status flagged its own incomplete run. Both preparation failures retained; outside-guard status resolves this without product edits/retests or expansion.",
+      "preservation": "All refs/worktrees/native products/fullcatalog profiles/chunks/failed captures/ignored artifacts retained; no cleanup/push/publication/credits/reset.",
+      "nextAction": "Resume exact saved approval-blocked validations when service recovers; do not repeat accepted captures/root443tests unless source/integration changes. Then stats integration and bounded facts/runtime composition, global eligibility/query buckets/frontier/pages/UI; all fullcatalog/device gates remain open."
     },
     "latestRuntimeBuild": {
-      "shell": "1754514ffe74",
-      "validationReference": "T15.targetRuntimeAssignment.validation",
-      "status": "Production bundle PASS;7development-worker actualChrome tests PASS; no production fullcatalog/device inference."
+      "shell": "bad6a686e07c",
+      "status": "production bundle/types PASS with exact metadata representation;8newbrowserchecksUNRUNreviewfailure",
+      "validationReference": "T15.metadataBoundAssignment.validation"
     },
     "latestAcceptedRuntimeTree": {
-      "baseCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
-      "validationReference": "T15.targetRuntimeAssignment.validation",
+      "baseCommit": "b3dfe801b0fcec3e7e155e0c74afe736229f457e",
       "shell": "1754514ffe74",
-      "status": "Reviewed current working source hashes; this checkpoint commits exact tested runtime tree. App presentation5336ad4e unchanged."
+      "status": "Last actual7Chrome worker runtime acceptance; new metadata runtime browser gate remains pending."
     },
     "capacityEntry": {
       "at": "2026-10-19T03:43:36.055493+00:00",

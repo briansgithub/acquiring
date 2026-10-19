@@ -9,6 +9,8 @@ let fixtures:Record<string,Fixture>;
 const base='http://127.0.0.1:5173/aural-target-fixtures/';
 test.beforeAll(()=>{
   fixtures=Object.fromEntries([['good','default-varyingBass','a'],['bass','bass-view-roman','b'],['broken','modern-decodes-invalid-source-key','c'],['zero','zero-length-unchecked-end','d'],['short','positions-shorter-than-tokens','e']].map(([name,probe,snapshot])=>[name,JSON.parse(execFileSync('python',['scripts/catalog/make-aural-target-browser-fixture.py','--probe',probe!,'--snapshot',snapshot!.repeat(64)],{encoding:'utf8'})) as Fixture]));
+  for(const [name,snapshot,textCase]of [['nulHeader','f','nul-header'],['nulKey','1','nul-key'],['largeText','2','large-metadata']])
+    fixtures[name!]=JSON.parse(execFileSync('python',['scripts/catalog/make-aural-target-browser-fixture.py','--probe','default-varyingBass','--snapshot',snapshot!.repeat(64),'--text-case',textCase!],{encoding:'utf8'})) as Fixture;
 });
 test.beforeEach(async({page,context})=>{
   await context.route('**/aural-target-fixtures/**',async route=>{
@@ -59,4 +61,17 @@ test('request-start worker cut rejects pending client and preserves a readable c
   const completed=await page.evaluate(async query=>{window.catalogHarness.beginAuralTarget('owner',query);await window.catalogHarness.close('owner');return window.catalogHarness.auralTargetState();},fixtures.good!.request);
   expect(completed).toMatchObject({done:true,value:fixtures.good!.expected});
   await writeFile(info.outputPath('proof.json'),JSON.stringify({requestStartCut:true,pendingRejected:true,reopenedNativeTarget:true,queuedCloseWaited:true}));
+});
+
+test('actual WASM preserves NUL metadata and refuses whole NUL key JSON and byte-oversized text',async({page},info)=>{
+  await call(page,'seedUsers');const users=await call(page,'users');await call(page,'open',['owner']);
+  await install(page,'nulHeader','31234567-1234-1234-1234-123456789012');
+  const header=await call<{reducedRanges:boolean}>(page,'auralHeader',['owner']);expect(header.reducedRanges).toBe(false);
+  expect(await call(page,'auralTarget',['owner',fixtures.nulHeader!.request])).toEqual(fixtures.nulHeader!.expected);
+  for(const [name,id,code]of [['nulKey','41234567-1234-1234-1234-123456789012','INTEGRITY'],['largeText','51234567-1234-1234-1234-123456789012','LIMIT']]){
+    await install(page,name!,id!);const before=await call(page,'info',['owner']);expect(await failure(page,fixtures[name!]!.request)).toBe(code);
+    expect(await call(page,'info',['owner'])).toEqual(before);expect(await call(page,'users')).toEqual(users);
+  }
+  await install(page,'good','61234567-1234-1234-1234-123456789012');expect(await call(page,'auralTarget',['owner',fixtures.good!.request])).toEqual(fixtures.good!.expected);
+  await call(page,'close',['owner']);await writeFile(info.outputPath('proof.json'),JSON.stringify({exactNulHeaderFlag:true,wholeNulKeyRefused:true,metadataByteCap:true,filesUsersPreserved:true,validRetry:true}));
 });

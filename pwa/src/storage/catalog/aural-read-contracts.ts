@@ -17,7 +17,8 @@ export interface AuralCatalogHeader {
 export interface AuralSuffixLocation { readonly runId: number; readonly offset: number }
 export interface AuralHeaderReadApi {
   /** Require exact expected lowercase SHA256 snapshot. Read only three known metadata
-   * keys (at most four rows) and typeof/length of suffix_locations; never its full BLOB.
+   * keys (at most four rows) as SQL-bounded16KiB UTF8 BLOBs, then<=4096UTF16;
+   * exact NUL/BOM preserved, malformed UTF8 refused. Also typeof/length of suffix_locations; never its full BLOB.
    * Native schemas1..3/flags, browser refusal for malformed/duplicate/oversize metadata,
    * non-BLOB array, non-integral 8-byte pairs, or array bytes>=2GiB. Empty array is valid.
    * Throw CatalogError INVALID_REQUEST / STALE_SNAPSHOT / INTEGRITY; do not recover here.

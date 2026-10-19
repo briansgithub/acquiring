@@ -60,7 +60,7 @@ it('refuses metadata/key/blob type mismatches and missing modern key columns',()
   for(const change of ["UPDATE catalog_run SET view=NULL","UPDATE catalog_run SET key_json=x'00'","UPDATE catalog_run SET tokens='text'"]){const {sql,reader}=fixture();sql.exec(change);expect(()=>readAuralTargetRow(reader,SNAPSHOT,request)).toThrowError(expect.objectContaining({code:'INTEGRITY'}));}
   const {sql,reader}=fixture(true);sql.exec("UPDATE metadata SET value='aural-catalog-3' WHERE key='schema_version'");expect(()=>readAuralTargetRow(reader,SNAPSHOT,request)).toThrowError(expect.objectContaining({code:'INTEGRITY'}));
 });
-it('measures key limits as UTF8 bytes and refuses oversized metadata before value materialization',()=>{
+it('measures key limits as UTF8 bytes and applies metadata UTF16 limits after bounded fetch',()=>{
   for(const [column,text]of [['key_json','é'.repeat(32769)],['view','x'.repeat(4097)]]){const {sql,reader}=fixture();sql.prepare(`UPDATE catalog_run SET ${column}=?`).run(text!);expect(()=>readAuralTargetRow(reader,SNAPSHOT,request)).toThrowError(expect.objectContaining({code:'LIMIT'}));}
 });
 it('does not select an over-limit compressed BLOB into JS',()=>{
@@ -68,4 +68,31 @@ it('does not select an over-limit compressed BLOB into JS',()=>{
   const select=reader.selectObjects;let captured:Record<string,unknown>|undefined;
   reader.selectObjects=(query,bind)=>{const rows=select(query,bind);if(query.includes('FROM catalog_run'))captured=rows[0];return rows;};
   expect(()=>readAuralTargetRow(reader,SNAPSHOT,request)).toThrowError(expect.objectContaining({code:'LIMIT'}));expect(captured!.tokens).toBeNull();expect(captured!.tokensSize).toBe(8*1024*1024+1);
+});
+
+it('preserves embedded NUL/BOM run text and complete key JSON instead of CString truncation',()=>{
+  const {sql,reader}=fixture();const stable='r\0x',key=probe.keyRaw+'\0junk',view='\ufeffharmony_bass';
+  sql.prepare('UPDATE catalog_run SET stable_id=?,key_json=?,view=?').run(stable,key,view);
+  const result=readAuralTargetRow(reader,SNAPSHOT,request);
+  expect(result.runInput.stableId).toBe(stable);expect(result.runInput.keyJson).toBe(key);expect(result.runInput.view).toBe(view);
+});
+it('bounds metadata bytes before materialization despite leading NUL and refuses bad UTF8',()=>{
+  const {sql,reader}=fixture();const select=reader.selectObjects;let row:Record<string,unknown>|undefined;
+  reader.selectObjects=(query,bind)=>{const rows=select(query,bind);if(query.includes('FROM catalog_run'))row=rows[0];return rows;};
+  sql.prepare('UPDATE catalog_run SET stable_id=?').run('\0'+'x'.repeat(20000));
+  expect(()=>readAuralTargetRow(reader,SNAPSHOT,request)).toThrowError(expect.objectContaining({code:'LIMIT'}));
+  expect(row!.stableId).toBeNull();expect(row!.stableIdSize).toBe(20001);
+  sql.exec("UPDATE catalog_run SET stable_id=CAST(x'ff' AS TEXT)");
+  expect(()=>readAuralTargetRow(reader,SNAPSHOT,request)).toThrowError(expect.objectContaining({code:'INTEGRITY'}));
+});
+it('checks exact UTF16 metadata cap after byte-limited NUL/astral transport',()=>{
+  const {sql,reader}=fixture();
+  for(const valid of ['\0'+'x'.repeat(4095),'😀'.repeat(2048)]){
+    sql.prepare('UPDATE catalog_run SET stable_id=?').run(valid);
+    expect(readAuralTargetRow(reader,SNAPSHOT,request).runInput.stableId).toBe(valid);
+  }
+  for(const invalid of ['\0'+'x'.repeat(4096),'😀'.repeat(2049)]){
+    sql.prepare('UPDATE catalog_run SET stable_id=?').run(invalid);
+    expect(()=>readAuralTargetRow(reader,SNAPSHOT,request)).toThrowError(expect.objectContaining({code:'LIMIT'}));
+  }
 });

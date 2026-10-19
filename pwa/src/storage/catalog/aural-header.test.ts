@@ -80,6 +80,31 @@ describe('actual SQLite aural header and bounded suffix lookup',()=>{
     expect(readAuralSuffixLocation(reader,header,1)).toEqual({runId:513,offset:65537});expect(reads).toBe(1);
     expect(observed).toContain('substr(data,?,8)');expect(bounds).toEqual([9]);
   });
+  it('preserves exact NUL/BOM text through bounded BLOB reads instead of binding truncation',()=>{
+    const {sql,reader}=fixture();
+    sql.prepare('UPDATE metadata SET value=? WHERE key=?').run('unique-transitions-1\0junk','sequence_reduction_version');
+    expect(readAuralHeader(reader,SNAPSHOT).reducedRanges).toBe(false);
+    sql.prepare('UPDATE metadata SET value=? WHERE key=?').run(SNAPSHOT+'\0junk','snapshot_id');
+    expect(()=>readAuralHeader(reader,SNAPSHOT)).toThrowError(expect.objectContaining({code:'INTEGRITY'}));
+    sql.prepare('UPDATE metadata SET value=? WHERE key=?').run('\ufeff'+SNAPSHOT,'snapshot_id');
+    expect(()=>readAuralHeader(reader,SNAPSHOT)).toThrowError(expect.objectContaining({code:'INTEGRITY'}));
+  });
+  it('SQL bounds metadata bytes before materialization even after NUL and rejects invalid UTF8',()=>{
+    const {sql,reader}=fixture();const original=reader.selectObjects;let observed:Record<string,unknown>|undefined;
+    reader.selectObjects=(text,bind)=>{const rows=original(text,bind);if(text.includes('FROM metadata'))observed=rows.find(r=>r.key==='sequence_reduction_version');return rows;};
+    sql.prepare('UPDATE metadata SET value=? WHERE key=?').run('\0'+'x'.repeat(20000),'sequence_reduction_version');
+    expect(()=>readAuralHeader(reader,SNAPSHOT)).toThrowError(expect.objectContaining({code:'INTEGRITY'}));
+    expect(observed!.value).toBeNull();expect(observed!.valueBytes).toBe(20001);
+    sql.exec("UPDATE metadata SET value=CAST(x'ff' AS TEXT) WHERE key='sequence_reduction_version'");
+    expect(()=>readAuralHeader(reader,SNAPSHOT)).toThrowError(expect.objectContaining({code:'INTEGRITY'}));
+  });
+  it('keeps the UTF16 boundary after byte-bounded astral text decode',()=>{
+    const {sql,reader}=fixture();
+    sql.prepare('UPDATE metadata SET value=? WHERE key=?').run('😀'.repeat(2048),'sequence_reduction_version');
+    expect(readAuralHeader(reader,SNAPSHOT).reducedRanges).toBe(false);
+    sql.prepare('UPDATE metadata SET value=? WHERE key=?').run('😀'.repeat(2049),'sequence_reduction_version');
+    expect(()=>readAuralHeader(reader,SNAPSHOT)).toThrowError(expect.objectContaining({code:'INTEGRITY'}));
+  });
   it('reports missing lookup schema as integrity failure without a write or fallback query',()=>{
     const {sql,reader}=fixture();sql.exec('DROP TABLE metadata');
     expect(()=>readAuralHeader(reader,SNAPSHOT)).toThrowError(expect.objectContaining({code:'INTEGRITY'}));

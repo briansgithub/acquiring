@@ -17,8 +17,9 @@ export interface AuralTargetQueryApi {
    * installed SHA256 snapshot before any read. Header+one8byte suffix+one bounded run row.
    * start is a valid suffix rank; end ANY signedInt copied per native; length0..10000.
    * Native legacy key_json selected twice without referencing absent source_key_json column.
-   * SQL guards BLOB8MiB EACH /key TEXT64KiB UTF8 EACH /metadata TEXT4096Unicode points
-   * before materialization. Decoder further enforces UTF16/JSON/decompression budgets.
+   * SQL guards BLOB8MiB EACH /key TEXT64KiB UTF8 EACH /metadata TEXT16KiB UTF8
+   * before materialization, then metadata<=4096UTF16. Fetch TEXT as BLOB and decode
+   * fatal UTF8 preserving NUL/BOM; no binding CString truncation. Decoder further enforces JSON/decompression budgets.
    * Returned plain input/span objects frozen; compressed bytes are owned query results,
    * not caller data. Caller immediately passes input into copying async decoder while
    * holding same immutable readonly DB handle/serialized command; no persistent lease.

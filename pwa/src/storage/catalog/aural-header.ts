@@ -13,12 +13,16 @@ function rows(db:AuralReadDatabase,sql:string,bind?:(string|number)[]):Record<st
 /** Frozen native capability flags, with explicit browser bounds before BLOB materialization. */
 export function readAuralHeader(db:AuralReadDatabase,expectedSnapshot:string):AuralCatalogHeader {
   if(typeof expectedSnapshot!=='string'||!SNAPSHOT.test(expectedSnapshot))throw new CatalogError('INVALID_REQUEST','Expected catalog snapshot SHA256');
-  const metadata=rows(db,"SELECT key,value FROM metadata WHERE key IN ('schema_version','snapshot_id','sequence_reduction_version') LIMIT 4");
+  const metadata=rows(db,"SELECT key,typeof(value) AS valueType,length(CAST(value AS BLOB)) AS valueBytes,CASE WHEN typeof(value)='text' AND length(CAST(value AS BLOB))<=16384 THEN CAST(value AS BLOB) END AS value FROM metadata WHERE key IN ('schema_version','snapshot_id','sequence_reduction_version') LIMIT 4");
   const values=new Map<string,string>();
   for(const row of metadata){
-    const {key,value}=row;
-    if(typeof key!=='string'||!KEYS.has(key)||values.has(key)||typeof value!=='string'||value.length>4096)integrity('Invalid aural catalog metadata');
-    values.set(key,value);
+    const {key,value,valueType,valueBytes}=row;
+    if(typeof key!=='string'||!KEYS.has(key)||values.has(key)||valueType!=='text'||typeof valueBytes!=='number'||!Number.isSafeInteger(valueBytes)||valueBytes<0||valueBytes>16384||!(value instanceof Uint8Array)||value.byteLength!==valueBytes)integrity('Invalid aural catalog metadata');
+    let decoded:string;
+    try {decoded=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(value);}
+    catch {return integrity('Invalid aural metadata UTF8');}
+    if(decoded.length>4096)integrity('Invalid aural catalog metadata');
+    values.set(key,decoded);
   }
   const schema=values.get('schema_version'),snapshot=values.get('snapshot_id');
   if(!schema||!SCHEMAS.has(schema)||!snapshot||!SNAPSHOT.test(snapshot))integrity('Unsupported aural catalog header');
