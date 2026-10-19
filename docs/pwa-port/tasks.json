@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-18T23:18:41.070585+00:00",
+  "updated": "2026-10-19T03:43:36.055493+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -3166,6 +3166,23 @@
           "pwa/tests/browser/aural-target.spec.ts": "7ea42c8d7995d3053ef3720eb7b369e293c7b4fe3bf3ec51420a994caf7e6b56"
         },
         "finishedAt": "2026-10-18T23:18:41.070585+00:00"
+      },
+      "rankStatsProposalAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "status": "read-only proposal claimed; no source or native recapture",
+        "branch": "codex/pwa-aural-target-codec",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "6df29c543a3bc50ec2b3dc51b6b7ab9d7ea91ab6",
+        "primaryBase": "b3dfe801b0fcec3e7e155e0c74afe736229f457e",
+        "at": "2026-10-19T03:43:36.055493+00:00",
+        "ownedPaths": [
+          ".artifacts/pwa-port/t15-rank-stats-proposal-window22.md"
+        ],
+        "nextAction": "Reuse saved readiness; inspect only missing eligibility/bucket dependencies and exact pure statistics extraction seam. Recommend ONE bounded oracle-first kernel and exact native source ranges, data contract and test cases. No production source/capture/branch changes before root freezes contract.",
+        "expectedCheck": "Read-only native/source proposal with <=100 lines; primary and sibling remain clean.",
+        "limits": "One existing worker only; five-hour70 no new slice/check,80 yield; weekly100 stop,90 checkpoint each step. No completed evidence repetition or pending Library gate."
       }
     },
     {
@@ -3563,6 +3580,15 @@
       "validationReference": "T15.targetRuntimeAssignment.validation",
       "shell": "1754514ffe74",
       "status": "Reviewed current working source hashes; this checkpoint commits exact tested runtime tree. App presentation5336ad4e unchanged."
+    },
+    "capacityEntry": {
+      "at": "2026-10-19T03:43:36.055493+00:00",
+      "fiveHourUsedPercent": 0,
+      "weeklyUsedPercent": 60,
+      "ordinaryUsageAllowed": true,
+      "fiveHourResetsAt": 1792399327,
+      "weeklyResetsAt": 1792876816,
+      "action": "Primary b3dfe801 and sibling tips clean; agents completed/idle; no recovery-required guards. Elevated audit no Acquiring python/node/java or test listeners. Resume bounded T15 proposal."
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",
