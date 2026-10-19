@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T13:45:08.214376+00:00",
+  "updated": "2026-10-19T13:47:08.900680+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -3424,7 +3424,7 @@
       "statisticsRuntimeAssignment": {
         "owner": "coordinator runtime unknown unchanged",
         "at": "2026-10-19T13:39:00.361763+00:00",
-        "status": "request snapshot source/tests saved before first checks; protocol/RPC still unimplemented",
+        "status": "request snapshot accepted6tests/fulltypes; protocol/workerRPC/browser composition still pending",
         "baseCommit": "989fd4023ec82c3a10d7100d775d09cef4950ca1",
         "ownedPaths": [
           "pwa/src/storage/catalog/aural-statistics-runtime-contracts.ts",
@@ -3439,12 +3439,16 @@
           "pwa/scripts/catalog/make-aural-statistics-browser-fixture.py",
           "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
         ],
-        "nextAction": "First6request guard/ownership tests+fulltypes whileworkerdisjoint popularity SQL; sourceper frozencontract, no newbrowser/nativeproof before runtime composition.",
+        "nextAction": "After selected popularity query review/integration, add worker/client/harness routing and tiny realSQLite nativeexpected browserfixtures, validate source/types/build/actualChrome. Do not repeat accepted purecapture/nativeoracles.",
         "expectedCheck": "Public request guards/no-caller-mutation tests, client routing/timeout, actualChrome tiny SQLite/WASM stats/counts/score(native tolerance)/snapshot/filter/ownership/restart and user-data preservation. No old native/fullcatalog repeats.",
         "validation": {
           "requestUnits": "window23-request-unit-first-20261019:6tests672ms FIRSTPASS",
           "requestTypes": "window23-request-types-first-20261019 fullstrict types exit0 FIRSTPASS",
-          "state": "Only request snapshot source/tests prepared; not yet protocol/workerRPC. Files remain root-owned/untracked until own sourcecheckpoint."
+          "state": "Only request snapshot source/tests prepared; not yet protocol/workerRPC. Files remain root-owned/untracked until own sourcecheckpoint.",
+          "requestSha256": {
+            "pwa/src/storage/catalog/aural-statistics-request.ts": "8cbc9ca3ecdf044e08dd1401427950bed7650bc3f302641151bc881e139bd172",
+            "pwa/src/storage/catalog/aural-statistics-request.test.ts": "1eaa3bf4636bb0f1dda6397aa5c9bb1bf85e01ee40673f377d4e590626428bcf"
+          }
         }
       }
     },
