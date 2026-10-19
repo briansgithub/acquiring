@@ -1,0 +1,7 @@
+# Native rank eligibility bit index
+
+2026-10-19T03:46:12.709693+00:00 oracle-first intent: root unknown unchanged, contract frozen from whole801cf798 AuralRankEligibility.kt. Capture <=12NEW groups via unchanged actual Kotlin2.2.10 class/BitSet; provenance/products ignored except portable fixture/producer. Review before pure implementation. Max8388608 packed32 words, private copied bitmap/prefix and frozen public API. Worker separately read-only stats proposal; no shared paths. No SQL/global validity/popularity/query/UI acceptance or old capture repetition.
+
+First capture guard window22-rank-native-first-20261019 failed ONLY final Python verification (tuple vs JSON list). Actual native compile/runtime completed0; independent raw input/stdout inspection confirms12groups/258queries and copied BitSet invariance. Preserve original products and recover through exact source/input/driver comparison without native recompilation/recapture; one producer validation correction, no native failure.
+
+Recovered window22-rank-capture-recovered-20261019 exit0; original unchanged native products retained, no native recompile/recapture.12groups/258inclusive queries,2classes; fixture SHA06916dc3b728bf72c7d58639b0314f685378003f537cc1b31d86a3aae70a537d. Root whole-provenance/output review PASS. Frozen rank/statistics contracts fullstrict types PASS guard window22-rank-stats-contract-types-20261019. Pure rank implementation pending.

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T03:43:36.055493+00:00",
+  "updated": "2026-10-19T03:50:03.649810+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -3171,7 +3171,7 @@
         "owner": "preview_owner",
         "model": "gpt-6.1-sol",
         "thinking": "high",
-        "status": "read-only proposal claimed; no source or native recapture",
+        "status": "complete read-only proposal; sibling tracked clean, no native checks/source edits",
         "branch": "codex/pwa-aural-target-codec",
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "baseCommit": "6df29c543a3bc50ec2b3dc51b6b7ab9d7ea91ab6",
@@ -3182,7 +3182,57 @@
         ],
         "nextAction": "Reuse saved readiness; inspect only missing eligibility/bucket dependencies and exact pure statistics extraction seam. Recommend ONE bounded oracle-first kernel and exact native source ranges, data contract and test cases. No production source/capture/branch changes before root freezes contract.",
         "expectedCheck": "Read-only native/source proposal with <=100 lines; primary and sibling remain clean.",
-        "limits": "One existing worker only; five-hour70 no new slice/check,80 yield; weekly100 stop,90 checkpoint each step. No completed evidence repetition or pending Library gate."
+        "limits": "One existing worker only; five-hour70 no new slice/check,80 yield; weekly100 stop,90 checkpoint each step. No completed evidence repetition or pending Library gate.",
+        "proposalSha256": "58b5e67ac6ce327716a5ab3022a6c14fc3f85c612a1e983d9ff2baca6000ede6"
+      },
+      "rankEligibilityAssignment": {
+        "owner": "coordinator runtime unknown unchanged",
+        "at": "2026-10-19T03:46:12.709693+00:00",
+        "baseCommit": "dc90282b",
+        "status": "native oracle recovered/reviewed; frozen contracts full types PASS; pure source not yet started",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/rank-eligibility-contracts.ts",
+          "pwa/src/domain/catalog/fixtures/generate-rank-eligibility-native.py",
+          "pwa/src/domain/catalog/fixtures/native-rank-eligibility.json",
+          "pwa/src/domain/catalog/RANK_ELIGIBILITY_WORKLOG.md",
+          "pwa/src/domain/catalog/rank-eligibility.ts",
+          "pwa/src/domain/catalog/rank-eligibility.test.ts"
+        ],
+        "nextAction": "Capture/review <=12NEW groups from unchanged native rank BitSet class, then pure contract implementation/tests only. No global eligibility scan or stats claim.",
+        "expectedCheck": "First actual Kotlin capture, focused unit/type checks after oracle review; source/input/stdout/class hashes retained.",
+        "validation": {
+          "nativeFirstGuard": "window22-rank-native-first-20261019: native compile/runtime0 then producer tuple/list verification failure",
+          "recoveryGuard": "window22-rank-capture-recovered-20261019 exit0, ORIGINAL native products reused; no compile/runtime recapture",
+          "recoveryReceipt": ".artifacts/pwa-port/window22-rank-capture-recovery.json",
+          "oracleGroups": 12,
+          "queries": 258,
+          "classes": 2,
+          "fixtureSha256": "06916dc3b728bf72c7d58639b0314f685378003f537cc1b31d86a3aae70a537d",
+          "review": "Root verified complete source/input/driver/stdout/classes hashes and ALL258 outcomes/mutation results; actual unchanged JVM class, no TS expectation generator. One producer validation correction, native failures0.",
+          "types": "window22-rank-stats-contract-types-20261019: C:/nvm4w/nodejs/node.exe node_modules/typescript/bin/tsc --noEmit in pwa exit0",
+          "unproven": "No pure port tests, predicate construction/SQL/global song/popularity eligibility/runtime/catalog UI claim."
+        }
+      },
+      "statisticsOracleAssignment": {
+        "at": "2026-10-19T03:49:05.354438+00:00",
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "status": "contract types PASS; ready to branch from this checkpoint for native oracle only",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-aural-statistics-reference",
+        "previousBranch": "codex/pwa-aural-target-codec",
+        "previousTip": "6df29c543a3bc50ec2b3dc51b6b7ab9d7ea91ab6",
+        "primaryBase": "dc90282b1dee254c69119e5f61b3b925676fce4d",
+        "contract": "pwa/src/domain/catalog/statistics-contracts.ts",
+        "contractSha256": "c3f642d844d60587018f28f7e338fd32255363f7e1c9a95a237184ef4226800d",
+        "ownedPaths": [
+          "pwa/src/domain/catalog/fixtures/generate-statistics-native.py",
+          "pwa/src/domain/catalog/fixtures/native-statistics.json",
+          "pwa/src/domain/catalog/STATISTICS_WORKLOG.md"
+        ],
+        "nextAction": "New branch from contract checkpoint in existing CLEAN sibling only after root names exact commit; preserve all refs/artifacts. Capture <=20NEW actual-native stats/comparator groups, review/validated3path checkpoint then idle. No production implementation before root oracle review.",
+        "expectedCheck": "Actual cached Kotlin2.2.10 compile/runtime with unchanged frozen stats/factor/base/comparator + native declarations; retained provenance/input/stdout/classes. Oracle only; no SQL behavior stub or old recapture."
       }
     },
     {
