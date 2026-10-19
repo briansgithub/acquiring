@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T13:59:50.857888+00:00",
+  "updated": "2026-10-19T14:05:39.073377+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2381,7 +2381,7 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "coordinator runtime unknown unchanged; workers idle",
+      "owner": "coordinator runtime unknown unchanged; preview_owner Sol/high bounded read-only proposal",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
@@ -3511,6 +3511,50 @@
           "receiptSha256": "998d5b9b5675484babcde872542f1efad635cc39f28fe23465f45193d613319c",
           "producerSha256": "11b4079c7aab144277bf41d012fa416f887c3cefd7a3b722432257c69dbbeb95"
         }
+      },
+      "eligibilityRuntimeProposal": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "at": "2026-10-19T14:00:18.684226+00:00",
+        "branch": "codex/pwa-statistics-fixtures",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "baseCommit": "12c637766fa03dcf815688d3cf40662ef5b92d92",
+        "status": "complete read-only75lineproposal; rootreviewed whole; canonical finite-score contract supersedes optional nonfinite offer",
+        "ownedPaths": [
+          ".artifacts/pwa-port/t15-eligibility-runtime-proposal-window23.md"
+        ],
+        "nextAction": "Reuse saved rank-stats proposal/readiness. Inspect ONLY missing eligibleRankBits and matchingBuckets dependencies to select ONE smallest next oracle-first kernel/SQL slice. <=80line ignoredproposal naming exactnative slices, existingkernels, dataflow/budgets/interruption, proposedAPI/ownedpaths/cases. No originalDB/open/nativecapture/newbranch/sourceedits/deps/production/browser or pendingLibrary gate. Root freezes contract before implementation.",
+        "proposalSha256": "0377760e5fc11f6eae9e7448cec074c780f6905c0e07862b717752a3976e3023"
+      },
+      "songRankAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "at": "2026-10-19T14:04:54.381867+00:00",
+        "primaryBase": "e7741959ec72f3586564ca5abe3aa2c969372594",
+        "branch": "codex/pwa-song-rank-eligibility",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "previousBranch": "codex/pwa-statistics-fixtures",
+        "previousTip": "12c637766fa03dcf815688d3cf40662ef5b92d92",
+        "status": "contractfulltypesFIRSTPASS; freezecheckpoint next beforephase1delegation",
+        "contract": "pwa/src/domain/catalog/song-rank-contracts.ts",
+        "phase1OwnedPaths": [
+          "pwa/src/domain/catalog/fixtures/generate-song-rank-native.py",
+          "pwa/src/domain/catalog/fixtures/native-song-rank.json",
+          "pwa/src/domain/catalog/SONG_RANK_WORKLOG.md"
+        ],
+        "phase2OwnedPaths": [
+          "pwa/src/domain/catalog/song-rank-eligibility.ts",
+          "pwa/src/domain/catalog/song-rank-eligibility.test.ts",
+          "pwa/src/domain/catalog/SONG_RANK_WORKLOG.md"
+        ],
+        "nextAction": "Roottypes/checkpointcontract thenexactbase/newbranchinexistingsibling; ORACLE FIRST<=12NEWnativegroups unchangedwhole method/helper/rankclass, actual privateLong reflection/wirepadadapter. No sourceportbefore rootreview/oraclefollowup. Finite score domain explicit; no global10000rankclaim.",
+        "expectedCheck": "ActualKotlin2.2.10 provenance/native output; rootallhashes/input/packing review before pureport; thenmeaningful native+refusal/snapshot/freeze/indexcomposition tests/scopedtypes.",
+        "validation": {
+          "contractTypes": "window23-song-rank-contract-types-20261019:fullstrict types exit0 FIRSTPASS",
+          "contractSha256": "c28a2e3425ee0ac325a21b430538048ff785228e9f9855cca2b2431c7f23b8a2"
+        }
       }
     },
     {
@@ -3930,13 +3974,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-18T23:18:41.070585+00:00",
-      "fiveHourUsedPercent": 70,
-      "weeklyUsedPercent": 59,
+      "at": "2026-10-19T14:05:39.073377+00:00",
+      "fiveHourUsedPercent": 58,
+      "weeklyUsedPercent": 76,
       "ordinaryUsageAllowed": true,
-      "fiveHourResetsAt": 1792380961,
+      "fiveHourResetsAt": 1792434545,
       "weeklyResetsAt": 1792876816,
-      "action": "Five-hour70% no-new-work boundary reached after target/browser acceptance. Save current source/evidence checkpoint and yield; no new slice/worker/expensive check."
+      "action": "Continue bounded oracle-first song-rank seam; stopnewstep70five-hour/80checkpoint, weekly100override."
     }
   }
 }
