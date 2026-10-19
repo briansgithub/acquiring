@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T14:12:23.400497+00:00",
+  "updated": "2026-10-19T14:13:34.489538+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2381,12 +2381,12 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "coordinator runtime unknown unchanged; preview_owner Sol/high bounded read-only proposal",
+      "owner": "coordinator runtime unknown unchanged; both workers idle",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
-      "slice": "Accepted pure query/identity/loop/rank bits, exact-byte header/target RPC, pure statistics and bounded readonly facts/popularity statistics RPC. Global rank predicate/query buckets/frontier/groups/pages/UI/fullcatalog budgets remain open.",
-      "nextAction": "Accepted selected-interval statistics foundation. Resume global rank eligibility/querymatching bucket/frontier/group/page/UI dependency graph; do not repeat accepted native captures or tinyChrome checks unchanged.",
+      "slice": "Accepted actualWASM bounded statistics RPC (495checks/build+4Chrome), plus oracle-first song-rank reference12groups25probes. Pure song-rank fragment source still unimplemented; fullglobal predicate/buckets/frontier/groups/pages/UI remain open.",
+      "nextAction": "Afterlivefivehour<70/ordinaryallowed, inspectHANDOFF/tasks/Git/guard/processes; samecleanSol/high existingefd7a0e8 sibling canfast-forward to namedprimaryoracle/docs base underrootclaim, thenPHASE2EXACT3: song-rank-eligibility.ts/.test.ts/SONG_RANK_WORKLOG.md. Frozen64ba88ec contract; useaccepted25nativeprobes, browserrefusal/snapshot/freeze/reentry/indexcomposition tests +scopedtypes, narrowvalidatedcommit thenrootreview/normalmerge/combinedchecks. NO native recapture/globalSQL/browsercacheclaim.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -3537,7 +3537,7 @@
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "previousBranch": "codex/pwa-statistics-fixtures",
         "previousTip": "12c637766fa03dcf815688d3cf40662ef5b92d92",
-        "status": "oracleefd7a0e8 validated/reviewed; normalmerge next; pureport NOTstarted",
+        "status": "oracle accepted/normalmerge0bb77d9b;12nativegroups25probes/5classes+8jars verified; pureport NOTstarted",
         "contract": "pwa/src/domain/catalog/song-rank-contracts.ts",
         "phase1OwnedPaths": [
           "pwa/src/domain/catalog/fixtures/generate-song-rank-native.py",
@@ -3549,12 +3549,12 @@
           "pwa/src/domain/catalog/song-rank-eligibility.test.ts",
           "pwa/src/domain/catalog/SONG_RANK_WORKLOG.md"
         ],
-        "nextAction": "Normalmerge oracleexacttip; preserve all originalcapture products. Atfivehour70 startno phase2. Nextapplicablewindow liveusage+guard/Git, then sameSol/high phase2EXACT3paths frommergedoracle/frozen64ba88ec contract. No native recapture/globalclaim.",
+        "nextAction": "Afterlivefivehour<70/ordinaryallowed, inspectHANDOFF/tasks/Git/guard/processes; samecleanSol/high existingefd7a0e8 sibling canfast-forward to namedprimaryoracle/docs base underrootclaim, thenPHASE2EXACT3: song-rank-eligibility.ts/.test.ts/SONG_RANK_WORKLOG.md. Frozen64ba88ec contract; useaccepted25nativeprobes, browserrefusal/snapshot/freeze/reentry/indexcomposition tests +scopedtypes, narrowvalidatedcommit thenrootreview/normalmerge/combinedchecks. NO native recapture/globalSQL/browsercacheclaim.",
         "expectedCheck": "ActualKotlin2.2.10 provenance/native output; rootallhashes/input/packing review before pureport; thenmeaningful native+refusal/snapshot/freeze/indexcomposition tests/scopedtypes.",
         "validation": {
           "contractTypes": "window23-song-rank-contract-types-20261019:fullstrict types exit0 FIRSTPASS",
           "contractSha256": "c28a2e3425ee0ac325a21b430538048ff785228e9f9855cca2b2431c7f23b8a2",
-          "native": "t15-song-rank-native-first-20261019-119:FIRSTcompile/runtime exit0/12groups25probes/5classes; verify-only120PASS; actualguardname in workerreceipt authoritative",
+          "native": "t15-song-rank-reference-native-20261019-119:FIRSTcompile/runtime exit0/12groups25probes/5classes; originalproducts verify-only120PASS",
           "root": "window23-song-rank-oracle-review-fix1-20261019 PASS allwhole/slices/extracted/input/stdout/classes/reflectedLongsplitpad/tailbits/UTF16; firstroothelper65hex literal typo failed BEFORE furtherchecks, correctedonce. No nativefailure/recapture.",
           "jars": "window23-song-rank-jars-review-20261019:all8actualcachedcompiler/runtimejars+exact801cf798authorityverified",
           "producerSha256": "64c538f7c67b5ce52b62694789037283ea6ab4cb53d2ddc69d3c2f599395300f",
@@ -3562,9 +3562,11 @@
           "receipt": "..\\Acquiring-pwa-data-compat\\.artifacts\\pwa-port\\t15-song-rank-reference-validation.json",
           "receiptSha256": "6caacb13a2ac358ccdcaaf484e70c443a0c58deae4b0f84b18bb78130e75bc4c",
           "work": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t15-song-rank-native/20261019T140906839787Z",
-          "limitation": "Producer created actualWORKbeforecompile but did not print/save separate precompileWORKintent. Successful119 path preserved in terminalreceipt; no retroactiveintentclaim/sourcehashchange. Futureproducers must persist actualWORK beforelongoperation. Pureport/SQL/global/browser unrun."
+          "limitation": "Producer created actualWORKbeforecompile but did not print/save separate precompileWORKintent. Successful119 path preserved in terminalreceipt; no retroactiveintentclaim/sourcehashchange. Futureproducers must persist actualWORK beforelongoperation. Pureport/SQL/global/browser unrun.",
+          "primaryIntegration": "window23-song-rank-reference-integration-20261019:exact3primaryfile hashes match accepted nativecheckpoint after normalmerge; no unchangedtest/native recapture"
         },
-        "oracleTip": "efd7a0e82d75c71df859862aab9f1967d0e54fa0"
+        "oracleTip": "efd7a0e82d75c71df859862aab9f1967d0e54fa0",
+        "integrationCommit": "0bb77d9b391f178b0621cb31d78595b9749740f8"
       }
     },
     {
@@ -3984,13 +3986,13 @@
     "supersedes": "Historical70%either-window rules and weeklyresetwait below100% do not apply to weekly anymore.",
     "automationVerifiedAt": "2026-10-17T11:32:25.819883+00:00",
     "lastObserved": {
-      "at": "2026-10-19T14:05:39.073377+00:00",
-      "fiveHourUsedPercent": 58,
-      "weeklyUsedPercent": 76,
+      "at": "2026-10-19T14:13:34.489538+00:00",
+      "fiveHourUsedPercent": 72,
+      "weeklyUsedPercent": 78,
       "ordinaryUsageAllowed": true,
       "fiveHourResetsAt": 1792434545,
       "weeklyResetsAt": 1792876816,
-      "action": "Continue bounded oracle-first song-rank seam; stopnewstep70five-hour/80checkpoint, weekly100override."
+      "action": "Fivehour>=70: no new slice/worker/expensivecheck. Existingoracle integrated/verified, save recovery checkpoint thenyield. Weekly100override stillactive; recordedfutureweeklyresetdoesnotblockremainingordinaryallowance."
     }
   }
 }
