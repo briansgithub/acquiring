@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T13:57:00.301657+00:00",
+  "updated": "2026-10-19T13:59:50.857888+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2381,12 +2381,12 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "coordinator; both workers idle",
+      "owner": "coordinator runtime unknown unchanged; workers idle",
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
-      "slice": "Accepted pure query/identity/loop/rank-bit kernels and header/target RPC foundation; bounded scalar stats-facts SQL unit-proven. Native statistics oracle integrated, production statistics draft pending approval-service validation. Global eligibility/buckets/ranking/pages/UI/fullcatalog budgets remain open.",
-      "nextAction": "Resume exact saved approval-blocked validations when service recovers; do not repeat accepted captures/root443tests unless source/integration changes. Then stats integration and bounded facts/runtime composition, global eligibility/query buckets/frontier/pages/UI; all fullcatalog/device gates remain open.",
+      "slice": "Accepted pure query/identity/loop/rank bits, exact-byte header/target RPC, pure statistics and bounded readonly facts/popularity statistics RPC. Global rank predicate/query buckets/frontier/groups/pages/UI/fullcatalog budgets remain open.",
+      "nextAction": "Accepted selected-interval statistics foundation. Resume global rank eligibility/querymatching bucket/frontier/group/page/UI dependency graph; do not repeat accepted native captures or tinyChrome checks unchanged.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -3442,7 +3442,7 @@
       "statisticsRuntimeAssignment": {
         "owner": "coordinator runtime unknown unchanged",
         "at": "2026-10-19T13:39:00.361763+00:00",
-        "status": "Fixture reviewed and4Chrome cases typesPASS; final combined/build/browser queued before acceptance",
+        "status": "accepted bounded actualWASM statistics RPC:495combined/fulltypes/build +4Chrome24.1s FIRSTPASS",
         "baseCommit": "989fd4023ec82c3a10d7100d775d09cef4950ca1",
         "ownedPaths": [
           "pwa/src/storage/catalog/aural-statistics-runtime-contracts.ts",
@@ -3457,7 +3457,7 @@
           "pwa/scripts/catalog/make-aural-statistics-browser-fixture.py",
           "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
         ],
-        "nextAction": "Review/normalmerge exact fixture2paths, fulltypes/build then first actualChrome at unique pwa/.artifacts/pwa-port/aural-statistics/window23-first. All native expected values unchanged.",
+        "nextAction": "Accepted selected-interval statistics foundation. Resume global rank eligibility/querymatching bucket/frontier/group/page/UI dependency graph; do not repeat accepted native captures or tinyChrome checks unchanged.",
         "expectedCheck": "Public request guards/no-caller-mutation tests, client routing/timeout, actualChrome tiny SQLite/WASM stats/counts/score(native tolerance)/snapshot/filter/ownership/restart and user-data preservation. No old native/fullcatalog repeats.",
         "validation": {
           "requestUnits": "window23-request-unit-first-20261019:6tests672ms FIRSTPASS",
@@ -3476,14 +3476,26 @@
             "pwa/src/storage/catalog/client.test.ts": "b0f13d05d594bb15e03a58ba58c83f92efb77bce611c9a5ca73528267c655179",
             "pwa/src/storage/catalog/protocol.ts": "b39a07d45aebbf65acea56fe106b4cb8bc484f0cc5445ddbee6d98a47c22a6a9",
             "pwa/tests/browser/catalog-worker-harness.ts": "5384d637ad269a549bad12cdfd1093343de15083320d8cc0aff307730e1b75f5"
-          }
-        }
+          },
+          "combined": "window23-statistics-final-combined-build-20261019:495tests/32files13.65s/fullstrict types/production build PASS",
+          "browser": "window23-statistics-browser-first-20261019:4actualChrome24.1s FIRSTPASS;8unchanged native examples exactcounts/toleranced scores; missing/stale/refusal/users/retry/request-startcut/offlinequery/queuedclose",
+          "build": "d540d2d7fb7fd154e353542ddbfb12536abe8b70c9a946b32f2a676c103b34c1",
+          "proofSha256": {
+            "pwa/.artifacts/pwa-port/aural-statistics/window23-first/aural-statistics-actual-SQ-8420a-s-across-counts-and-factors-chrome/proof.json": "40fa9c2017c82c356783c0181d9e8372ad5e5d08be715016ab77e91a14d7526f",
+            "pwa/.artifacts/pwa-port/aural-statistics/window23-first/aural-statistics-malformed-06e07-g-and-users-for-valid-retry-chrome/proof.json": "a9ac5291457a7dfadf22015d4f4068ec35dc93b0804db8d959bb5cc055d39880",
+            "pwa/.artifacts/pwa-port/aural-statistics/window23-first/aural-statistics-statistic-13a96-ctivation-without-rebinding-chrome/proof.json": "953984ead90610d30b20fb1ca7afeb9ea4d1ccbd3fa7ffd6f77e06b1aa3ad25d",
+            "pwa/.artifacts/pwa-port/aural-statistics/window23-first/aural-statistics-statistic-201ab-wner-and-queued-close-waits-chrome/proof.json": "58294b7ce645a589e5f50ae923a8c0264d09fa65243b983c773172a762f0bf9a"
+          },
+          "review": "preview_owner gpt-6.1-sol/high independentREADONLY review7b372d14: no materialfinding; no duplicatedtests/source edits",
+          "limitations": "Development browser testentry +productionbundle build separate. Newowner opens ONLINE then offlineSQLquery; no coldbootstrap/midCPUcut/actual30stimeout/device/fullcatalog/globaleligibility/UI claim. Fakeclient timeout8tests separately accepted."
+        },
+        "testedRevision": "7b372d14640961369406725f0702a6799ba5de40"
       },
       "statisticsFixtureAssignment": {
         "owner": "preview_owner",
         "model": "gpt-6.1-sol",
         "thinking": "high",
-        "status": "Root whole producer/smokehelper reviewed, no blocker; exact2path clean tip verified; normalmerge next",
+        "status": "accepted fixture12c63776 normallymerged7b372d14;9smokes and root4actualChrome PASS;workeridle",
         "branch": "codex/pwa-statistics-fixtures",
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "ownedPaths": [
