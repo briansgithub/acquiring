@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T13:36:33.344579+00:00",
+  "updated": "2026-10-19T13:39:00.361763+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -3321,7 +3321,7 @@
         "model": "gpt-6.1-sol",
         "thinking": "high",
         "at": "2026-10-19T03:57:25.379460+00:00",
-        "status": "source accepted at worker tip3b465d0b; root normal integration/combined acceptance pending",
+        "status": "accepted normalmerge989fd402 +470primary tests/30files12.67s/fullstrict types PASS",
         "baseCommit": "03fcde73a95b4dcecf523c2906cd6b5d81756c6e",
         "branch": "codex/pwa-aural-statistics",
         "previousBranch": "codex/pwa-aural-statistics-reference",
@@ -3332,7 +3332,7 @@
           "pwa/src/domain/catalog/catalog-statistics.test.ts",
           "pwa/src/domain/catalog/STATISTICS_WORKLOG.md"
         ],
-        "nextAction": "Normal exact-tip3b465d0b merge into primary a2c70f80 successor after this reviewcheckpoint, only3owned new/append paths; then combined ROOT check. No source changes/newworker/native capture before acceptance.",
+        "nextAction": "Accepted kernel; no unchanged reruns/native recapture. Runtime composition uses same immutable attempt selected scalar facts/popularity under bounded contract.",
         "expectedCheck": "First focused native parity/browser-domain unit groups + scoped strict types; exact hashes/receipts. Two fix cycles maximum.",
         "validation": {
           "firstUnits": "t15-statistics-source-unit-20261019-84:26/27PASS; all20nativegroups PASS. Only browser getter-count assertion20vs18 fails. No production source fix required by observed failure.",
@@ -3358,7 +3358,8 @@
           "finalUnits": "t15-statistics-source-final-unit-20261019-95:27/27groups669ms PASS;20nativegroups+7browser; native Intzero normalize, Double signedzero retained",
           "finalTypes": "t15-statistics-source-final-types-20261019-96 scopedstrict types exit0",
           "finalReceipt": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t15-statistics-source-validation.json",
-          "finalReceiptSha256": "536210aa66a169556975c943befcc58d11691ae2bfe092504cbdcd4e2e04bc15"
+          "finalReceiptSha256": "536210aa66a169556975c943befcc58d11691ae2bfe092504cbdcd4e2e04bc15",
+          "primaryCombined": "window23-statistics-primary-combined-20261019:470tests/30files12.67s +fullstrict types PASS on989fd4023ec82c3a10d7100d775d09cef4950ca1"
         },
         "resumeIntent": {
           "at": "2026-10-19T13:31:06.348935+00:00",
@@ -3368,7 +3369,8 @@
           "state": "Root verified3savedworkerhashes unchanged, bothagentscompletedidle; recoveryRequired[]; NEW elevated read-only process/port audit returned0 with no Acquiring python/node/java or4173/5173listeners.",
           "nextAction": "Apply ONLY saved test gettercount20->18/log; first scopedtypes +unitfix1,3path validated checkpoint then idle for root integration. No native/source recapture/newbranch."
         },
-        "tip": "3b465d0b8f03ec0fdff826dd08ee132951b4ee06"
+        "tip": "3b465d0b8f03ec0fdff826dd08ee132951b4ee06",
+        "integrationCommit": "989fd4023ec82c3a10d7100d775d09cef4950ca1"
       },
       "statisticsFactsAssignment": {
         "owner": "coordinator runtime unknown unchanged",
@@ -3394,6 +3396,47 @@
           "unproven": "No WASM/RPC/global valid-song/rank predicate/build pipeline, fullcatalog spans/coldwarm/device/UI. <=10000selectedpairs is explicit refusal boundary, no partial total silently returned.",
           "finalRecovery": "Source/check hashes and frozen Android diff verified; outside-guard root recoveryRequired[]. Final verifier baseline-field/self-incomplete-status preparation errors retained, no product tests/source failure."
         }
+      },
+      "popularityQueryAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "at": "2026-10-19T13:39:00.361763+00:00",
+        "status": "contract frozen before newbranch/source; types check next",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "branch": "codex/pwa-aural-popularity",
+        "previousBranch": "codex/pwa-aural-statistics",
+        "previousTip": "3b465d0b8f03ec0fdff826dd08ee132951b4ee06",
+        "primaryBase": "989fd4023ec82c3a10d7100d775d09cef4950ca1",
+        "ownedPaths": [
+          "pwa/src/storage/catalog/aural-popularity-query.ts",
+          "pwa/src/storage/catalog/aural-popularity-query.test.ts",
+          "pwa/src/storage/catalog/POPULARITY_WORKLOG.md"
+        ],
+        "contract": "pwa/src/storage/catalog/aural-popularity-contracts.ts",
+        "nextAction": "After root names exact validatedcontractcommit, create newbranch from it in existing CLEAN sibling preserving allrefs/artifacts. Bounded selected-song readonly SQL projection only, actualSQLite tests/scopedtypes,3path validatedcheckpoint then idle. No newnativecapture/worker/client/other exports/contracts/deps.",
+        "expectedCheck": "Meaningful actual nodeSQLite readonly projection/refusal/snapshot/batch/double/bytebounds tests +scopedstrict types. Same approval route, no model/permission downgrades."
+      },
+      "statisticsRuntimeAssignment": {
+        "owner": "coordinator runtime unknown unchanged",
+        "at": "2026-10-19T13:39:00.361763+00:00",
+        "status": "bounded request/RPC contract frozen; source not started",
+        "baseCommit": "989fd4023ec82c3a10d7100d775d09cef4950ca1",
+        "ownedPaths": [
+          "pwa/src/storage/catalog/aural-statistics-runtime-contracts.ts",
+          "pwa/src/storage/catalog/aural-statistics-request.ts",
+          "pwa/src/storage/catalog/aural-statistics-request.test.ts",
+          "pwa/src/storage/catalog/catalog-worker.ts",
+          "pwa/src/storage/catalog/client.ts",
+          "pwa/src/storage/catalog/client.test.ts",
+          "pwa/src/storage/catalog/protocol.ts",
+          "pwa/tests/browser/catalog-worker-harness.ts",
+          "pwa/tests/browser/aural-statistics.spec.ts",
+          "pwa/scripts/catalog/make-aural-statistics-browser-fixture.py",
+          "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
+        ],
+        "nextAction": "Request snapshot/tests first while Sol builds disjoint popularity SQL; after its review/normalintegration compose selected facts+popularity+accepted purestats under same immutable attemptedDBownership, then types/build/actualChrome/native-oracle fixtures/recovery proof.",
+        "expectedCheck": "Public request guards/no-caller-mutation tests, client routing/timeout, actualChrome tiny SQLite/WASM stats/counts/score(native tolerance)/snapshot/filter/ownership/restart and user-data preservation. No old native/fullcatalog repeats."
       }
     },
     {
