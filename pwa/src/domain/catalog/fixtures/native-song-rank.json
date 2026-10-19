@@ -1,0 +1,5504 @@
+{
+  "authority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "kotlinVersion": "2.2.10",
+  "serializationVersion": "1.8.1",
+  "compilerVersion": "info: kotlinc-jvm 2.2.10 (JRE 25.0.3+-15898627-b508.16)",
+  "wholeSourceSha256": {
+    "catalog": "5a2bf50be38fe2e73705f54c0af3766bdfc4034418712eb6555eb1981e5dabbd",
+    "corpus": "69c9676196c0bfe0b8e28a419810d56a7a63d2bb6a9181deec7d982c001e368f",
+    "rank": "c488eadefc416e70bfeaaf1d21a1127df3dda547cdd591d3d721da3a8396c5a4"
+  },
+  "sliceSha256": {
+    "method": "349ec63870e67c23fc239f3841deccd71fdbd2a8edce6ab6854e07475e23b826",
+    "helper": "a781cbebb4fea174c6850e49e116fae988c21ea62eb0da1a7a6a26c1c205e913",
+    "popularity": "9e44d7829677d9130e4c7769cbde451c70045ccbcbfd0cd24980d148365684b3"
+  },
+  "extractedSourceSha256": {
+    "Native": "8aa726e1bd63b425a54ef9933df26f8774d02d11fd2a58e5dca1b272e371de75",
+    "Rank": "c488eadefc416e70bfeaaf1d21a1127df3dda547cdd591d3d721da3a8396c5a4",
+    "Adapter": "c21ac67355b05629de1968c81d837b016c6a711d3855f39fa8d3aa49b28e9efb",
+    "Driver": "d064d8d5eef608a5fc3b9f385efd5aa55ce26421fb428701f40ef2f30151e11d"
+  },
+  "producerSha256": "64c538f7c67b5ce52b62694789037283ea6ab4cb53d2ddc69d3c2f599395300f",
+  "nativeInputSha256": "d3ca6dcfaf38c9bc7ccd11639d7810b71416bc9e30a257b77c5ae1c085427249",
+  "nativeStdoutSha256": "5e892b2949b327e7e65716f267eb3119a9162a1bc1792d57b8cab623990ba778",
+  "nativeClassSha256": {
+    "AuralPopularity.class": "e95f7ad632209273f23ae5e88f6e2be08c8321d1e62abaeedc6c5f2e64f8486a",
+    "AuralRankEligibility.class": "545c0d678fd576d19967aa0814a92f4806d600617154a80a7992cae52997d1d5",
+    "DriverKt.class": "dd711dc411af04f37edb69478aea856e2e1356b4a1fab776da85232b0ad7995e",
+    "NativeKt.class": "35844db8f8452ce1a3bcd716c9a37d9ba99e385d25df8d759afd654ae25ca06a",
+    "NativeSongRankHost.class": "4b2ec2bf9de7e9f5344af335561b22d62937f90ef46b1e244e93ed010d18aa3e"
+  },
+  "jars": [
+    {
+      "file": "kotlin-compiler-embeddable-2.2.10.jar",
+      "sha256": "79628fd5d64b4692a62f98962baab00e9076a37e2cffd6ace33cd0b7be7d1cdf"
+    },
+    {
+      "file": "kotlin-stdlib-2.2.10.jar",
+      "sha256": "9c67cc79efd6b9215b49d2a4308f5f3433537376c7c88e89bdd6729bd096e61a"
+    },
+    {
+      "file": "kotlin-script-runtime-2.2.10.jar",
+      "sha256": "c304a67dba6a61dde560e6310920bed746307c3854f6675c29ac29114731b6b0"
+    },
+    {
+      "file": "kotlin-daemon-embeddable-2.2.10.jar",
+      "sha256": "b31573d418961fa080760fedcfc90d68ad67a85eafa245c73fe3d551476777ba"
+    },
+    {
+      "file": "kotlinx-coroutines-core-jvm-1.9.0.jar",
+      "sha256": "ad89c2892235e670f222d819cb3d81188143cb19a05b59df9889ae4269f5c70a"
+    },
+    {
+      "file": "annotations-23.0.0.jar",
+      "sha256": "7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05"
+    },
+    {
+      "file": "kotlinx-serialization-json-jvm-1.8.1.jar",
+      "sha256": "8769e5647557e3700919c32d508f5c5dad53c5d8234cd10846354fbcff14aa24"
+    },
+    {
+      "file": "kotlinx-serialization-core-jvm-1.8.1.jar",
+      "sha256": "3565b6d4d789bf70683c45566944287fc1d8dc75c23d98bd87d01059cc76f2b3"
+    }
+  ],
+  "adapter": "WHOLE unchanged native eligibleRankBits/helper/rank class/popularity declaration. Fresh cache perprobe; only supplied rank-song via suffix/run arrays, validity and popularity bindings. Reflection reads returned actual private Long words; unsigned32 split/zero padding ONLY wire extent adapter. UTF16 unit observations prove exact input decode including lone surrogates without lossy stdout string echo. No predicate replacement/TS truth/SQL/cache/global scan/old recapture. No serialization plugin needed: declarations are nonserializable, actual JSON element runtime used.",
+  "cases": [
+    {
+      "name": "empty-rank",
+      "probes": [
+        {
+          "name": "empty",
+          "songByRank": [],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 0,
+            "words": []
+          },
+          "nativeLongWords": [],
+          "nativeIsEmpty": true,
+          "decodedUtf16": {
+            "songByRank": [],
+            "validSongIds": [
+              [
+                65
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ]
+            ]
+          }
+        },
+        {
+          "name": "empty-with-unreferenced-data",
+          "songByRank": [],
+          "validSongIds": [
+            "unused"
+          ],
+          "popularity": [
+            {
+              "songId": "unused",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 0,
+            "words": []
+          },
+          "nativeLongWords": [],
+          "nativeIsEmpty": true,
+          "decodedUtf16": {
+            "songByRank": [],
+            "validSongIds": [
+              [
+                117,
+                110,
+                117,
+                115,
+                101,
+                100
+              ]
+            ],
+            "popularityIds": [
+              [
+                117,
+                110,
+                117,
+                115,
+                101,
+                100
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "all-invalid-songs",
+      "probes": [
+        {
+          "name": "invalid",
+          "songByRank": [
+            "A",
+            "B"
+          ],
+          "validSongIds": [],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0.5
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 2,
+            "words": [
+              0
+            ]
+          },
+          "nativeLongWords": [],
+          "nativeIsEmpty": true,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                66
+              ]
+            ],
+            "validSongIds": [],
+            "popularityIds": [
+              [
+                65
+              ]
+            ]
+          }
+        },
+        {
+          "name": "valid-but-unseen",
+          "songByRank": [
+            "A",
+            "B"
+          ],
+          "validSongIds": [
+            "C"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1
+            },
+            {
+              "songId": "B",
+              "score": 1
+            },
+            {
+              "songId": "C",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 2,
+            "words": [
+              0
+            ]
+          },
+          "nativeLongWords": [],
+          "nativeIsEmpty": true,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                66
+              ]
+            ],
+            "validSongIds": [
+              [
+                67
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-and-null-score",
+      "probes": [
+        {
+          "name": "null-and-missing",
+          "songByRank": [
+            "A",
+            "B",
+            "C"
+          ],
+          "validSongIds": [
+            "A",
+            "B",
+            "C"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": null
+            },
+            {
+              "songId": "C",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 3,
+            "words": [
+              4
+            ]
+          },
+          "nativeLongWords": [
+            "4"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ],
+              [
+                67
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "thresholds-inclusive-neighbors",
+      "probes": [
+        {
+          "name": "percent-0",
+          "songByRank": [
+            "negative",
+            "zero",
+            "below",
+            "half",
+            "above",
+            "one",
+            "outside",
+            "null"
+          ],
+          "validSongIds": [
+            "negative",
+            "zero",
+            "below",
+            "half",
+            "above",
+            "one",
+            "outside",
+            "null"
+          ],
+          "popularity": [
+            {
+              "songId": "negative",
+              "score": -0.1
+            },
+            {
+              "songId": "zero",
+              "score": 0
+            },
+            {
+              "songId": "below",
+              "score": 0.49999999999999994
+            },
+            {
+              "songId": "half",
+              "score": 0.5
+            },
+            {
+              "songId": "above",
+              "score": 0.5000000000000001
+            },
+            {
+              "songId": "one",
+              "score": 1
+            },
+            {
+              "songId": "outside",
+              "score": 1.1
+            },
+            {
+              "songId": "null",
+              "score": null
+            }
+          ],
+          "percent": 0,
+          "expected": {
+            "rankCount": 8,
+            "words": [
+              62
+            ]
+          },
+          "nativeLongWords": [
+            "62"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ],
+              [
+                98,
+                101,
+                108,
+                111,
+                119
+              ],
+              [
+                104,
+                97,
+                108,
+                102
+              ],
+              [
+                97,
+                98,
+                111,
+                118,
+                101
+              ],
+              [
+                111,
+                110,
+                101
+              ],
+              [
+                111,
+                117,
+                116,
+                115,
+                105,
+                100,
+                101
+              ],
+              [
+                110,
+                117,
+                108,
+                108
+              ]
+            ],
+            "validSongIds": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ],
+              [
+                98,
+                101,
+                108,
+                111,
+                119
+              ],
+              [
+                104,
+                97,
+                108,
+                102
+              ],
+              [
+                97,
+                98,
+                111,
+                118,
+                101
+              ],
+              [
+                111,
+                110,
+                101
+              ],
+              [
+                111,
+                117,
+                116,
+                115,
+                105,
+                100,
+                101
+              ],
+              [
+                110,
+                117,
+                108,
+                108
+              ]
+            ],
+            "popularityIds": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ],
+              [
+                98,
+                101,
+                108,
+                111,
+                119
+              ],
+              [
+                104,
+                97,
+                108,
+                102
+              ],
+              [
+                97,
+                98,
+                111,
+                118,
+                101
+              ],
+              [
+                111,
+                110,
+                101
+              ],
+              [
+                111,
+                117,
+                116,
+                115,
+                105,
+                100,
+                101
+              ],
+              [
+                110,
+                117,
+                108,
+                108
+              ]
+            ]
+          }
+        },
+        {
+          "name": "percent-50",
+          "songByRank": [
+            "negative",
+            "zero",
+            "below",
+            "half",
+            "above",
+            "one",
+            "outside",
+            "null"
+          ],
+          "validSongIds": [
+            "negative",
+            "zero",
+            "below",
+            "half",
+            "above",
+            "one",
+            "outside",
+            "null"
+          ],
+          "popularity": [
+            {
+              "songId": "negative",
+              "score": -0.1
+            },
+            {
+              "songId": "zero",
+              "score": 0
+            },
+            {
+              "songId": "below",
+              "score": 0.49999999999999994
+            },
+            {
+              "songId": "half",
+              "score": 0.5
+            },
+            {
+              "songId": "above",
+              "score": 0.5000000000000001
+            },
+            {
+              "songId": "one",
+              "score": 1
+            },
+            {
+              "songId": "outside",
+              "score": 1.1
+            },
+            {
+              "songId": "null",
+              "score": null
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 8,
+            "words": [
+              56
+            ]
+          },
+          "nativeLongWords": [
+            "56"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ],
+              [
+                98,
+                101,
+                108,
+                111,
+                119
+              ],
+              [
+                104,
+                97,
+                108,
+                102
+              ],
+              [
+                97,
+                98,
+                111,
+                118,
+                101
+              ],
+              [
+                111,
+                110,
+                101
+              ],
+              [
+                111,
+                117,
+                116,
+                115,
+                105,
+                100,
+                101
+              ],
+              [
+                110,
+                117,
+                108,
+                108
+              ]
+            ],
+            "validSongIds": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ],
+              [
+                98,
+                101,
+                108,
+                111,
+                119
+              ],
+              [
+                104,
+                97,
+                108,
+                102
+              ],
+              [
+                97,
+                98,
+                111,
+                118,
+                101
+              ],
+              [
+                111,
+                110,
+                101
+              ],
+              [
+                111,
+                117,
+                116,
+                115,
+                105,
+                100,
+                101
+              ],
+              [
+                110,
+                117,
+                108,
+                108
+              ]
+            ],
+            "popularityIds": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ],
+              [
+                98,
+                101,
+                108,
+                111,
+                119
+              ],
+              [
+                104,
+                97,
+                108,
+                102
+              ],
+              [
+                97,
+                98,
+                111,
+                118,
+                101
+              ],
+              [
+                111,
+                110,
+                101
+              ],
+              [
+                111,
+                117,
+                116,
+                115,
+                105,
+                100,
+                101
+              ],
+              [
+                110,
+                117,
+                108,
+                108
+              ]
+            ]
+          }
+        },
+        {
+          "name": "percent-100",
+          "songByRank": [
+            "negative",
+            "zero",
+            "below",
+            "half",
+            "above",
+            "one",
+            "outside",
+            "null"
+          ],
+          "validSongIds": [
+            "negative",
+            "zero",
+            "below",
+            "half",
+            "above",
+            "one",
+            "outside",
+            "null"
+          ],
+          "popularity": [
+            {
+              "songId": "negative",
+              "score": -0.1
+            },
+            {
+              "songId": "zero",
+              "score": 0
+            },
+            {
+              "songId": "below",
+              "score": 0.49999999999999994
+            },
+            {
+              "songId": "half",
+              "score": 0.5
+            },
+            {
+              "songId": "above",
+              "score": 0.5000000000000001
+            },
+            {
+              "songId": "one",
+              "score": 1
+            },
+            {
+              "songId": "outside",
+              "score": 1.1
+            },
+            {
+              "songId": "null",
+              "score": null
+            }
+          ],
+          "percent": 100,
+          "expected": {
+            "rankCount": 8,
+            "words": [
+              32
+            ]
+          },
+          "nativeLongWords": [
+            "32"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ],
+              [
+                98,
+                101,
+                108,
+                111,
+                119
+              ],
+              [
+                104,
+                97,
+                108,
+                102
+              ],
+              [
+                97,
+                98,
+                111,
+                118,
+                101
+              ],
+              [
+                111,
+                110,
+                101
+              ],
+              [
+                111,
+                117,
+                116,
+                115,
+                105,
+                100,
+                101
+              ],
+              [
+                110,
+                117,
+                108,
+                108
+              ]
+            ],
+            "validSongIds": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ],
+              [
+                98,
+                101,
+                108,
+                111,
+                119
+              ],
+              [
+                104,
+                97,
+                108,
+                102
+              ],
+              [
+                97,
+                98,
+                111,
+                118,
+                101
+              ],
+              [
+                111,
+                110,
+                101
+              ],
+              [
+                111,
+                117,
+                116,
+                115,
+                105,
+                100,
+                101
+              ],
+              [
+                110,
+                117,
+                108,
+                108
+              ]
+            ],
+            "popularityIds": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ],
+              [
+                98,
+                101,
+                108,
+                111,
+                119
+              ],
+              [
+                104,
+                97,
+                108,
+                102
+              ],
+              [
+                97,
+                98,
+                111,
+                118,
+                101
+              ],
+              [
+                111,
+                110,
+                101
+              ],
+              [
+                111,
+                117,
+                116,
+                115,
+                105,
+                100,
+                101
+              ],
+              [
+                110,
+                117,
+                108,
+                108
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "finite-out-of-range",
+      "probes": [
+        {
+          "name": "extreme-finite",
+          "songByRank": [
+            "negative",
+            "positive",
+            "zero"
+          ],
+          "validSongIds": [
+            "negative",
+            "positive",
+            "zero"
+          ],
+          "popularity": [
+            {
+              "songId": "negative",
+              "score": -1.7976931348623157e+308
+            },
+            {
+              "songId": "positive",
+              "score": 1.7976931348623157e+308
+            },
+            {
+              "songId": "zero",
+              "score": -0.0
+            }
+          ],
+          "percent": 0,
+          "expected": {
+            "rankCount": 3,
+            "words": [
+              4
+            ]
+          },
+          "nativeLongWords": [
+            "4"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                112,
+                111,
+                115,
+                105,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ]
+            ],
+            "validSongIds": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                112,
+                111,
+                115,
+                105,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ]
+            ],
+            "popularityIds": [
+              [
+                110,
+                101,
+                103,
+                97,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                112,
+                111,
+                115,
+                105,
+                116,
+                105,
+                118,
+                101
+              ],
+              [
+                122,
+                101,
+                114,
+                111
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "repeated-ranks-and-valid-ids",
+      "probes": [
+        {
+          "name": "duplicates",
+          "songByRank": [
+            "A",
+            "A",
+            "B",
+            "A",
+            "B",
+            "A"
+          ],
+          "validSongIds": [
+            "A",
+            "A",
+            "B",
+            "B"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1
+            },
+            {
+              "songId": "B",
+              "score": 0.4
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 6,
+            "words": [
+              43
+            ]
+          },
+          "nativeLongWords": [
+            "43"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                65
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                66
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ],
+              [
+                66
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "packed-word-boundaries",
+      "probes": [
+        {
+          "name": "ranks-0-31-32-63-64",
+          "songByRank": [
+            "yes",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "yes",
+            "yes",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "no",
+            "yes",
+            "yes"
+          ],
+          "validSongIds": [
+            "yes",
+            "no"
+          ],
+          "popularity": [
+            {
+              "songId": "yes",
+              "score": 1
+            },
+            {
+              "songId": "no",
+              "score": 0
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 65,
+            "words": [
+              2147483649,
+              2147483649,
+              1
+            ]
+          },
+          "nativeLongWords": [
+            "-9223372030412324863",
+            "1"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                110,
+                111
+              ],
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                121,
+                101,
+                115
+              ]
+            ],
+            "validSongIds": [
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                110,
+                111
+              ]
+            ],
+            "popularityIds": [
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                110,
+                111
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "explicit-zero-tail-padding",
+      "probes": [
+        {
+          "name": "length-33",
+          "songByRank": [
+            "yes",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent"
+          ],
+          "validSongIds": [
+            "yes",
+            "absent"
+          ],
+          "popularity": [
+            {
+              "songId": "yes",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 33,
+            "words": [
+              1,
+              0
+            ]
+          },
+          "nativeLongWords": [
+            "1"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ]
+            ],
+            "validSongIds": [
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ]
+            ],
+            "popularityIds": [
+              [
+                121,
+                101,
+                115
+              ]
+            ]
+          }
+        },
+        {
+          "name": "length-65",
+          "songByRank": [
+            "yes",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent"
+          ],
+          "validSongIds": [
+            "yes",
+            "absent"
+          ],
+          "popularity": [
+            {
+              "songId": "yes",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 65,
+            "words": [
+              1,
+              0,
+              0
+            ]
+          },
+          "nativeLongWords": [
+            "1"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ]
+            ],
+            "validSongIds": [
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ]
+            ],
+            "popularityIds": [
+              [
+                121,
+                101,
+                115
+              ]
+            ]
+          }
+        },
+        {
+          "name": "length-96",
+          "songByRank": [
+            "yes",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent",
+            "absent"
+          ],
+          "validSongIds": [
+            "yes",
+            "absent"
+          ],
+          "popularity": [
+            {
+              "songId": "yes",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 96,
+            "words": [
+              1,
+              0,
+              0
+            ]
+          },
+          "nativeLongWords": [
+            "1"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ]
+            ],
+            "validSongIds": [
+              [
+                121,
+                101,
+                115
+              ],
+              [
+                97,
+                98,
+                115,
+                101,
+                110,
+                116
+              ]
+            ],
+            "popularityIds": [
+              [
+                121,
+                101,
+                115
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "all-eligible-word-extents",
+      "probes": [
+        {
+          "name": "length-1",
+          "songByRank": [
+            "A"
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 1,
+            "words": [
+              1
+            ]
+          },
+          "nativeLongWords": [
+            "1"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ]
+            ]
+          }
+        },
+        {
+          "name": "length-31",
+          "songByRank": [
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A"
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 31,
+            "words": [
+              2147483647
+            ]
+          },
+          "nativeLongWords": [
+            "2147483647"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ]
+            ]
+          }
+        },
+        {
+          "name": "length-32",
+          "songByRank": [
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A"
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 32,
+            "words": [
+              4294967295
+            ]
+          },
+          "nativeLongWords": [
+            "4294967295"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ]
+            ]
+          }
+        },
+        {
+          "name": "length-63",
+          "songByRank": [
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A"
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 63,
+            "words": [
+              4294967295,
+              2147483647
+            ]
+          },
+          "nativeLongWords": [
+            "9223372036854775807"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ]
+            ]
+          }
+        },
+        {
+          "name": "length-64",
+          "songByRank": [
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A"
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 64,
+            "words": [
+              4294967295,
+              4294967295
+            ]
+          },
+          "nativeLongWords": [
+            "-1"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ]
+            ]
+          }
+        },
+        {
+          "name": "length-65",
+          "songByRank": [
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A",
+            "A"
+          ],
+          "validSongIds": [
+            "A"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 65,
+            "words": [
+              4294967295,
+              4294967295,
+              1
+            ]
+          },
+          "nativeLongWords": [
+            "-1",
+            "1"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ],
+              [
+                65
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "raw-text-identity",
+      "probes": [
+        {
+          "name": "nul-bom-prototype-astral-case",
+          "songByRank": [
+            "__proto__",
+            "a\u0000b",
+            "a",
+            "\ufeffa",
+            "\ud83d\ude00",
+            "\u00e9",
+            "e\u0301",
+            "A"
+          ],
+          "validSongIds": [
+            "__proto__",
+            "a",
+            "\ud83d\ude00",
+            "e\u0301"
+          ],
+          "popularity": [
+            {
+              "songId": "__proto__",
+              "score": 1
+            },
+            {
+              "songId": "a\u0000b",
+              "score": 1
+            },
+            {
+              "songId": "a",
+              "score": 1
+            },
+            {
+              "songId": "\ufeffa",
+              "score": 1
+            },
+            {
+              "songId": "\ud83d\ude00",
+              "score": 1
+            },
+            {
+              "songId": "\u00e9",
+              "score": 1
+            },
+            {
+              "songId": "e\u0301",
+              "score": 1
+            },
+            {
+              "songId": "A",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 8,
+            "words": [
+              85
+            ]
+          },
+          "nativeLongWords": [
+            "85"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                95,
+                95,
+                112,
+                114,
+                111,
+                116,
+                111,
+                95,
+                95
+              ],
+              [
+                97,
+                0,
+                98
+              ],
+              [
+                97
+              ],
+              [
+                65279,
+                97
+              ],
+              [
+                55357,
+                56832
+              ],
+              [
+                233
+              ],
+              [
+                101,
+                769
+              ],
+              [
+                65
+              ]
+            ],
+            "validSongIds": [
+              [
+                95,
+                95,
+                112,
+                114,
+                111,
+                116,
+                111,
+                95,
+                95
+              ],
+              [
+                97
+              ],
+              [
+                55357,
+                56832
+              ],
+              [
+                101,
+                769
+              ]
+            ],
+            "popularityIds": [
+              [
+                95,
+                95,
+                112,
+                114,
+                111,
+                116,
+                111,
+                95,
+                95
+              ],
+              [
+                97,
+                0,
+                98
+              ],
+              [
+                97
+              ],
+              [
+                65279,
+                97
+              ],
+              [
+                55357,
+                56832
+              ],
+              [
+                233
+              ],
+              [
+                101,
+                769
+              ],
+              [
+                65
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "exact-lone-utf16-units",
+      "probes": [
+        {
+          "name": "unpaired-and-pair-distinct",
+          "songByRank": [
+            "\ud800",
+            "\udc00",
+            "\ud800\udc00",
+            "x\ud800y",
+            "x\udc00y",
+            "x"
+          ],
+          "validSongIds": [
+            "\ud800",
+            "\ud800\udc00",
+            "x\udc00y"
+          ],
+          "popularity": [
+            {
+              "songId": "\ud800",
+              "score": 1
+            },
+            {
+              "songId": "\udc00",
+              "score": 1
+            },
+            {
+              "songId": "\ud800\udc00",
+              "score": 1
+            },
+            {
+              "songId": "x\ud800y",
+              "score": 1
+            },
+            {
+              "songId": "x\udc00y",
+              "score": 1
+            },
+            {
+              "songId": "x",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 6,
+            "words": [
+              21
+            ]
+          },
+          "nativeLongWords": [
+            "21"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                55296
+              ],
+              [
+                56320
+              ],
+              [
+                55296,
+                56320
+              ],
+              [
+                120,
+                55296,
+                121
+              ],
+              [
+                120,
+                56320,
+                121
+              ],
+              [
+                120
+              ]
+            ],
+            "validSongIds": [
+              [
+                55296
+              ],
+              [
+                55296,
+                56320
+              ],
+              [
+                120,
+                56320,
+                121
+              ]
+            ],
+            "popularityIds": [
+              [
+                55296
+              ],
+              [
+                56320
+              ],
+              [
+                55296,
+                56320
+              ],
+              [
+                120,
+                55296,
+                121
+              ],
+              [
+                120,
+                56320,
+                121
+              ],
+              [
+                120
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "same-facts-different-percent-fresh-host",
+      "probes": [
+        {
+          "name": "fresh-0",
+          "songByRank": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "A",
+            "B",
+            "C",
+            "D",
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "validSongIds": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0
+            },
+            {
+              "songId": "B",
+              "score": 0.4
+            },
+            {
+              "songId": "C",
+              "score": 0.7
+            },
+            {
+              "songId": "D",
+              "score": 1
+            }
+          ],
+          "percent": 0,
+          "expected": {
+            "rankCount": 12,
+            "words": [
+              4095
+            ]
+          },
+          "nativeLongWords": [
+            "4095"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ],
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ],
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ]
+            ]
+          }
+        },
+        {
+          "name": "fresh-50",
+          "songByRank": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "A",
+            "B",
+            "C",
+            "D",
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "validSongIds": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0
+            },
+            {
+              "songId": "B",
+              "score": 0.4
+            },
+            {
+              "songId": "C",
+              "score": 0.7
+            },
+            {
+              "songId": "D",
+              "score": 1
+            }
+          ],
+          "percent": 50,
+          "expected": {
+            "rankCount": 12,
+            "words": [
+              3276
+            ]
+          },
+          "nativeLongWords": [
+            "3276"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ],
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ],
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ]
+            ]
+          }
+        },
+        {
+          "name": "fresh-100",
+          "songByRank": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "A",
+            "B",
+            "C",
+            "D",
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "validSongIds": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "popularity": [
+            {
+              "songId": "A",
+              "score": 0
+            },
+            {
+              "songId": "B",
+              "score": 0.4
+            },
+            {
+              "songId": "C",
+              "score": 0.7
+            },
+            {
+              "songId": "D",
+              "score": 1
+            }
+          ],
+          "percent": 100,
+          "expected": {
+            "rankCount": 12,
+            "words": [
+              2184
+            ]
+          },
+          "nativeLongWords": [
+            "2184"
+          ],
+          "nativeIsEmpty": false,
+          "decodedUtf16": {
+            "songByRank": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ],
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ],
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ]
+            ],
+            "validSongIds": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ]
+            ],
+            "popularityIds": [
+              [
+                65
+              ],
+              [
+                66
+              ],
+              [
+                67
+              ],
+              [
+                68
+              ]
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
