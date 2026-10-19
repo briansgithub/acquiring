@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T03:52:59.159346+00:00",
+  "updated": "2026-10-19T03:56:49.664919+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -3224,7 +3224,7 @@
         "owner": "preview_owner",
         "model": "gpt-6.1-sol",
         "thinking": "high",
-        "status": "contract types PASS; ready to branch from this checkpoint for native oracle only",
+        "status": "complete actual native oracle reviewed; normal exact-tip integration next",
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "branch": "codex/pwa-aural-statistics-reference",
         "previousBranch": "codex/pwa-aural-target-codec",
@@ -3237,8 +3237,36 @@
           "pwa/src/domain/catalog/fixtures/native-statistics.json",
           "pwa/src/domain/catalog/STATISTICS_WORKLOG.md"
         ],
-        "nextAction": "New branch from contract checkpoint in existing CLEAN sibling only after root names exact commit; preserve all refs/artifacts. Capture <=20NEW actual-native stats/comparator groups, review/validated3path checkpoint then idle. No production implementation before root oracle review.",
-        "expectedCheck": "Actual cached Kotlin2.2.10 compile/runtime with unchanged frozen stats/factor/base/comparator + native declarations; retained provenance/input/stdout/classes. Oracle only; no SQL behavior stub or old recapture."
+        "nextAction": "Normal merge EXACT1d2e3d75 from clean reviewed oracle sibling into primary e735b1d3 successor; only three new fixture/log paths. Then freeze implementation claim and name new base; no oracle recapture.",
+        "expectedCheck": "Actual cached Kotlin2.2.10 compile/runtime with unchanged frozen stats/factor/base/comparator + native declarations; retained provenance/input/stdout/classes. Oracle only; no SQL behavior stub or old recapture.",
+        "tip": "1d2e3d75c3cdd78fbff8d4b85dc663f8bb8df894",
+        "validation": {
+          "groups": 20,
+          "probes": 56,
+          "classes": 30,
+          "statsProbes": 51,
+          "comparatorProbes": 5,
+          "producerSha256": "d3b266b2f0fde8dbbf0dfedcab672ce784c7d754a5c9e815c350d096b6802194",
+          "fixtureSha256": "79cc23aead8c3965a15017efde7618dbeb47ee9eab8aefabe6cb0324782e64ee",
+          "receipt": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t15-statistics-reference-validation.json",
+          "receiptSha256": "952fa76d72bac5cfbe6fc90401f5192b97304d84db197b68c413602902a2a46f",
+          "nativeCheck": "t15-statistics-reference-native-fix1-20261019-77 exit0; one compile assembly fix cycle, failed first compiler products retained; actual capture not repeated",
+          "review": "Root entire124line producer, unchanged8native slices/whole source, all56rawinput/output probes and30class hashes independently verified. Firstseen sum order and signedzero exact pair comparisons captured. Empty stats() wrapper failure retained separately, public compute follows nullable statsMatching. No production source/JS arithmetic claim."
+        }
+      },
+      "metadataBoundAssignment": {
+        "owner": "coordinator runtime unknown unchanged",
+        "at": "2026-10-19T03:56:49.664919+00:00",
+        "status": "inspection-only finding, bounded reproduction/fix intent saved before check",
+        "ownedPaths": [
+          "pwa/src/storage/catalog/aural-header.ts",
+          "pwa/src/storage/catalog/aural-header.test.ts",
+          "pwa/src/storage/catalog/aural-target-query.ts",
+          "pwa/src/storage/catalog/aural-target-query.test.ts",
+          "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
+        ],
+        "nextAction": "Use one tiny actual SQLite probe to check length(text) with embedded NUL vs CAST BLOB bytes. If confirmed, enforce SQL byte bounds before known metadata/run text materialization, retaining UTF16 limits after fetch. Relevant existing/new realSQLite tests/types/build/browser only; no data scan/capture or pending Library test.",
+        "expectedCheck": "Actual SQLite reproduction; focused header/target query regression tests+types; browser regressions only if changed runtime SQL path warrants."
       }
     },
     {
