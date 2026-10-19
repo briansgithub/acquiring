@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T14:05:39.073377+00:00",
+  "updated": "2026-10-19T14:12:23.400497+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -3537,7 +3537,7 @@
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "previousBranch": "codex/pwa-statistics-fixtures",
         "previousTip": "12c637766fa03dcf815688d3cf40662ef5b92d92",
-        "status": "contractfulltypesFIRSTPASS; freezecheckpoint next beforephase1delegation",
+        "status": "oracleefd7a0e8 validated/reviewed; normalmerge next; pureport NOTstarted",
         "contract": "pwa/src/domain/catalog/song-rank-contracts.ts",
         "phase1OwnedPaths": [
           "pwa/src/domain/catalog/fixtures/generate-song-rank-native.py",
@@ -3549,12 +3549,22 @@
           "pwa/src/domain/catalog/song-rank-eligibility.test.ts",
           "pwa/src/domain/catalog/SONG_RANK_WORKLOG.md"
         ],
-        "nextAction": "Roottypes/checkpointcontract thenexactbase/newbranchinexistingsibling; ORACLE FIRST<=12NEWnativegroups unchangedwhole method/helper/rankclass, actual privateLong reflection/wirepadadapter. No sourceportbefore rootreview/oraclefollowup. Finite score domain explicit; no global10000rankclaim.",
+        "nextAction": "Normalmerge oracleexacttip; preserve all originalcapture products. Atfivehour70 startno phase2. Nextapplicablewindow liveusage+guard/Git, then sameSol/high phase2EXACT3paths frommergedoracle/frozen64ba88ec contract. No native recapture/globalclaim.",
         "expectedCheck": "ActualKotlin2.2.10 provenance/native output; rootallhashes/input/packing review before pureport; thenmeaningful native+refusal/snapshot/freeze/indexcomposition tests/scopedtypes.",
         "validation": {
           "contractTypes": "window23-song-rank-contract-types-20261019:fullstrict types exit0 FIRSTPASS",
-          "contractSha256": "c28a2e3425ee0ac325a21b430538048ff785228e9f9855cca2b2431c7f23b8a2"
-        }
+          "contractSha256": "c28a2e3425ee0ac325a21b430538048ff785228e9f9855cca2b2431c7f23b8a2",
+          "native": "t15-song-rank-native-first-20261019-119:FIRSTcompile/runtime exit0/12groups25probes/5classes; verify-only120PASS; actualguardname in workerreceipt authoritative",
+          "root": "window23-song-rank-oracle-review-fix1-20261019 PASS allwhole/slices/extracted/input/stdout/classes/reflectedLongsplitpad/tailbits/UTF16; firstroothelper65hex literal typo failed BEFORE furtherchecks, correctedonce. No nativefailure/recapture.",
+          "jars": "window23-song-rank-jars-review-20261019:all8actualcachedcompiler/runtimejars+exact801cf798authorityverified",
+          "producerSha256": "64c538f7c67b5ce52b62694789037283ea6ab4cb53d2ddc69d3c2f599395300f",
+          "fixtureSha256": "bf8fa8d0c8036233235ba1f063c856a86bec716b7531302352d2477390765804",
+          "receipt": "..\\Acquiring-pwa-data-compat\\.artifacts\\pwa-port\\t15-song-rank-reference-validation.json",
+          "receiptSha256": "6caacb13a2ac358ccdcaaf484e70c443a0c58deae4b0f84b18bb78130e75bc4c",
+          "work": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t15-song-rank-native/20261019T140906839787Z",
+          "limitation": "Producer created actualWORKbeforecompile but did not print/save separate precompileWORKintent. Successful119 path preserved in terminalreceipt; no retroactiveintentclaim/sourcehashchange. Futureproducers must persist actualWORK beforelongoperation. Pureport/SQL/global/browser unrun."
+        },
+        "oracleTip": "efd7a0e82d75c71df859862aab9f1967d0e54fa0"
       }
     },
     {
