@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T04:12:12.164612+00:00",
+  "updated": "2026-10-19T13:36:33.344579+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -2518,7 +2518,7 @@
           "validation": "rankEligibilityAssignment/statisticsOracleAssignment/statisticsAssignment/metadataBoundAssignment/statisticsFactsAssignment"
         }
       ],
-      "blocker": "Temporary external approval-review service model capacity blocks8actualChrome checks and worker assertion correction/types/retest. No action executed/no bypass. Root continued independent rank/SQL foundations; automation remains ACTIVE.",
+      "blocker": null,
       "dependencyGates": {
         "T05": "desktop-catalog-runtime"
       },
@@ -3264,7 +3264,7 @@
       "metadataBoundAssignment": {
         "owner": "coordinator runtime unknown unchanged",
         "at": "2026-10-19T03:56:49.664919+00:00",
-        "status": "source+32SQLite tests/fulltypes/build accepted; NEW actual WASM regression remains unexecuted due approval review service capacity",
+        "status": "accepted FIRST8actualChrome37.6s after SAME approval route recovery; no permission/model changes",
         "ownedPaths": [
           "pwa/src/storage/catalog/aural-header.ts",
           "pwa/src/storage/catalog/aural-header.test.ts",
@@ -3276,7 +3276,7 @@
           "pwa/scripts/catalog/make-aural-target-browser-fixture.py",
           "pwa/tests/browser/aural-target.spec.ts"
         ],
-        "nextAction": "After approval service recovers and usage permits, inspect absence of oldguard/output and request SAME permitted localhost/process route for8actualChrome header/target tests. Unique output pwa/.artifacts/pwa-port/aural-read/metadata-window22-first (not created). No permission downgrade/bypass/fullcatalog/native repeat.",
+        "nextAction": "Accepted8actualChrome development-worker metadata/header/target behavior; no unchanged reruns. Existing productionbundlebad6 build accepted separately; no new production fullcatalog/device claim.",
         "expectedCheck": "Actual SQLite reproduction; focused header/target query regression tests+types; browser regressions only if changed runtime SQL path warrants.",
         "finding": "First diagnostic assertion incorrectly assumed binding retained full NUL TEXT; actual nodeSQLite truncates it. Corrected probe checks SQL byte size and exact BLOB decode, one diagnostic correction. Source now SQL-bounds TEXT bytes and decodes BLOB preserving NUL/BOM; fatal invalidUTF8 explicit browser refusal.",
         "validation": {
@@ -3285,7 +3285,7 @@
           "types": "window22-metadata-types-first-20261019 fullstrict types FIRSTPASS",
           "pending": "Current browser fixture/spec source now changed; fulltypes/build/8actualChrome planned BEFORE acceptance. Three new browser refusal/transport fixtures are not new native expected captures; default native fixture unchanged.",
           "build": "window22-metadata-build-first-20261019: fullstrict types+vitebuild+shell build PASS, shellbad6a686e07c. Source runtime hash map below. Latest facts helper is unreferenced by bundle; separately typechecked/tested.",
-          "browser": "window22-metadata-browser-first-20261019 toolcall rejected BEFORE process/guard launch: automatic approval review Selected model is at capacity, not unsafe determination.8actualChrome tests UNRUN, no outputs/PID/receipt. Prior7actualChrome1754514ffe74 evidence retained, not claimed for new SQL representation.",
+          "browser": "window23-metadata-browser-first-20261019 actualexit0/session3257: node node_modules/@playwright/test/cli.js test tests/browser/aural-read.spec.ts tests/browser/aural-target.spec.ts --project=chrome --output=.artifacts/pwa-port/aural-read/metadata-window22-first in pwa.8passed37.6s FIRST ACTUAL execution; prior review-rejected attempts never launched.",
           "testedSha256": {
             "pwa/src/storage/catalog/aural-header.ts": "edf8ea2b2c1edb6f4cb474ac2308063122722f0f96b6606132bfb10377b44577",
             "pwa/src/storage/catalog/aural-target-query.ts": "072f78ebb52e135c1e01829e5a70d9d81fe265c6335722a6cefb2e5f3cd31099",
@@ -3296,7 +3296,24 @@
             "pwa/scripts/catalog/make-aural-target-browser-fixture.py": "4c513c6f46fe04bb62504164e25d06581bfa3ffe19eb0a2a74764bcbf1a1f3e6",
             "pwa/tests/browser/aural-target.spec.ts": "6b48fcb28a0a10e8cbd236a89a5841e64105c84f861ca4ad398d6df70817e36c"
           },
-          "fixtureSyntax": "Current maintained browser fixture Python AST parse PASS; actual new fixture/browser execution still UNRUN."
+          "fixtureSyntax": "Current maintained browser fixture Python AST parse PASS; actual new fixture/browser execution still UNRUN.",
+          "proofSha256": {
+            "pwa/.artifacts/pwa-port/aural-read/metadata-window22-first/aural-read-actual-WASM-hea-62dc4-cks-active-snapshot-updates-chrome/proof.json": "d594a70026127b2a8fdafd3f3581de663e050ce4519f02a309ac811f3299068b",
+            "pwa/.artifacts/pwa-port/aural-read/metadata-window22-first/aural-read-header-read-kee-e15df-se-allows-the-next-real-tab-chrome/proof.json": "0120966954465aa28d4a433a172673a118c896bdece73fefffa7b0db1e2c4089",
+            "pwa/.artifacts/pwa-port/aural-read/metadata-window22-first/aural-read-malformed-array-095f1-nstalled-files-or-user-data-chrome/proof.json": "36fab35b975a35b3defed8bbd13c7c531f2d6785cb2eb329d1b8097c9949a643",
+            "pwa/.artifacts/pwa-port/aural-read/metadata-window22-first/aural-target-actual-WASM-p-0c325-SON-and-byte-oversized-text-chrome/proof.json": "5b6ad5b1314a07921a34f49f2f6177caca1756c03588035b34b562461a6d8c9e",
+            "pwa/.artifacts/pwa-port/aural-read/metadata-window22-first/aural-target-actual-WASM-r-cd1ec-ree-roman-and-empty-targets-chrome/proof.json": "b3d9ec485fc813fc0c31a55879217d895771e9f8a1388680b4c82a5a3336e18c",
+            "pwa/.artifacts/pwa-port/aural-read/metadata-window22-first/aural-target-native-key-an-50060-users-and-allow-valid-retry-chrome/proof.json": "30242123b71b8305ce3760052d00319710e286a9a3e2da93201a4fe59116041b",
+            "pwa/.artifacts/pwa-port/aural-read/metadata-window22-first/aural-target-request-start-6482f-adable-catalog-after-reopen-chrome/proof.json": "59a9039ef5a82a441d3c1fd69fb711018e89a34e6d70b697bb67c479c40274e6",
+            "pwa/.artifacts/pwa-port/aural-read/metadata-window22-first/aural-target-stale-rank-re-6e7c8-never-rebind-to-new-catalog-chrome/proof.json": "a4a001a63426165e3be7c77410b6a7b76c260a0a6b38d02193cda3264327d482"
+          }
+        },
+        "resumeIntent": {
+          "at": "2026-10-19T13:31:06.348935+00:00",
+          "runId": "window23-metadata-browser-first-20261019",
+          "output": "pwa/.artifacts/pwa-port/aural-read/metadata-window22-first",
+          "state": "Output absent and primaryclean before intent; no previous browser child or result. Same permittedlocalhost/process route after successful elevated processaudit.",
+          "nextAction": "FIRST actual8Chrome checks with existing savedfixture/spec/helper; no repeated native/fullcatalog/root443tests."
         }
       },
       "statisticsAssignment": {
@@ -3304,7 +3321,7 @@
         "model": "gpt-6.1-sol",
         "thinking": "high",
         "at": "2026-10-19T03:57:25.379460+00:00",
-        "status": "draft source UNVALIDATED; automatic approval service capacity blocks exact test correction/typecheck/retest; existing worker idle",
+        "status": "source accepted at worker tip3b465d0b; root normal integration/combined acceptance pending",
         "baseCommit": "03fcde73a95b4dcecf523c2906cd6b5d81756c6e",
         "branch": "codex/pwa-aural-statistics",
         "previousBranch": "codex/pwa-aural-statistics-reference",
@@ -3315,7 +3332,7 @@
           "pwa/src/domain/catalog/catalog-statistics.test.ts",
           "pwa/src/domain/catalog/STATISTICS_WORKLOG.md"
         ],
-        "nextAction": "When automatic approval service can complete its review AND live five-hour<70, reuse SAME worker/tree/route. Reconcile3owned dirty files/hashes first; apply exactly Array(20).fill(1)->Array(18).fill(1) at getter test, append truthfullog, run first scopedtypes+unitfix1 under same approved route; commit3paths then root review/normal integration/combined acceptance. Do not use another route/model to bypass rejection or recapture oracle.",
+        "nextAction": "Normal exact-tip3b465d0b merge into primary a2c70f80 successor after this reviewcheckpoint, only3owned new/append paths; then combined ROOT check. No source changes/newworker/native capture before acceptance.",
         "expectedCheck": "First focused native parity/browser-domain unit groups + scoped strict types; exact hashes/receipts. Two fix cycles maximum.",
         "validation": {
           "firstUnits": "t15-statistics-source-unit-20261019-84:26/27PASS; all20nativegroups PASS. Only browser getter-count assertion20vs18 fails. No production source fix required by observed failure.",
@@ -3331,9 +3348,27 @@
             "STATISTICS_WORKLOG.md": "a6935545a0f5dfe3cbb8433e8641f162f2b034d911e9684d023f525b8e32e045"
           },
           "recoveryCopy": "H:\\Desktop\\Acquiring\\Acquiring\\.artifacts\\pwa-port\\statistics-source-recovery-window22",
-          "review": "Root read entire134line source/156line tests; no arithmetic blocker found, but draft not integrated/accepted. First native score/count/comparator checks pass; browser boundary failure uncorrected.",
-          "unproven": "Scoped/full types and27/27retest; no worker source checkpoint/merge/browser/runtime acceptance."
-        }
+          "review": "Root reviewed entire source/test before resumed checks and final changed18getter count, throwinggetter type annotation and Intzero normalization/assertions. One testassertioncycle, separatetypeannotationcycle; narrow Intzero boundary after root interpretation. No native recapture. Final exact3hashes checked.",
+          "unproven": "Scoped/full types and27/27retest; no worker source checkpoint/merge/browser/runtime acceptance.",
+          "finalSourceHashes": {
+            "catalog-statistics.ts": "c9ef304736e9d453f8a9b2885311d9e9a772db2ad94ee8ac301a28f2131db392",
+            "catalog-statistics.test.ts": "c785985054c22904abb2d7f38ecb5dd931ea0a8a4e5c2e1c9d18f50513bdd20a",
+            "STATISTICS_WORKLOG.md": "0960f08f8bbe8ac30759137038d7b213fa257e33b5b8786cc5c2388e98c86d77"
+          },
+          "finalUnits": "t15-statistics-source-final-unit-20261019-95:27/27groups669ms PASS;20nativegroups+7browser; native Intzero normalize, Double signedzero retained",
+          "finalTypes": "t15-statistics-source-final-types-20261019-96 scopedstrict types exit0",
+          "finalReceipt": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat/.artifacts/pwa-port/t15-statistics-source-validation.json",
+          "finalReceiptSha256": "536210aa66a169556975c943befcc58d11691ae2bfe092504cbdcd4e2e04bc15"
+        },
+        "resumeIntent": {
+          "at": "2026-10-19T13:31:06.348935+00:00",
+          "primaryBase": "a2c70f8094cd2dc54d4abaf124221273a4bc13de",
+          "workerBase": "03fcde73a95b4dcecf523c2906cd6b5d81756c6e",
+          "route": "same preview_owner gpt-6.1-sol/high; same require_escalated automatic review, no downgrade/modelchange",
+          "state": "Root verified3savedworkerhashes unchanged, bothagentscompletedidle; recoveryRequired[]; NEW elevated read-only process/port audit returned0 with no Acquiring python/node/java or4173/5173listeners.",
+          "nextAction": "Apply ONLY saved test gettercount20->18/log; first scopedtypes +unitfix1,3path validated checkpoint then idle for root integration. No native/source recapture/newbranch."
+        },
+        "tip": "3b465d0b8f03ec0fdff826dd08ee132951b4ee06"
       },
       "statisticsFactsAssignment": {
         "owner": "coordinator runtime unknown unchanged",
@@ -3757,13 +3792,13 @@
       "status": "Last actual7Chrome worker runtime acceptance; new metadata runtime browser gate remains pending."
     },
     "capacityEntry": {
-      "at": "2026-10-19T03:43:36.055493+00:00",
-      "fiveHourUsedPercent": 0,
-      "weeklyUsedPercent": 60,
+      "at": "2026-10-19T13:31:06.348935+00:00",
+      "fiveHourUsedPercent": 1,
+      "weeklyUsedPercent": 67,
       "ordinaryUsageAllowed": true,
-      "fiveHourResetsAt": 1792399327,
+      "fiveHourResetsAt": 1792434545,
       "weeklyResetsAt": 1792876816,
-      "action": "Primary b3dfe801 and sibling tips clean; agents completed/idle; no recovery-required guards. Elevated audit no Acquiring python/node/java or test listeners. Resume bounded T15 proposal."
+      "action": "Approval service recovered on SAME elevated read-only processaudit; preserve source and resume only saved unfinished validations."
     }
   },
   "dependencyRule": "A dependency normally requires task status complete. An explicit dependencyGates mapping may instead require the named completed milestone on that dependency. It authorizes bounded development only; the parent acceptance remains open and release integration still requires all full-task gates.",
