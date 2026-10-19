@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T13:47:08.900680+00:00",
+  "updated": "2026-10-19T13:50:48.501394+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -3402,7 +3402,7 @@
         "model": "gpt-6.1-sol",
         "thinking": "high",
         "at": "2026-10-19T13:39:00.361763+00:00",
-        "status": "sourceprepared/unvalidated in existing831base; root clarified pre-SQL lone-surrogate refusal BEFORE firstchecks",
+        "status": "root whole source/tests reviewed; final3path hashes/clean tip verified; normal integration next",
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "branch": "codex/pwa-aural-popularity",
         "previousBranch": "codex/pwa-aural-statistics",
@@ -3414,11 +3414,29 @@
           "pwa/src/storage/catalog/POPULARITY_WORKLOG.md"
         ],
         "contract": "pwa/src/storage/catalog/aural-popularity-contracts.ts",
-        "nextAction": "After root names exact validatedcontractcommit, create newbranch from it in existing CLEAN sibling preserving allrefs/artifacts. Bounded selected-song readonly SQL projection only, actualSQLite tests/scopedtypes,3path validatedcheckpoint then idle. No newnativecapture/worker/client/other exports/contracts/deps.",
+        "nextAction": "Normalmerge exact2cd2f8ea preserving canonical72b contract, then covering primary tests/types before RPC.",
         "expectedCheck": "Meaningful actual nodeSQLite readonly projection/refusal/snapshot/batch/double/bytebounds tests +scopedstrict types. Same approval route, no model/permission downgrades.",
         "contractClarification": {
           "at": "2026-10-19T13:45:08.214376+00:00",
           "scope": "Canonical primary contract adds INVALID_REQUEST for ill-formedUTF16 songIDs before binder replacement; valid pairs/NUL/BOM unchanged, no TSsignature change. Worker still owns3source/test/logpaths on831base; doNOTeditcontract/reset/rebase/merge or overwrite currentdirtysource. Read this primary contract revision, add focusedguards/tests BEFORE firstchecks. Root preserves amendedcontract atintegration."
+        },
+        "tip": "2cd2f8eaeb5270fd85c1bddf059745a7bbca3f68",
+        "validation": {
+          "branch": "codex/pwa-aural-popularity",
+          "base": "831b8c2984496cf55c5e388fe578babb8990db0b",
+          "contractAmendment": "72b3163622c98226a39653c21e47f139e93d10a1",
+          "units": "FIRSTPASS16/16/1file/1.19s",
+          "unitGuard": "t15-popularity-unit-20261019-104",
+          "strictScopedTypes": "FIRSTPASSexit0",
+          "typesGuard": "t15-popularity-types-20261019-105",
+          "failureCycles": 0,
+          "sourceHashes": {
+            "pwa/src/storage/catalog/aural-popularity-query.ts": "49e702a28ea8004731f9a3c6d3a28724657ad75d5dcd8f9a8830da4b262a4dfb",
+            "pwa/src/storage/catalog/aural-popularity-query.test.ts": "c22b780c7371ef9a45a309538531ec91be073de7a66c1fcde8f3a1a4a61863b6",
+            "pwa/src/storage/catalog/POPULARITY_WORKLOG.md": "88b4a4184537a542de6e13c18755234276b2ada24f284d8294901bf72a47ab43"
+          },
+          "limitations": "Selected readonly query only; no native capture/global preload/worker RPC/browser/fullcatalog claim",
+          "next": "Idle for root review/normal integration/covering checks"
         }
       },
       "statisticsRuntimeAssignment": {
@@ -3450,6 +3468,19 @@
             "pwa/src/storage/catalog/aural-statistics-request.test.ts": "1eaa3bf4636bb0f1dda6397aa5c9bb1bf85e01ee40673f377d4e590626428bcf"
           }
         }
+      },
+      "statisticsFixtureAssignment": {
+        "owner": "preview_owner",
+        "model": "gpt-6.1-sol",
+        "thinking": "high",
+        "status": "intent only; delegate after integration/covering",
+        "branch": "codex/pwa-statistics-fixtures",
+        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
+        "ownedPaths": [
+          "pwa/scripts/catalog/make-aural-statistics-browser-fixture.py",
+          "pwa/scripts/catalog/STATISTICS_FIXTURE_WORKLOG.md"
+        ],
+        "nextAction": "Tiny3SQLite fixture producer from existing accepted native-statistics.json; no native capture or expectedmath rewrite. --probe NAME --snapshot SHA256 optional --variant bad-confidence. Return directory/manifest/request/expected/nativeProbe/browserVariant. Counts raw ordered occurrences; minimal run/song/popularity schema, default actual native expected stats unchanged. Smoke accepted7probes; validate package manifest/checksums/SQLite readonly fields. Root owns browser spec, harness/RPC and integration."
       }
     },
     {
