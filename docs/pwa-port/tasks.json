@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T13:54:07.031536+00:00",
+  "updated": "2026-10-19T13:57:00.301657+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -3442,7 +3442,7 @@
       "statisticsRuntimeAssignment": {
         "owner": "coordinator runtime unknown unchanged",
         "at": "2026-10-19T13:39:00.361763+00:00",
-        "status": "RPC8clienttests/types accepted2c588bc7;4browser cases prepared pending fixture review",
+        "status": "Fixture reviewed and4Chrome cases typesPASS; final combined/build/browser queued before acceptance",
         "baseCommit": "989fd4023ec82c3a10d7100d775d09cef4950ca1",
         "ownedPaths": [
           "pwa/src/storage/catalog/aural-statistics-runtime-contracts.ts",
@@ -3483,14 +3483,22 @@
         "owner": "preview_owner",
         "model": "gpt-6.1-sol",
         "thinking": "high",
-        "status": "intent only; delegate after integration/covering",
+        "status": "Root whole producer/smokehelper reviewed, no blocker; exact2path clean tip verified; normalmerge next",
         "branch": "codex/pwa-statistics-fixtures",
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "ownedPaths": [
           "pwa/scripts/catalog/make-aural-statistics-browser-fixture.py",
           "pwa/scripts/catalog/STATISTICS_FIXTURE_WORKLOG.md"
         ],
-        "nextAction": "Tiny3SQLite fixture producer from existing accepted native-statistics.json; no native capture or expectedmath rewrite. --probe NAME --snapshot SHA256 optional --variant bad-confidence. Return directory/manifest/request/expected/nativeProbe/browserVariant. Counts raw ordered occurrences; minimal run/song/popularity schema, default actual native expected stats unchanged. Smoke accepted7probes; validate package manifest/checksums/SQLite readonly fields. Root owns browser spec, harness/RPC and integration."
+        "nextAction": "Normalmerge exacttip, then root combined/types/productionbuild/4actualChrome. No newnative capture.",
+        "tip": "12c637766fa03dcf815688d3cf40662ef5b92d92",
+        "validation": {
+          "smokeGuard": "t15-statistics-fixtures-smoke-20261019-112",
+          "result": "FIRSTPASS9smokes,8nativeexamples+1browserconfidencevariant; exact3SQLite contents/orderedpairs/requests/unchanged nativeexpected/chunks/gzip/hashes verified",
+          "receipt": "..\\Acquiring-pwa-data-compat\\.artifacts\\pwa-port\\t15-statistics-fixture-validation.json",
+          "receiptSha256": "998d5b9b5675484babcde872542f1efad635cc39f28fe23465f45193d613319c",
+          "producerSha256": "11b4079c7aab144277bf41d012fa416f887c3cefd7a3b722432257c69dbbeb95"
+        }
       }
     },
     {
