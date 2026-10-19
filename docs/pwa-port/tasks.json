@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T13:50:48.501394+00:00",
+  "updated": "2026-10-19T13:53:05.936722+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -3402,7 +3402,7 @@
         "model": "gpt-6.1-sol",
         "thinking": "high",
         "at": "2026-10-19T13:39:00.361763+00:00",
-        "status": "root whole source/tests reviewed; final3path hashes/clean tip verified; normal integration next",
+        "status": "accepted normalmerge927598ef +492primary tests/32files14.04s/fullstrict types PASS",
         "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
         "branch": "codex/pwa-aural-popularity",
         "previousBranch": "codex/pwa-aural-statistics",
@@ -3442,7 +3442,7 @@
       "statisticsRuntimeAssignment": {
         "owner": "coordinator runtime unknown unchanged",
         "at": "2026-10-19T13:39:00.361763+00:00",
-        "status": "request snapshot accepted6tests/fulltypes; protocol/workerRPC/browser composition still pending",
+        "status": "serialized readonly statistics RPC saved;8clienttests/fullstrict types FIRSTPASS; actualChrome not yet run",
         "baseCommit": "989fd4023ec82c3a10d7100d775d09cef4950ca1",
         "ownedPaths": [
           "pwa/src/storage/catalog/aural-statistics-runtime-contracts.ts",
@@ -3457,7 +3457,7 @@
           "pwa/scripts/catalog/make-aural-statistics-browser-fixture.py",
           "pwa/src/storage/catalog/AURAL_READ_WORKLOG.md"
         ],
-        "nextAction": "After selected popularity query review/integration, add worker/client/harness routing and tiny realSQLite nativeexpected browserfixtures, validate source/types/build/actualChrome. Do not repeat accepted purecapture/nativeoracles.",
+        "nextAction": "Tinyfixture producer review/integration, actualChrome4nativeexpected/snapshot/integrity/restart checks, productionbuild. Then new combined revision checks before acceptance.",
         "expectedCheck": "Public request guards/no-caller-mutation tests, client routing/timeout, actualChrome tiny SQLite/WASM stats/counts/score(native tolerance)/snapshot/filter/ownership/restart and user-data preservation. No old native/fullcatalog repeats.",
         "validation": {
           "requestUnits": "window23-request-unit-first-20261019:6tests672ms FIRSTPASS",
@@ -3466,6 +3466,16 @@
           "requestSha256": {
             "pwa/src/storage/catalog/aural-statistics-request.ts": "8cbc9ca3ecdf044e08dd1401427950bed7650bc3f302641151bc881e139bd172",
             "pwa/src/storage/catalog/aural-statistics-request.test.ts": "1eaa3bf4636bb0f1dda6397aa5c9bb1bf85e01ee40673f377d4e590626428bcf"
+          },
+          "popularityPrimaryCombined": "window23-popularity-primary-combined-20261019:492tests/32files14.04s +fullstrict types PASS on927598ef",
+          "client": "window23-statistics-client-first-20261019:8tests/711ms FIRSTPASS",
+          "types": "window23-statistics-rpc-types-first-20261019:fullstrict types exit0 FIRSTPASS",
+          "rpcSha256": {
+            "pwa/src/storage/catalog/catalog-worker.ts": "4ca43b5bdcde19bdd763b46aceb0d0163f2d5eda4d1635f7deee8e0e9a6f2bac",
+            "pwa/src/storage/catalog/client.ts": "3e471a36758cd59503e95d23f30d6c81bb97859f8ba2f421553778f30d1b8476",
+            "pwa/src/storage/catalog/client.test.ts": "b0f13d05d594bb15e03a58ba58c83f92efb77bce611c9a5ca73528267c655179",
+            "pwa/src/storage/catalog/protocol.ts": "b39a07d45aebbf65acea56fe106b4cb8bc484f0cc5445ddbee6d98a47c22a6a9",
+            "pwa/tests/browser/catalog-worker-harness.ts": "5384d637ad269a549bad12cdfd1093343de15083320d8cc0aff307730e1b75f5"
           }
         }
       },

@@ -1,3 +1,8 @@
+import {captureAuralStatisticsRequest} from './aural-statistics-request';
+import {readAuralStatisticsFacts} from './aural-statistics-query';
+import {readAuralPopularity} from './aural-popularity-query';
+import {computeAuralCatalogStatistics} from '../../domain/catalog/catalog-statistics';
+import type {AuralStatisticsRequest,AuralStatisticsResponse} from './aural-statistics-runtime-contracts';
 import {captureAuralTargetQuery,readAuralTargetRow} from './aural-target-query';
 import {decodeAuralCatalogRun,createAuralCatalogTarget} from './aural-target-codec';
 import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
@@ -242,12 +247,36 @@ function auralTarget(query:AuralCatalogTargetQuery){
     return createAuralCatalogTarget(run,row.span);
   });
 }
+function auralStatistics(request:AuralStatisticsRequest):Promise<AuralStatisticsResponse> {
+  const captured=captureAuralStatisticsRequest(request);
+  return withAuralDatabase((db,source)=>{
+    const facts=readAuralStatisticsFacts(db,source.sourceSnapshot,captured.range);
+    let popularityDb:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
+    try {
+      // Both readonly handles belong to the same immutable installation, inside one queued command.
+      popularityDb=new sqlite!.oo1.DB(stagedPath(source.id,'aural-popularity.db'),'r',owner().vfsName);
+      const popularity=readAuralPopularity(popularityDb,facts.validSongIds);
+      let statistics:AuralStatisticsResponse['statistics'];
+      try {
+        statistics=computeAuralCatalogStatistics({targetLength:captured.range.length,
+          occurrences:facts.occurrences,runs:facts.runs,validSongIds:facts.validSongIds,popularity,
+          settings:captured.settings,recentSongIds:captured.recentSongIds,
+          favoriteSongIds:captured.favoriteSongIds,minimumPopularityPercent:captured.minimumPopularityPercent});
+      } catch(error) {
+        if(error instanceof RangeError)throw new CatalogError('LIMIT','Aural statistics exceed the browser input limit');
+        throw error;
+      }
+      return Object.freeze({sourceSnapshot:source.sourceSnapshot,range:captured.range,statistics});
+    } finally {popularityDb?.close();}
+  });
+}
 async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'init') { await acquire(); return info(); }
   if (command.kind === 'close') { releaseOwnership?.(); await ownershipTask; releaseOwnership = undefined; ownershipTask = undefined; return null; }
   owner();
   if (command.kind === 'info') return info();
   if (command.kind === 'auralTarget') return auralTarget(command.query);
+  if (command.kind === 'auralStatistics') return auralStatistics(command.request);
   if (command.kind === 'auralHeader') return auralHeader();
   if (command.kind === 'songPage') return songPage(command.query);
   if (command.kind === 'songPayload') return songPayload(command.slug);

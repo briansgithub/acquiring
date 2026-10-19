@@ -3,10 +3,16 @@ import {readSongDetails} from '../../src/features/details/reader';
 import { openUserDatabase, USER_STORES } from '../../src/storage/user';
 import type { CatalogManifest } from '../../src/storage/catalog/manifest';
 const clients = new Map<string, CatalogWorkerClient>();
+let statisticsRead:{done:boolean;value?:unknown;code?:string}={done:false};
 let targetRead:{done:boolean;value?:unknown;code?:string}={done:false};
 let progress: import('../../src/storage/catalog/protocol').CatalogProgress | null = null;
 let preparation: { done: boolean; error?: string } = { done: false };
 export const catalogHarness = {
+  auralStatistics(name:string,request:import('../../src/storage/catalog/aural-statistics-runtime-contracts').AuralStatisticsRequest){return clients.get(name)!.auralStatistics(request);},
+  beginAuralStatistics(name:string,request:import('../../src/storage/catalog/aural-statistics-runtime-contracts').AuralStatisticsRequest){
+    statisticsRead={done:false};void clients.get(name)!.auralStatistics(request).then(value=>{statisticsRead={done:true,value};},(error:{code?:string})=>{statisticsRead={done:true,code:error.code};});
+  },
+  auralStatisticsState(){return statisticsRead;},
   auralTarget(name:string,query:import('../../src/storage/catalog/aural-target-query-contracts').AuralCatalogTargetQuery){return clients.get(name)!.auralTarget(query);},
   beginAuralTarget(name:string,query:import('../../src/storage/catalog/aural-target-query-contracts').AuralCatalogTargetQuery){
     targetRead={done:false};void clients.get(name)!.auralTarget(query).then(value=>{targetRead={done:true,value};},(error:{code?:string})=>{targetRead={done:true,code:error.code};});
