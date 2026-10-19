@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T03:50:03.649810+00:00",
+  "updated": "2026-10-19T03:52:59.159346+00:00",
   "implementationAuthorized": true,
   "currentStage": "implementation_foundation",
   "tasks": [
@@ -3189,7 +3189,7 @@
         "owner": "coordinator runtime unknown unchanged",
         "at": "2026-10-19T03:46:12.709693+00:00",
         "baseCommit": "dc90282b",
-        "status": "native oracle recovered/reviewed; frozen contracts full types PASS; pure source not yet started",
+        "status": "pure rank bitmap accepted:17focused tests/258native queries/full types PASS; global predicate/SQL runtime unimplemented",
         "ownedPaths": [
           "pwa/src/domain/catalog/rank-eligibility-contracts.ts",
           "pwa/src/domain/catalog/fixtures/generate-rank-eligibility-native.py",
@@ -3198,7 +3198,7 @@
           "pwa/src/domain/catalog/rank-eligibility.ts",
           "pwa/src/domain/catalog/rank-eligibility.test.ts"
         ],
-        "nextAction": "Capture/review <=12NEW groups from unchanged native rank BitSet class, then pure contract implementation/tests only. No global eligibility scan or stats claim.",
+        "nextAction": "Use copied packed rank index in future eligibility/bucket runtime. Accepted native oracle/pure checks need no repetition unless integration changes them.",
         "expectedCheck": "First actual Kotlin capture, focused unit/type checks after oracle review; source/input/stdout/class hashes retained.",
         "validation": {
           "nativeFirstGuard": "window22-rank-native-first-20261019: native compile/runtime0 then producer tuple/list verification failure",
@@ -3210,7 +3210,13 @@
           "fixtureSha256": "06916dc3b728bf72c7d58639b0314f685378003f537cc1b31d86a3aae70a537d",
           "review": "Root verified complete source/input/driver/stdout/classes hashes and ALL258 outcomes/mutation results; actual unchanged JVM class, no TS expectation generator. One producer validation correction, native failures0.",
           "types": "window22-rank-stats-contract-types-20261019: C:/nvm4w/nodejs/node.exe node_modules/typescript/bin/tsc --noEmit in pwa exit0",
-          "unproven": "No pure port tests, predicate construction/SQL/global song/popularity eligibility/runtime/catalog UI claim."
+          "unproven": "No pure port tests, predicate construction/SQL/global song/popularity eligibility/runtime/catalog UI claim.",
+          "pureUnits": "window22-rank-unit-first-20261019: C:/nvm4w/nodejs/node.exe node_modules/vitest/vitest.mjs run src/domain/catalog/rank-eligibility.test.ts in pwa;17passed/1file/1.49s FIRSTPASS",
+          "pureTypes": "window22-rank-types-first-20261019: C:/nvm4w/nodejs/node.exe node_modules/typescript/bin/tsc --noEmit in pwa exit0 FIRSTPASS"
+        },
+        "sourceSha256": {
+          "pwa/src/domain/catalog/rank-eligibility.ts": "e5e052677199dd717dfa5cbd96cf99f1dbb6129f6f620d37ef85f930c2e1b648",
+          "pwa/src/domain/catalog/rank-eligibility.test.ts": "88f8d2994ed7bbdf954402a3a72d8ac39756b68a1a1b605c0d74975f7c52a009"
         }
       },
       "statisticsOracleAssignment": {
