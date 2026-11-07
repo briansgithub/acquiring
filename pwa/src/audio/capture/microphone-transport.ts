@@ -22,6 +22,9 @@ const AUDIO_CONSTRAINTS: MediaTrackConstraints = Object.freeze({
  * Dedicated capture AudioContext + ScriptProcessor. Not the playback ApplicationAudioContext.
  * ScriptProcessor quantum (4096) is a documented browser difference vs native blocking hop reads.
  * Processor feeds a muted gain so Chrome runs the callback without a monitor mix.
+ * ScriptProcessor is deprecated; AudioWorklet is feasible (same hop listener, extra processor
+ * module + CSP) and is the documented replacement. Not switched this slice — tracked limitation,
+ * not accepted parity.
  */
 export function createWebAudioMicrophoneTransport(
   options: WebAudioMicrophoneTransportOptions = {},

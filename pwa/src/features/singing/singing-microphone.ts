@@ -1,20 +1,39 @@
 import {
   BrowserMicrophoneCapture, MicrophonePitchCoordinator, MicrophonePitchOwner, type PitchResultEstimate,
 } from '../../audio/capture';
-import { SpelledPitch } from '../../domain/music';
+import { calculateMeasuredInterval, type MeasuredInterval, SpelledPitch } from '../../domain/music';
 
 export const LISTEN_TIMEOUT_MS = 3000;
 export const FLIPFLOP_SLOT_MS = 3000;
+/** Native HummingIntervalPopup after slot 2: pitchTracker.stop() then delay(2000). */
+export const FLIPFLOP_REST_MS = 2000;
+/** Native EXPAND_ANIMATION_MS(300) + AUTO_LISTEN_DELAY_MS(500). */
+export const AUTO_LISTEN_MS = 800;
 
 export type SingingMicAction =
   | { readonly kind: 'idle' }
   | { readonly kind: 'listening'; readonly slot: 1 | 2; readonly targetMidi: number }
-  | { readonly kind: 'flipflop'; readonly slot: 1 | 2 };
+  | { readonly kind: 'flipflop'; readonly slot: 1 | 2 }
+  | { readonly kind: 'flipflop-rest'; readonly until: number };
 
 export interface SingingSlotPitch {
   readonly midi: number;
   readonly cents: number;
   readonly label: string;
+}
+
+/** Accepted T03 contract on captured raw MIDI. Null unless both slots have a live write. */
+export function sungInterval(
+  slot1: SingingSlotPitch | null,
+  slot2: SingingSlotPitch | null,
+): MeasuredInterval | null {
+  if (!slot1 || !slot2) return null;
+  return calculateMeasuredInterval(slot1.midi, slot2.midi);
+}
+
+export function formatSungIntervalCents(cents: number): string {
+  const rounded = Math.round(cents);
+  return `${rounded >= 0 ? '+' : ''}${rounded}¢`;
 }
 
 export class SingingMicrophoneSession {
@@ -27,6 +46,8 @@ export class SingingMicrophoneSession {
   slot1: SingingSlotPitch | null = null;
   slot2: SingingSlotPitch | null = null;
   error: string | null = null;
+  /** Explicit listen/Flip-Flop this session. Collapse/stop keeps it; release clears. */
+  optedIn = false;
   version = 0;
   private readonly listeners = new Set<() => void>();
 
@@ -43,6 +64,7 @@ export class SingingMicrophoneSession {
   };
 
   listen(slot: 1 | 2, targetMidi: number): void {
+    this.optedIn = true;
     this.error = null;
     this.lease.stop();
     this.lease.claim();
@@ -52,6 +74,13 @@ export class SingingMicrophoneSession {
     this.emit();
   }
 
+  /** Native-equivalent 800ms auto-listen only after prior explicit mic opt-in, while idle. */
+  maybeAutoListen(slot: 1 | 2, targetMidi: number): boolean {
+    if (!this.optedIn || this.action.kind !== 'idle') return false;
+    this.listen(slot, targetMidi);
+    return true;
+  }
+
   setFlipFlop(enabled: boolean): void {
     this.lease.stop();
     if (!enabled) {
@@ -59,6 +88,7 @@ export class SingingMicrophoneSession {
       this.emit();
       return;
     }
+    this.optedIn = true;
     this.error = null;
     this.lease.claim();
     this.action = { kind: 'flipflop', slot: 1 };
@@ -82,6 +112,7 @@ export class SingingMicrophoneSession {
 
   release(): void {
     this.stop();
+    this.optedIn = false;
     this.coordinator.release();
   }
 
@@ -100,18 +131,32 @@ export class SingingMicrophoneSession {
       else this.emit();
       return;
     }
+    if (this.action.kind === 'flipflop-rest') {
+      if (now >= this.action.until) this.startFlipFlopSlot(1, now);
+      this.emit();
+      return;
+    }
     if (this.action.kind === 'flipflop') {
       if (live) this.writeSlot(this.action.slot, live, centsFromNearest(live.midi));
       if (now - this.startedAt >= FLIPFLOP_SLOT_MS) {
-        const next: 1 | 2 = this.action.slot === 1 ? 2 : 1;
-        this.lease.stop();
-        this.lease.claim();
-        this.action = { kind: 'flipflop', slot: next };
-        this.startedAt = now;
-        this.lease.start(60);
+        if (this.action.slot === 2) {
+          this.lease.stop();
+          this.action = { kind: 'flipflop-rest', until: now + FLIPFLOP_REST_MS };
+          this.startedAt = now;
+        } else {
+          this.startFlipFlopSlot(2, now);
+        }
       }
       this.emit();
     }
+  }
+
+  private startFlipFlopSlot(slot: 1 | 2, now: number): void {
+    this.lease.stop();
+    this.lease.claim();
+    this.action = { kind: 'flipflop', slot };
+    this.startedAt = now;
+    this.lease.start(60);
   }
 
   private writeSlot(slot: 1 | 2, live: PitchResultEstimate, cents: number): void {

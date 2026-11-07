@@ -7,3 +7,5 @@
 .singing-dock__slot,
 .singing-dock__interval { flex: 1 1 6rem; min-height: 44px; min-width: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #a6c8ff; border-radius: .75rem; background: #273449; overflow-wrap: anywhere; padding: .5rem; }
 .singing-dock__interval output { font-size: 1.5rem; line-height: 1.2; opacity: .4; }
+.singing-dock__interval[data-singing-interval="measured"] output { opacity: 1; }
+.singing-dock__interval-cents { font-size: .85rem; }

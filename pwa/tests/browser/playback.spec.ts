@@ -345,6 +345,13 @@ test('singing dock loads card targets without scores and octave persists per son
   await expect(page.locator('[data-singing-dock="expanded"]')).toBeVisible();
   await expect(page.locator('[data-singing-slot="1"]')).not.toHaveText('—');
   await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-opted-in','false');
+  await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toHaveCount(0);
+  await page.waitForTimeout(900);
+  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-opted-in','false');
+  await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
   await page.getByRole('button',{name:'Raise singing octave',exact:true}).click();
   await expect(page.getByRole('status',{name:'Singing octave',exact:true})).toHaveText('+1');
   const section=page.getByRole('combobox',{name:'Section',exact:true});

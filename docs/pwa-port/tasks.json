@@ -974,8 +974,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
-      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop opt-in. Device mic/AudioWorklet/median scores remain open",
-      "nextAction": "Browser capture adapter landed. Next Flip-Flop 2s rest or AudioWorklet or actual device mic. SYNTHETIC fixture is not Pixel acceptance. No fabricated cents. Native auto-listen 800ms skipped (gesture + no unsolicited recording). Library prefix polish is not next.",
+      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop opt-in, 2s rest, measured interval, opt-in-only auto-listen. Device mic/AudioWorklet/median Aural scores remain open",
+      "nextAction": "Flip-Flop 2s rest + measured interval + opt-in-only auto-listen landed. Next SongQueue or AudioWorklet or coordinated device mic. SYNTHETIC fixture is not Pixel acceptance. No fabricated cents. First-load auto-listen 800ms is a Brian decision (getUserMedia is not transient-gated). Library prefix polish is not next.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
@@ -1026,6 +1026,17 @@
             "T09-mic-capture-browser-004"
           ],
           "result": "PASS 57 focused then 1035 unit/86 files + 1 parity + types + shell 52efc458aa0a. browser-004 FIRST PASS 4/4: SYNTHETIC 440Hz estimate+stop; permission Error; Flip-Flop enabled; dock still interval — without scores. Linear resample and ScriptProcessor 4096 documented as necessary browser differences. Expand does not record. Native auto-listen 800ms skipped. Not real mic/Pixel/whole-CI-green."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/singing/singing-microphone.test.ts src/domain/music/interval.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/microphone-capture.spec.ts tests/browser/playback.spec.ts --project chrome --workers 1 --grep \"SYNTHETIC microphone|visible timeline hides|singing dock loads\"",
+          "revision": "2bdccfb6 plus named Flip-Flop rest / interval / opt-in auto-listen tree",
+          "guards": [
+            "T13-flipflop-rest-unit-001",
+            "T13-flipflop-rest-typecheck-001",
+            "T13-flipflop-rest-check-001",
+            "T13-flipflop-rest-browser-001"
+          ],
+          "result": "PASS 34 focused then 1038 unit/86 files + 1 parity + types + shell b46ee11bd284. browser-001 FIRST PASS 4/4: SYNTHETIC 440Hz; permission Error; Flip-Flop enabled; card-target still idle/opted-in false after 900ms and interval — without scores. Flip-Flop rests 2s after slot 2 with mic stopped. Measured interval uses accepted calculateMeasuredInterval. Auto-listen only after prior opt-in. ScriptProcessor+linear resample tracked not parity. Not real mic/Pixel/whole-CI-green."
         }
       ],
       "progress": [
@@ -1035,7 +1046,8 @@
         "2026-11-07T11:50Z PitchPublisher hop/200ms hold/start/stop/release on continuation. Injected clock; exclusive coordinator and getUserMedia remain. 27 capture / 1023 unit PASS. Partial T09.",
         "2026-11-07T11:52Z Exclusive MicrophonePitchCoordinator lease on continuation. Delayed previous-owner stop ignored. getUserMedia hop clock next. Partial T09.",
         "2026-11-07T11:55Z MicrophonePitchTracker hop-to-YIN on continuation. Injected PCM hops; getUserMedia adapter remains. Partial T09.",
-        "2026-11-07T12:00Z BrowserMicrophoneCapture + dock listen/Flip-Flop. SYNTHETIC oscillator fixture. Auto-listen skipped. Partial T09."
+        "2026-11-07T12:00Z BrowserMicrophoneCapture + dock listen/Flip-Flop. SYNTHETIC oscillator fixture. Auto-listen skipped. Partial T09.",
+        "2026-11-07T12:05Z Flip-Flop 2s rest after slot 2, measured interval readout, opt-in-only 800ms auto-listen. First-load auto-listen is a Brian decision; getUserMedia is not transient-gated. AudioWorklet deferred. Partial T09/T13."
       ],
       "blocker": null
     },
@@ -1071,7 +1083,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
       "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter. Prefix-scrubber, Artists chip, Play-Shuffle remain. Settings Back 64px still owner-blocked.",
-      "nextAction": "All Songs in-view filter landed 53e875d1. T09 capture adapter + dock listen/Flip-Flop landed. Rotate off Library polish. Artists chip needs new getArtistSuggestions RPC. SongQueueViewModel is implementable later. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
+      "nextAction": "All Songs in-view filter landed 53e875d1. Flip-Flop rest/interval landed. Next SongQueueViewModel. Artists chip needs new getArtistSuggestions RPC. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-all-songs-filter/browser-001",
@@ -2172,8 +2184,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
-      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + opt-in listen/Flip-Flop via T09 capture. Median interval scores, auto-listen, Flip-Flop 2s rest remain.",
-      "nextAction": "Do not fake scores. Capture adapter exists; median interval scoring and Flip-Flop 2s rest remain. Do not start Aural/T15 remainder.",
+      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + opt-in listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + opt-in-only auto-listen. Median Aural scores and first-load auto-listen remain.",
+      "nextAction": "Do not fake scores. Flip-Flop rest and measured interval landed. First-load auto-listen is a Brian decision (A native-parity 800ms / B current opt-in-only / C never). SongQueue next. Do not start Aural/T15 remainder.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -2184,10 +2196,22 @@
             "T13-octave-check-001"
           ],
           "result": "PASS 11 focused 123ms; typecheck; combined 971 unit/73 files 16.15s + 1 parity + types + production shell 1a7e9ac45427. Unbundled; App shell unchanged. No browser/mic/Aural claim."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/singing/singing-microphone.test.ts src/domain/music/interval.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/microphone-capture.spec.ts tests/browser/playback.spec.ts --project chrome --workers 1 --grep \"SYNTHETIC microphone|visible timeline hides|singing dock loads\"",
+          "revision": "2bdccfb6 plus named Flip-Flop rest / interval / opt-in auto-listen tree",
+          "guards": [
+            "T13-flipflop-rest-unit-001",
+            "T13-flipflop-rest-typecheck-001",
+            "T13-flipflop-rest-check-001",
+            "T13-flipflop-rest-browser-001"
+          ],
+          "result": "PASS 34 focused then 1038 unit/86 files + 1 parity + types + shell b46ee11bd284. browser-001 4/4 including 900ms no first-load auto-listen. Flip-Flop 2s rest with mic stopped. Measured interval from captured MIDI. Opt-in-only auto-listen. No fabricated cents. Partial T13."
         }
       ],
       "progress": [
-        "2026-11-07T09:20:00Z Brian playback/singing/cards-first; Aural/song-rank/family trees last. Lineage is tie-breaker inside that order (LINEAGE_PRIORITY.md). T09 not required for pure octave math; development gate is accepted T12 interval cards. Library Settings Back excluded."
+        "2026-11-07T09:20:00Z Brian playback/singing/cards-first; Aural/song-rank/family trees last. Lineage is tie-breaker inside that order (LINEAGE_PRIORITY.md). T09 not required for pure octave math; development gate is accepted T12 interval cards. Library Settings Back excluded.",
+        "2026-11-07T12:05Z Flip-Flop 2s rest, measured interval, opt-in-only auto-listen. First-load auto-listen remains Brian decision. SongQueue next."
       ],
       "blocker": null,
       "dependencyGates": {

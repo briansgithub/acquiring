@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { BrowserMicrophoneCapture, PITCH_SAMPLE_RATE } from '../../audio/capture';
 import type { MicrophoneCaptureTransport } from '../../audio/capture';
-import { LISTEN_TIMEOUT_MS, SingingMicrophoneSession } from './singing-microphone';
+import {
+  AUTO_LISTEN_MS, FLIPFLOP_REST_MS, FLIPFLOP_SLOT_MS, LISTEN_TIMEOUT_MS,
+  SingingMicrophoneSession, formatSungIntervalCents, sungInterval,
+} from './singing-microphone';
 
 class FakeTransport implements MicrophoneCaptureTransport {
   async start(): Promise<void> { /* synthetic; tests pushAudio directly */ }
@@ -12,39 +15,97 @@ function sine(frequency: number, hop = 512, at = 0): Float32Array {
   return Float32Array.from({ length: hop }, (_, i) => Math.sin(2 * Math.PI * frequency * (at + i) / PITCH_SAMPLE_RATE));
 }
 
+function sessionAt(now: { t: number }): SingingMicrophoneSession {
+  const capture = new BrowserMicrophoneCapture(undefined, {
+    transport: new FakeTransport(), now: () => now.t, onPageHide: false,
+  });
+  return new SingingMicrophoneSession({ capture, now: () => now.t });
+}
+
 describe('SingingMicrophoneSession listen/Flip-Flop', () => {
   it('listens on an explicit gesture, skips held-only writes, and times out without fabricating cents', () => {
-    let now = 1_000;
-    const capture = new BrowserMicrophoneCapture(undefined, {
-      transport: new FakeTransport(), now: () => now, onPageHide: false,
-    });
-    const session = new SingingMicrophoneSession({ capture, now: () => now });
+    const now = { t: 1_000 };
+    const session = sessionAt(now);
     expect(session.action.kind).toBe('idle');
+    expect(session.optedIn).toBe(false);
     session.listen(1, 69);
+    expect(session.optedIn).toBe(true);
     expect(session.action).toMatchObject({ kind: 'listening', slot: 1 });
     let n = 0;
     for (let i = 0; i < 16; i++) {
-      capture.pushAudio(sine(440, 512, n), PITCH_SAMPLE_RATE, now);
+      session.capture.pushAudio(sine(440, 512, n), PITCH_SAMPLE_RATE, now.t);
       n += 512;
     }
-    session.tick(now);
+    session.tick(now.t);
     expect(session.slot1?.label).toMatch(/A4/);
     expect(session.slot1?.cents).toBeCloseTo(0, 0);
-    now += LISTEN_TIMEOUT_MS;
-    session.tick(now);
+    now.t += LISTEN_TIMEOUT_MS;
+    session.tick(now.t);
     expect(session.action.kind).toBe('idle');
+    expect(session.optedIn).toBe(true);
     session.release();
+    expect(session.optedIn).toBe(false);
   });
 
   it('Flip-Flop starts at MIDI 60 from a user gesture and stop clears the lease', () => {
-    const capture = new BrowserMicrophoneCapture(undefined, {
-      transport: new FakeTransport(), now: () => 0, onPageHide: false,
-    });
-    const session = new SingingMicrophoneSession({ capture, now: () => 0 });
+    const session = sessionAt({ t: 0 });
     session.setFlipFlop(true);
+    expect(session.optedIn).toBe(true);
     expect(session.action).toMatchObject({ kind: 'flipflop', slot: 1 });
     session.setFlipFlop(false);
     expect(session.action.kind).toBe('idle');
+    expect(session.optedIn).toBe(true);
     session.release();
+  });
+
+  it('Flip-Flop rests 2s after slot 2 with the mic stopped, then resumes slot 1', () => {
+    const now = { t: 0 };
+    const session = sessionAt(now);
+    session.setFlipFlop(true);
+    expect(session.capture.isRunning).toBe(true);
+    now.t += FLIPFLOP_SLOT_MS;
+    session.tick(now.t);
+    expect(session.action).toMatchObject({ kind: 'flipflop', slot: 2 });
+    expect(session.capture.isRunning).toBe(true);
+    now.t += FLIPFLOP_SLOT_MS;
+    session.tick(now.t);
+    expect(session.action.kind).toBe('flipflop-rest');
+    expect(session.capture.isRunning).toBe(false);
+    if (session.action.kind !== 'flipflop-rest') throw new Error('expected rest');
+    expect(session.action.until).toBe(now.t + FLIPFLOP_REST_MS);
+    now.t += FLIPFLOP_REST_MS - 1;
+    session.tick(now.t);
+    expect(session.action.kind).toBe('flipflop-rest');
+    expect(session.capture.isRunning).toBe(false);
+    now.t += 1;
+    session.tick(now.t);
+    expect(session.action).toMatchObject({ kind: 'flipflop', slot: 1 });
+    expect(session.capture.isRunning).toBe(true);
+    session.release();
+  });
+
+  it('auto-listen requires prior explicit opt-in and stays idle without it', () => {
+    const session = sessionAt({ t: 0 });
+    expect(session.maybeAutoListen(1, 69)).toBe(false);
+    expect(session.action.kind).toBe('idle');
+    expect(session.capture.isRunning).toBe(false);
+    session.listen(1, 69);
+    session.stop();
+    expect(session.maybeAutoListen(1, 60)).toBe(true);
+    expect(session.action).toMatchObject({ kind: 'listening', slot: 1, targetMidi: 60 });
+    expect(AUTO_LISTEN_MS).toBe(800);
+    session.release();
+  });
+
+  it('measured interval uses accepted calculateMeasuredInterval on raw slot MIDI', () => {
+    expect(sungInterval(null, { midi: 64, cents: 0, label: 'E4' })).toBeNull();
+    const interval = sungInterval(
+      { midi: 60.1, cents: 10, label: 'C4' },
+      { midi: 64.1, cents: 10, label: 'E4' },
+    );
+    expect(interval?.shorthand).toBe('M3 ↑');
+    expect(interval?.centsDeviation).toBeCloseTo(0, 8);
+    expect(formatSungIntervalCents(15)).toBe('+15¢');
+    expect(formatSungIntervalCents(-30.4)).toBe('-30¢');
   });
 });
