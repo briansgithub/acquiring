@@ -41,6 +41,12 @@ export class MicrophonePitchTracker implements PitchSource {
     this.buffer.reset();
   }
 
+  fail(message: string): PitchResult {
+    const result = this.publisher.fail(message);
+    this.buffer.reset();
+    return result;
+  }
+
   release(): void {
     this.publisher.release();
     this.buffer.reset();

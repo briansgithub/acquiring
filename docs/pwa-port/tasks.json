@@ -963,7 +963,10 @@
         "T07"
       ],
       "allowedPaths": [
-        "pwa/src/audio/capture/"
+        "pwa/src/audio/capture/",
+        "pwa/tests/browser/microphone-capture.spec.ts",
+        "pwa/tests/browser/microphone-capture.html",
+        "pwa/tests/browser/microphone-capture-harness.ts"
       ],
       "acceptance": "Synthetic pitch/noise/harmonic/dropout cases; actual microphone smoke test",
       "status": "in_progress",
@@ -971,8 +974,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
-      "slice": "Pure native pitch core plus PitchPublisher hop/200ms hold plus exclusive lease plus MicrophonePitchTracker hop-to-YIN (injected PCM clock). getUserMedia hop clock and scoring remain open",
-      "nextAction": "MicrophonePitchTracker hop-to-YIN landed. Next getUserMedia hop clock into MicrophonePitchTracker. Missing contract is the browser capture adapter only (permission, AudioContext/AudioWorklet, Float32→PCM16, resampling). No fabricated cents, no singing-dock scores, no Aural. Library prefix polish is not next.",
+      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop opt-in. Device mic/AudioWorklet/median scores remain open",
+      "nextAction": "Browser capture adapter landed. Next Flip-Flop 2s rest or AudioWorklet or actual device mic. SYNTHETIC fixture is not Pixel acceptance. No fabricated cents. Native auto-listen 800ms skipped (gesture + no unsolicited recording). Library prefix polish is not next.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
@@ -1013,6 +1016,16 @@
             "T09-pitch-tracker-check-001"
           ],
           "result": "PASS 31 capture then 1027 unit/83 files + 1 parity + types + shell 24b6cc12e562. Injected 16kHz hops publish A4; rolling window must flush before 200ms hold. Exclusive singing lease uses melody-fast hop 256. No getUserMedia; no fabricated cents; no singing-dock scores. Partial T09, not device/whole-CI-green."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/audio/capture src/features/singing; npm run check; npx playwright test tests/browser/microphone-capture.spec.ts tests/browser/playback.spec.ts --project chrome --workers 1 --grep \"SYNTHETIC microphone|visible timeline hides|singing dock loads\"",
+          "revision": "9fe4a607 plus named browser capture adapter tree",
+          "guards": [
+            "T09-mic-capture-unit-003",
+            "T09-mic-capture-check-002",
+            "T09-mic-capture-browser-004"
+          ],
+          "result": "PASS 57 focused then 1035 unit/86 files + 1 parity + types + shell 52efc458aa0a. browser-004 FIRST PASS 4/4: SYNTHETIC 440Hz estimate+stop; permission Error; Flip-Flop enabled; dock still interval — without scores. Linear resample and ScriptProcessor 4096 documented as necessary browser differences. Expand does not record. Native auto-listen 800ms skipped. Not real mic/Pixel/whole-CI-green."
         }
       ],
       "progress": [
@@ -1021,7 +1034,8 @@
         "Pure pitch24a3f78b normally integrated at906c9243 preserving owned Library work. Combined266unit+1input PASS;final focused3cancellation/types/build and10coveringChrome cases PASS after one test-only discriminator correction. T09 remains in_progress:actual microphone/clock/dropout owner unimplemented. All workers idle.",
         "2026-11-07T11:50Z PitchPublisher hop/200ms hold/start/stop/release on continuation. Injected clock; exclusive coordinator and getUserMedia remain. 27 capture / 1023 unit PASS. Partial T09.",
         "2026-11-07T11:52Z Exclusive MicrophonePitchCoordinator lease on continuation. Delayed previous-owner stop ignored. getUserMedia hop clock next. Partial T09.",
-        "2026-11-07T11:55Z MicrophonePitchTracker hop-to-YIN on continuation. Injected PCM hops; getUserMedia adapter remains. Partial T09."
+        "2026-11-07T11:55Z MicrophonePitchTracker hop-to-YIN on continuation. Injected PCM hops; getUserMedia adapter remains. Partial T09.",
+        "2026-11-07T12:00Z BrowserMicrophoneCapture + dock listen/Flip-Flop. SYNTHETIC oscillator fixture. Auto-listen skipped. Partial T09."
       ],
       "blocker": null
     },
@@ -1057,7 +1071,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
       "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter. Prefix-scrubber, Artists chip, Play-Shuffle remain. Settings Back 64px still owner-blocked.",
-      "nextAction": "All Songs in-view filter landed 53e875d1. T09 PitchPublisher, exclusive lease, and hop-to-YIN tracker landed. Rotate off Library polish: next getUserMedia hop clock into MicrophonePitchTracker. Artists chip needs new getArtistSuggestions RPC. SongQueueViewModel is implementable later. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
+      "nextAction": "All Songs in-view filter landed 53e875d1. T09 capture adapter + dock listen/Flip-Flop landed. Rotate off Library polish. Artists chip needs new getArtistSuggestions RPC. SongQueueViewModel is implementable later. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-all-songs-filter/browser-001",
@@ -2158,8 +2172,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
-      "slice": "Octave kernel + T06 songOctaveOffsets session + dock chrome without scores. Flip-Flop/listen/auto-listen/mic remain T09.",
-      "nextAction": "Do not fake scores. T09 remains required for scoring/mic. Next independent work is T21 Settings selectAsDefault. Do not start Aural/T15 remainder.",
+      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + opt-in listen/Flip-Flop via T09 capture. Median interval scores, auto-listen, Flip-Flop 2s rest remain.",
+      "nextAction": "Do not fake scores. Capture adapter exists; median interval scoring and Flip-Flop 2s rest remain. Do not start Aural/T15 remainder.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",

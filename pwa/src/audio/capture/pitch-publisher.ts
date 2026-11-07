@@ -117,6 +117,14 @@ export class PitchPublisher implements PitchSource {
     this.result = NO_SIGNAL;
   }
 
+  /** Capture IO failure: halt so a dead getUserMedia cannot stay live. Native init Error can leave running true until stop(); PWA fails closed. */
+  fail(message: string): PitchResult {
+    if (this.released) return this.result;
+    this.running = false;
+    this.result = Object.freeze({ kind: 'error', message });
+    return this.result;
+  }
+
   release(): void {
     this.stop();
     this.released = true;

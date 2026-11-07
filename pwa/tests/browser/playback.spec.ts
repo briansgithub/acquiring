@@ -322,7 +322,7 @@ test('visible timeline hides in root-only and singing octave does not start sour
   expect((await audio(page)).contexts).toHaveLength(0);
   await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
   await expect(page.locator('[data-singing-dock="expanded"]')).toBeVisible();
-  await expect(page.getByRole('switch',{name:'Flip-Flop',exact:true})).toBeDisabled();
+  await expect(page.getByRole('switch',{name:'Flip-Flop',exact:true})).toBeEnabled();
   await expect(page.locator('[data-singing-interval="empty"]')).toBeVisible();
   await page.getByRole('button',{name:'Raise singing octave',exact:true}).click();
   await expect(page.getByRole('status',{name:'Singing octave',exact:true})).toHaveText('+1');

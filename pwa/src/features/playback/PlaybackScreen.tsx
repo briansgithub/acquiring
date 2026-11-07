@@ -259,7 +259,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
         {playback&&!playbackError&&<PlaybackTimeline section={selected[1]} beat={beat} rootOnly={settings.rootOnly} majorLocked={majorLocked}
           onScrub={{tap:t=>{cardPreviewStop.current?.();playback.scrubTo(t);playback.finishScrub();},dragTo:t=>{cardPreviewStop.current?.();playback.scrubTo(t);},end:()=>playback.finishScrub()}}/>}
         <SingingDock octaveOffset={octaveOffset} onOctaveOffsetChange={offset=>octaveSession.updateOctaveOffset(offset)}
-          target={singingTarget} expanded={dockExpanded} onExpandedChange={setDockExpanded}/>
+          target={singingTarget} expanded={dockExpanded} onExpandedChange={setDockExpanded} transpose={settings.transpose}/>
         <section className="panel playback-settings" aria-label="Playback settings">
           <label className="playback-field">Tempo (%)
             <input aria-label="Tempo (%)" type="range" min="0" max="200" step="1" value={settings.tempoPercent} disabled={!playback}
