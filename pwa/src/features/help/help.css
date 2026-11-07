@@ -9,3 +9,16 @@
 .help-article__back { min-height: 44px; justify-self: start; }
 .help-intervals { width: 100%; border-collapse: collapse; }
 .help-intervals th,.help-intervals td { text-align: left; padding: .35rem .5rem; overflow-wrap: anywhere; }
+.help-degree-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.help-degree,.help-roman-symbol { font-family: ui-monospace,monospace; font-weight: 600; }
+.help-align { display: grid; justify-items: center; gap: .15rem; flex: 1; min-width: 0; }
+.help-panel,.help-roman-card,.help-roman-figure,.help-chord-row p,.help-callout {
+  background: #2b2930; border-radius: 9px; padding: .45rem .6rem;
+}
+.help-chord-row { display: grid; gap: 8px; }
+.help-chord-row p,.help-roman-figure { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin: 0; }
+.help-roman-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.help-roman-card { width: 150px; text-align: center; margin: 0; }
+.help-roman-figures { display: grid; gap: 7px; }
+.help-roman-meaning,.help-roman-borrowed,.help-callout { color: #cac4d0; }
+.help-article section { display: grid; gap: .6rem; }

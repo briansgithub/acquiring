@@ -1,12 +1,13 @@
-/** Frozen 801cf798 HelpIndex / HelpArticleScreen. Rich notation-article prose remains a later slice. */
+/** Frozen 801cf798 HelpIndex / HelpArticleScreen. */
 import {useState} from 'react';
 import {
-  HELP_C_MAJOR_NOTES,HELP_INTERVAL_ROWS,HELP_ROMAN_QUALITY,HELP_SCALE_DEGREES,
   HELP_TOPIC_INSTRUCTIONS,HELP_TOPIC_INTERVALS,HELP_TOPIC_ROMAN,HELP_TOPIC_SCALE_DEGREES,
   HELP_TOPICS,type HelpTopic,
 } from './help-catalog';
 import {IntroductionArticle} from './IntroductionArticle';
 import {IntroductionCopy} from './introduction-copy';
+import {IntervalsHelpArticle,ScaleDegreesHelpArticle} from './notation-articles';
+import {RomanNumeralsHelpArticle} from './roman-article';
 import './help.css';
 
 export function HelpScreen(){
@@ -31,12 +32,8 @@ function HelpArticle({topic,onBack}:{topic:HelpTopic;onBack:()=>void}){
     <button className="help-article__back" type="button" onClick={onBack}>&lt; Back</button>
     <h2>{title}</h2>
     {topic.id===HELP_TOPIC_INSTRUCTIONS&&<IntroductionArticle/>}
-    {topic.id===HELP_TOPIC_SCALE_DEGREES&&<p data-help-degrees={HELP_SCALE_DEGREES.join('')}>{HELP_SCALE_DEGREES.join(' ')} / {HELP_C_MAJOR_NOTES.join(' ')}</p>}
-    {topic.id===HELP_TOPIC_INTERVALS&&<table className="help-intervals"><tbody>{HELP_INTERVAL_ROWS.map(row=>
-      <tr key={row.abbreviation+row.semitones}><th>{row.abbreviation}</th><td>{row.meaning}</td><td>{row.semitones}</td></tr>
-    )}</tbody></table>}
-    {topic.id===HELP_TOPIC_ROMAN&&<ul data-help-roman="quality">{HELP_ROMAN_QUALITY.map(example=>
-      <li key={example.symbol}>{example.symbol} — {example.meaning}</li>
-    )}</ul>}
+    {topic.id===HELP_TOPIC_SCALE_DEGREES&&<ScaleDegreesHelpArticle/>}
+    {topic.id===HELP_TOPIC_INTERVALS&&<IntervalsHelpArticle/>}
+    {topic.id===HELP_TOPIC_ROMAN&&<RomanNumeralsHelpArticle/>}
   </article>;
 }

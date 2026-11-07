@@ -18,6 +18,17 @@ test('Library, Settings, browser history and bookmarked screens', async ({ page 
   await expect(page.locator('[data-introduction="octave"]')).toContainText('octave');
   await page.locator('.help-article__back').click();
   await expect(page.locator('[data-help-index]')).toBeVisible();
+  await page.getByRole('button', { name: 'Scale degrees', exact: true }).click();
+  await expect(page.locator('[data-help-article="help.topic.scaleDegrees"]')).toContainText('hat above a number');
+  await expect(page.locator('[data-help-degrees]')).toHaveAttribute('data-help-degrees','1234567');
+  await page.locator('.help-article__back').click();
+  await page.getByRole('button', { name: 'Roman numerals', exact: true }).click();
+  await expect(page.locator('[data-help-roman="quality"]')).toBeVisible();
+  await expect(page.locator('[data-help-roman="applied"]')).toContainText('V/V');
+  await expect(page.locator('[data-help-roman-borrowed="iv"]')).toContainText('(min)');
+  await expect(page.getByText('five of five', { exact: false })).toBeVisible();
+  await page.locator('.help-article__back').click();
+  await expect(page.locator('[data-help-index]')).toBeVisible();
   await page.getByRole('button', { name: 'Back', exact: true }).focus();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/settings$/);

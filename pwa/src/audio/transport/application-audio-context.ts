@@ -38,7 +38,10 @@ export class ApplicationAudioContext implements ApplicationAudioContextOwner {
     this.win?.addEventListener('pageshow',this.onPageShow);
   }
 
-  getSnapshot = ():ApplicationAudioState => this.state;
+  getSnapshot = ():ApplicationAudioState => {
+    this.reconcileNative();
+    return this.state;
+  };
 
   getContext():AudioContext {
     if (this.released) throw new Error('Application audio is released.');
@@ -182,12 +185,21 @@ export class ApplicationAudioContext implements ApplicationAudioContextOwner {
   private readonly onVisibility = ():void => {
     if (!this.released && this.doc?.hidden) this.invalidate('lifecycle');
   };
-  private readonly onContextState = ():void => {
-    if (this.released) return;
-    if (this.context?.state === 'closed') this.invalidate('closed');
-    else if (this.context?.state !== 'running') this.invalidate('suspended');
-    // An external resume must never grant permission in a new foreground epoch.
-  };
+  private readonly onContextState = ():void => { this.reconcileNative(); };
+
+  // Native .state can become non-running before statechange. Capability must match that
+  // observation immediately; a later event must not invalidate the same loss twice.
+  // External resume still never grants permission.
+  private reconcileNative():void {
+    if (this.released || !this.context) return;
+    const native = this.context.state;
+    if (native === 'running') return;
+    if (native === 'closed') {
+      if (this.state.phase !== 'closed' && this.state.phase !== 'released') this.invalidate('closed');
+      return;
+    }
+    if (this.state.canRender) this.invalidate('suspended');
+  }
 }
 
 let applicationOwner:ApplicationAudioContext|undefined;

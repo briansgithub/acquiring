@@ -154,6 +154,24 @@ describe('application audio context lifetime', () => {
     expect(createContext).toHaveBeenCalledTimes(1);
   });
 
+  it('revokes a published grant when native state is already non-running before statechange', async () => {
+    const {owner} = setup(); await owner.resumeFromGesture();
+    const observed:string[] = [];
+    owner.subscribeInvalidation(reason => observed.push(reason+':'+owner.getSnapshot().canRender));
+    context.state = 'suspended';
+    const revoked = owner.getSnapshot();
+    expect(revoked).toMatchObject({epoch:1,phase:'suspended',canRender:false});
+    expect(owner.getSnapshot()).toBe(revoked);
+    expect(observed).toEqual(['suspended:false']);
+    context.change('suspended');
+    expect(owner.getSnapshot()).toBe(revoked);
+    expect(observed).toEqual(['suspended:false']);
+    context.change('running');
+    expect(owner.getSnapshot().canRender).toBe(false);
+    await owner.resumeFromGesture();
+    expect(owner.getSnapshot()).toMatchObject({epoch:1,phase:'ready',canRender:true});
+  });
+
   it('contains rejected/thrown/nonrunning native resume and allows a new explicit attempt', async () => {
     const {owner} = setup();
     context.resume.mockRejectedValueOnce(new Error('native denied'));
