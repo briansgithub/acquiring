@@ -5,14 +5,17 @@ import {LibraryScreen,libraryRouteState,saveLibraryView} from '../features/libra
 import {mutateSongQueue,songQueueSession,songQueueVersion,subscribeSongQueue} from '../features/library/song-queue-host';
 import {SongQueueRouteSync} from '../features/library/song-queue-route';
 import {HelpScreen} from '../features/help/HelpScreen';
+import {IntroductionScreen} from '../features/onboarding/IntroductionScreen';
+import {hasCompletedIntroduction,markIntroductionCompleted} from '../features/onboarding/introduction-prefs';
 import {DefaultInstrumentControl} from '../features/settings/DefaultInstrumentControl';
 import {hydrateAppInstrumentSession,openGuestInstrumentPreferences} from '../features/settings/instrument-session';
-import { useEffect, useSyncExternalStore } from 'react';
+import {useEffect,useState,useSyncExternalStore} from 'react';
 import { CatalogPanel } from '../features/catalog/CatalogPanel';
 import { AppShell } from '../ui/shell/AppShell';
 import { navigate, parseRoute, subscribeRoute } from './routes';
 
 export function App() {
+  const [introDone,setIntroDone]=useState(()=>hasCompletedIntroduction());
   useEffect(()=>{
     let db:Awaited<ReturnType<typeof openGuestInstrumentPreferences>>;
     let cancelled=false;
@@ -35,6 +38,9 @@ export function App() {
   const backToLibrary = () => { if(history.state?.fromLibrary||history.state?.fromSong||history.state?.fromPlayback)history.back();else home(); };
   const queued = queue.active && queue.started;
   const current = queued ? queue.entries[queue.index] : undefined;
+  if(!introDone){
+    return <IntroductionScreen onContinue={()=>{markIntroductionCompleted();setIntroDone(true);}}/>;
+  }
   return <>
     <SongQueueRouteSync />
     {route.kind === 'settings' ? <AppShell title="Settings" onBack={backToLibrary}>

@@ -132,6 +132,7 @@ export function usePlaybackPitchPractice(input:{
     function discardCurrent() {
       accumulator.clear();
       runId.current = null;
+      setScores(new Map());
     }
   }, [accumulator, active, controller, enabled, input.octaveOffset, input.transpose, monitoring, source]);
 

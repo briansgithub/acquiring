@@ -5,6 +5,7 @@ import {
   HELP_TOPIC_INSTRUCTIONS,HELP_TOPIC_INTERVALS,HELP_TOPIC_ROMAN,HELP_TOPIC_SCALE_DEGREES,
   HELP_TOPICS,type HelpTopic,
 } from './help-catalog';
+import {IntroductionArticle} from './IntroductionArticle';
 import {IntroductionCopy} from './introduction-copy';
 import './help.css';
 
@@ -38,16 +39,4 @@ function HelpArticle({topic,onBack}:{topic:HelpTopic;onBack:()=>void}){
       <li key={example.symbol}>{example.symbol} — {example.meaning}</li>
     )}</ul>}
   </article>;
-}
-
-function IntroductionArticle(){
-  return <>
-    <section data-introduction="objective"><h3>{IntroductionCopy.OBJECTIVE_HEADING}</h3><p>{IntroductionCopy.OBJECTIVE}</p></section>
-    <section data-introduction="gestures"><h3>{IntroductionCopy.GESTURES_HEADING}</h3>
-      <p>{IntroductionCopy.TAP_ACTION} — {IntroductionCopy.TAP_DETAIL}</p>
-      <p>{IntroductionCopy.DOUBLE_TAP_ACTION} — {IntroductionCopy.DOUBLE_TAP_DETAIL}</p>
-      <p>{IntroductionCopy.MIC_ACTION} — {IntroductionCopy.MIC_DETAIL}</p>
-    </section>
-    <section data-introduction="octave"><h3>{IntroductionCopy.OCTAVE_HEADING}</h3><p>{IntroductionCopy.OCTAVE}</p></section>
-  </>;
 }

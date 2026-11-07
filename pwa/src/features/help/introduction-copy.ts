@@ -1,4 +1,4 @@
-/** Frozen 801cf798 IntroductionView.kt IntroductionCopy. One-shot intro screen is a later T21 slice. */
+/** Frozen 801cf798 IntroductionView.kt IntroductionCopy. One-shot intro uses the same strings. */
 export const IntroductionCopy=Object.freeze({
   TITLE:'Introduction',
   OBJECTIVE_HEADING:'Objective:',
