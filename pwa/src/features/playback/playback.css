@@ -3,6 +3,10 @@
 .playback-screen .panel { min-width: 0; }
 .playback-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
 .playback-actions .action { min-width: 44px; min-height: 44px; }
+.playback-favorited {
+  position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 4;
+  margin: 0; padding: 12px 20px; border-radius: 16px; background: #3b4664; color: #e8d9ff; pointer-events: none;
+}
 .playback-field { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .5rem; min-width: 0; margin: .75rem 0; }
 .playback-field select,
 .playback-field input[type="range"] { grid-column: 1 / -1; width: 100%; max-width: 100%; min-width: 0; min-height: 44px; }

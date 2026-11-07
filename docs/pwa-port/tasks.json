@@ -1349,9 +1349,21 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Canvas timeline restaffs on Lock in Major. Route-position memory landed. Favorites/T21 default/inertia/Roman/scores remain.",
-      "nextAction": "T12 Playback favorites star via T06 playlists next. Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position memory and Favorites star landed. T21 default/inertia/Roman/scores remain.",
+      "nextAction": "T21 Settings selectAsDefault / session-vs-default instrument next. Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
+        {
+          "command": "npx vitest run src/features/playback/favorites.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-favorites/browser-first",
+          "revision": "00f26f2a plus named favorites tree",
+          "guards": [
+            "T12-favorites-unit-001",
+            "T12-favorites-check-001",
+            "T12-favorites-typecheck-002",
+            "T12-favorites-check-002",
+            "T12-favorites-browser-001"
+          ],
+          "result": "PASS 9 focused; typecheck-001 localeCompare/createdAt FAIL cycle1; typecheck-002 PASS; check-002 1001 unit/77 files + 1 parity + types + shell f0cdc9bcd672; Chrome 15/15 FIRST PASS 1.8m including Favorites persist/confirm/unstar. Library accordion not started. No T21/inertia/scores/device/whole-CI-green claim. Preexisting app test:browser audio-sink/Library 64px remains."
+        },
         {
           "command": "npx vitest run src/features/playback/playback-route-memory.test.ts src/features/playback/controller.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-route-memory/browser-first",
           "revision": "3abadc1c plus named route-memory tree",
@@ -1939,7 +1951,7 @@
         ],
         "scope": "Native MainActivity remember(slug) tempo 100 / arp 3, process transpose, PlaybackController identity skip-load, session waveform selectForSession. Info remount restores section/beat/tempo/arp/transpose/waveform. Mix/Lock/root-only remount-reset. Library re-entry resets tempo/arp; beat restores only if first-section identity matches. Settings selectAsDefault not included.",
         "status": "unit-001 13 focused PASS; typecheck-001 PASS; check-001 992 unit/76 files + 1 parity + shell d859d1a59368; browser-001 FIRST PASS 14/14 1.6m",
-        "nextAction": "Playback favorites star via T06 playlists. T21 Settings default after that. Do not polish inertia or fake scores.",
+        "nextAction": "Favorites star landed later. T21 Settings default next. Do not polish inertia or fake scores.",
         "testedSha256": {
           "pwa/src/features/playback/playback-route-memory.ts": "a5a224e31bf8a5f0bd6123a078e591f8bf1c85c11426c2e6c36f6c64ad6726f0",
           "pwa/src/features/playback/playback-route-memory.test.ts": "9d672223f099de4643d83bbaa43913a03227f71032ce822bd87f011af10ddcf7",
@@ -1950,6 +1962,37 @@
           "pwa/src/app/App.tsx": "2378074188aeb0e7ae3c0723c7408891b5ea67207dd58d4249451269814b2464",
           "pwa/tests/browser/playback.spec.ts": "2470b20b7c4ee5bf63164258850deab47cd6bc195ec916af33fe5766b055501c",
           "pwa/src/features/playback/WORKLOG.md": "0506e05270f913aa224ad9d7f40e939a385500b8eeeb88512f47267a27bc0777"
+        }
+      },
+      "favoritesAssignment": {
+        "owner": "coordinator (cursor-grok /workspace)",
+        "at": "2026-11-07T10:06:00+00:00",
+        "baseCommit": "00f26f2a49bafcc1a1ddf26d2f67c4fdc9d95741",
+        "branch": "codex/pwa-continuation",
+        "ownedPaths": [
+          "pwa/src/features/playback/playlist-store.ts",
+          "pwa/src/features/playback/favorites-session.ts",
+          "pwa/src/features/playback/favorites.test.ts",
+          "pwa/src/features/playback/PlaybackFavoriteStar.tsx",
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/features/playback/playback.css",
+          "pwa/src/features/playback/view-contracts.ts",
+          "pwa/tests/browser/playback.spec.ts",
+          "pwa/src/features/playback/WORKLOG.md"
+        ],
+        "scope": "Native PlaylistDao Favorites + MainActivity optimistic star + FavoritedConfirmation 2s add-only. T06 playlists/playlistEntries. No Library accordion, custom playlist UI, or scores.",
+        "status": "unit-001 9 focused PASS; typecheck-001 FAIL cycle1; typecheck-002 PASS; check-002 1001 unit/77 files + shell f0cdc9bcd672; browser-001 FIRST PASS 15/15 1.8m",
+        "nextAction": "T21 Settings selectAsDefault. Do not polish inertia or fake scores.",
+        "testedSha256": {
+          "pwa/src/features/playback/playlist-store.ts": "5a83281cfd85178a188e4ff32815343a725e327904603caae672a5659445531a",
+          "pwa/src/features/playback/favorites-session.ts": "ffe18f70a9ba8ffc8874e2060b354a27cc37ed8e492c4e8273ba6962e00132bc",
+          "pwa/src/features/playback/favorites.test.ts": "99abe9420f7a6676c95ef1253dd9ec2c6dab73661a27f1c42bddd20d5c148bfe",
+          "pwa/src/features/playback/PlaybackFavoriteStar.tsx": "bb29f2aef5c64d52e220b1e10afaf80917d66ead410f292e37fcf9d6d131ed21",
+          "pwa/src/features/playback/PlaybackScreen.tsx": "896062798f736b397bd5f020dcec183eba4079d9f2dc6f6ed3c100c92f765b14",
+          "pwa/src/features/playback/playback.css": "4fc9273352678957ef776c0e29366af148471b0189ea7a8af35cde96ef8cb659",
+          "pwa/src/features/playback/view-contracts.ts": "57a55326a6ac2ddd99d8072d951c1f347b691b4cb0fb4213be7bda3ae091595a",
+          "pwa/tests/browser/playback.spec.ts": "a97f69f7979177d61197f2cfa8b080ca36c9617265a648551ab92e92f549c959",
+          "pwa/src/features/playback/WORKLOG.md": "00ab764e37e00f21ca31d9eac0ce50fd9608443af2b68fd8ad6242eca3a444d6"
         }
       }
     },
@@ -1970,7 +2013,7 @@
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
       "slice": "Octave kernel + T06 songOctaveOffsets session + dock chrome without scores. Flip-Flop/listen/auto-listen/mic remain T09.",
-      "nextAction": "Do not fake scores. T09 remains required for scoring/mic. Next independent T12 work is Playback favorites star. Do not start Aural/T15 remainder.",
+      "nextAction": "Do not fake scores. T09 remains required for scoring/mic. Next independent work is T21 Settings selectAsDefault. Do not start Aural/T15 remainder.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",

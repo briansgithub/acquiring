@@ -40,7 +40,7 @@ T15 Phase 2 `buildAuralSongRankFragment` is already accepted on this branch at `
 
 T15 Phase 2 `buildAuralSongRankFragment` is already accepted on this branch at `e5ed284c`. Preserve it; do not expand T15. Song-rank is Aural-catalog eligibility only — not Playback/singing/cards.
 
-Landed through this checkpoint: T13 octave kernel `165f3dbf`; T12 timeline layout `0d77407e`; Canvas `430a6430`; Lock-in-Major restaff + T06 octave persistence + dock chrome `3abadc1c`; T12 defaults/route-position memory. Next: Playback favorites star. Do not polish inertia. T09 remains required for singing scores/mic. Library Settings Back 64px stays owner-blocked.
+Landed through this checkpoint: T13 octave kernel `165f3dbf`; T12 timeline `0d77407e`/`430a6430`/`3abadc1c`; route-position `00f26f2a`; Playback Favorites star. Next: T21 Settings `selectAsDefault`. Do not polish inertia. T09 remains required for singing scores/mic. Library Settings Back 64px stays owner-blocked.
 
 ## Accepted work and open gates
 

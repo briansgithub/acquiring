@@ -117,8 +117,8 @@ test('playback reloads offline without autoplay and fits narrow large text',asyn
   await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   const controls=view.locator('.playback-transport button,.playback-field select,.playback-field input[type=range]');
-  // Two transport buttons, four ranges and three selects; checkbox uses its44px label.
-  expect(await controls.count()).toBe(9);
+  // Play/Reset/Favorites, four ranges and three selects; checkbox uses its44px label.
+  expect(await controls.count()).toBe(10);
   expect(await controls.evaluateAll(elements=>elements.every(element=>{const b=element.getBoundingClientRect();return b.width>=44&&b.height>=44;}))).toBe(true);
   const path=testInfo.outputPath('playback-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});
   await page.getByRole('button',{name:'Play',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.some(item=>item.peak>.001)).toBe(true);
@@ -413,4 +413,48 @@ test('playback remembers Info round-trip position and resets per-song defaults a
   await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('SINE');
   await expect(page.getByRole('slider',{name:'Position',exact:true})).toHaveValue('1');
   const image=testInfo.outputPath('route-memory-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
+});
+
+test('playback favorite star persists on T06 Favorites and confirms only a successful add',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  const star=page.getByRole('button',{name:'Add to Favorites',exact:true});
+  await expect(star).toHaveAttribute('aria-pressed','false');
+  await star.click();
+  await expect(page.getByRole('button',{name:'Remove from Favorites',exact:true})).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('[data-favorited-confirmation]')).toHaveText('Favorited');
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Play song',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect.poll(async()=>page.getByRole('button',{name:'Remove from Favorites',exact:true}).getAttribute('aria-pressed')).toBe('true');
+  await expect(page.locator('[data-favorited-confirmation]')).toHaveCount(0);
+  await page.getByRole('button',{name:'Remove from Favorites',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Add to Favorites',exact:true})).toHaveAttribute('aria-pressed','false');
+  await expect(page.locator('[data-favorited-confirmation]')).toHaveCount(0);
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Playback_Context');
+  await page.locator('[data-song-slug="playback-context"]').click();
+  await page.getByRole('button',{name:'Play song',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect(page.getByRole('button',{name:'Add to Favorites',exact:true})).toHaveAttribute('aria-pressed','false');
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Detail_Gzip');
+  await page.locator('[data-song-slug="detail-gzip"]').click();
+  await page.getByRole('button',{name:'Play song',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect(page.getByRole('button',{name:'Add to Favorites',exact:true})).toHaveAttribute('aria-pressed','false');
+  await page.getByRole('button',{name:'Add to Favorites',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Remove from Favorites',exact:true})).toHaveAttribute('aria-pressed','true');
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Detail_Gzip');
+  await page.locator('[data-song-slug="detail-gzip"]').click();
+  await page.getByRole('button',{name:'Play song',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect.poll(async()=>page.getByRole('button',{name:'Remove from Favorites',exact:true}).getAttribute('aria-pressed')).toBe('true');
+  await page.setViewportSize({width:320,height:640});
+  await page.evaluate(()=>{document.documentElement.style.fontSize='32px';scrollTo(0,0);});
+  expect(await page.getByRole('button',{name:'Remove from Favorites',exact:true}).evaluate(el=>{const r=el.getBoundingClientRect();return r.width>=44&&r.height>=44;})).toBe(true);
+  const image=testInfo.outputPath('favorite-star-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });

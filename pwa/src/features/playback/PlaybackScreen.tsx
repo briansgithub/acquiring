@@ -1,5 +1,8 @@
 import {PlaybackCards} from './PlaybackCards';
+import {PlaybackFavoriteStar} from './PlaybackFavoriteStar';
 import {PlaybackTimeline} from './PlaybackTimeline';
+import {FavoriteSession} from './favorites-session';
+import {openGuestPlaylistStore} from './playlist-store';
 import {SingingDock} from '../singing/SingingDock';
 import {openGuestSongOctaveOffsetStore,SongOctaveOffsetSession} from '../singing/song-octave-session';
 import type {UserDatabase} from '../../storage/user';
@@ -41,6 +44,8 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
   const singingRequestId=useRef(0);
   const octaveSession=useMemo(()=>new SongOctaveOffsetSession(),[]);
   const octaveOffset=useSyncExternalStore(octaveSession.subscribe,octaveSession.getSnapshot,octaveSession.getSnapshot);
+  const favoriteSession=useMemo(()=>new FavoriteSession(),[]);
+  const favorite=useSyncExternalStore(favoriteSession.subscribe,favoriteSession.getSnapshot,favoriteSession.getSnapshot);
   const [playback,setPlayback]=useState<SectionPlaybackController|null>(null);
   const [playbackError,setPlaybackError]=useState<string|null>(null);
   const playbackOwner=useRef<SectionPlaybackController|null>(null);
@@ -84,8 +89,20 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
     });
     return ()=>{closed=true;octaveSession.attachStore(null);db?.close();};
   },[octaveSession]);
+  useEffect(()=>{
+    let closed=false;
+    let db:UserDatabase|undefined;
+    void openGuestPlaylistStore().then(opened=>{
+      if(closed){opened?.db.close();return;}
+      if(!opened)return;
+      db=opened.db;
+      favoriteSession.attachStore(opened.store);
+    });
+    return ()=>{closed=true;favoriteSession.attachStore(null);db?.close();};
+  },[favoriteSession]);
 
   useEffect(()=>{void octaveSession.enterSession(slug,`${slug}:${sectionKey}`);},[octaveSession,slug,sectionKey]);
+  useEffect(()=>{void favoriteSession.enterSong(slug);},[favoriteSession,slug]);
   useEffect(()=>{setMajorLocked(false);setDockExpanded(false);setSingingTarget(null);},[slug]);
 
   useEffect(()=>{
@@ -209,6 +226,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
       {details.sections.length>0&&selected&&<>
         <section className="panel playback-transport" aria-label="Playback controls">
           <div className="playback-actions">
+            <PlaybackFavoriteStar snapshot={favorite} onToggle={()=>favoriteSession.toggle()}/>
             <button className="action" onClick={()=>active?playback?.pause():playback?.play()} disabled={!playback||Boolean(playbackError)}>{active?'Pause':'Play'}</button>
             <button className="action" onClick={()=>{cardPreviewStop.current?.();playback?.reset();}} disabled={!playback}>Reset</button>
           </div>
