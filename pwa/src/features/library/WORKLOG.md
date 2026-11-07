@@ -55,3 +55,5 @@ Final source checkpoint evidence:266combined unit+1input PASS(window4-final-libr
 2026-11-07T12:25Z Playlist-save Chrome proof on existing Play/Shuffle path: name Practice queue, Save playlist, Playlist saved, Back, Expand Practice queue shows starred song. saveCurrentQueue unit included. auralSectionIdentity still deferred. Partial T10.
 
 2026-11-07T12:26Z T10 queued changeSection remount. Frozen MainActivity onSectionChange → songQueue.changeSection(it, PlaybackController.isPlaybackRequested). Playback select now calls queue.changeSection when queued (sectionOverride + loadToken remount + autoStart=playbackRequested); local loadSection remains the non-queue path. data-queue-section proves override survived remount. auralSectionIdentity still deferred. Chrome on Play/Shuffle path. Partial T10.
+
+2026-11-07T12:40Z No Library source this slice. Brian accepted singing-dock policy A (800ms first-listen). Prefix scrubber/Artists chip/Settings Back 64px unchanged.

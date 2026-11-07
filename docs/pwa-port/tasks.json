@@ -974,8 +974,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
-      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop opt-in, 2s rest, measured interval, opt-in-only auto-listen. AudioWorklet same-origin hashed module. Device mic/median Aural scores remain open",
-      "nextAction": "AudioWorklet hashed module landed. Next remaining playback inertia/Roman, or coordinated device mic when a specific ADB test exists. SYNTHETIC fixture is not Pixel acceptance. No fabricated cents. First-load auto-listen B pending Brian, not parity. Library prefix polish is not next.",
+      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop plus Brian 2026-11-07 policy A first-load 800ms auto-listen including first permission prompt. AudioWorklet same-origin hashed module. Device mic/median Aural scores remain open",
+      "nextAction": "Policy A accepted. AudioWorklet hashed module landed. Next remaining playback inertia polish, or coordinated device mic when a specific ADB test exists. SYNTHETIC fixture is not Pixel acceptance. No fabricated cents. Library prefix polish is not next.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
@@ -1095,7 +1095,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
       "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter plus SongQueue kernel plus Play/Shuffle chrome plus resolveQueuedSection plus playlist-save Chrome proof. Prefix-scrubber, Artists chip, Aural queue begin, auralSectionIdentity RPC remain. Settings Back 64px still owner-blocked.",
-      "nextAction": "Playlist-save Chrome proof landed with AudioWorklet. Next remaining playback inertia/Roman, or Artists chip (needs getArtistSuggestions RPC). Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last. Mic policy B pending Brian.",
+      "nextAction": "Playlist-save Chrome proof landed with AudioWorklet. Next remaining playback inertia polish, or Artists chip (needs getArtistSuggestions RPC). Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last. Policy A accepted.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-all-songs-filter/browser-001",
@@ -1522,8 +1522,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, and live drag/scrub landed. Real mouse/canvas drag still failing; synthetic PointerEvent is handler-only. Inertia coast/Roman/scores remain.",
-      "nextAction": "T10 Favorites accordion landed. Do not polish inertia/Roman or spend this pass on mouse/canvas drag — track for later input/device. T09 still required for scores. Library recents next. Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, live drag/scrub, chord-lane Roman, queued changeSection, and opt-in Pitch monitoring overlay landed. Real mouse/canvas drag still failing; synthetic PointerEvent is handler-only. Inertia coast remains polish.",
+      "nextAction": "Do not polish inertia this pass. Mouse/canvas drag stays test.fixme with original assertions. Policy A singing first-listen landed. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
         {
           "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-drag/browser-fix2",
@@ -2230,8 +2230,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
-      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + opt-in listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + opt-in-only auto-listen. Median Aural scores and first-load auto-listen remain.",
-      "nextAction": "Do not fake scores. Flip-Flop rest and measured interval landed. AudioWorklet hashed module landed. First-load auto-listen B pending Brian, not parity. Do not start Aural/T15 remainder.",
+      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt. Median Aural scores remain.",
+      "nextAction": "Policy A accepted; no further mic-policy question. Do not fake scores. Do not start Aural/T15 remainder. Shared PLAYBACK_PERSISTENT/SINGING_TOOL coordinator across two BrowserMicrophoneCapture instances remains later.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -2253,11 +2253,25 @@
             "T13-flipflop-rest-browser-001"
           ],
           "result": "PASS 34 focused then 1038 unit/86 files + 1 parity + types + shell b46ee11bd284. browser-001 4/4 including 900ms no first-load auto-listen. Flip-Flop 2s rest with mic stopped. Measured interval from captured MIDI. Opt-in-only auto-listen. No fabricated cents. Partial T13."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/singing/singing-microphone.test.ts src/features/playback/melody-timeline-score.test.ts src/features/playback/persistent-pitch.test.ts src/audio/capture/microphone-capture.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --workers 1 --grep \"policy A|singing dock loads|visible timeline hides|playback reloads offline|unsupported sections remain silent\"",
+          "revision": "cf9eb52a plus named policy A first-listen / Pitch monitoring tree",
+          "guards": [
+            "T13-policy-a-unit-001",
+            "T13-policy-a-typecheck-001",
+            "T13-policy-a-check-001",
+            "T13-policy-a-browser-002",
+            "T13-policy-a-browser-005",
+            "T13-policy-a-check-002"
+          ],
+          "result": "PASS 36 focused then 1087 unit/92 files + 1 parity + types + shell b22fe6f9ed3b. Policy A Chrome FIRST PASS: first-load listening after 800ms including first permission prompt; collapse cancels; prior slot listen after Stop; stubbed Permission denied Error idle no cents. Expand-without-target stays idle. Playwright fake/silent getUserMedia labeled, not SYNTHETIC oscillator, not Pixel. Pitch monitoring Mic control count 11. Unsupported first-section render gate: only model section after playback accepts it. Real mouse/canvas drag still beat 1; test.fixme original assertions. Codex gpt-6.1-sol read-only review EXIT 0 thread 01a1b605-42f0-79d3-844a-0c579f69e30b. No fabricated cents. Partial T13. Not device/whole-CI-green."
         }
       ],
       "progress": [
         "2026-11-07T09:20:00Z Brian playback/singing/cards-first; Aural/song-rank/family trees last. Lineage is tie-breaker inside that order (LINEAGE_PRIORITY.md). T09 not required for pure octave math; development gate is accepted T12 interval cards. Library Settings Back excluded.",
-        "2026-11-07T12:05Z Flip-Flop 2s rest, measured interval, opt-in-only auto-listen. First-load auto-listen remains Brian decision. SongQueue next."
+        "2026-11-07T12:05Z Flip-Flop 2s rest, measured interval, opt-in-only auto-listen. First-load auto-listen remains Brian decision. SongQueue next.",
+        "2026-11-07T12:40Z Brian accepted policy A: Match Android, card double-click may start microphone listening after 800ms including first permission prompt. Replaced temporary policy B gating. No further policy question. SYNTHETIC oscillator ≠ Pixel; Playwright fake/silent getUserMedia labeled separately. Cursor remains writer; Codex gpt-6.1-sol read-only review of uncommitted (thread 01a1b605-42f0-79d3-844a-0c579f69e30b) EXIT 0."
       ],
       "blocker": null,
       "dependencyGates": {

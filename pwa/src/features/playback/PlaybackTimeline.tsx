@@ -1,37 +1,34 @@
-import {useEffect,useMemo,useRef,useState,type PointerEvent} from 'react';
+import {useEffect,useMemo,useRef,useState} from 'react';
 import type {ExtractedSection} from '../../contracts';
 import {preparePlaybackSection} from './section-model';
 import {
   TIMELINE_HEIGHT_PX,
   TIMELINE_PLAYHEAD_STROKE_PX,
-  TIMELINE_TAP_SLOP_PX,
   buildChordTimelineVisuals,
   buildMelodyTimelineVisuals,
   layoutPlaybackTimeline,
-  timelineDragBeat,
-  timelineTapBeat,
 } from './timeline-layout';
 import {chordLaneRomanCenterY,chordLaneRomanFit,paintChordLaneRoman} from './timeline-roman';
+import {paintMelodyRunScores} from './timeline-scores';
+import {useTimelineScrub,type TimelineScrub} from './timeline-scrub';
+import {formatMelodyTimelinePitchScore,type MelodyRunScoreOutcome} from './melody-timeline-score';
 
-export interface TimelineScrub {
-  tap(beat:number):void;
-  dragTo(beat:number):void;
-  end():void;
-}
+export type {TimelineScrub};
 
-/** Product timeline: Canvas lanes/playhead, tap-to-seek, live drag, chord-lane Roman. No inertia/scores. */
-export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onScrub}:{
+/** Product timeline: Canvas lanes/playhead, tap/drag, chord-lane Roman, banked melody scores. No inertia. */
+export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onScrub,scores=emptyScores,monitoring=false}:{
   section:ExtractedSection;beat:number;rootOnly:boolean;majorLocked?:boolean;onScrub?:TimelineScrub;
+  scores?:ReadonlyMap<number,MelodyRunScoreOutcome>;monitoring?:boolean;
 }){
   const canvasRef=useRef<HTMLCanvasElement>(null);
   const hostRef=useRef<HTMLDivElement>(null);
-  const pointer=useRef<{x:number;y:number;beat:number;dragging:boolean}|null>(null);
   const [width,setWidth]=useState(0);
   const model=useMemo(()=>preparePlaybackSection(section),[section]);
   const melody=useMemo(()=>buildMelodyTimelineVisuals(model.melody,section,majorLocked),[model,section,majorLocked]);
   const chords=useMemo(()=>buildChordTimelineVisuals(section,majorLocked),[section,majorLocked]);
   const layout=width>0?layoutPlaybackTimeline({width,currentBeat:beat,rootOnly,melody,chords}):null;
   const endBeat=model.timeline.endBeat;
+  useTimelineScrub(canvasRef,beat,endBeat,onScrub,!rootOnly);
 
   useEffect(()=>{
     const host=hostRef.current;if(!host)return;
@@ -57,6 +54,7 @@ export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onScru
       ctx.fillStyle=note.active?'#a6c8ff':'rgba(166,200,255,0.6)';
       ctx.fillRect(note.x,note.y,note.width,note.height);
     }
+    paintMelodyRunScores(ctx,melody,scores,layoutNow);
     layoutNow.chords.forEach((chord,index)=>{
       if(chord.culled)return;
       ctx.fillStyle=chord.active?'rgba(255,255,255,0.82)':'rgba(255,255,255,0.16)';
@@ -71,37 +69,10 @@ export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onScru
     ctx.restore();
     ctx.fillStyle='#ffffff';
     ctx.fillRect(layoutNow.playheadX-TIMELINE_PLAYHEAD_STROKE_PX/2,0,TIMELINE_PLAYHEAD_STROKE_PX,layoutNow.height);
-  },[chords,layout]);
+  },[chords,layout,melody,scores]);
 
   if(rootOnly||layout&&!layout.visible){
     return <div ref={hostRef} className="playback-timeline-host" data-playback-timeline="hidden" hidden/>;
-  }
-
-  function down(event:PointerEvent<HTMLCanvasElement>){
-    if(event.button!==0)return;
-    event.preventDefault();
-    try{event.currentTarget.setPointerCapture(event.pointerId);}catch{/* inactive synthetic pointers */}
-    pointer.current={x:event.clientX,y:event.clientY,beat,dragging:false};
-  }
-  function move(event:PointerEvent<HTMLCanvasElement>){
-    const origin=pointer.current;if(!origin||!onScrub)return;
-    const dx=event.clientX-origin.x;
-    if(!origin.dragging){
-      if(Math.hypot(dx,event.clientY-origin.y)<=TIMELINE_TAP_SLOP_PX)return;
-      origin.dragging=true;
-    }
-    onScrub.dragTo(timelineDragBeat(origin.beat,dx,endBeat));
-  }
-  function up(event:PointerEvent<HTMLCanvasElement>){
-    const origin=pointer.current;pointer.current=null;
-    if(!origin||!onScrub||event.button!==0)return;
-    if(origin.dragging){onScrub.end();return;}
-    const rect=event.currentTarget.getBoundingClientRect();
-    onScrub.tap(timelineTapBeat(origin.beat,event.clientX-rect.left,rect.width,endBeat));
-  }
-  function cancel(){
-    const origin=pointer.current;pointer.current=null;
-    if(origin?.dragging)onScrub?.end();
   }
 
   return <div ref={hostRef} className="playback-timeline-host">
@@ -112,9 +83,14 @@ export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onScru
       data-timeline-major={majorLocked?'true':'false'}
       data-timeline-staff={melody.map(note=>note.staffDegree).join(',')}
       data-timeline-romans={chords.map(chord=>chord.roman?.symbol??'').join('|')}
+      data-timeline-scores={scoreAttr(scores)}
+      data-pitch-monitoring={monitoring?'true':'false'}
       data-timeline-playhead={layout?String(layout.playheadX):''}
-      height={TIMELINE_HEIGHT_PX} draggable={false}
-      onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={cancel}
-      onDragStart={event=>event.preventDefault()}/>
+      height={TIMELINE_HEIGHT_PX} draggable={false}/>
   </div>;
+}
+
+const emptyScores:ReadonlyMap<number,MelodyRunScoreOutcome>=new Map();
+function scoreAttr(scores:ReadonlyMap<number,MelodyRunScoreOutcome>):string {
+  return [...scores.values()].map(outcome=>outcome.kind==='scored'?formatMelodyTimelinePitchScore(outcome.score):'·').join('|');
 }

@@ -1,6 +1,8 @@
 import {PlaybackCards} from './PlaybackCards';
 import {PlaybackFavoriteStar} from './PlaybackFavoriteStar';
+import {PlaybackSettingsPanel} from './PlaybackSettingsPanel';
 import {PlaybackTimeline} from './PlaybackTimeline';
+import {usePlaybackPitchPractice} from './use-playback-pitch-practice';
 import {FavoriteSession} from './favorites-session';
 import {openGuestPlaylistStore} from './playlist-store';
 import {SingingDock} from '../singing/SingingDock';
@@ -8,14 +10,13 @@ import {openGuestSongOctaveOffsetStore,SongOctaveOffsetSession} from '../singing
 import type {UserDatabase} from '../../storage/user';
 import {singingTargetRequest,type SingingTargetRequest} from '../singing/singing-octave';
 import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
-import {INSTRUMENTS,Waveform} from '../../audio/synth';
 import {
-  DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,DEFAULT_PLAYBACK_TEMPO_PERCENT,PLAYBACK_ARPEGGIOS,
+  DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,DEFAULT_PLAYBACK_TEMPO_PERCENT,
   type PlaybackSettings,type SectionPlaybackController,
 } from './controller';
 import {appInstrumentSession} from '../settings/instrument-session';
 import {enterPlayback,sessionTranspose} from './playback-route-memory';
-import {PLAYBACK_ARPEGGIO_NAMES,emptyPlaybackState,playbackStatusCopy,rememberPlayback,startSectionPlayback} from './playback-screen-support';
+import {emptyPlaybackState,playbackStatusCopy,rememberPlayback,startSectionPlayback} from './playback-screen-support';
 import {useQueuePlayback} from './queue-playback';
 import {resolveQueuedSection} from '../library/song-queue';
 import {formatBeat} from '../details/overview';
@@ -209,6 +210,10 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   const beat=Math.max(1,Math.min(playbackState.endBeat,transport.beat));
   const active=transport.playbackRequested;
   const {phase,status}=playbackStatusCopy(playbackError,transport.phase,active);
+  const pitch=usePlaybackPitchPractice({
+    section:playback&&!playbackError&&selected?selected[1]:null,beat,rootOnly:settings.rootOnly,
+    majorLocked,transpose:settings.transpose,octaveOffset,
+  });
 
   return <AppShell title={title} onBack={onBack}><div className="playback-screen" aria-busy={detailState.phase==='loading'} data-playback-phase={phase} data-playback-requested={String(active)} data-queue-section={queueSectionId??''}>
     {queueNav&&<div className="playback-queue-bar panel" data-song-queue-bar="">
@@ -236,7 +241,8 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
           <div className="playback-actions">
             <PlaybackFavoriteStar snapshot={favorite} onToggle={()=>favoriteSession.toggle()}/>
             <button className="action" onClick={()=>active?playback?.pause():playback?.play()} disabled={!playback||Boolean(playbackError)}>{active?'Pause':'Play'}</button>
-            <button className="action" onClick={()=>{cardPreviewStop.current?.();playback?.reset();}} disabled={!playback}>Reset</button>
+            <button className="action" type="button" aria-label="Pitch monitoring" aria-pressed={pitch.monitoring} onClick={pitch.toggle} disabled={!playback||Boolean(playbackError)}>Mic</button>
+            <button className="action" onClick={()=>{cardPreviewStop.current?.();pitch.clear();playback?.reset();}} disabled={!playback}>Reset</button>
           </div>
           <label className="playback-field playback-position">Position
             <input aria-label="Position" type="range" min="1" max={playbackState.endBeat} step="0.01" value={beat} disabled={!playback}
@@ -254,42 +260,13 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
         {playbackError&&<section className="panel"><p role="alert">{playbackError}</p></section>}
         {playback&&!playbackError&&<PlaybackCards section={selected[1]} beat={beat} baseBpm={playbackState.baseBpm} settings={settings} stopPreview={cardPreviewStop}
           majorLocked={majorLocked} onMajorLockedChange={setMajorLocked}
-          onSing={request=>{cardPreviewStop.current?.();playback.pause();singingRequestId.current+=1;setSingingTarget(singingTargetRequest(request.first,request.second,singingRequestId.current));setDockExpanded(true);}}/>}
+          onSing={request=>{cardPreviewStop.current?.();pitch.cancel();playback.pause();singingRequestId.current+=1;setSingingTarget(singingTargetRequest(request.first,request.second,singingRequestId.current));setDockExpanded(true);}}/>}
         {playback&&!playbackError&&<PlaybackTimeline section={selected[1]} beat={beat} rootOnly={settings.rootOnly} majorLocked={majorLocked}
+          scores={pitch.scores} monitoring={pitch.monitoring}
           onScrub={{tap:t=>{cardPreviewStop.current?.();playback.scrubTo(t);playback.finishScrub();},dragTo:t=>{cardPreviewStop.current?.();playback.scrubTo(t);},end:()=>playback.finishScrub()}}/>}
         <SingingDock octaveOffset={octaveOffset} onOctaveOffsetChange={offset=>octaveSession.updateOctaveOffset(offset)}
           target={singingTarget} expanded={dockExpanded} onExpandedChange={setDockExpanded} transpose={settings.transpose}/>
-        <section className="panel playback-settings" aria-label="Playback settings">
-          <label className="playback-field">Tempo (%)
-            <input aria-label="Tempo (%)" type="range" min="0" max="200" step="1" value={settings.tempoPercent} disabled={!playback}
-              onChange={event=>updateSettings({tempoPercent:Number(event.target.value)})}/>
-            <output>{settings.tempoPercent}%</output>
-          </label>
-          <label className="playback-field">Transpose
-            <input aria-label="Transpose" type="range" min="-12" max="12" step="1" value={settings.transpose} disabled={!playback}
-              onChange={event=>updateSettings({transpose:Number(event.target.value)})}/>
-            <output>{settings.transpose}</output>
-          </label>
-          <label className="playback-field">Instrument
-            <select aria-label="Instrument" value={settings.waveform} disabled={!playback}
-              onChange={event=>updateSettings({waveform:event.target.value as Waveform})}>
-              {INSTRUMENTS.map(instrument=><option key={instrument.waveform} value={instrument.waveform}>{instrument.displayName}</option>)}
-            </select>
-          </label>
-          <label className="playback-check"><input type="checkbox" aria-label="Root only" checked={settings.rootOnly} disabled={!playback}
-            onChange={event=>updateSettings({rootOnly:event.target.checked})}/>Root only</label>
-          <label className="playback-field">Melody mix
-            <input aria-label="Melody mix" type="range" min="0" max="100" step="1" value={settings.melodyPercent} disabled={!playback}
-              onChange={event=>updateSettings({melodyPercent:Number(event.target.value)})}/>
-            <output>{settings.melodyPercent}%</output>
-          </label>
-          {!settings.rootOnly&&<label className="playback-field">Arpeggio
-            <select aria-label="Arpeggio" value={settings.arpeggioIndex} disabled={!playback}
-              onChange={event=>updateSettings({arpeggioIndex:Number(event.target.value)})}>
-              {PLAYBACK_ARPEGGIOS.map((_,index)=><option key={index} value={index}>{PLAYBACK_ARPEGGIO_NAMES[index]}</option>)}
-            </select>
-          </label>}
-        </section>
+        <PlaybackSettingsPanel settings={settings} disabled={!playback} onChange={updateSettings}/>
       </>}
     </>}
   </div></AppShell>;

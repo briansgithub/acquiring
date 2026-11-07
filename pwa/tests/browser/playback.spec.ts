@@ -117,8 +117,8 @@ test('playback reloads offline without autoplay and fits narrow large text',asyn
   await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   const controls=view.locator('.playback-transport button,.playback-field select,.playback-field input[type=range]');
-  // Play/Reset/Favorites, four ranges and three selects; checkbox uses its44px label.
-  expect(await controls.count()).toBe(10);
+  // Favorites/Play/Mic/Reset, four ranges and three selects; checkbox uses its 44px label.
+  expect(await controls.count()).toBe(11);
   expect(await controls.evaluateAll(elements=>elements.every(element=>{const b=element.getBoundingClientRect();return b.width>=44&&b.height>=44;}))).toBe(true);
   const path=testInfo.outputPath('playback-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});
   await page.getByRole('button',{name:'Play',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.some(item=>item.peak>.001)).toBe(true);
@@ -131,7 +131,9 @@ test('direct playback development StrictMode keeps a fresh readonly owner and of
 
 test('unsupported sections remain silent, recover to a valid section, and release recovered owners',async({page})=>{
   await instrument(page);await installAndOpen(page);await page.goto('/playback/playback-bad-first');
-  const view=page.locator('[data-playback-phase]');await expect(view).toHaveAttribute('data-playback-phase','error');
+  const view=page.locator('[data-playback-phase]');
+  await expect(view).toHaveAttribute('aria-busy','false');
+  await expect(view).toHaveAttribute('data-playback-phase','error');
   await expect(page.getByRole('button',{name:'Play',exact:true})).toBeDisabled();expect((await audio(page)).contexts).toHaveLength(0);
   await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');await expect(view).toHaveAttribute('data-playback-phase','stopped');
   await page.getByRole('button',{name:'Play',exact:true}).click();await expect(view).toHaveAttribute('data-playback-phase','playing');
@@ -338,7 +340,8 @@ test('visible timeline hides in root-only and singing octave does not start sour
   const path=testInfo.outputPath('timeline-octave-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});
 });
 
-test('singing dock loads card targets without scores and octave persists per song',async({page},testInfo)=>{
+test('singing dock loads card targets without scores and octave persists per song',async({page,context},testInfo)=>{
+  await context.grantPermissions(['microphone']);
   await instrument(page);await installAndOpen(page);
   await page.getByRole('button',{name:'Play',exact:true}).click();
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','true');
@@ -350,10 +353,13 @@ test('singing dock loads card targets without scores and octave persists per son
   await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
   await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-opted-in','false');
   await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toHaveCount(0);
-  await page.waitForTimeout(900);
-  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
-  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-opted-in','false');
+  await expect.poll(async()=>page.locator('[data-singing-dock]').getAttribute('data-mic-state'),{timeout:2_000}).toBe('listening');
+  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-opted-in','true');
+  await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toBeVisible();
   await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+  await page.getByRole('button',{name:'Stop microphone',exact:true}).click();
+  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-opted-in','true');
   await page.getByRole('button',{name:'Raise singing octave',exact:true}).click();
   await expect(page.getByRole('status',{name:'Singing octave',exact:true})).toHaveText('+1');
   const section=page.getByRole('combobox',{name:'Section',exact:true});
@@ -563,6 +569,7 @@ test('settings default instrument persists and playback session does not overwri
 
 test('timeline tap seeks from the centered playhead without starting playback',async({page},testInfo)=>{
   await instrument(page);await installAndOpen(page);
+  await expect(page.getByRole('button',{name:'Pitch monitoring',exact:true})).toHaveAttribute('aria-pressed','false');
   const timeline=page.locator('[data-playback-timeline="visible"]');
   const position=page.getByRole('slider',{name:'Position',exact:true});
   await expect(timeline).toBeVisible();
@@ -604,8 +611,6 @@ test('timeline PointerEvent handler scrubs drag math; not real mouse or touch ac
   const image=testInfo.outputPath('timeline-drag-handler-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
 
-// Unproven: Playwright mouse/canvas drag stayed at beat 1 (57fa7312 cycles 1-2). Synthetic PointerEvent
-// is not mouse/touch acceptance. Keep the real-pointer assertions for a later input/device pass.
 test.fixme('real Playwright mouse canvas drag scrubs live opposite the finger without inertia',async({page})=>{
   await instrument(page);await installAndOpen(page);
   const timeline=page.locator('[data-playback-timeline="visible"]');
@@ -624,4 +629,59 @@ test.fixme('real Playwright mouse canvas drag scrubs live opposite the finger wi
   await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(2,1);
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
   await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','playing');
+});
+
+test.describe('policy A first-listen (Playwright fake/silent getUserMedia; not SYNTHETIC oscillator; not Pixel)',()=>{
+  test('card double-click starts listening after 800ms including first permission prompt',async({page,context})=>{
+    await context.grantPermissions(['microphone']);
+    await instrument(page);await installAndOpen(page);
+    await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+    await expect(page.locator('[data-singing-dock="expanded"]')).toBeVisible();
+    await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+    await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toHaveCount(0);
+    await expect.poll(async()=>page.locator('[data-singing-dock]').getAttribute('data-mic-state'),{timeout:2_000}).toBe('listening');
+    await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-opted-in','true');
+    await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toBeVisible();
+    await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+  });
+
+  test('collapse before 800ms cancels first-load auto-listen',async({page,context})=>{
+    await context.grantPermissions(['microphone']);
+    await instrument(page);await installAndOpen(page);
+    await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+    await expect(page.locator('[data-singing-dock="expanded"]')).toBeVisible();
+    await page.getByRole('button',{name:'Collapse humming tool',exact:true}).click();
+    await expect(page.locator('[data-singing-dock="collapsed"]')).toBeVisible();
+    await page.waitForTimeout(900);
+    await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+    await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toHaveCount(0);
+    await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+    await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+  });
+
+  test('prior explicit slot listen still starts immediately after Stop',async({page,context})=>{
+    await context.grantPermissions(['microphone']);
+    await instrument(page);await installAndOpen(page);
+    await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+    await expect.poll(async()=>page.locator('[data-singing-dock]').getAttribute('data-mic-state'),{timeout:2_000}).toBe('listening');
+    await page.getByRole('button',{name:'Stop microphone',exact:true}).click();
+    await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+    await page.locator('[data-singing-slot="1"]').dblclick();
+    await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','listening');
+    await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toBeVisible();
+  });
+});
+
+test('policy A first-load permission denial shows Error and stays idle (stubbed getUserMedia; not Pixel)',async({page})=>{
+  await page.addInitScript(()=>{
+    Object.defineProperty(navigator.mediaDevices,'getUserMedia',{
+      configurable:true,value:async()=>{throw Object.assign(new Error('Permission denied'),{name:'NotAllowedError'});},
+    });
+  });
+  await instrument(page);await installAndOpen(page);
+  await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+  await expect.poll(async()=>page.getByRole('alert').textContent(),{timeout:3_000}).toBe('Permission denied');
+  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+  await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+  await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toHaveCount(0);
 });

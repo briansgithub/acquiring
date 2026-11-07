@@ -74,9 +74,9 @@ export class SingingMicrophoneSession {
     this.emit();
   }
 
-  /** Native-equivalent 800ms auto-listen only after prior explicit mic opt-in, while idle. */
+  /** Native HummingIntervalPopup: 800ms after target load, idle only. First getUserMedia prompt is allowed. */
   maybeAutoListen(slot: 1 | 2, targetMidi: number): boolean {
-    if (!this.optedIn || this.action.kind !== 'idle') return false;
+    if (this.action.kind !== 'idle') return false;
     this.listen(slot, targetMidi);
     return true;
   }
@@ -119,6 +119,7 @@ export class SingingMicrophoneSession {
   tick(now = this.now()): void {
     const result = this.capture.current;
     if (result.kind === 'error') {
+      this.lease.stop();
       this.error = result.message;
       this.action = { kind: 'idle' };
       this.emit();

@@ -3,12 +3,11 @@ import {OCTAVE_OFFSET_MAX,OCTAVE_OFFSET_MIN,clampSingingOctaveOffset,effectiveTa
 import {AUTO_LISTEN_MS,SingingMicrophoneSession,formatSungIntervalCents,sungInterval} from './singing-microphone';
 import './singing.css';
 
-/** Playback singing dock. Expand does not start the microphone.
- * Native auto-listen 800ms after target load is NOT blocked by getUserMedia transient
- * activation (MDN: getUserMedia does not require it). AudioContext autoplay is sticky.
- * First-load auto-listen without prior mic opt-in remains a Brian decision (permission-prompt
- * UX). This slice auto-listens only after explicit listen/Flip-Flop this session, with
- * visible mic state and Stop. No fabricated cents. AudioWorklet + linear resample; not real mic.
+/** Playback singing dock. Expand handle does not start the microphone.
+ * Brian 2026-11-07 policy A: match Android — card double-click / target load may start
+ * slot-1 listening after AUTO_LISTEN_MS (800), including the first permission prompt.
+ * Collapse/release/navigation cancel; capture generation serializes in-flight getUserMedia.
+ * Visible listening + Stop. No fabricated cents. AudioWorklet + linear resample; not Pixel.
  */
 export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0}:{
   octaveOffset:number;
@@ -23,7 +22,11 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   const mic=session;
   const [nowTick,setNowTick]=useState(0);
   const expandedRef=useRef(expanded);
+  const targetRef=useRef(target);
+  const midiRef=useRef({transpose,octaveOffset});
   expandedRef.current=expanded;
+  targetRef.current=target;
+  midiRef.current={transpose,octaveOffset};
   useEffect(()=>()=>session.release(),[session]);
   useEffect(()=>{if(!expanded)session.stop();},[expanded,session]);
   useEffect(()=>{
@@ -33,14 +36,18 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
     session.retarget(effectiveTargetMidi(note,transpose,octaveOffset));
   },[octaveOffset,transpose,target,session]);
   useEffect(()=>{
+    session.stop();
     const first=target?.first;
-    if(!first)return;
+    const requestId=target?.requestId;
+    if(!first||requestId==null)return;
     const id=window.setTimeout(()=>{
       if(!expandedRef.current)return;
-      session.maybeAutoListen(1,effectiveTargetMidi(first,transpose,octaveOffset));
+      if(targetRef.current?.requestId!==requestId)return;
+      const midi=midiRef.current;
+      session.maybeAutoListen(1,effectiveTargetMidi(first,midi.transpose,midi.octaveOffset));
     },AUTO_LISTEN_MS);
     return()=>window.clearTimeout(id);
-  },[target?.requestId,transpose,octaveOffset,session]);
+  },[target?.requestId,session]);
   useEffect(()=>{
     if(mic.action.kind==='idle')return;
     const id=window.setInterval(()=>{session.tick();setNowTick((n)=>n+1);},100);

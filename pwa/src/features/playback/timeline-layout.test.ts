@@ -30,7 +30,7 @@ describe('native PlaybackView timeline geometry, CSS px = dp', () => {
   it('hides the whole timeline in root-only/simple mode', () => {
     const layout = layoutPlaybackTimeline({
       width: 320, currentBeat: 2, rootOnly: true,
-      melody: [{beat: 1, duration: 1, staffDegree: 1}],
+      melody: [{beat: 1, duration: 1, staffDegree: 1, sourceMidi: null}],
       chords: [{beat: 1, duration: 2, rest: false}],
     });
     expect(layout.visible).toBe(false);
@@ -42,7 +42,7 @@ describe('native PlaybackView timeline geometry, CSS px = dp', () => {
   it('centers the playhead and translates content by (currentBeat-1)*60', () => {
     const layout = layoutPlaybackTimeline({
       width: 200, currentBeat: 3, rootOnly: false,
-      melody: [{beat: 3, duration: 1, staffDegree: 0}],
+      melody: [{beat: 3, duration: 1, staffDegree: 0, sourceMidi: 60}],
       chords: [{beat: 1, duration: 4, rest: false}],
     });
     expect(layout.visible).toBe(true);
@@ -57,8 +57,8 @@ describe('native PlaybackView timeline geometry, CSS px = dp', () => {
     const layout = layoutPlaybackTimeline({
       width: 60, currentBeat: 2, rootOnly: false,
       melody: [
-        {beat: 1, duration: 1, staffDegree: 1},
-        {beat: 2, duration: 1, staffDegree: 1},
+        {beat: 1, duration: 1, staffDegree: 1, sourceMidi: 62},
+        {beat: 2, duration: 1, staffDegree: 1, sourceMidi: 62},
       ],
       chords: [{beat: 10, duration: 1, rest: false}],
     });

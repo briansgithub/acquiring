@@ -84,16 +84,44 @@ describe('SingingMicrophoneSession listen/Flip-Flop', () => {
     session.release();
   });
 
-  it('auto-listen requires prior explicit opt-in and stays idle without it', () => {
+  it('policy A first-load auto-listen starts while idle, including without prior opt-in', () => {
     const session = sessionAt({ t: 0 });
-    expect(session.maybeAutoListen(1, 69)).toBe(false);
-    expect(session.action.kind).toBe('idle');
-    expect(session.capture.isRunning).toBe(false);
-    session.listen(1, 69);
+    expect(session.optedIn).toBe(false);
+    expect(session.maybeAutoListen(1, 69)).toBe(true);
+    expect(session.optedIn).toBe(true);
+    expect(session.action).toMatchObject({ kind: 'listening', slot: 1, targetMidi: 69 });
+    expect(session.capture.isRunning).toBe(true);
+    expect(session.maybeAutoListen(1, 60)).toBe(false);
     session.stop();
     expect(session.maybeAutoListen(1, 60)).toBe(true);
     expect(session.action).toMatchObject({ kind: 'listening', slot: 1, targetMidi: 60 });
+    session.setFlipFlop(true);
+    expect(session.maybeAutoListen(1, 69)).toBe(false);
     expect(AUTO_LISTEN_MS).toBe(800);
+    session.release();
+  });
+
+  it('permission denial surfaces Error, returns idle, and does not invent cents', async () => {
+    const denied = new (class implements MicrophoneCaptureTransport {
+      async start(): Promise<void> {
+        throw Object.assign(new Error('Permission denied'), { name: 'NotAllowedError' });
+      }
+      stop(): void { /* no IO */ }
+    })();
+    const capture = new BrowserMicrophoneCapture(undefined, {
+      transport: denied, now: () => 0, onPageHide: false,
+    });
+    const session = new SingingMicrophoneSession({ capture, now: () => 0 });
+    session.maybeAutoListen(1, 60);
+    expect(session.action.kind).toBe('listening');
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    session.tick(0);
+    expect(session.error).toBe('Permission denied');
+    expect(session.action.kind).toBe('idle');
+    expect(session.slot1).toBeNull();
+    expect(session.capture.isRunning).toBe(false);
     session.release();
   });
 

@@ -5,14 +5,15 @@
  * identity or T27 proof. Hidden in root-only/simple. Tap seeks currentBeat+(tapX-centerX)/60.
  * Drag scrubs startBeat-deltaX/60 (finger right → earlier beat). Chord-lane Roman uses
  * accepted getRomanSymbol / getRelativeIonianRomanSymbol + T04 display. No inertia/coast
- * or pitch-score overlay.
+ * overlay uses accepted PersistentPlaybackPitchPractice medians when Pitch monitoring is on.
  */
 import type {ExtractedSection,MelodyNote} from '../../contracts';
 import {getKeys,keyAtBeat} from '../../domain/data';
 import {doubleOrUndefined} from '../../domain/data/primitives';
 import {nativeBooleanOrNull} from '../../domain/music/native-json';
 import {
-  getRawDegree,getRelativeIonianRomanSymbol,getRomanSymbol,ionianContextStaffDegree,relativeIonianKey,
+  getRawDegree,getRelativeIonianRomanSymbol,getRomanSymbol,ionianContextPreviewAudioNote,ionianContextStaffDegree,
+  relativeIonianKey,resolveScaleDegreePitch,
 } from '../../domain/music';
 import {romanNumeralDisplayFromChord,type RomanNumeralDisplay} from '../../ui/notation/roman-numeral';
 
@@ -30,6 +31,7 @@ export interface TimelineMelodyVisual {
   readonly beat: number;
   readonly duration: number;
   readonly staffDegree: number;
+  readonly sourceMidi: number | null;
 }
 
 export interface TimelineChordVisual {
@@ -95,7 +97,11 @@ export function buildMelodyTimelineVisuals(
     const sourceKey = keyAtBeat(keys, note.beat);
     const raw = melodyTimelineStaffDegree(note.sd, note.octave);
     const staffDegree = relativeMajor ? (ionianContextStaffDegree(note.sd, note.octave, sourceKey, ionian) ?? raw) : raw;
-    visuals.push(Object.freeze({beat: note.beat, duration: note.duration, staffDegree}));
+    const pitch = resolveScaleDegreePitch(note.sd, note.octave, sourceKey);
+    const sourceMidi = pitch
+      ? (relativeMajor ? (ionianContextPreviewAudioNote(pitch, ionian) ?? pitch.toAudioNoteNumber()) : pitch.toAudioNoteNumber())
+      : null;
+    visuals.push(Object.freeze({beat: note.beat, duration: note.duration, staffDegree, sourceMidi}));
   }
   return Object.freeze(visuals);
 }
