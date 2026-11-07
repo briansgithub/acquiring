@@ -1349,9 +1349,25 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position memory and Favorites star landed. T21 default/inertia/Roman/scores remain.",
-      "nextAction": "T21 Settings selectAsDefault / session-vs-default instrument next. Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position memory, Favorites star, and T21 session-vs-default instrument landed. Inertia/tap/Roman/scores remain.",
+      "nextAction": "T12 timeline tap-to-seek without inertia coast next. Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
+        {
+          "command": "npx vitest run src/features/settings/instrument-session.test.ts src/features/playback/playback-route-memory.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/settings-default-instrument/browser-fix2",
+          "revision": "b75165b8 plus named T21 selectAsDefault tree",
+          "guards": [
+            "T21-default-unit-001",
+            "T21-default-typecheck-001",
+            "T21-default-check-001",
+            "T21-default-browser-001",
+            "T21-default-unit-002",
+            "T21-default-typecheck-002",
+            "T21-default-check-002",
+            "T21-default-browser-002",
+            "T21-default-browser-003"
+          ],
+          "result": "PASS 9 then 10 focused; typecheck-001/002 PASS; check-001 1004 unit/78 files shell b383eca8050d; check-002 1005 unit/78 files + 1 parity + types + shell dfabc5088e68; browser-001 FAIL useSyncExternalStore getSnapshot identity loop; browser-002 leftover :4173; browser-003 FIRST PASS 16/16 2.0m including Settings Sine persist, Playback Flute does not overwrite default, Electric Piano relaunch. Intro/help/diagnostics not started. No inertia/scores/device/whole-CI-green claim. Preexisting app test:browser audio-sink/Library 64px remains."
+        },
         {
           "command": "npx vitest run src/features/playback/favorites.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-favorites/browser-first",
           "revision": "00f26f2a plus named favorites tree",
@@ -3956,15 +3972,34 @@
         "pwa/src/features/help/"
       ],
       "acceptance": "One-shot intro, invalid-default fallback, session/default separation, allow-listed export",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
+      "status": "in_progress",
+      "owner": "coordinator runtime unknown",
+      "branch": "codex/pwa-continuation",
       "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
-      "validation": [],
-      "progress": [],
+      "baseCommit": "b75165b88029c9917aaf9a17e173f344bb11ed1a",
+      "slice": "selectAsDefault / session-vs-default instrument landed. Intro, expanded help, diagnostics/reset remain.",
+      "nextAction": "Do not expand intro/help/diagnostics until playback tap/remaining T12 priority slices move. T08/T12 parents remain in_progress; this slice used T06 preferences + existing Playback instrument menu. Library Settings Back excluded.",
+      "validation": [
+        {
+          "command": "npx vitest run src/features/settings/instrument-session.test.ts src/features/playback/playback-route-memory.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/settings-default-instrument/browser-fix2",
+          "revision": "b75165b8 plus named T21 selectAsDefault tree",
+          "guards": [
+            "T21-default-unit-001",
+            "T21-default-typecheck-001",
+            "T21-default-check-001",
+            "T21-default-browser-001",
+            "T21-default-unit-002",
+            "T21-default-typecheck-002",
+            "T21-default-check-002",
+            "T21-default-browser-002",
+            "T21-default-browser-003"
+          ],
+          "result": "PASS native three owner cases + snapshot cache; invalid default → clarinet; selectForSession does not write store; selectAsDefault updates session+store and relaunch. Chrome: Settings Sine hydrates Playback; Playback Flute leaves Settings Sine; Electric Piano survives reload. cycle1 getSnapshot loop fixed. Partial T21, not intro/help/diagnostics/device/whole-CI-green."
+        }
+      ],
+      "progress": [
+        "2026-11-07T10:18Z bounded selectAsDefault slice accepted on continuation after snapshot-cache fix. T06 preferences.default_instrument. PlaybackScreen 296 lines. Preexisting CI app test:browser audio-sink/Library 64px remains."
+      ],
       "blocker": null
     },
     {

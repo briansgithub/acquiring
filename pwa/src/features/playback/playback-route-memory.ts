@@ -3,9 +3,10 @@
  * song is left. Transpose and session waveform are process-wide. Beat survives
  * Info because native `PlaybackController.load` no-ops on unchanged `slug:section`.
  * Mix / Lock in Major / root-only stay Compose-local and reset on remount.
- * Settings `selectAsDefault` instrument persistence remains T21.
+ * Session waveform is AppInstrumentSession; Settings selectAsDefault is T21.
  */
-import {DEFAULT_WAVEFORM,Waveform} from '../../audio/synth';
+import type {Waveform} from '../../audio/synth';
+import {appInstrumentSession,resetAppInstrumentSession} from '../settings/instrument-session';
 import {DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,DEFAULT_PLAYBACK_TEMPO_PERCENT} from './controller';
 
 export interface PlaybackSongMemory {
@@ -17,14 +18,13 @@ export interface PlaybackRouteEntry extends PlaybackSongMemory {
 
 let selectedSlug:string|null=null;
 let transpose=0;
-let waveform:Waveform=DEFAULT_WAVEFORM;
 const bySlug=new Map<string,PlaybackSongMemory>();
 let lastIdentity:{readonly slug:string;readonly sectionId:string;readonly beat:number}|null=null;
 
 export function sessionTranspose():number {return transpose;}
-export function sessionWaveform():Waveform {return waveform;}
+export function sessionWaveform():Waveform {return appInstrumentSession.sessionInstrument;}
 export function setSessionTranspose(value:number):void {transpose=value;}
-export function setSessionWaveform(value:Waveform):void {waveform=value;}
+export function setSessionWaveform(value:Waveform):void {appInstrumentSession.selectForSession(value);}
 
 export function capturePlayback(slug:string,memory:PlaybackSongMemory):void {
   const stored=Object.freeze({sectionId:memory.sectionId,beat:memory.beat,tempoPercent:memory.tempoPercent,arpeggioIndex:memory.arpeggioIndex});
@@ -42,9 +42,9 @@ export function enterPlayback(slug:string,firstSectionId:string,sectionIds:reado
   const beat=lastIdentity?.slug===slug&&lastIdentity.sectionId===sectionId?lastIdentity.beat:1;
   const tempoPercent=sameSong&&remembered?remembered.tempoPercent:DEFAULT_PLAYBACK_TEMPO_PERCENT;
   const arpeggioIndex=sameSong&&remembered?remembered.arpeggioIndex:DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX;
-  return Object.freeze({sectionId,beat,tempoPercent,arpeggioIndex,transpose,waveform});
+  return Object.freeze({sectionId,beat,tempoPercent,arpeggioIndex,transpose,waveform:appInstrumentSession.sessionInstrument});
 }
 
 export function resetPlaybackRouteMemory():void {
-  selectedSlug=null;transpose=0;waveform=DEFAULT_WAVEFORM;bySlug.clear();lastIdentity=null;
+  selectedSlug=null;transpose=0;bySlug.clear();lastIdentity=null;resetAppInstrumentSession();
 }

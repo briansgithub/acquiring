@@ -2,18 +2,30 @@ import {PlaybackScreen} from '../features/playback/PlaybackScreen';
 import {leavePlaybackSong} from '../features/playback/playback-route-memory';
 import {SongScreen} from '../features/details/SongScreen';
 import {LibraryScreen,libraryRouteState,saveLibraryView} from '../features/library/LibraryScreen';
-import { useSyncExternalStore } from 'react';
+import {DefaultInstrumentControl} from '../features/settings/DefaultInstrumentControl';
+import {hydrateAppInstrumentSession,openGuestInstrumentPreferences} from '../features/settings/instrument-session';
+import { useEffect, useSyncExternalStore } from 'react';
 import { CatalogPanel } from '../features/catalog/CatalogPanel';
 import { AppShell } from '../ui/shell/AppShell';
 import { navigate, parseRoute, subscribeRoute } from './routes';
 
 export function App() {
+  useEffect(()=>{
+    let db:Awaited<ReturnType<typeof openGuestInstrumentPreferences>>;
+    let cancelled=false;
+    void openGuestInstrumentPreferences().then(opened=>{
+      if(cancelled){opened?.close();return;}
+      db=opened;if(opened)void hydrateAppInstrumentSession(opened);
+    });
+    return ()=>{cancelled=true;db?.close();};
+  },[]);
   const pathname = useSyncExternalStore(subscribeRoute, () => location.pathname, () => '/');
   const route = parseRoute(pathname);
   const home = () => { leavePlaybackSong(); navigate('/',libraryRouteState()); };
   const backToLibrary = () => { if(history.state?.fromLibrary||history.state?.fromSong||history.state?.fromPlayback)history.back();else home(); };
   if (route.kind === 'settings') return <AppShell title="Settings" onBack={backToLibrary}>
     <CatalogPanel />
+    <section className="panel"><h2>Default Instrument</h2><DefaultInstrumentControl /></section>
     <section className="panel"><h2>Appearance</h2><p>Dark theme</p></section>
     <button className="action" onClick={() => navigate('/help')}>Help</button>
   </AppShell>;

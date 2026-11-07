@@ -458,3 +458,34 @@ test('playback favorite star persists on T06 Favorites and confirms only a succe
   expect(await page.getByRole('button',{name:'Remove from Favorites',exact:true}).evaluate(el=>{const r=el.getBoundingClientRect();return r.width>=44&&r.height>=44;})).toBe(true);
   const image=testInfo.outputPath('favorite-star-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
+
+test('settings default instrument persists and playback session does not overwrite it',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('CLARINET');
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Settings',exact:true}).click();
+  await page.getByRole('radio',{name:'Default instrument: Sine',exact:true}).check();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Detail_Gzip');
+  await page.locator('[data-song-slug="detail-gzip"]').click();
+  await page.getByRole('button',{name:'Play song',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('SINE');
+  await page.getByRole('combobox',{name:'Instrument',exact:true}).selectOption('FLUTE');
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Settings',exact:true}).click();
+  await expect(page.getByRole('radio',{name:'Default instrument: Sine',exact:true})).toBeChecked();
+  await page.getByRole('radio',{name:'Default instrument: Electric Piano',exact:true}).check();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Detail_Gzip');
+  await page.locator('[data-song-slug="detail-gzip"]').click();
+  await page.getByRole('button',{name:'Play song',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('ELECTRIC_PIANO');
+  await page.reload();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect.poll(async()=>page.getByRole('combobox',{name:'Instrument',exact:true}).inputValue()).toBe('ELECTRIC_PIANO');
+  const image=testInfo.outputPath('default-instrument-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
+});

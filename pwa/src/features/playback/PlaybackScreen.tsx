@@ -11,6 +11,7 @@ import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
 import {INSTRUMENTS,Waveform} from '../../audio/synth';
 import type {PlaybackSettings} from './controller';
 import {PLAYBACK_ARPEGGIOS,SectionPlaybackController} from './controller';
+import {appInstrumentSession} from '../settings/instrument-session';
 import {capturePlayback,enterPlayback,setSessionTranspose,setSessionWaveform} from './playback-route-memory';
 import {formatBeat} from '../details/overview';
 import {displayTitle,safeSectionName} from '../../domain/data';
@@ -46,6 +47,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
   const octaveOffset=useSyncExternalStore(octaveSession.subscribe,octaveSession.getSnapshot,octaveSession.getSnapshot);
   const favoriteSession=useMemo(()=>new FavoriteSession(),[]);
   const favorite=useSyncExternalStore(favoriteSession.subscribe,favoriteSession.getSnapshot,favoriteSession.getSnapshot);
+  const instrument=useSyncExternalStore(appInstrumentSession.subscribe,appInstrumentSession.getSnapshot,appInstrumentSession.getSnapshot);
   const [playback,setPlayback]=useState<SectionPlaybackController|null>(null);
   const [playbackError,setPlaybackError]=useState<string|null>(null);
   const playbackOwner=useRef<SectionPlaybackController|null>(null);
@@ -140,6 +142,12 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
   },[details,slug]);
 
   useEffect(()=>{
+    if(!playback||playback.closed||playback.getSnapshot().settings.waveform===instrument.session)return;
+    try{playback.updateSettings({waveform:instrument.session});}
+    catch(error){setPlaybackError(error instanceof Error?error.message:'Playback settings could not be applied.');}
+  },[playback,instrument.session]);
+
+  useEffect(()=>{
     if(!playback||!selected||playbackError||loadedSection.current===selected[0])return;
     try{
       playback.loadSection(selected[1]);
@@ -158,6 +166,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
 
   function updateSettings(patch:Partial<PlaybackSettings>){
     try{
+      if(patch.waveform)appInstrumentSession.selectForSession(patch.waveform);
       playback?.updateSettings(patch);
       if(loadedSection.current===selected?.[0])setPlaybackError(null);
     }catch(error){setPlaybackError(error instanceof Error?error.message:'Playback settings could not be applied.');}
