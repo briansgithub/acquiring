@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-11-07T13:15:00+00:00",
+  "updated": "2026-11-07T13:20:00+00:00",
   "implementationAuthorized": true,
   "currentStage": "playback_singing_priority",
   "ownerPriority": {
@@ -974,8 +974,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
-      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop plus Brian 2026-11-07 policy A first-load 800ms auto-listen including first permission prompt. AudioWorklet same-origin hashed module. Shared PLAYBACK_PERSISTENT/SINGING_TOOL capture across monitoring+dock. Live halo uses captured estimates. Device mic/median Aural scores remain open",
-      "nextAction": "Live halo/marker from capture landed. Real page.mouse drag original assertions pass. Next: not inertia polish. Real touch unproven. SYNTHETIC fixture is not Pixel acceptance. Playwright fake/silent getUserMedia labeled separately. No fabricated cents. Library prefix polish is not next.",
+      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop plus Brian 2026-11-07 policy A first-load 800ms auto-listen including first permission prompt. AudioWorklet same-origin hashed module. Shared PLAYBACK_PERSISTENT/SINGING_TOOL capture across monitoring+dock. Live halo uses captured estimates. Emulated browser touch labeled separately from Pixel. Device mic/banked-score Chrome remain open",
+      "nextAction": "Emulated browser touch PASS (CDP/Playwright, not Pixel). Live halo landed; rest 0¢ ≠ banked empty. Banked scoring impl in, acceptance open. Next: not inertia. SYNTHETIC ≠ fake getUserMedia ≠ Pixel. No fabricated cents.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
@@ -1523,8 +1523,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, live drag/scrub, chord-lane Roman, queued changeSection, opt-in Pitch monitoring overlay, shared exclusive mic, real page.mouse drag, and live halo/marker from capture landed. Synthetic PointerEvent is handler-only. Real touch unproven. Inertia coast remains polish.",
-      "nextAction": "Do not polish inertia this pass. Live halo/marker from capture landed. Real page.mouse drag original assertions pass. Interval-audio 44100 PASS on actual CI 10effa71; whole CI still red (audio-sink + Settings Back). Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, live drag/scrub, chord-lane Roman, queued changeSection, opt-in Pitch monitoring overlay, shared exclusive mic, real page.mouse drag, live halo/marker, and emulated browser touch landed. Synthetic PointerEvent is handler-only. Inertia coast remains polish.",
+      "nextAction": "Do not polish inertia this pass. Emulated browser touch original assertions PASS (CDP/Playwright hasTouch; not PointerEvent math; not Pixel). Interval-audio 44100 PASS on actual CI 10effa71. audio-sink suspend canRender later bounded, not exempt. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
         {
           "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-drag/browser-fix2",
@@ -1657,7 +1657,8 @@
         "2026-10-18T02:46:50.910462+00:00 Intervalaudio component ACCEPTED: worker5ebdba23 normallymerged2b41da48,14focused/93rootcoveringchecks/strictcombinedtypes/build6c7d8e82510b;6actualChrome afterfixture-readinessfix1. One59535/64800framebuffer,3PCM/livegraphstages/actualclock/unison/rawtranspose/cancellation/staleheldrender/sharedborrower/trustednavigation. Singleimmutabletag throughONEexistingowner removesextraarbitration, no owner/DSP/APIchange. Firstfailuretrace retained browser-first; finalproofs interval-audio/browser-fix1. AppUI/producttest unrun, nofullT12/physical/Safariclaim.",
         "2026-10-18T03:00:28.331224+00:00 Nativeintervalcards ACCEPTED: c49c4047 normallymerged, strictcombinedtypes/Appbuild8eb973ca54a5 andinitial7ChromePASS/final2affectedlayoutChromePASS. Actual3stage1350ms/rawwrittenpitches/Majorlabelonly/manualtransposeonce/currentpreset/staticintervalmutualcancellation/Reset/sectioncleanup/nativeunison/restvisibility/keyboard/44px/320px200% image reviewed. Oneexistingowner/context; pure/component93checks+6Chrome retained withoutrecapture. FullT12visualtimeline/defaults/positionmemory andT13/T21/device gates open.",
         "2026-11-07T13:10Z Real page.mouse canvas drag original assertions PASS after scroll-then-box. DOM: box-before-scroll y=1204.78 elementFromPoint miss beat 1; after scroll y=295.78 hits CANVAS beat 2. Not synthetic replacement. Interval-audio ended clock gate: onended waits for currentTime>=scheduled+frames/rate, no epsilon. check-001 1095 unit/93 files + 1 parity + types + shell 1048a78fc761; browser-001 44100 interval + mouse drag + tap FIRST PASS. Codex gpt-6.1-sol read-only thread 01a1b616-f816-7b22-aed9-70abcb8c3187. Settings Back untouched. Inertia not polished.",
-        "2026-11-07T13:15Z Live halo/marker/label from captured pitch (PlaybackView 1323-1403). Banked medians already existed. Silent live 0¢ rest is native gauge, not a banked score. Deterministic injected-cents units labeled. Chrome fake/silent getUserMedia rest 0¢/hasEstimate=false. check 1100 unit/94 files + 1 parity + types + shell d54dfbda17d4; browser-001 9/9 including live halo FIRST PASS. Codex gpt-6.1-sol read-only thread 01a1b61d-b2f4-7400-91e3-926ea90f6cfd. Actual CI 10effa71 42375125680: interval-audio 44100 PASS; still red audio-sink + Settings Back 110px. Settings Back untouched. Inertia not polished."
+        "2026-11-07T13:15Z Live halo/marker/label from captured pitch (PlaybackView 1323-1403). Banked medians already existed. Silent live 0¢ rest is native gauge, not a banked score. Deterministic injected-cents units labeled. Chrome fake/silent getUserMedia rest 0¢/hasEstimate=false. check 1100 unit/94 files + 1 parity + types + shell d54dfbda17d4; browser-001 9/9 including live halo FIRST PASS. Codex gpt-6.1-sol read-only thread 01a1b61d-b2f4-7400-91e3-926ea90f6cfd. Actual CI 10effa71 42375125680: interval-audio 44100 PASS; still red audio-sink + Settings Back 110px. Settings Back untouched. Inertia not polished.",
+        "2026-11-07T13:20Z Emulated browser touch (Playwright touchscreen.tap + CDP Input.dispatchTouchEvent, hasTouch; not PointerEvent math; not Pixel) original tap-seek and drag-scrub assertions PASS. No product handler change (touch-action:none already). T21 HelpCatalog /help index + IntroductionCopy. check 1101 unit/95 files + 1 parity + types + shell ddb890c68e78; browser-001 5/5 touch+mouse+halo-rest-0¢+help. Codex help-catalog thread 01a1b625-5cb7-78f1-8ef8-cf4455ad54fc. Banked scoring impl in, acceptance open. 32ms tween and 11px vs 11.sp outstanding. audio-sink later bounded, not exempt. Settings Back untouched."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -2233,8 +2234,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
-      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt + shared PLAYBACK_PERSISTENT/SINGING_TOOL capture + banked medians + live halo/marker from capture. Median Aural scores remain.",
-      "nextAction": "Live halo/marker from capture landed. Policy A accepted; no further mic-policy question. Do not fake scores. Do not start Aural/T15 remainder. Real page.mouse drag original assertions pass. Next: not inertia. Real touch unproven. Pixel/real-mic unproven.",
+      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt + shared PLAYBACK_PERSISTENT/SINGING_TOOL capture + banked median kernel/hook/badges + live halo/marker from capture. Banked-score Chrome acceptance and median Aural scores remain.",
+      "nextAction": "Emulated browser touch PASS. Live halo rest 0¢ ≠ banked empty. Banked scoring kernel+hook+badges implemented/unit-tested; no captured-pitch Chrome badge. Policy A accepted. Do not fake scores. Do not start Aural/T15. Next: not inertia. Pixel/real-mic unproven.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -2292,6 +2293,14 @@
             "T13-live-halo-browser-001"
           ],
           "result": "PASS 5 focused then 1100 unit/94 files + 1 parity + types + shell d54dfbda17d4. Chrome FIRST PASS 9/9 including live halo rest 0¢/hasEstimate=false (Playwright fake/silent getUserMedia, not SYNTHETIC, not Pixel), exclusive lease, policy A, original page.mouse drag. Deterministic injected-cents units labeled. Banked scores stay empty on silent capture. Codex gpt-6.1-sol read-only thread 01a1b61d-b2f4-7400-91e3-926ea90f6cfd EXIT 0; wall-clock 250ms sampling applied. Actual CI 10effa71 42375125680 interval-audio 44100 PASS; whole CI still red audio-sink + Settings Back. Partial T13. Not device/whole-CI-green."
+        },
+        {
+          "command": "npx playwright test tests/browser/playback.spec.ts --project chrome --workers 1 --grep \"emulated browser touch\"",
+          "revision": "6bc917fe plus named emulated-touch tree",
+          "guards": [
+            "T12-touch-browser-001"
+          ],
+          "result": "PASS 2/2 FIRST: Playwright touchscreen.tap seek beat 2; CDP Input.dispatchTouchEvent drag 60px left beat 2. hasTouch. Not PointerEvent math. Not Pixel. Original assertions unweakened. No product handler change. Partial T12. Not physical device."
         }
       ],
       "progress": [
@@ -2300,7 +2309,8 @@
         "2026-11-07T12:40Z Brian accepted policy A: Match Android, card double-click may start microphone listening after 800ms including first permission prompt. Replaced temporary policy B gating. No further policy question. SYNTHETIC oscillator ≠ Pixel; Playwright fake/silent getUserMedia labeled separately. Cursor remains writer; Codex gpt-6.1-sol read-only review of uncommitted (thread 01a1b605-42f0-79d3-844a-0c579f69e30b) EXIT 0.",
         "2026-11-07T13:00Z Shared PLAYBACK_PERSISTENT/SINGING_TOOL capture+coordinator across Pitch monitoring and singing dock. Native MainActivity one tracker, two leases. Ownership-loss idle without stopping the new owner; no stolen slot writes or banked melody scores. Cursor writer; Codex gpt-6.1-sol read-only interval-audio 44100 analysis thread 01a1b610-bd97-7132-95e3-b208ba06c9ef EXIT 0, no spec change.",
         "2026-11-07T13:10Z Real page.mouse drag original assertions pass (stale off-screen boundingBox). Interval-audio ended clock gate local-PASS, assertion unchanged. Codex gpt-6.1-sol read-only fix rec thread 01a1b616-f816-7b22-aed9-70abcb8c3187. Cursor remains writer.",
-        "2026-11-07T13:15Z Live halo/marker/label from captured pitch. Held estimates display-only; silent 0¢ rest is not a banked score. Deterministic units labeled. Chrome fake/silent rest 0¢. Codex gpt-6.1-sol read-only thread 01a1b61d-b2f4-7400-91e3-926ea90f6cfd. Actual CI 10effa71 interval-audio 44100 PASS; still not whole-CI-green."
+        "2026-11-07T13:15Z Live halo/marker/label from captured pitch. Held estimates display-only; silent 0¢ rest is not a banked score. Deterministic units labeled. Chrome fake/silent rest 0¢. Codex gpt-6.1-sol read-only thread 01a1b61d-b2f4-7400-91e3-926ea90f6cfd. Actual CI 10effa71 interval-audio 44100 PASS; still not whole-CI-green.",
+        "2026-11-07T13:20Z Emulated browser touch PASS. Banked scoring remains impl-in/acceptance-open; halo 0¢ is not a banked score. 32ms tween and 11px vs 11.sp outstanding."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -4234,8 +4244,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": null,
       "baseCommit": "b75165b88029c9917aaf9a17e173f344bb11ed1a",
-      "slice": "selectAsDefault / session-vs-default instrument landed. Intro, expanded help, diagnostics/reset remain.",
-      "nextAction": "Do not expand intro/help/diagnostics until playback tap/remaining T12 priority slices move. T08/T12 parents remain in_progress; this slice used T06 preferences + existing Playback instrument menu. Library Settings Back excluded.",
+      "slice": "selectAsDefault / session-vs-default instrument landed. HelpCatalog `/help` index + IntroductionCopy instructions article landed. Rich notation-article prose, one-shot IntroductionPrefs, diagnostics/reset remain.",
+      "nextAction": "HelpCatalog index landed. Next remaining T21: HelpNotationArticles/Roman prose, one-shot intro, or diagnostics/reset. Library Settings Back excluded. Do not claim help complete.",
       "validation": [
         {
           "command": "npx vitest run src/features/settings/instrument-session.test.ts src/features/playback/playback-route-memory.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/settings-default-instrument/browser-fix2",
@@ -4252,10 +4262,22 @@
             "T21-default-browser-003"
           ],
           "result": "PASS native three owner cases + snapshot cache; invalid default → clarinet; selectForSession does not write store; selectAsDefault updates session+store and relaunch. Chrome: Settings Sine hydrates Playback; Playback Flute leaves Settings Sine; Electric Piano survives reload. cycle1 getSnapshot loop fixed. Partial T21, not intro/help/diagnostics/device/whole-CI-green."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/help/help-catalog.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/shell.spec.ts --project chrome --workers 1 --grep \"Library, Settings\"",
+          "revision": "6bc917fe plus named help-catalog tree",
+          "guards": [
+            "T21-help-catalog-unit-001",
+            "T21-help-catalog-typecheck-001",
+            "T21-help-catalog-check-001",
+            "T21-help-catalog-browser-001"
+          ],
+          "result": "PASS 1 focused then 1101 unit/95 files + 1 parity + types + shell ddb890c68e78. Chrome FIRST: /help lists Instructions+Intervals; Instructions article shows IntroductionCopy octave; in-article Back returns to index; AppShell Back still /settings. Codex thread 01a1b625-5cb7-78f1-8ef8-cf4455ad54fc catalog match; gesture em-dash applied. Rich notation articles/one-shot intro/diagnostics remain. Settings Back untouched. Partial T21."
         }
       ],
       "progress": [
-        "2026-11-07T10:18Z bounded selectAsDefault slice accepted on continuation after snapshot-cache fix. T06 preferences.default_instrument. PlaybackScreen 296 lines. Preexisting CI app test:browser audio-sink/Library 64px remains."
+        "2026-11-07T10:18Z bounded selectAsDefault slice accepted on continuation after snapshot-cache fix. T06 preferences.default_instrument. PlaybackScreen 296 lines. audio-sink suspend canRender is later bounded investigation, not a permanent exemption. Library Settings Back owner-blocked.",
+        "2026-11-07T13:20Z HelpCatalog + IntroductionCopy onto /help index. Instructions article uses IntroductionCopy. Interval table is 14 native rows. Scale-degree/Roman catalog dumps, not full article prose. One-shot IntroductionPrefs and diagnostics/reset remain."
       ],
       "blocker": null
     },

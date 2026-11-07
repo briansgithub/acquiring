@@ -9,6 +9,15 @@ test('Library, Settings, browser history and bookmarked screens', async ({ page 
   await expect(page.getByRole('heading', { name: 'Library', exact: true })).toBeVisible();
   await page.goto('/help');
   await expect(page.getByRole('heading', { name: 'Help', exact: true })).toBeVisible();
+  await expect(page.locator('[data-help-index]')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Instructions', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Intervals', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Instructions', exact: true }).click();
+  await expect(page.locator('[data-help-article="help.topic.instructions"]')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Introduction', exact: true })).toBeVisible();
+  await expect(page.locator('[data-introduction="octave"]')).toContainText('octave');
+  await page.locator('.help-article__back').click();
+  await expect(page.locator('[data-help-index]')).toBeVisible();
   await page.getByRole('button', { name: 'Back', exact: true }).focus();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/settings$/);

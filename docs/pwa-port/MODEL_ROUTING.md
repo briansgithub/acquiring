@@ -151,3 +151,5 @@ Source: official OpenAI model selection guidance https://developers.openai.com/a
 2026-11-07T13:10Z Cursor writer. Codex read-only named-files rec for ended clock gate, gpt-6.1-sol, EXIT 0, thread `01a1b616-f816-7b22-aed9-70abcb8c3187`, usage input 56612 / cached 47744 / output 463 / reasoning 8. No overlapping edits. Allowance/reset unknown (Codex JSON has no quota window).
 
 2026-11-07T13:07Z Cursor writer. One bounded Codex read-only live-halo vs native PlaybackView 1323-1403, default gpt-6.1-sol, EXIT 0, thread `01a1b61d-b2f4-7400-91e3-926ea90f6cfd`, usage input 57852 / cached 47360 / output 520 / reasoning 61. Geometry match; applied wall-clock 250ms sampling (was tick-count). 11px vs 11.sp tracked. No overlapping edits. Allowance/reset unknown.
+
+2026-11-07T13:14Z Cursor writer. One bounded Codex read-only HelpCatalog vs native HelpContent.kt / IntroductionCopy, EXIT 0, thread `01a1b625-5cb7-78f1-8ef8-cf4455ad54fc`, usage input 53557 / cached 42752 / output 341 / reasoning 0. Catalog match; applied native gesture ` — ` separator. Example cards / one-shot intro deferred. No overlapping edits. Allowance/reset unknown.

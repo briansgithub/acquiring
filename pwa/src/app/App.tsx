@@ -4,6 +4,7 @@ import {SongScreen} from '../features/details/SongScreen';
 import {LibraryScreen,libraryRouteState,saveLibraryView} from '../features/library/LibraryScreen';
 import {mutateSongQueue,songQueueSession,songQueueVersion,subscribeSongQueue} from '../features/library/song-queue-host';
 import {SongQueueRouteSync} from '../features/library/song-queue-route';
+import {HelpScreen} from '../features/help/HelpScreen';
 import {DefaultInstrumentControl} from '../features/settings/DefaultInstrumentControl';
 import {hydrateAppInstrumentSession,openGuestInstrumentPreferences} from '../features/settings/instrument-session';
 import { useEffect, useSyncExternalStore } from 'react';
@@ -42,7 +43,7 @@ export function App() {
       <section className="panel"><h2>Appearance</h2><p>Dark theme</p></section>
       <button className="action" onClick={() => navigate('/help')}>Help</button>
     </AppShell> : route.kind === 'help' ? <AppShell title="Help" onBack={() => navigate('/settings')}>
-      <section className="panel"><h2>Acquiring</h2><p>Listen, practice and learn music.</p><p>Once downloaded, your catalogs and saved practice will be available offline on this device.</p></section>
+      <HelpScreen />
     </AppShell> : route.kind === 'playback' ? <PlaybackScreen key={queued?queue.loadToken:route.slug} slug={route.slug}
       playOnceKey={queued?queue.playbackCompletionKey:null}
       autoStart={queued&&queue.autoStart}

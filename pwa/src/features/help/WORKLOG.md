@@ -1,0 +1,3 @@
+# Help / introduction
+
+2026-11-07T13:20Z Frozen 801cf798 HelpCatalog + IntroductionCopy onto `/help`. Index lists native four topics and the offline note. Instructions article uses IntroductionCopy (objective/gestures/octave text; gesture rows use native ` — `). Intervals table is the 14 native rows. Scale-degree numerals/C-major names and Roman quality examples are catalog dumps, not the full HelpNotationArticles/HelpRomanArticle prose. One-shot IntroductionPrefs screen, diagnostics/reset, and Settings Back remain later/blocked. T21-help-catalog-unit-001 1 PASS; check-001 1101/95 + parity + shell ddb890c68e78; browser FIRST Instructions article + Back to index + AppShell Back to Settings. Codex thread 01a1b625-5cb7-78f1-8ef8-cf4455ad54fc catalog match.

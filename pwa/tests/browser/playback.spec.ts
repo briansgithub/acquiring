@@ -61,6 +61,17 @@ async function installAndOpen(page:Page){
   await expect(page.getByRole('slider',{name:'Position',exact:true})).toBeEnabled();
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-phase','stopped');
 }
+/** Chromium Input.dispatchTouchEvent. Emulated browser touch, not page.evaluate PointerEvent, not Pixel. */
+async function emulateTouchDrag(page:Page,from:{x:number;y:number},to:{x:number;y:number},steps=8){
+  const client=await page.context().newCDPSession(page);
+  const point=(x:number,y:number)=>({id:0,x,y,radiusX:1,radiusY:1,force:1});
+  await client.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point(from.x,from.y)]});
+  for(let i=1;i<=steps;i++){
+    const x=from.x+(to.x-from.x)*i/steps,y=from.y+(to.y-from.y)*i/steps;
+    await client.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[point(x,y)]});
+  }
+  await client.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+}
 test('product playback uses real streaming audio and preserves explicit intent across controls and teardown',async({page},testInfo)=>{
   await instrument(page);await installAndOpen(page);
   const view=page.locator('[data-playback-phase]'),position=page.getByRole('slider',{name:'Position',exact:true}),tempo=page.getByRole('slider',{name:'Tempo (%)',exact:true});
@@ -630,6 +641,41 @@ test('real Playwright mouse canvas drag scrubs live opposite the finger without 
   await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(2,1);
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
   await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','playing');
+});
+
+test.describe('emulated browser touch (Playwright/CDP touch dispatch; not PointerEvent math; not Pixel)',()=>{
+  test.use({hasTouch:true});
+  test('touchscreen tap seeks from the centered playhead without starting playback',async({page})=>{
+    await instrument(page);await installAndOpen(page);
+    const timeline=page.locator('[data-playback-timeline="visible"]');
+    const position=page.getByRole('slider',{name:'Position',exact:true});
+    await expect(timeline).toBeVisible();
+    expect(Number(await position.inputValue())).toBe(1);
+    await expect.poll(async()=>Number(await timeline.getAttribute('data-timeline-playhead'))).toBeGreaterThan(0);
+    const playhead=Number(await timeline.getAttribute('data-timeline-playhead'));
+    await timeline.scrollIntoViewIfNeeded();
+    const box=await timeline.boundingBox();
+    if(!box)throw new Error('timeline bounding box');
+    await page.touchscreen.tap(box.x+playhead+60,box.y+20);
+    await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(2,1);
+    await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
+    await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','playing');
+  });
+  test('CDP touch drag scrubs live opposite the finger without inertia',async({page})=>{
+    await instrument(page);await installAndOpen(page);
+    const timeline=page.locator('[data-playback-timeline="visible"]');
+    const position=page.getByRole('slider',{name:'Position',exact:true});
+    await expect(timeline).toBeVisible();
+    await expect.poll(async()=>Number(await timeline.getAttribute('data-timeline-playhead'))).toBeGreaterThan(0);
+    const playhead=Number(await timeline.getAttribute('data-timeline-playhead'));
+    await timeline.scrollIntoViewIfNeeded();
+    const box=await timeline.boundingBox();
+    if(!box)throw new Error('timeline bounding box');
+    await emulateTouchDrag(page,{x:box.x+playhead,y:box.y+20},{x:box.x+playhead-60,y:box.y+20});
+    await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(2,1);
+    await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
+    await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','playing');
+  });
 });
 
 test.describe('policy A first-listen (Playwright fake/silent getUserMedia; not SYNTHETIC oscillator; not Pixel)',()=>{

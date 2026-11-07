@@ -1,0 +1,11 @@
+.help-index,.help-article { display: grid; gap: .75rem; min-width: 0; }
+.help-index h2,.help-article h2,.help-article h3 { margin: 0; overflow-wrap: anywhere; }
+.help-topic {
+  display: grid; gap: .25rem; min-height: 44px; padding: .6rem .75rem; text-align: left;
+  border: 1px solid #79747E; border-radius: .5rem; background: #242424; color: inherit; font: inherit;
+}
+.help-topic__title { font-weight: 600; }
+.help-topic__detail { color: #cac4d0; overflow-wrap: anywhere; }
+.help-article__back { min-height: 44px; justify-self: start; }
+.help-intervals { width: 100%; border-collapse: collapse; }
+.help-intervals th,.help-intervals td { text-align: left; padding: .35rem .5rem; overflow-wrap: anywhere; }
