@@ -74,6 +74,7 @@ export class BrowserMicrophoneCapture implements PitchSource {
     this.resampler.reset();
     this.hops.reset();
     this.tracker.stop();
+    this.transport.stop(); // retire active tracks now, not after pending permission/module work
     this.queue = this.queue.then(() => {
       if (this.generation === generation) this.transport.stop();
     }, () => {

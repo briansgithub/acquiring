@@ -515,12 +515,12 @@
       ],
       "acceptance": "Seek/config/loop/cancellation races, silent scrub and explicit-resume cases",
       "status": "in_progress",
-      "owner": "coordinator; Sol/high sink worker saved unvalidated partial and is idle",
-      "branch": "codex/pwa-foundation",
-      "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
-      "slice": "Composed streaming and first App section-playback accepted; trusted-tab/device acceptance open",
-      "nextAction": "Accepted first App section-playback de8b8c49 through T12 actualChrome4cases/final0a8e796d. Do not reimplement accepted components or repeat proofs. Interval-audio ended receipt now waits for currentTime>=scheduled+frames/rate (no epsilon). Observed: onended in the final 128-frame quantum; inferred: Chrome posts ended before the clock advances. CI 42372685610 15-sample early remains historical; local 44100 PASS after gate. audio-sink suspend canRender: getSnapshot reconciles native non-running before statechange; original assertions retained; local both-rate PASS. FullT08 trustedtab/physical/Safari/BFCache remain open.",
+      "owner": "codex",
+      "branch": "codex/pwa-continuation",
+      "worktree": "/workspace/acquiring",
+      "baseCommit": "df6a7340751caf9d27b7d671cc4c273c510b1e66",
+      "slice": "trusted-tab-bounded-proof",
+      "nextAction": "Real tab gate remains open until browser/environment genuinely emits hidden/blur on departure; do not loop retries or weaken assertions. Next ready primary bounded proof: product navigation/pagehide capture retirement and explicit fresh-document restart; distinguish available genuine pagehide from unavailable real-tab visibility.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -626,6 +626,18 @@
           "command": "node node_modules/vitest/vitest.mjs run src/audio/transport src/features/details; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build; node node_modules/@playwright/test/cli.js test audio-transport.spec.ts --output=.artifacts/pwa-port/audio-transport/browser-startup-fix1; node node_modules/@playwright/test/cli.js test audio-sink.spec.ts --output=.artifacts/pwa-port/audio-transport/sink-startup-covering (pwa via root run-control)",
           "revision": "e084ccb601e2e7918e922574c62a7d95345984d6 plus exact named hashes in composed-stream-runtime",
           "result": "PASS186 transport/details unit checks(13files/2.91s), combined strict types/production build shell ee0b60b5be75, actualChrome composed transport2cases12.7s at44100/48000(default output-timestamp both), existing sink2cases7.2s(timestamp44100/explicitrender48000). Guards window10-owner-startup-unit/build-20261016, window10-owner-browser-startup-fix1-20261016, window10-sink-startup-covering-browser-20261016. Real moduleworker/PCM/analyser/playedhead, silent scrub/seek/zeroBPM/request restoration/positiveconfig, finalrender-before-queue-drain completion, actualsuspend/newgesture, borrowerrelease/contextreuse, trustedpagehide/newdocument. Original2clock failures and rawdiagnostic retained; first sourcefix retest passed unchanged assertions. No App streaming/Safari/physicalhearing/trustedtab/BFCache acceptance."
+        },
+        {
+          "command": "T08-tab-candidate-001 run-control, cwd pwa: npm run test:browser -- --config .artifacts/pwa-port/trusted-tab-candidate.config.ts --grep 'real tab departure' --output .artifacts/pwa-port/t08-tab-candidate-001",
+          "revision": "df6a7340 original preview body copied to ignored candidate; focus emulation disabled, hidden assertion added",
+          "result": "FAIL 1/1 6.6s. Actual bringToFront on two headless pages: visibility stayed visible; retained proof lifecycle []. No real tab departure proved.",
+          "log": "pwa/.artifacts/pwa-port/t08-tab-candidate-001"
+        },
+        {
+          "command": "T08-tab-headed-001 run-control, cwd pwa: private Xorg :199 dummy display + same candidate npm command with --headed --output .artifacts/pwa-port/t08-tab-headed-001; exact runner intent retained in session",
+          "revision": "same original assertions/candidate",
+          "result": "FAIL 1/1 6.4s. Headed Chromium with focus emulation disabled also visible/lifecycle []. No DOM event dispatch or visibility/isTrusted patch. Private display terminated in finally. Investigation stopped after two distinct environment attempts.",
+          "log": "pwa/.artifacts/pwa-port/t08-tab-headed-001"
         }
       ],
       "progress": [
@@ -668,9 +680,10 @@
         "2026-10-16T17:08:57.589796+00:00 preintegration: primarye60e39a2 clean, siblingf9330517 clean/idle,0recovery/no node or python processes via Get-Process. CIM inventory unavailable; no ownership ambiguity. Root reviewed pendinggesture config preservation, guarded terminalcatch, ready-before-heldenqueue and regressions. Exact four worker paths; contract unchanged. Live26%/66%weekly; no new operation at70%.",
         "2026-10-16T17:10:47.582870+00:00 e084ccb6 composed owner185units/strict types/build PASS(shell ee0b60b5be75). First actualChrome2failed before first source, error Selected audio clock regressed; immutable guard window10-owner-browser-first-20261016, proof+traces unique browser-first. No assertion weakened. Bounded diagnostic1: record actual timestamp/currentTime without alteration in fixture, rerun exact2cases unique browser-clock-diagnostic. Same Sol/high read-only cause review; no worker source edits. FullT08/App/device acceptance open.",
         "2026-10-16T17:12:33.827866+00:00 raw-clock diagnostic recorded both rates:44100 output .000069->.000021 at render .040635;48000 .000029->.000009 at render .04,0sources. Same error, no correction/retest yet. Inference: premature monotonic baseline during silent module startup. WebAudio getOutputTimestamp source https://webaudio.github.io/web-audio-api/#dom-audiocontext-getoutputtimestamp describes outputframe vsrendercurrentTime, zero beforeprocessing; no monotonic guarantee added. Root bounded startup correction intent; no clock blending or active-regression relaxation.",
-        "2026-10-16T17:16:50.841873+00:00 accepted composed owner and narrow silent-start clock correction; worker read-only reviewed4paths/no material findings. Current primary10ownedpaths only; guard0recovery, no relevant node/python process observed afterbrowserexit. All old branches/profiles/failuretraces preserved. Lastlive34%/67%; later usage query produced no response through bounded waits and was cancelled(read-only). No new slice while current quota unavailable; this is temporary scheduling state, no credits/resets/model action."
+        "2026-10-16T17:16:50.841873+00:00 accepted composed owner and narrow silent-start clock correction; worker read-only reviewed4paths/no material findings. Current primary10ownedpaths only; guard0recovery, no relevant node/python process observed afterbrowserexit. All old branches/profiles/failuretraces preserved. Lastlive34%/67%; later usage query produced no response through bounded waits and was cancelled(read-only). No new slice while current quota unavailable; this is temporary scheduling state, no credits/resets/model action.",
+        "2026-11-07 Codex bounded genuine-tab attempt: inspected installed Playwright default Emulation.setFocusEmulationEnabled true; disabling it did not produce departure events in headless or private-Xorg headed Chromium. Both actual bringToFront attempts failed added hidden assertion; original tracked test.fixme and body untouched. No tab/Safari/BFCache/Pixel acceptance. Independent T09 pending capture stop race repaired and tested instead."
       ],
-      "blocker": "Trusted tab blur/visibility remains unproven in this automation;both modes kept all pages visible. Original assertion/body retained as explicit fixme. This does not block independent transport implementation. Actual trusted pagehide/new-document cleanup passed after explicit owner approval;no approval rejection remains outstanding for that fixture.",
+      "blocker": "T08-tab-candidate-001 headless and T08-tab-headed-001 private Xorg headed both FAILED real hidden assertion: visible, lifecycle []. Native focus restored by disabling Playwright focus emulation; genuine bringToFront still yields no trusted visibility/blur. Original test.fixme/body unchanged. No more tab retries this pass.",
       "proposalAssignment": {
         "owner": "preview_owner gpt-6.1-sol/high",
         "status": "complete; context-only proposal selected for bounded first implementation",
@@ -970,12 +983,12 @@
       ],
       "acceptance": "Synthetic pitch/noise/harmonic/dropout cases; actual microphone smoke test",
       "status": "in_progress",
-      "owner": "coordinator (runtime model unknown); pure pitch worker idle",
-      "branch": "codex/pwa-foundation",
-      "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
-      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop plus Brian 2026-11-07 policy A first-load 800ms auto-listen including first permission prompt. AudioWorklet same-origin hashed module. Shared PLAYBACK_PERSISTENT/SINGING_TOOL capture across monitoring+dock. Live halo uses captured estimates. SYNTHETIC oscillator also wraps product Playback monitoring for banked-score Chrome. Emulated browser touch labeled separately from Pixel. Device mic remains open",
-      "nextAction": "SYNTHETIC product banked-score Chrome PASS (scored ¢ and · while monitoring). Fake/silent rest 0¢ still empty scores. Pixel/real mic remain. Next: not inertia. SYNTHETIC ≠ fake getUserMedia ≠ Pixel. No fabricated cents.",
+      "owner": "codex",
+      "branch": "codex/pwa-continuation",
+      "worktree": "/workspace/acquiring",
+      "baseCommit": "df6a7340751caf9d27b7d671cc4c273c510b1e66",
+      "slice": "pending-capture-immediate-stop",
+      "nextAction": "Next bounded primary proof: product navigation/pagehide cleanup of active/pending capture and explicit fresh-document restart. Do not repeat failed real-tab attempts without a materially capable browser environment. Pixel/Safari/real prompt/physical mic remain open; T22 UI/service/parser, animation/inertia/density and T23–28 remain unaccepted. Aural stays last.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
@@ -1048,6 +1061,18 @@
             "T09-audioworklet-browser-001"
           ],
           "result": "PASS 47 focused then 1055 unit/89 files + 1 parity + types + shell f9f384ba3f97. typecheck-001/002 FAIL worklet test node types, fixed. check-001 inlined worklet as data: URL; assetsInlineLimit + ?url&no-inline emits hashed dist/assets/microphone-capture-worklet-*.js (12 shell files). browser-001 FIRST PASS 6/6: SYNTHETIC AudioWorklet 440Hz under fixture CSP script-src/worker-src 'self' (not blob/data); permission Error; singing dock idle/interval —; empty Favorites no Play; accordion unstar; Play/Shuffle save Practice queue persists. Linear resample 44100/48000 still exact-enough for YIN. ScriptProcessor gone. Mic policy B pending, not parity. Not real mic/Pixel/whole-CI-green."
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T09-cancel-check-001 --owner codex --task T09 --next-action 'Validate capture cancellation with original unit parity types and production build' --cwd pwa -- npm run check",
+          "revision": "df6a7340 + source SHA256 .artifacts/pwa-port/t09-cancel-source.json",
+          "result": "PASS 1208 unit /109 files (4 new cancellation cases), 1 parity, strict types, production shell 0e26557c8c33 /12 files. Existing >500kB bundle warning.",
+          "log": ".artifacts/pwa-port/runs/T09-cancel-check-001/result.json"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T09-cancel-browser-001 --owner codex --task T09 --next-action 'Validate product Stop/Collapse pending capture races and original policy A/preview/pagehide assertions; trusted tab fixme retained' --cwd pwa -- npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/playback.spec.ts tests/browser/audio-preview.spec.ts --grep 'pending capture|policy A|real preview render|out of order|trusted pagehide|real tab departure' --output .artifacts/pwa-port/t09-cancel-browser-001",
+          "revision": "same source hashes",
+          "result": "PASS 11, SKIP 1 (original trusted-tab fixme), reported 1.4m, system Chromium. New product permission-delivery Stop 10.0s and worklet Collapse 10.1s use artificial promise gates on actual fake/silent streams; no real prompt/device or trusted-event claim. Tracks/context retire, no late graph/autoresume, fresh gesture restarts. Original policy A cases, preview 44.1/48k and genuine pagehide/new-doc cases pass.",
+          "log": "pwa/.artifacts/pwa-port/t09-cancel-browser-001"
         }
       ],
       "progress": [
@@ -1060,7 +1085,8 @@
         "2026-11-07T12:00Z BrowserMicrophoneCapture + dock listen/Flip-Flop. SYNTHETIC oscillator fixture. Auto-listen skipped. Partial T09.",
         "2026-11-07T12:05Z Flip-Flop 2s rest after slot 2, measured interval readout, opt-in-only 800ms auto-listen. First-load auto-listen is a Brian decision; getUserMedia is not transient-gated. AudioWorklet deferred. Partial T09/T13.",
         "2026-11-07T12:25Z AudioWorklet same-origin hashed module replaces ScriptProcessor. Hop/resample/lease/permission fail-closed preserved. SYNTHETIC labeled. Playlist-save Chrome proof included. Device mic/Pixel remain. Partial T09.",
-        "2026-11-07T13:00Z One BrowserMicrophoneCapture + MicrophonePitchCoordinator for PLAYBACK_PERSISTENT and SINGING_TOOL. Ownership-loss idles without stopping the new owner; stolen estimates are not written to slots or banked as melody scores. Partial T09/T13."
+        "2026-11-07T13:00Z One BrowserMicrophoneCapture + MicrophonePitchCoordinator for PLAYBACK_PERSISTENT and SINGING_TOOL. Ownership-loss idles without stopping the new owner; stolen estimates are not written to slots or banked as melody scores. Partial T09/T13.",
+        "2026-11-07 Codex independent primary slice after failed T08 genuine-tab attempts: BrowserMicrophoneCapture.stop now calls transport teardown immediately, not behind pending open; transport generation guards late getUserMedia/resume/module completions and stale failure, closing tracks/context before a cancelled graph can be created. Native pinned MicrophonePitchTracker.stop/job cancellation and PersistentPlaybackPitchController.cancel/permission phase guard supply authority. Four new unit cases + two actual product UI race tests, fake/silent Chromium with artificial promise gates; no real permission prompt/device proof. 1208unit/1parity/types/shell 0e26557c8c33 PASS; 11 browser PASS/1 original fixme skipped. 800ms first-listen/no-prior-session-opt-in and visible Stop/Collapse unchanged. No user-data/catalog/remote writes; Settings Back untouched."
       ],
       "blocker": null
     },

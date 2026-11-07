@@ -806,3 +806,34 @@ test('opt-in Pitch monitoring paints native live halo rest 0¢ from capture (Pla
   await expect(timeline).toHaveAttribute('data-timeline-live-cents','');
   await expect(timeline).toHaveAttribute('data-timeline-scores','');
 });
+
+// Artificial async delivery gates on actual Playwright fake/silent streams; NOT real permission prompts or trusted-tab proof.
+for(const stage of ['permission','worklet'] as const)test('pending capture '+stage+' retires on '+(stage==='permission'?'Stop':'Collapse')+' before late completion',async({page,context})=>{
+ await context.grantPermissions(['microphone']);await instrument(page);
+ await page.addInitScript(stage=>{
+  const streams:MediaStream[]=[],contexts:AudioContext[]=[];let graphs=0,entered=false,release!:()=>void,first=true;
+  const gate=new Promise<void>(resolve=>{release=resolve;});
+  const gum=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+  navigator.mediaDevices.getUserMedia=async constraints=>{const stream=await gum(constraints);streams.push(stream);if(stage==='permission'&&first){first=false;entered=true;await gate;}return stream;};
+  const Native=window.AudioContext;
+  window.AudioContext=class extends Native{constructor(options?:AudioContextOptions){super(options);if(options?.sampleRate===16000)contexts.push(this);}createMediaStreamSource(stream:MediaStream){graphs++;return super.createMediaStreamSource(stream);}};
+  const add=AudioWorklet.prototype.addModule;
+  AudioWorklet.prototype.addModule=async function(url,options){await add.call(this,url,options);if(stage==='worklet'&&first){first=false;entered=true;await gate;}};
+  (window as unknown as {captureRace:{release:()=>void;snapshot:()=>unknown}}).captureRace={release,snapshot:()=>({entered,graphs,tracks:streams.flatMap(stream=>stream.getTracks().map(track=>track.readyState)),contexts:contexts.map(context=>context.state)})};
+ },stage);
+ await installAndOpen(page);
+ const proof=()=>page.evaluate(()=>(window as unknown as {captureRace:{snapshot:()=>{entered:boolean;graphs:number;tracks:string[];contexts:string[]}}}).captureRace.snapshot());
+ await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+ await expect.poll(async()=>(await proof()).entered).toBe(true);await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','listening');
+ if(stage==='permission')await page.getByRole('button',{name:'Stop microphone',exact:true}).click();
+ else await page.getByRole('button',{name:'Collapse humming tool',exact:true}).click();
+ await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+ if(stage==='worklet'){await expect.poll(async()=>(await proof()).tracks.every(state=>state==='ended')).toBe(true);await expect.poll(async()=>(await proof()).contexts.every(state=>state==='closed')).toBe(true);}
+ await page.evaluate(()=>(window as unknown as {captureRace:{release:()=>void}}).captureRace.release());
+ await expect.poll(async()=>(await proof()).tracks.every(state=>state==='ended')).toBe(true);
+ expect((await proof()).graphs).toBe(0);if(stage==='permission')expect((await proof()).contexts).toEqual([]);
+ await page.waitForTimeout(900);expect((await proof()).graphs).toBe(0);await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+ if(stage==='worklet')await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+ await page.locator('[data-singing-slot="1"]').dblclick();await expect.poll(async()=>(await proof()).graphs).toBe(1);
+ await page.getByRole('button',{name:'Stop microphone',exact:true}).click();await expect.poll(async()=>(await proof()).tracks.every(state=>state==='ended')).toBe(true);
+});

@@ -90,3 +90,18 @@ describe('createWebAudioMicrophoneTransport AudioWorklet path', () => {
     expect(closed).toBe(1);
   });
 });
+
+// Cancellation contracts; injected deferred promises are NOT trusted browser lifecycle proof.
+it('retires a late permission stream without creating a capture context',async()=>{
+ let resolve!:(stream:MediaStream)=>void;let stopped=0,contexts=0;
+ const transport=createWebAudioMicrophoneTransport({getUserMedia:()=>new Promise(done=>{resolve=done;}),createContext:()=>{contexts++;throw new Error('Cancelled capture must not create a context');}});
+ const pending=transport.start(()=>undefined);transport.stop();resolve({getTracks:()=>[{stop:()=>stopped++}]} as unknown as MediaStream);await pending;
+ expect(stopped).toBe(1);expect(contexts).toBe(0);
+});
+for(const stage of ['resume','module'])it('retires tracks/context immediately during pending '+stage+' and suppresses late graph creation',async()=>{
+ let unblock!:()=>void,entered!:()=>void,stopped=0,closed=0,nodes=0;
+ const gate=new Promise<void>(resolve=>{unblock=resolve;}),ready=new Promise<void>(resolve=>{entered=resolve;});
+ const context={state:stage==='resume'?'suspended':'running',resume:async()=>{entered();await gate;},close:async()=>{closed++;},createMediaStreamSource:()=>{nodes++;throw new Error('Cancelled graph');}} as unknown as AudioContext;
+ const transport=createWebAudioMicrophoneTransport({getUserMedia:async()=>({getTracks:()=>[{stop:()=>stopped++}]} as unknown as MediaStream),createContext:()=>context,addWorkletModule:async()=>{entered();if(stage==='module')await gate;}});
+ const pending=transport.start(()=>undefined);await ready;transport.stop();expect(stopped).toBe(1);expect(closed).toBe(1);unblock();await pending;expect(nodes).toBe(0);
+});

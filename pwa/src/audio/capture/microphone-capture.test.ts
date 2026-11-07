@@ -90,3 +90,10 @@ describe('BrowserMicrophoneCapture injected transport', () => {
     capture.release();
   });
 });
+
+it('Stop calls transport teardown synchronously while an open is pending',async()=>{
+ const transport=new FakeTransport();let done!:()=>void;transport.gate=new Promise(resolve=>{done=resolve;});
+ const capture=new BrowserMicrophoneCapture(undefined,{transport,onPageHide:false});capture.start(60);await flush();
+ const before=transport.stops;capture.stop();expect(transport.stops).toBeGreaterThan(before);expect(capture.isRunning).toBe(false);
+ done();await flush();expect(transport.listener).toBeNull();capture.release();
+});

@@ -41,6 +41,7 @@ const WORKLET_NODE_OPTIONS: AudioWorkletNodeOptions = Object.freeze({
 export function createWebAudioMicrophoneTransport(
   options: WebAudioMicrophoneTransportOptions = {},
 ): MicrophoneCaptureTransport {
+  let generation = 0;
   let stream: MediaStream | null = null;
   let context: AudioContext | null = null;
   let node: AudioWorkletNode | null = null;
@@ -59,11 +60,17 @@ export function createWebAudioMicrophoneTransport(
 
   return {
     async start(listener) {
-      stream = await getUserMedia({ audio: AUDIO_CONSTRAINTS, video: false });
+      const current = ++generation;
+      teardown();
+      const acquired = await getUserMedia({ audio: AUDIO_CONSTRAINTS, video: false });
+      if(current !== generation) { stopTracks(acquired); return; }
+      stream = acquired;
       try {
         context = createContext({ sampleRate: PITCH_SAMPLE_RATE });
         if (context.state === 'suspended') await context.resume();
+        if(current !== generation)return;
         await addWorkletModule(context, workletUrl);
+        if(current !== generation)return;
         source = context.createMediaStreamSource(stream);
         node = createWorkletNode(context, CAPTURE_WORKLET_NAME);
         mute = context.createGain();
@@ -78,11 +85,12 @@ export function createWebAudioMicrophoneTransport(
         node.connect(mute);
         mute.connect(context.destination);
       } catch (error) {
+        if(current !== generation)return;
         teardown();
         throw error;
       }
     },
-    stop() { teardown(); },
+    stop() { ++generation; teardown(); },
   };
 
   function teardown(): void {
