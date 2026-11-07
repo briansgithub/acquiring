@@ -111,6 +111,13 @@ export class SingingMicrophoneSession {
     this.lease.retarget(targetMidi);
   }
 
+  /** Native listenTimeRemaining / recordingTimeRemaining. Rest shows none. */
+  remainingMs(now = this.now()): number {
+    if (this.action.kind === 'listening') return Math.max(0, LISTEN_TIMEOUT_MS - (now - this.startedAt));
+    if (this.action.kind === 'flipflop') return Math.max(0, FLIPFLOP_SLOT_MS - (now - this.startedAt));
+    return 0;
+  }
+
   stop(): void {
     this.lease.stop();
     this.action = { kind: 'idle' };

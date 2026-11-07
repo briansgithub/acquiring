@@ -360,6 +360,8 @@ test('singing dock loads card targets without scores and octave persists per son
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
   await expect(page.locator('[data-singing-dock="expanded"]')).toBeVisible();
   await expect(page.locator('[data-singing-slot="1"]')).not.toHaveText('—');
+  await expect(page.locator('[data-singing-slot="1"] [data-singing-cents]')).toHaveText('+0¢');
+  await expect(page.locator('[data-singing-slot="1"] [data-singing-cents]')).toHaveAttribute('data-singing-cents-source','target');
   await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
   await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
   await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-opted-in','false');
@@ -367,6 +369,8 @@ test('singing dock loads card targets without scores and octave persists per son
   await expect.poll(async()=>page.locator('[data-singing-dock]').getAttribute('data-mic-state'),{timeout:2_000}).toBe('listening');
   await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-opted-in','true');
   await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toBeVisible();
+  await expect(page.locator('[data-singing-slot="1"] [data-singing-remaining]')).toBeVisible();
+  await expect(page.locator('[data-singing-slot="1"] [data-singing-cents]')).toHaveAttribute('data-singing-cents-source','target');
   await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
   await page.getByRole('button',{name:'Stop microphone',exact:true}).click();
   await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');

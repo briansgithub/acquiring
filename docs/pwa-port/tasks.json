@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-11-07T13:20:00+00:00",
+  "updated": "2026-11-07T14:00:00+00:00",
   "implementationAuthorized": true,
   "currentStage": "playback_singing_priority",
   "ownerPriority": {
@@ -1524,7 +1524,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
       "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, live drag/scrub, chord-lane Roman, queued changeSection, opt-in Pitch monitoring overlay, shared exclusive mic, real page.mouse drag, live halo/marker, emulated browser touch, and SYNTHETIC product banked-score Chrome landed. Synthetic PointerEvent is handler-only. Inertia coast remains polish.",
-      "nextAction": "Do not polish inertia/tween this pass. T21 fps/privacy landed. Actual CI 00abb9a4 99/1/2 Settings Back 110 only. Next singing scoring. Aural/T15 last. Library Settings Back excluded.",
+      "nextAction": "Do not polish inertia/tween this pass. Singing-dock listen slot scoring landed. Actual CI 00abb9a4 99/1/2 Settings Back 110 only. Next Artists chip then leftover singing Record/tape/preview. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
         {
           "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-drag/browser-fix2",
@@ -1675,7 +1675,8 @@
         "2026-11-07T13:25Z SYNTHETIC product banked-score Chrome: oscillator wraps product getUserMedia through real Pitch monitoring Mic (not harness). data-timeline-live-estimate=true then leave run while monitoring → scored ¢ or Unscored · on data-timeline-scores. Fake/silent rest 0¢ still empty scores. Steal/error now clears banked scores (native scoring-disable). check-002 1103 unit/96 files + 1 parity + types + shell 4cb9d38f5123; browser-002 FIRST PASS 5/5 synthetic scored+· + intro + halo rest + help. Codex gpt-6.1-sol 01a1b62d-40ef-7183-a5a6-6c3265d0fa5b. Actual CI 7e85c96b 42376258073 94/3 failed/2 skipped (audio-sink canRender + Settings Back 110px). 32ms tween and 11px vs 11.sp outstanding. Settings Back untouched.",
         "2026-11-07T13:35Z audio-sink suspend canRender: observed Chrome context.state already suspended while canRender true and suspend statechange not yet fired (~12ms); sink idle from native state. getSnapshot reconciles native non-running; delayed event does not double-invalidate; original assertions retained. Local sink 44100+48000 + transport + context 8/8 PASS. HelpNotationArticles/Roman prose landed. check 1105 unit/96 files + 1 parity + types + shell 56645abb07c0; shell browser 3/3. Codex 01a1b634-291e-79c1-85a8-41ce4dea935f. Actual completed CI 435ffd9a 42376950150: 98 passed / 2 failed / 2 skipped (44100 canRender + Settings Back 110px; 48000 sink passed that run). This commit unseen. Settings Back untouched. Diagnostics/reset remain.",
         "2026-11-07T13:41Z T21 AudioDiagnostics export + engine-stop reset: allow-list/trim/schemaVersion 1; resetEngine native event order including second playback.reset; preview stop + registered transport pause/reset; no ApplicationAudioContext.release; no onboarding/catalog/T06 wipe; share/clipboard. Native scoring unmount: in-composition finish vs disable-clear vs remember-drop; PWA finish-on-every-cleanup refused (transpose). check 1112 unit/97 files + 1 parity + types + shell 5792f99f070b; shell browser 3/3 clipboard+preserved intro. Codex 01a1b63b-aa17-71d1-a0db-af0b422dcb40. 2b69bf32 CI still in progress. Settings Back untouched.",
-        "2026-11-07T13:50Z T21 Display fps + Privacy: 60 fps/Maximum; playing-tick throttle; commands/error force; acquiring-display not T06; Privacy last after Version; diagnostics reset keeps display. check 1120 unit/98 files + 1 parity + types + shell f2f49a4ea032; shell browser 3/3 FIRST PASS. Codex 01a1b643-7666-74a3-99e9-c084116691f0. Actual CI 2b69bf32/00abb9a4 99/1/2 Settings Back 110 only; audio-sink green there. Settings Back untouched."
+        "2026-11-07T13:50Z T21 Display fps + Privacy: 60 fps/Maximum; playing-tick throttle; commands/error force; acquiring-display not T06; Privacy last after Version; diagnostics reset keeps display. check 1120 unit/98 files + 1 parity + types + shell f2f49a4ea032; shell browser 3/3 FIRST PASS. Codex 01a1b643-7666-74a3-99e9-c084116691f0. Actual CI 2b69bf32/00abb9a4 99/1/2 Settings Back 110 only; audio-sink green there. Settings Back untouched.",
+        "2026-11-07T14:00Z Singing-dock listen slot scoring on T13; timeline banked overlay unchanged. No preferredRefreshRate / 120fps claim. Settings Back untouched. Next Artists chip, not inertia/tween."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -2251,8 +2252,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
-      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt + shared PLAYBACK_PERSISTENT/SINGING_TOOL capture + banked median kernel/hook/badges + live halo/marker from capture. Banked-score Chrome acceptance and median Aural scores remain.",
-      "nextAction": "Emulated browser touch PASS. Live halo rest 0¢ ≠ banked empty. Banked scoring kernel+hook+badges implemented/unit-tested; no captured-pitch Chrome badge. Policy A accepted. Do not fake scores. Do not start Aural/T15. Next: not inertia. Pixel/real-mic unproven.",
+      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt + shared PLAYBACK_PERSISTENT/SINGING_TOOL capture + banked median kernel/hook/badges + live halo/marker from capture + SYNTHETIC banked-score Chrome + singing-dock listen slot scoring (displayedSlotData/gauge/remaining). Rolling tape, empty-slot Record, click-to-preview, and median Aural scores remain.",
+      "nextAction": "Listen slot scoring SYNTHETIC Chrome PASS. Target +0¢ placeholder ≠ sung score. Remaining singing: Record/tape/preview/new-request clear. Policy A accepted. Do not fake scores. Do not start Aural/T15. Next: Artists chip, not inertia. Pixel/real-mic unproven.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -2318,6 +2319,15 @@
             "T12-touch-browser-001"
           ],
           "result": "PASS 2/2 FIRST: Playwright touchscreen.tap seek beat 2; CDP Input.dispatchTouchEvent drag 60px left beat 2. hasTouch. Not PointerEvent math. Not Pixel. Original assertions unweakened. No product handler change. Partial T12. Not physical device."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/singing/singing-score.test.ts src/features/singing/singing-microphone.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/playback-synthetic-scores.spec.ts --project chrome --workers 1 --grep \"singing dock loads|policy A|exclusive PLAYBACK|SYNTHETIC\" --output .artifacts/pwa-port/singing-score/browser-001",
+          "revision": "2c0d7de6 plus named singing-dock slot scoring tree",
+          "guards": [
+            "T13-singing-score-check-001",
+            "T13-singing-score-browser-001"
+          ],
+          "result": "PASS 15 focused then 1129 unit/99 files + 1 parity + types + shell 9ec2e59c3a61. browser-001 FIRST PASS 10/10: fake/silent target +0¢ + remaining; SYNTHETIC captured slot ¢ + octave retarget; policy A/exclusive/halo rest. Codex gpt-6.1-sol 01a1b64a-4ad6-7592-b3b7-0831903fd932 MATCH kernel; applied rounded interval green + Flip-Flop nearest/white. Rolling tape/Record/preview remain. No fabricated cents. Partial T13. Not device/whole-CI-green."
         }
       ],
       "progress": [
@@ -2327,7 +2337,8 @@
         "2026-11-07T13:00Z Shared PLAYBACK_PERSISTENT/SINGING_TOOL capture+coordinator across Pitch monitoring and singing dock. Native MainActivity one tracker, two leases. Ownership-loss idle without stopping the new owner; no stolen slot writes or banked melody scores. Cursor writer; Codex gpt-6.1-sol read-only interval-audio 44100 analysis thread 01a1b610-bd97-7132-95e3-b208ba06c9ef EXIT 0, no spec change.",
         "2026-11-07T13:10Z Real page.mouse drag original assertions pass (stale off-screen boundingBox). Interval-audio ended clock gate local-PASS, assertion unchanged. Codex gpt-6.1-sol read-only fix rec thread 01a1b616-f816-7b22-aed9-70abcb8c3187. Cursor remains writer.",
         "2026-11-07T13:15Z Live halo/marker/label from captured pitch. Held estimates display-only; silent 0¢ rest is not a banked score. Deterministic units labeled. Chrome fake/silent rest 0¢. Codex gpt-6.1-sol read-only thread 01a1b61d-b2f4-7400-91e3-926ea90f6cfd. Actual CI 10effa71 interval-audio 44100 PASS; still not whole-CI-green.",
-        "2026-11-07T13:20Z Emulated browser touch PASS. Banked scoring remains impl-in/acceptance-open; halo 0¢ is not a banked score. 32ms tween and 11px vs 11.sp outstanding."
+        "2026-11-07T13:20Z Emulated browser touch PASS. Banked scoring remains impl-in/acceptance-open; halo 0¢ is not a banked score. 32ms tween and 11px vs 11.sp outstanding.",
+        "2026-11-07T14:00Z Singing-dock listen slot scoring: displayedSlotData retarget, getPitchColor bands, remaining countdown, rounded interval green, Flip-Flop nearest/white. SYNTHETIC captured slot ¢ Chrome. Target +0¢ placeholder ≠ sung score ≠ halo rest 0¢ ≠ banked empty/·. Codex 01a1b64a. Rolling tape/Record/preview/new-request clear remain. Settings Back untouched. No 120fps claim."
       ],
       "blocker": null,
       "dependencyGates": {

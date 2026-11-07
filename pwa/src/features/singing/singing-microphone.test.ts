@@ -39,9 +39,13 @@ describe('SingingMicrophoneSession listen/Flip-Flop', () => {
     session.tick(now.t);
     expect(session.slot1?.label).toMatch(/A4/);
     expect(session.slot1?.cents).toBeCloseTo(0, 0);
-    now.t += LISTEN_TIMEOUT_MS;
+    expect(session.remainingMs(now.t)).toBe(LISTEN_TIMEOUT_MS);
+    now.t += 500;
+    expect(session.remainingMs(now.t)).toBe(LISTEN_TIMEOUT_MS - 500);
+    now.t += LISTEN_TIMEOUT_MS - 500;
     session.tick(now.t);
     expect(session.action.kind).toBe('idle');
+    expect(session.remainingMs(now.t)).toBe(0);
     expect(session.optedIn).toBe(true);
     session.release();
     expect(session.optedIn).toBe(false);
@@ -52,6 +56,7 @@ describe('SingingMicrophoneSession listen/Flip-Flop', () => {
     session.setFlipFlop(true);
     expect(session.optedIn).toBe(true);
     expect(session.action).toMatchObject({ kind: 'flipflop', slot: 1 });
+    expect(session.remainingMs()).toBe(FLIPFLOP_SLOT_MS);
     session.setFlipFlop(false);
     expect(session.action.kind).toBe('idle');
     expect(session.optedIn).toBe(true);
@@ -71,6 +76,7 @@ describe('SingingMicrophoneSession listen/Flip-Flop', () => {
     session.tick(now.t);
     expect(session.action.kind).toBe('flipflop-rest');
     expect(session.capture.isRunning).toBe(false);
+    expect(session.remainingMs(now.t)).toBe(0);
     if (session.action.kind !== 'flipflop-rest') throw new Error('expected rest');
     expect(session.action.until).toBe(now.t + FLIPFLOP_REST_MS);
     now.t += FLIPFLOP_REST_MS - 1;

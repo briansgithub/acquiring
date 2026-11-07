@@ -9,3 +9,15 @@
 .singing-dock__interval output { font-size: 1.5rem; line-height: 1.2; opacity: .4; }
 .singing-dock__interval[data-singing-interval="measured"] output { opacity: 1; }
 .singing-dock__interval-cents { font-size: .85rem; }
+.singing-dock__interval[data-interval-cents-close] .singing-dock__interval-cents { color: #4caf50; }
+.singing-dock__slot { position: relative; gap: .15rem; }
+.singing-dock__degree { font-size: 1rem; }
+.singing-dock__sung { font-size: .85rem; }
+.singing-dock__cents {
+  font-size: .75rem; background: rgb(0 0 0 / .5); border-radius: .25rem; padding: .1rem .3rem;
+}
+.singing-dock__cents[data-singing-cents-source="target"] { opacity: .7; }
+.singing-dock__remaining {
+  position: absolute; top: .25rem; right: .25rem; font-size: .75rem;
+  background: #3d6ea8; color: #fff; border-radius: .25rem; padding: 0 .3rem;
+}

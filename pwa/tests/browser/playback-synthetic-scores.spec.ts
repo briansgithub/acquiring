@@ -104,3 +104,22 @@ test('SYNTHETIC captured pitch banks Unscored · when the run finishes undersamp
   await expect(timeline).not.toHaveAttribute('data-timeline-live-cents','');
   await expect(mic).toHaveAttribute('aria-pressed','true');
 });
+
+test('SYNTHETIC singing-dock listen scores slot cents against the current target (not timeline badges; not fake/silent; not Pixel)',async({page,context})=>{
+  await context.grantPermissions(['microphone']);
+  await installSyntheticOscillatorCapture(page);
+  await openPlayback(page);
+  await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+  const slot=page.locator('[data-singing-slot="1"] [data-singing-cents]');
+  await expect.poll(async()=>page.locator('[data-singing-dock]').getAttribute('data-mic-state'),{timeout:2_000}).toBe('listening');
+  await expect.poll(async()=>slot.getAttribute('data-singing-cents-source'),{timeout:8_000}).toBe('captured');
+  await expect(slot).toHaveText(/^[+-]\d+¢$/);
+  const before=await slot.textContent();
+  const proof=await page.evaluate(()=>(window as unknown as {__acquiringSyntheticCapture?:SyntheticCaptureProof}).__acquiringSyntheticCapture);
+  expect(proof).toEqual(expect.objectContaining({label:'SYNTHETIC',hz:440}));
+  await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+  await page.getByRole('button',{name:'Raise singing octave',exact:true}).click();
+  await expect.poll(async()=>slot.textContent(),{timeout:3_000}).not.toBe(before);
+  await expect(slot).toHaveAttribute('data-singing-cents-source','captured');
+  await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+});

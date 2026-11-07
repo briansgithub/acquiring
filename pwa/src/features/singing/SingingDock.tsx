@@ -1,7 +1,8 @@
 import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
 import type {BrowserMicrophoneCapture, ExclusivePitchSource} from '../../audio/capture';
-import {OCTAVE_OFFSET_MAX,OCTAVE_OFFSET_MIN,clampSingingOctaveOffset,effectiveTargetMidi,singingOctaveOffsetLabel,type SingingTargetRequest} from './singing-octave';
-import {AUTO_LISTEN_MS,SingingMicrophoneSession,formatSungIntervalCents,sungInterval} from './singing-microphone';
+import {OCTAVE_OFFSET_MAX,OCTAVE_OFFSET_MIN,clampSingingOctaveOffset,effectiveTargetMidi,singingOctaveOffsetLabel,type SingingTargetNote,type SingingTargetRequest} from './singing-octave';
+import {AUTO_LISTEN_MS,SingingMicrophoneSession,formatSungIntervalCents,sungInterval,type SingingSlotPitch} from './singing-microphone';
+import {displayedSlotData,intervalCentsClose,pitchAccuracyBand,pitchAccuracyColor,remainingSeconds} from './singing-score';
 import './singing.css';
 
 /** Playback singing dock. Expand handle does not start the microphone.
@@ -59,11 +60,11 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
     const id=window.setInterval(()=>{session.tick();setNowTick((n)=>n+1);},100);
     return()=>window.clearInterval(id);
   },[mic.action.kind,session]);
-  const first=target?.first?.scaleDegreeLabel??'';
-  const second=target?.second?.scaleDegreeLabel??'';
   const flip=mic.action.kind==='flipflop'||mic.action.kind==='flipflop-rest';
   const interval=sungInterval(mic.slot1,mic.slot2);
-  const listeningSlot=mic.action.kind==='listening'||mic.action.kind==='flipflop'?mic.action.slot:null;
+  const listenSlot=mic.action.kind==='listening'?mic.action.slot:null;
+  const recordSlot=mic.action.kind==='flipflop'?mic.action.slot:null;
+  const remaining=remainingSeconds(session.remainingMs());
   void nowTick;void micVersion;
   function toggleListen(slot:1|2){
     if(mic.action.kind==='listening'&&mic.action.slot===slot){session.stop();return;}
@@ -100,13 +101,14 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
       </div>
       {mic.error&&<p role="alert">{mic.error}</p>}
       <div className="singing-dock__slots" data-singing-target-row="">
-        <button type="button" className="singing-dock__slot" data-singing-slot="1" aria-label="Singing slot 1"
-          data-listening={listeningSlot===1?'true':undefined}
-          onDoubleClick={()=>toggleListen(1)}>{mic.slot1?.label||first||'—'}</button>
-        <button type="button" className="singing-dock__slot" data-singing-slot="2" aria-label="Singing slot 2"
-          data-listening={listeningSlot===2?'true':undefined}
-          onDoubleClick={()=>toggleListen(2)}>{mic.slot2?.label||second||'—'}</button>
+        <SingingSlotCard slot={1} note={target?.first??null} captured={mic.slot1} transpose={transpose}
+          octaveOffset={octaveOffset} listening={listenSlot===1} recording={recordSlot===1}
+          ignoreTarget={flip} remaining={remaining} onToggleListen={()=>toggleListen(1)}/>
+        <SingingSlotCard slot={2} note={target?.second??null} captured={mic.slot2} transpose={transpose}
+          octaveOffset={octaveOffset} listening={listenSlot===2} recording={recordSlot===2}
+          ignoreTarget={flip} remaining={remaining} onToggleListen={()=>toggleListen(2)}/>
         <div className="singing-dock__interval" data-singing-interval={interval?'measured':'empty'}
+          data-interval-cents-close={interval&&intervalCentsClose(interval.centsDeviation)?'true':undefined}
           aria-label="Sung interval">
           <span>Interval</span>
           <output>{interval?interval.shorthand:'—'}</output>
@@ -115,4 +117,33 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
       </div>
     </>}
   </section>;
+}
+
+function SingingSlotCard({slot,note,captured,transpose,octaveOffset,listening,recording,ignoreTarget,remaining,onToggleListen}:{
+  slot:1|2;
+  note:SingingTargetNote|null;
+  captured:SingingSlotPitch|null;
+  transpose:number;
+  octaveOffset:number;
+  listening:boolean;
+  recording:boolean;
+  ignoreTarget:boolean;
+  remaining:number;
+  onToggleListen:()=>void;
+}){
+  const effective=ignoreTarget||!note?null:effectiveTargetMidi(note,transpose,octaveOffset);
+  const displayed=displayedSlotData(captured,effective);
+  const degree=ignoreTarget?'':(note?.scaleDegreeLabel||'—');
+  const centsColor=recording?'#fff':displayed?pitchAccuracyColor(displayed.cents):undefined;
+  return <button type="button" className="singing-dock__slot" data-singing-slot={slot}
+    aria-label={`Singing slot ${slot}`} data-listening={listening?'true':undefined}
+    data-recording={recording?'true':undefined} data-singing-cents-source={displayed?.source}
+    onDoubleClick={ignoreTarget?undefined:onToggleListen}>
+    <span className="singing-dock__degree">{degree||'—'}</span>
+    {displayed?.source==='captured'&&<span className="singing-dock__sung">{displayed.label}</span>}
+    {displayed&&<span className="singing-dock__cents" data-singing-cents=""
+      data-singing-cents-source={displayed.source} data-pitch-accuracy={recording?'recording':pitchAccuracyBand(displayed.cents)}
+      style={{color:centsColor}}>{formatSungIntervalCents(displayed.cents)}</span>}
+    {(listening||recording)&&<span className="singing-dock__remaining" data-singing-remaining="">{remaining}s</span>}
+  </button>;
 }
