@@ -611,16 +611,17 @@ test('timeline PointerEvent handler scrubs drag math; not real mouse or touch ac
   const image=testInfo.outputPath('timeline-drag-handler-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
 
-test.fixme('real Playwright mouse canvas drag scrubs live opposite the finger without inertia',async({page})=>{
+test('real Playwright mouse canvas drag scrubs live opposite the finger without inertia',async({page})=>{
   await instrument(page);await installAndOpen(page);
   const timeline=page.locator('[data-playback-timeline="visible"]');
   const position=page.getByRole('slider',{name:'Position',exact:true});
   await expect(timeline).toBeVisible();
   await expect.poll(async()=>Number(await timeline.getAttribute('data-timeline-playhead'))).toBeGreaterThan(0);
   const playhead=Number(await timeline.getAttribute('data-timeline-playhead'));
+  // Cards push the canvas below the fold. Box-before-scroll aims at y≈1204 (elementFromPoint miss, beat 1).
+  await timeline.scrollIntoViewIfNeeded();
   const box=await timeline.boundingBox();
   if(!box)throw new Error('timeline bounding box');
-  await timeline.scrollIntoViewIfNeeded();
   await page.mouse.move(box.x+playhead,box.y+20);
   await page.mouse.down();
   await page.mouse.move(box.x+playhead-60,box.y+20,{steps:8});

@@ -6,11 +6,13 @@ const FADE_SECONDS = 0.024;
 const RESUME_WAIT_MS = 1500;
 const PREPARATION_WAIT_MS = 5000;
 const CLOCK_POLL_MS = 20;
+const ENDED_CLOCK_WAIT_MS = 1000;
 
 type Pending = { revision:number; requestId:string; settle:()=>void; timer:ReturnType<typeof setTimeout> };
 type Voice = {
   source:AudioBufferSourceNode; gain:GainNode; revision:number; requestId:string;
   frameCount:number; scheduledTime:number; nonSilent:boolean; started:boolean;
+  sourceEnded?:boolean;
   poll?:ReturnType<typeof setInterval>; retirement?:ReturnType<typeof setTimeout>;
 };
 
@@ -219,22 +221,42 @@ export class PreviewOwner implements AudioPreviewOwner {
       voice.started = true;
       this.receipt('render-started', voice);
     }
+    this.completeEndedIfDue(voice);
+  }
+
+  private completeEndedIfDue(voice:Voice):void {
+    const context = this.context;
+    if (!context || !voice.sourceEnded || this.current !== voice || voice.revision !== this.revision) return;
+    if (context.currentTime < voice.scheduledTime + voice.frameCount / context.sampleRate) return;
+    this.receipt('ended', voice);
+    this.current = undefined;
+    this.dispose(voice);
+    this.update('idle', null);
   }
 
   private onEnded(voice:Voice):void {
-    if (this.current === voice && voice.revision === this.revision && !this.released) {
-      this.checkClock(voice);
-      if (this.current === voice && voice.revision === this.revision && voice.started) {
-        this.receipt('ended', voice);
-      }
-      if (this.current === voice && voice.revision === this.revision) {
-        this.current = undefined;
-        this.dispose(voice);
-        this.update('idle', null);
-      }
-    } else {
+    if (this.current !== voice || voice.revision !== this.revision || this.released) {
       this.dispose(voice);
+      return;
     }
+    this.checkClock(voice);
+    if (this.current !== voice || voice.revision !== this.revision) return;
+    if (!voice.started) {
+      this.current = undefined;
+      this.dispose(voice);
+      this.update('idle', null);
+      return;
+    }
+    voice.sourceEnded = true;
+    this.completeEndedIfDue(voice);
+    if (this.current !== voice) return;
+    clearTimeout(voice.retirement);
+    voice.retirement = setTimeout(() => {
+      if (this.current !== voice) return;
+      this.current = undefined;
+      this.dispose(voice);
+      this.update('idle', null);
+    }, ENDED_CLOCK_WAIT_MS);
   }
 
   private receipt(kind:PreviewReceipt['kind'], voice:Voice):void {
@@ -254,6 +276,7 @@ export class PreviewOwner implements AudioPreviewOwner {
     this.current = undefined;
     if (!voice) return;
     clearInterval(voice.poll);
+    clearTimeout(voice.retirement);
     if (immediate || this.context?.state !== 'running') {
       this.dispose(voice);
       return;

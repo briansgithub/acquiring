@@ -152,6 +152,34 @@ describe('static preview output owner', () => {
     expect(receipts[0].nonSilent).toBe(true);
   });
 
+  it('defers ended until currentTime reaches scheduledTime+frames/rate without epsilon', async () => {
+    const {owner} = setup(() => new Int16Array(480));
+    await owner.play('held', request());
+    context.currentTime += 0.001;
+    await vi.advanceTimersByTimeAsync(20);
+    expect(receipts.map(receipt => receipt.kind)).toEqual(['render-started']);
+    context.sources[0].end();
+    expect(receipts.map(receipt => receipt.kind)).toEqual(['render-started']);
+    expect(owner.getSnapshot().phase).toBe('playing');
+    context.currentTime = 7 + 480 / 48_000;
+    await vi.advanceTimersByTimeAsync(20);
+    expect(receipts.map(receipt => receipt.kind)).toEqual(['render-started', 'ended']);
+    const ended = receipts[1];
+    expect(ended.contextTime).toBeGreaterThanOrEqual(ended.scheduledTime + ended.frameCount / ended.sampleRate);
+    expect(owner.getSnapshot().phase).toBe('idle');
+  });
+
+  it('watchdog retires without an ended receipt if the clock never reaches duration', async () => {
+    const {owner} = setup(() => new Int16Array(480));
+    await owner.play('stuck', request());
+    context.currentTime += 0.001;
+    await vi.advanceTimersByTimeAsync(20);
+    context.sources[0].end();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(receipts.map(receipt => receipt.kind)).toEqual(['render-started']);
+    expect(owner.getSnapshot().phase).toBe('idle');
+  });
+
   it('settles replaced work and consumes only the current out-of-order preparation once', async () => {
     const first = deferred<Int16Array|null>(), second = deferred<Int16Array|null>();
     const render = vi.fn().mockImplementationOnce(() => first.promise).mockImplementationOnce(() => second.promise);
