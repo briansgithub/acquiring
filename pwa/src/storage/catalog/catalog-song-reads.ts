@@ -1,14 +1,15 @@
 /** Song browse RPCs against one readonly withSongs handle. Worker stays dispatch-only. */
 import type {SongBrowseRow} from '../../features/library/grouping';
 import {
-  alphabeticalGroupCountsQuery,
+  browseGroupCountsQuery,
+  browseGroupSongsQuery,
   mapBrowseEntryRows,
   mapGroupCounts,
   mapSongBrowseRows,
   songBrowseBySlugsQuery,
   songPageQuery,
-  songsInAlphabeticalGroupQuery,
   type SongBrowseGroupCount,
+  type SongBrowseSortMode,
   type SongPage,
   type SongPageRequest,
 } from './library-queries';
@@ -33,12 +34,12 @@ export function songBrowseBySlugs(withSongs:WithSongs,slugs:string[]):Promise<So
   return withSongs(db=>mapSongBrowseRows(db.selectObjects(plan.sql,plan.bind)));
 }
 
-export function songAlphabeticalGroupCounts(withSongs:WithSongs,filterText:string):Promise<SongBrowseGroupCount[]> {
-  const plan=alphabeticalGroupCountsQuery(filterText);
+export function songBrowseGroupCounts(withSongs:WithSongs,sortMode:SongBrowseSortMode,filterText:string):Promise<SongBrowseGroupCount[]> {
+  const plan=browseGroupCountsQuery(sortMode,filterText);
   return withSongs(db=>mapGroupCounts(db.selectObjects(plan.sql,plan.bind)));
 }
 
-export function songSongsInAlphabeticalGroup(withSongs:WithSongs,groupKey:string,filterText:string):Promise<SongBrowseRow[]> {
-  const plan=songsInAlphabeticalGroupQuery(groupKey,filterText);
+export function songBrowseGroupSongs(withSongs:WithSongs,sortMode:SongBrowseSortMode,groupKey:string,filterText:string):Promise<SongBrowseRow[]> {
+  const plan=browseGroupSongsQuery(sortMode,groupKey,filterText);
   return withSongs(db=>mapBrowseEntryRows(db.selectObjects(plan.sql,plan.bind)));
 }

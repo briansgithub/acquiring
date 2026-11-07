@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {alphabeticalGroupCountsQuery,MAX_BROWSE_SLUGS,songBrowseBySlugsQuery,songPageQuery,songsInAlphabeticalGroupQuery,type SongPageRequest} from './library-queries';
+import {browseGroupCountsQuery,browseGroupSongsQuery,MAX_BROWSE_SLUGS,songBrowseBySlugsQuery,songPageQuery,type SongPageRequest} from './library-queries';
 it('bounds every untrusted page before query execution',()=>{
   for(const request of [null,{},[],{mode:'sql',text:'x'},{mode:'search',text:3},{mode:'search',text:'x'.repeat(513)},{mode:'search',text:'a\0b'},
     ...[0,-1,101,1.5,NaN,Infinity,null].map(limit=>({mode:'search',text:'x',limit})),
@@ -26,16 +26,24 @@ it('binds slug IN lists and refuses oversized or untrusted values',()=>{
   expect(()=>songBrowseBySlugsQuery(['ok','a\0b'])).toThrow(/Invalid song slug/);
   expect(()=>songBrowseBySlugsQuery(Array.from({length:MAX_BROWSE_SLUGS+1},(_,i)=>`s-${i}`))).toThrow(/Invalid song slug/);
 });
-it('binds All Songs alphabetical counts/membership without interpolating filter text',()=>{
+it('binds All Songs group counts/membership without interpolating filter text',()=>{
   const text=" ' OR 1=1 --_% ";
-  const counts=alphabeticalGroupCountsQuery(text);
+  const counts=browseGroupCountsQuery('alphabetical',text);
   expect(counts.sql).not.toContain(text);
   expect(counts.bind).toEqual([text,text,text]);
-  const songs=songsInAlphabeticalGroupQuery('A',text);
+  const songs=browseGroupSongsQuery('alphabetical','A',text);
   expect(songs.sql).not.toContain(text);
   expect(songs.bind).toEqual(['A',text,text,text]);
   expect(songs.sql).toContain('alphaGroup = ?');
-  expect(()=>songsInAlphabeticalGroupQuery('AA','')).toThrow(/Invalid alphabetical group/);
-  expect(()=>alphabeticalGroupCountsQuery('x'.repeat(513))).toThrow(/Invalid song browse filter/);
-  expect(()=>alphabeticalGroupCountsQuery('a\0b')).toThrow(/Invalid song browse filter/);
+  expect(browseGroupCountsQuery('complexity','').sql).toContain('complexityBucket');
+  expect(browseGroupSongsQuery('complexity','unrated','').sql).toContain('complexityBucket IS NULL');
+  expect(browseGroupSongsQuery('complexity','7','').bind[0]).toBe(7);
+  expect(browseGroupCountsQuery('mode','').sql).toContain('song_browse_modes');
+  expect(browseGroupSongsQuery('mode','ionian','').bind[0]).toBe('ionian');
+  expect(()=>browseGroupSongsQuery('alphabetical','AA','')).toThrow(/Invalid alphabetical group/);
+  expect(()=>browseGroupSongsQuery('complexity','10','')).toThrow(/Invalid complexity group/);
+  expect(()=>browseGroupSongsQuery('mode','major','')).toThrow(/Invalid mode group/);
+  expect(()=>browseGroupCountsQuery('title','')).toThrow(/Invalid All Songs sort mode/);
+  expect(()=>browseGroupCountsQuery('alphabetical','x'.repeat(513))).toThrow(/Invalid song browse filter/);
+  expect(()=>browseGroupCountsQuery('alphabetical','a\0b')).toThrow(/Invalid song browse filter/);
 });

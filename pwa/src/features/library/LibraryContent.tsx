@@ -17,8 +17,8 @@ export function LibraryContent({
   onDownload,
   onOpenSong,
   browseBySlugs,
-  alphabeticalGroupCounts,
-  songsInAlphabeticalGroup,
+  browseGroupCounts,
+  browseGroupSongs,
 }: LibraryContentProps) {
   const [searchFocused,setSearchFocused]=useState(false);
   const [showingAllSongs,setShowingAllSongs]=useState(false);
@@ -61,8 +61,7 @@ export function LibraryContent({
 
   if (showingAllSongs) {
     return <section className="library-content" aria-labelledby="library-heading">
-      <AllSongsView alphabeticalGroupCounts={alphabeticalGroupCounts}
-        songsInAlphabeticalGroup={songsInAlphabeticalGroup}
+      <AllSongsView browseGroupCounts={browseGroupCounts} browseGroupSongs={browseGroupSongs}
         onBack={() => setShowingAllSongs(false)} onOpenSong={onOpenSong} />
     </section>;
   }

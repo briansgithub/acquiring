@@ -124,10 +124,17 @@ test('All Songs alphabetical groups expand one heading and hide while search is 
   await page.getByRole('button',{name:'Clear search',exact:true}).click();
   await page.getByRole('button',{name:'All Songs',exact:true}).click();
   await expect(page.getByRole('heading',{name:'All Songs',exact:true})).toBeVisible();
-  await expect(page.getByText('Alphabetical',{exact:true})).toBeVisible();
+  await expect(page.getByLabel('Sort by')).toHaveValue('alphabetical');
   await page.getByRole('button',{name:'Expand A',exact:true}).click();
   await expect(page.locator('[data-all-songs] [data-song-slug="a-alpha"]')).toBeVisible();
   await expect(page.locator('[data-all-songs-group="A"] .library-playlist-count')).not.toHaveText('0');
+  await page.getByLabel('Sort by').selectOption('complexity');
+  await page.getByRole('button',{name:'Expand Unrated',exact:true}).click();
+  await expect(page.getByText('No songs in this group',{exact:true})).toBeVisible();
+  await expect(page.locator('[data-all-songs-group="7"] .library-playlist-count')).not.toHaveText('0');
+  await page.getByLabel('Sort by').selectOption('mode');
+  await page.getByRole('button',{name:'Expand Ionian (Major)',exact:true}).click();
+  await expect(page.locator('[data-all-songs] [data-song-slug="a-alpha"]')).toBeVisible();
   await page.getByRole('button',{name:'Back to Library',exact:true}).click();
   await expect(rows(page)).toHaveCount(20);
   await expect(page.getByRole('button',{name:'All Songs',exact:true})).toBeVisible();

@@ -1,6 +1,6 @@
 import { CatalogWorkerClient } from '../../storage/catalog/client';
 import { CatalogError } from '../../storage/catalog/protocol';
-import type { SongBrowseGroupCount, SongPage, SongPageRequest } from '../../storage/catalog/library-queries';
+import type { SongBrowseGroupCount, SongBrowseSortMode, SongPage, SongPageRequest } from '../../storage/catalog/library-queries';
 import type { SongBrowseRow } from './grouping';
 
 export interface LibraryView {
@@ -13,8 +13,8 @@ export interface LibraryState extends LibraryView {
 export interface LibraryClient {
   songPage(query:SongPageRequest):Promise<SongPage>;
   songBrowseBySlugs(slugs:string[]):Promise<SongBrowseRow[]>;
-  songAlphabeticalGroupCounts(filterText?:string):Promise<SongBrowseGroupCount[]>;
-  songSongsInAlphabeticalGroup(groupKey:string,filterText?:string):Promise<SongBrowseRow[]>;
+  songBrowseGroupCounts(sortMode:SongBrowseSortMode,filterText?:string):Promise<SongBrowseGroupCount[]>;
+  songBrowseGroupSongs(sortMode:SongBrowseSortMode,groupKey:string,filterText?:string):Promise<SongBrowseRow[]>;
   terminate():void;
 }
 const emptyView=():LibraryView=>({text:'',artist:null,rows:[],sourceSnapshot:null,nextOffset:null});
@@ -96,17 +96,17 @@ export class LibraryController {
     if(this.disposed)return [];
     return reader.songBrowseBySlugs(slugs);
   };
-  alphabeticalGroupCounts=async(filterText=''):Promise<SongBrowseGroupCount[]>=>{
+  browseGroupCounts=async(sortMode:SongBrowseSortMode,filterText=''):Promise<SongBrowseGroupCount[]>=>{
     if(this.disposed)return [];
     const reader=await this.reader();
     if(this.disposed)return [];
-    return reader.songAlphabeticalGroupCounts(filterText);
+    return reader.songBrowseGroupCounts(sortMode,filterText);
   };
-  songsInAlphabeticalGroup=async(groupKey:string,filterText=''):Promise<SongBrowseRow[]>=>{
+  browseGroupSongs=async(sortMode:SongBrowseSortMode,groupKey:string,filterText=''):Promise<SongBrowseRow[]>=>{
     if(this.disposed)return [];
     const reader=await this.reader();
     if(this.disposed)return [];
-    return reader.songSongsInAlphabeticalGroup(groupKey,filterText);
+    return reader.songBrowseGroupSongs(sortMode,groupKey,filterText);
   };
   private async load(append:boolean,restore?:LibraryView):Promise<void> {
     const generation=this.generation,{text,artist,nextOffset}=this.state;

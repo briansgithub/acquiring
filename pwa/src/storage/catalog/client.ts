@@ -1,7 +1,7 @@
 import {captureAuralStatisticsRequest} from './aural-statistics-request';
 import type {AuralStatisticsRequest,AuralStatisticsResponse} from './aural-statistics-runtime-contracts';
 import type { SongBrowseRow } from '../../features/library/grouping';
-import type { SongBrowseGroupCount, SongPageRequest, SongPage } from './library-queries';
+import type { SongBrowseGroupCount, SongBrowseSortMode, SongPageRequest, SongPage } from './library-queries';
 import type { SongPayload } from './detail-query';
 import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
 import type {AuralCatalogPatternTarget} from './aural-target-contracts';
@@ -48,11 +48,11 @@ export class CatalogWorkerClient {
   songPayload(slug: string): Promise<SongPayload|null> { return this.request({ kind: 'songPayload', slug }, 5000); }
   songPage(query: SongPageRequest): Promise<SongPage> { return this.request({ kind: 'songPage', query }); }
   songBrowseBySlugs(slugs: string[]): Promise<SongBrowseRow[]> { return this.request({ kind: 'songBrowseBySlugs', slugs }); }
-  songAlphabeticalGroupCounts(filterText=''): Promise<SongBrowseGroupCount[]> {
-    return this.request({ kind: 'songAlphabeticalGroupCounts', filterText });
+  songBrowseGroupCounts(sortMode: SongBrowseSortMode, filterText=''): Promise<SongBrowseGroupCount[]> {
+    return this.request({ kind: 'songBrowseGroupCounts', sortMode, filterText });
   }
-  songSongsInAlphabeticalGroup(groupKey: string, filterText=''): Promise<SongBrowseRow[]> {
-    return this.request({ kind: 'songSongsInAlphabeticalGroup', groupKey, filterText });
+  songBrowseGroupSongs(sortMode: SongBrowseSortMode, groupKey: string, filterText=''): Promise<SongBrowseRow[]> {
+    return this.request({ kind: 'songBrowseGroupSongs', sortMode, groupKey, filterText });
   }
   auralTarget(query:AuralCatalogTargetQuery):Promise<AuralCatalogPatternTarget> {return this.request({kind:'auralTarget',query},30_000);}
   auralStatistics(request:AuralStatisticsRequest):Promise<AuralStatisticsResponse> {

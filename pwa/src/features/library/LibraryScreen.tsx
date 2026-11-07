@@ -75,7 +75,7 @@ export function LibraryScreen(){
     onDownload={()=>{saveLibraryView();navigate('/settings',{fromLibrary:true});}}
     onOpenSong={row=>{void recordOpenedSong(row.slug,row.artist);controller.rememberFocused(row.slug);saveLibraryView();navigate('/songs/'+encodeURIComponent(row.slug),{fromLibrary:true});window.scrollTo(0,0);}}
     browseBySlugs={controller.browseBySlugs}
-    alphabeticalGroupCounts={controller.alphabeticalGroupCounts}
-    songsInAlphabeticalGroup={controller.songsInAlphabeticalGroup}
+    browseGroupCounts={controller.browseGroupCounts}
+    browseGroupSongs={controller.browseGroupSongs}
   />;
 }

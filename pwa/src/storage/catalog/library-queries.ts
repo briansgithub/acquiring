@@ -1,4 +1,4 @@
-import {alphabeticalGroups,type SongBrowseRow} from '../../features/library/grouping';
+import {alphabeticalGroups,complexityGroups,modeGroups,UNRATED_KEY,type AllSongsSortMode,type SongBrowseRow} from '../../features/library/grouping';
 import { CatalogError } from './protocol';
 
 export interface SongPageRequest { mode:'search'|'artist'; text:string; limit?:number; offset?:number }
@@ -7,7 +7,13 @@ export interface SongBrowseGroupCount { groupKey:string; songCount:number }
 export const MAX_SONG_PAGE_SIZE=100;
 export const MAX_SONG_QUERY_LENGTH=512;
 export const MAX_BROWSE_SLUGS=1000;
+export type SongBrowseSortMode=AllSongsSortMode;
+const SORT_MODES=new Set<SongBrowseSortMode>(['alphabetical','complexity','mode']);
 const ALPHA_GROUP_KEYS=new Set(alphabeticalGroups.map(group=>group.key));
+const COMPLEXITY_GROUP_KEYS=new Set(complexityGroups.map(group=>group.key));
+const MODE_GROUP_KEYS=new Set(modeGroups.map(group=>group.key));
+const TITLE_ORDER=`CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END, title COLLATE NOCASE, artist COLLATE NOCASE, slug COLLATE NOCASE`;
+const ENTRY_TITLE_ORDER=`CASE WHEN entries.title IS NULL OR TRIM(entries.title) = '' THEN 1 ELSE 0 END, entries.title COLLATE NOCASE, entries.artist COLLATE NOCASE, entries.slug COLLATE NOCASE`;
 /** Frozen SongDao BROWSE_FILTER_SQL: title/artist INSTR after stripping space/hyphen/underscore. */
 const BROWSE_FILTER_SQL=`(
   TRIM(?) = '' OR
@@ -75,24 +81,46 @@ export function songPageQuery(request:SongPageRequest):{sql:string;bind:(string|
   };
 }
 
-/** Frozen SongDao.getAlphabeticalGroupCounts. */
-export function alphabeticalGroupCountsQuery(filterText:unknown):{sql:string;bind:string[]} {
-  const text=browseFilter(filterText??'');
-  return {
-    sql:`SELECT alphaGroup AS groupKey, COUNT(*) AS songCount FROM song_browse_entries WHERE ${BROWSE_FILTER_SQL} GROUP BY alphaGroup`,
-    bind:[text,text,text],
-  };
+function browseSortMode(sortMode:unknown):SongBrowseSortMode {
+  if(typeof sortMode!=='string'||!SORT_MODES.has(sortMode as SongBrowseSortMode)) {
+    throw new CatalogError('INVALID_REQUEST','Invalid All Songs sort mode');
+  }
+  return sortMode as SongBrowseSortMode;
 }
 
-/** Frozen SongDao.getSongsInAlphabeticalGroup. */
-export function songsInAlphabeticalGroupQuery(groupKey:unknown,filterText:unknown):{sql:string;bind:string[]} {
-  if(typeof groupKey!=='string'||!ALPHA_GROUP_KEYS.has(groupKey))throw new CatalogError('INVALID_REQUEST','Invalid alphabetical group');
+function filterBind(filterText:unknown):string[] {
   const text=browseFilter(filterText??'');
-  return {
-    sql:`SELECT slug,artist,title,complexityRating FROM song_browse_entries
-      WHERE alphaGroup = ? AND ${BROWSE_FILTER_SQL}
-      ORDER BY CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
-        title COLLATE NOCASE,artist COLLATE NOCASE,slug COLLATE NOCASE`,
-    bind:[groupKey,text,text,text],
-  };
+  return [text,text,text];
 }
+
+/** Frozen SongDao.getAlphabeticalGroupCounts / getComplexityGroupCounts / getModeGroupCounts. */
+export function browseGroupCountsQuery(sortMode:unknown,filterText:unknown):{sql:string;bind:string[]} {
+  const mode=browseSortMode(sortMode),bind=filterBind(filterText);
+  if(mode==='alphabetical') {
+    return {sql:`SELECT alphaGroup AS groupKey, COUNT(*) AS songCount FROM song_browse_entries WHERE ${BROWSE_FILTER_SQL} GROUP BY alphaGroup`,bind};
+  }
+  if(mode==='complexity') {
+    return {sql:`SELECT COALESCE(CAST(complexityBucket AS TEXT), '${UNRATED_KEY}') AS groupKey, COUNT(*) AS songCount FROM song_browse_entries WHERE ${BROWSE_FILTER_SQL} GROUP BY complexityBucket`,bind};
+  }
+  return {sql:`SELECT modes.mode AS groupKey, COUNT(*) AS songCount FROM song_browse_modes AS modes INNER JOIN song_browse_entries AS entries ON entries.slug = modes.slug WHERE ${BROWSE_FILTER_SQL} GROUP BY modes.mode`,bind};
+}
+
+/** Frozen SongDao membership for one All Songs heading. */
+export function browseGroupSongsQuery(sortMode:unknown,groupKey:unknown,filterText:unknown):{sql:string;bind:(string|number)[]} {
+  const mode=browseSortMode(sortMode),filter=filterBind(filterText);
+  if(typeof groupKey!=='string')throw new CatalogError('INVALID_REQUEST','Invalid All Songs group');
+  if(mode==='alphabetical') {
+    if(!ALPHA_GROUP_KEYS.has(groupKey))throw new CatalogError('INVALID_REQUEST','Invalid alphabetical group');
+    return {sql:`SELECT slug,artist,title,complexityRating FROM song_browse_entries WHERE alphaGroup = ? AND ${BROWSE_FILTER_SQL} ORDER BY ${TITLE_ORDER}`,bind:[groupKey,...filter]};
+  }
+  if(mode==='complexity') {
+    if(!COMPLEXITY_GROUP_KEYS.has(groupKey))throw new CatalogError('INVALID_REQUEST','Invalid complexity group');
+    if(groupKey===UNRATED_KEY) {
+      return {sql:`SELECT slug,artist,title,complexityRating FROM song_browse_entries WHERE complexityBucket IS NULL AND ${BROWSE_FILTER_SQL} ORDER BY ${TITLE_ORDER}`,bind:filter};
+    }
+    return {sql:`SELECT slug,artist,title,complexityRating FROM song_browse_entries WHERE complexityBucket = ? AND ${BROWSE_FILTER_SQL} ORDER BY complexityRating ASC, ${TITLE_ORDER}`,bind:[Number(groupKey),...filter]};
+  }
+  if(!MODE_GROUP_KEYS.has(groupKey))throw new CatalogError('INVALID_REQUEST','Invalid mode group');
+  return {sql:`SELECT entries.slug,entries.artist,entries.title,entries.complexityRating FROM song_browse_entries AS entries INNER JOIN song_browse_modes AS modes ON modes.slug = entries.slug WHERE modes.mode = ? AND ${BROWSE_FILTER_SQL} ORDER BY ${ENTRY_TITLE_ORDER}`,bind:[groupKey,...filter]};
+}
+

@@ -107,7 +107,19 @@
 .library-all-songs-open { margin-top: 1rem; width: 100%; }
 .library-all-songs-header { display: flex; align-items: center; gap: .75rem; }
 .library-all-songs-header h2 { margin: 0; font-size: 1.5rem; line-height: 1.25; }
-.library-all-songs-sort { margin: .5rem 0 .75rem; color: #9ab9df; font-weight: 600; }
+.library-all-songs-sort-label { display: block; margin: .5rem 0 .35rem; font-weight: 600; }
+.library-all-songs-sort {
+  width: 100%;
+  min-height: 2.75rem;
+  margin: 0 0 .75rem;
+  padding: .55rem .75rem;
+  color: #f1f0f4;
+  background: #24252b;
+  border: 1px solid #77777f;
+  border-radius: .55rem;
+  font: inherit;
+  font-weight: 600;
+}
 .library-all-songs-group { margin: 0; }
 
 @media (max-width: 30rem) {

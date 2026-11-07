@@ -1,50 +1,62 @@
 import {useEffect,useState} from 'react';
 import {displayArtist,displayTitle} from '../../domain/data';
-import type {SongBrowseGroupCount} from '../../storage/catalog/library-queries';
-import {alphabeticalGroups,toggledExpandedGroup,type SongBrowseRow} from './grouping';
+import type {SongBrowseGroupCount,SongBrowseSortMode} from '../../storage/catalog/library-queries';
+import {groupsFor,toggledExpandedGroup,type SongBrowseRow} from './grouping';
 
 interface AllSongsViewProps {
-  alphabeticalGroupCounts(filterText?:string):Promise<SongBrowseGroupCount[]>;
-  songsInAlphabeticalGroup(groupKey:string,filterText?:string):Promise<SongBrowseRow[]>;
+  browseGroupCounts(sortMode:SongBrowseSortMode,filterText?:string):Promise<SongBrowseGroupCount[]>;
+  browseGroupSongs(sortMode:SongBrowseSortMode,groupKey:string,filterText?:string):Promise<SongBrowseRow[]>;
   onBack():void;
   onOpenSong(row:SongBrowseRow):void;
 }
 
-/** Frozen AllSongsView.kt alphabetical-only: one expansion, counts, no complexity/mode/scrubber. */
-export function AllSongsView({alphabeticalGroupCounts,songsInAlphabeticalGroup,onBack,onOpenSong}:AllSongsViewProps){
+const SORT_OPTIONS:readonly {mode:SongBrowseSortMode;label:string}[]=Object.freeze([
+  {mode:'alphabetical',label:'Alphabetical'},
+  {mode:'complexity',label:'Complexity'},
+  {mode:'mode',label:'Mode'},
+]);
+
+/** Frozen AllSongsView.kt: one expansion, counts, alphabetical/complexity/mode. Filter/scrubber later. */
+export function AllSongsView({browseGroupCounts,browseGroupSongs,onBack,onOpenSong}:AllSongsViewProps){
+  const [sortMode,setSortMode]=useState<SongBrowseSortMode>('alphabetical');
   const [counts,setCounts]=useState<ReadonlyMap<string,number>>(new Map());
   const [expanded,setExpanded]=useState<string|null>(null);
   const [songs,setSongs]=useState<SongBrowseRow[]>([]);
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState<string|null>(null);
+  const groups=groupsFor(sortMode);
 
   useEffect(()=>{
     let cancelled=false;
-    void alphabeticalGroupCounts('').then(rows=>{
+    void browseGroupCounts(sortMode,'').then(rows=>{
       if(!cancelled)setCounts(new Map(rows.map(row=>[row.groupKey,row.songCount])));
     }).catch(()=>{if(!cancelled)setCounts(new Map());});
     return ()=>{cancelled=true;};
-  },[alphabeticalGroupCounts]);
+  },[browseGroupCounts,sortMode]);
 
   useEffect(()=>{
     if(expanded===null){setSongs([]);setLoading(false);setError(null);return;}
     let cancelled=false;
     setLoading(true);setError(null);
-    void songsInAlphabeticalGroup(expanded,'').then(rows=>{
+    void browseGroupSongs(sortMode,expanded,'').then(rows=>{
       if(!cancelled){setSongs(rows);setError(null);}
     }).catch(caught=>{
       if(!cancelled){setSongs([]);setError(caught instanceof Error?caught.message:'Unable to load this group');}
     }).finally(()=>{if(!cancelled)setLoading(false);});
     return ()=>{cancelled=true;};
-  },[expanded,songsInAlphabeticalGroup]);
+  },[browseGroupSongs,expanded,sortMode]);
 
   return <div className="library-all-songs" data-all-songs="">
     <header className="library-all-songs-header">
       <button className="library-back" type="button" aria-label="Back to Library" onClick={onBack}>&lt; Back</button>
       <h2 id="library-heading">All Songs</h2>
     </header>
-    <p className="library-all-songs-sort">Alphabetical</p>
-    {alphabeticalGroups.map(group=>{
+    <label className="library-all-songs-sort-label" htmlFor="library-all-songs-sort">Sort by</label>
+    <select id="library-all-songs-sort" className="library-all-songs-sort" data-all-songs-sort="" value={sortMode}
+      onChange={event=>{setExpanded(null);setSortMode(event.currentTarget.value as SongBrowseSortMode);}}>
+      {SORT_OPTIONS.map(option=><option key={option.mode} value={option.mode}>{option.label}</option>)}
+    </select>
+    {groups.map(group=>{
       const isExpanded=expanded===group.key;
       const count=counts.get(group.key);
       return <div className="library-all-songs-group" key={group.key}>

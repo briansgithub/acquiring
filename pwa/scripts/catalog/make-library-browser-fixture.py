@@ -44,6 +44,7 @@ with closing(sqlite3.connect(path)) as db:
         first=(title or '').strip()[:1].upper();alpha=first if len(first)==1 and first in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' else '#'
         rating=None if slug=='detail-unrated' else 0. if slug=='detail-raw' else 77.05 if slug=='detail-gzip' else 77.
         db.execute('INSERT INTO song_browse_entries VALUES(?,?,?,?,?,?)',(slug,artist,title,alpha,rating,None if rating is None else int(rating//10)))
+    db.execute("INSERT INTO song_browse_modes VALUES('a-alpha','ionian')")
     db.commit()
 raw=path.read_bytes();compressed=gzip.compress(raw,mtime=0);(source/'catalog.db.gz').write_bytes(compressed)
 manifest={'schemaVersion':3,'snapshotId':hashlib.sha256(raw).hexdigest(),'files':[{'name':'catalog.db','byteSize':len(raw),'checksum':hashlib.sha256(raw).hexdigest(),'compressedByteSize':len(compressed),'compressedChecksum':hashlib.sha256(compressed).hexdigest()}]}

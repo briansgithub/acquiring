@@ -6,8 +6,8 @@ function deferred<T>(){let resolve!:(value:T)=>void,reject!:(error:unknown)=>voi
 const page=(slug:string,sourceSnapshot='one',nextOffset:number|null=null):SongPage=>({sourceSnapshot,rows:[{slug,title:slug,artist:'Artist',complexityRating:null}],hasMore:nextOffset!==null,nextOffset});
 function fixture(){
   const client={songPage:vi.fn<LibraryClient['songPage']>(),songBrowseBySlugs:vi.fn<LibraryClient['songBrowseBySlugs']>(),
-    songAlphabeticalGroupCounts:vi.fn<LibraryClient['songAlphabeticalGroupCounts']>(),
-    songSongsInAlphabeticalGroup:vi.fn<LibraryClient['songSongsInAlphabeticalGroup']>(),terminate:vi.fn()};
+    songBrowseGroupCounts:vi.fn<LibraryClient['songBrowseGroupCounts']>(),
+    songBrowseGroupSongs:vi.fn<LibraryClient['songBrowseGroupSongs']>(),terminate:vi.fn()};
   return {client,open:vi.fn(async()=>client)};
 }
 afterEach(()=>vi.useRealTimers());
@@ -81,16 +81,16 @@ it('hydrates playlist slugs through the exclusive reader and stops after dispose
   await expect(library.browseBySlugs(['a'])).resolves.toEqual([]);
 });
 
-it('hydrates alphabetical All Songs groups through the exclusive reader and stops after dispose',async()=>{
+it('hydrates All Songs groups through the exclusive reader and stops after dispose',async()=>{
   const {client,open}=fixture();client.songPage.mockResolvedValue(page('a'));
-  client.songAlphabeticalGroupCounts.mockResolvedValue([{groupKey:'A',songCount:2}]);
-  client.songSongsInAlphabeticalGroup.mockResolvedValue([{slug:'a-alpha',artist:'Artist-A',title:'Alpha Song',complexityRating:77}]);
+  client.songBrowseGroupCounts.mockResolvedValue([{groupKey:'7',songCount:2}]);
+  client.songBrowseGroupSongs.mockResolvedValue([{slug:'a-alpha',artist:'Artist-A',title:'Alpha Song',complexityRating:77}]);
   const library=new LibraryController(undefined,open);await library.start();
-  await expect(library.alphabeticalGroupCounts('')).resolves.toEqual([{groupKey:'A',songCount:2}]);
-  await expect(library.songsInAlphabeticalGroup('A')).resolves.toEqual([{slug:'a-alpha',artist:'Artist-A',title:'Alpha Song',complexityRating:77}]);
-  expect(client.songAlphabeticalGroupCounts).toHaveBeenCalledWith('');
-  expect(client.songSongsInAlphabeticalGroup).toHaveBeenCalledWith('A','');
+  await expect(library.browseGroupCounts('complexity')).resolves.toEqual([{groupKey:'7',songCount:2}]);
+  await expect(library.browseGroupSongs('mode','ionian')).resolves.toEqual([{slug:'a-alpha',artist:'Artist-A',title:'Alpha Song',complexityRating:77}]);
+  expect(client.songBrowseGroupCounts).toHaveBeenCalledWith('complexity','');
+  expect(client.songBrowseGroupSongs).toHaveBeenCalledWith('mode','ionian','');
   library.dispose();
-  await expect(library.alphabeticalGroupCounts()).resolves.toEqual([]);
-  await expect(library.songsInAlphabeticalGroup('A')).resolves.toEqual([]);
+  await expect(library.browseGroupCounts('alphabetical')).resolves.toEqual([]);
+  await expect(library.browseGroupSongs('alphabetical','A')).resolves.toEqual([]);
 });
