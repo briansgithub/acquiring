@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import { displayArtist, displayTitle } from '../../domain/data';
 import { libraryChromeVisible, type SongBrowseRow } from './grouping';
+import {AllSongsView} from './AllSongsView';
 import {PlaylistsSection} from './PlaylistsSection';
 import {RecentSelections} from './RecentSelections';
 import type { LibraryContentProps } from './view-contract';
@@ -16,8 +17,11 @@ export function LibraryContent({
   onDownload,
   onOpenSong,
   browseBySlugs,
+  alphabeticalGroupCounts,
+  songsInAlphabeticalGroup,
 }: LibraryContentProps) {
   const [searchFocused,setSearchFocused]=useState(false);
+  const [showingAllSongs,setShowingAllSongs]=useState(false);
   const browsingArtist = state.artist !== null;
   const hasSearch = state.text.trim().length > 0;
   const loading = state.phase === 'loading';
@@ -54,6 +58,14 @@ export function LibraryContent({
       >Songs by artist</button>}
     </li>;
   };
+
+  if (showingAllSongs) {
+    return <section className="library-content" aria-labelledby="library-heading">
+      <AllSongsView alphabeticalGroupCounts={alphabeticalGroupCounts}
+        songsInAlphabeticalGroup={songsInAlphabeticalGroup}
+        onBack={() => setShowingAllSongs(false)} onOpenSong={onOpenSong} />
+    </section>;
+  }
 
   return <section className="library-content" aria-labelledby="library-heading" aria-busy={loading || state.loadingMore}>
     {libraryChromeVisible(searchFocused) && !browsingArtist &&
@@ -120,5 +132,10 @@ export function LibraryContent({
       </button>
       {state.loadingMore && <p className="library-status" role="status" aria-live="polite">Loading more songs...</p>}
     </div>}
+
+    {libraryChromeVisible(searchFocused) && !browsingArtist &&
+      <button className="library-all-songs-open" type="button" data-all-songs-open=""
+        onMouseDown={event => event.preventDefault()}
+        onClick={() => setShowingAllSongs(true)}>All Songs</button>}
   </section>;
 }

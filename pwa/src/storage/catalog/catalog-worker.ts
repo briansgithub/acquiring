@@ -7,7 +7,7 @@ import {captureAuralTargetQuery,readAuralTargetRow} from './aural-target-query';
 import {decodeAuralCatalogRun,createAuralCatalogTarget} from './aural-target-codec';
 import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
 import {readAuralHeader} from './aural-header';
-import { mapSongBrowseRows, songBrowseBySlugsQuery, songPageQuery, type SongPageRequest, type SongPage } from './library-queries';
+import {songAlphabeticalGroupCounts,songBrowseBySlugs,songPage,songSongsInAlphabeticalGroup} from './catalog-song-reads';
 import {songDetailQuery,songPayloadRecord,readSongComplexity,type SongPayload} from './detail-query';
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { sha256 as incrementalSha256 } from '@noble/hashes/sha2.js';
@@ -214,19 +214,6 @@ async function songPayload(slug:string):Promise<SongPayload|null> {
     return payload&&{...payload,complexityRating:readSongComplexity(slug,(sql,bind)=>db.selectValue(sql,bind))};
   });
 }
-async function songPage(request:SongPageRequest):Promise<SongPage> {
-  const plan=songPageQuery(request);
-  return withSongs((db,source)=>{
-    const records=db.selectObjects(plan.sql,plan.bind);
-    const hasMore=records.length>plan.limit;
-    const rows=mapSongBrowseRows(records.slice(0,plan.limit) as Record<string,unknown>[]);
-    return {sourceSnapshot:source.sourceSnapshot,rows,hasMore,nextOffset:hasMore?plan.offset+rows.length:null};
-  });
-}
-async function songBrowseBySlugs(slugs:string[]) {
-  const plan=songBrowseBySlugsQuery(slugs);
-  return withSongs(db=>mapSongBrowseRows(db.selectObjects(plan.sql,plan.bind) as Record<string,unknown>[]));
-}
 /** One immutable attempt/readonly handle for the entire awaited command. */
 async function withAuralDatabase<T>(read:(db:InstanceType<Sqlite3Static['oo1']['DB']>,source:{id:string;sourceSnapshot:string})=>T|Promise<T>):Promise<T> {
   let db:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
@@ -285,8 +272,10 @@ async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'auralTarget') return auralTarget(command.query);
   if (command.kind === 'auralStatistics') return auralStatistics(command.request);
   if (command.kind === 'auralHeader') return auralHeader();
-  if (command.kind === 'songPage') return songPage(command.query);
-  if (command.kind === 'songBrowseBySlugs') return songBrowseBySlugs(command.slugs);
+  if (command.kind === 'songPage') return songPage(withSongs, command.query);
+  if (command.kind === 'songBrowseBySlugs') return songBrowseBySlugs(withSongs, command.slugs);
+  if (command.kind === 'songAlphabeticalGroupCounts') return songAlphabeticalGroupCounts(withSongs, command.filterText);
+  if (command.kind === 'songSongsInAlphabeticalGroup') return songSongsInAlphabeticalGroup(withSongs, command.groupKey, command.filterText);
   if (command.kind === 'songPayload') return songPayload(command.slug);
   if (command.kind === 'prepare') return prepare(id, command.attemptId, validateManifest(command.manifest), command.baseUrl);
   if (command.kind === 'activate') return activate(command.attemptId);

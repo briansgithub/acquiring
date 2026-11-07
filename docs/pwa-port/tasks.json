@@ -1023,9 +1023,20 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
-      "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections. All Songs/Play-Shuffle remain. Settings Back 64px still owner-blocked.",
-      "nextAction": "Recents landed. Next dependency-safe T10 slice: All Songs alphabetical groups (song_browse_entries + grouping helpers exist; add count/membership RPCs + chrome). Play/Shuffle playlist queue still explicit gap (no PWA SongQueue). Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
+      "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical. Complexity/mode/filter/scrubber and Play-Shuffle remain. Settings Back 64px still owner-blocked.",
+      "nextAction": "All Songs alphabetical landed. Next dependency-safe T10 slice: complexity/mode groups or in-view filter (same browse tables). Play/Shuffle playlist queue still explicit gap (no PWA SongQueue). Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
       "validation": [
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-all-songs/browser-001",
+          "revision": "1d07f296 plus named All Songs alphabetical tree",
+          "guards": [
+            "T10-all-songs-unit-001",
+            "T10-all-songs-typecheck-001",
+            "T10-all-songs-check-001",
+            "T10-all-songs-browser-001"
+          ],
+          "result": "PASS 30 focused then 1018 unit/80 files + 1 parity + types + shell db29e99adafb. browser-001 FIRST PASS 26 passed/1 skipped 2.9m. Alphabetical counts/membership RPCs via exclusive Library reader; catalog-worker 299 after song-read extract. Real Playwright mouse/canvas drag remains test.fixme (stayed beat 1 at 57fa7312); synthetic PointerEvent is handler math only; converting fixme to skipped is not acceptance. Settings Back assertion unchanged and excluded. Play/Shuffle not started. Complexity/mode/filter/scrubber omitted. Partial T10, not device/whole-CI-green."
+        },
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-recents/browser-001",
           "revision": "c82fe15d plus named Library recents tree",
@@ -1098,7 +1109,8 @@
         "Luna/medium review found independent development StrictMode effect replay starts an already disposed reader;not the blocked scroll issue. Screenshot visually inspected:controls/text wrap without obvious clipping/overflow. Pre-edit root owns a readonly closed flag and fresh-reader recreation on replay,with actual dev-origin install/search/Settings teardown proof. Do not investigate or rerun the failing scroll gate. Combined pitch tree263unit+input/types/build PASS before this narrow lifecycle fix;live63%/10%.",
         "Actual Library integrated:search/debounce/page/artist/history/draft/focus/worker teardown/BFCache;9controller cases. Luna readonly review found dev StrictMode replay uses disposed reader;fresh replacement plus abort of pending worker open corrected one ownership race. Final10Chrome cases PASS35.3s:4installer,3shell,artist/ownership,offline320px200percent andactual dev StrictMode install/search/remount. Source not fully accepted:Settings Back64px scroll drift remains and its test is unchanged/excluded explicitly from covering run. Root source checkpoint is partial feature with known gate,not T10 completion. Optional client AbortSignal3meaningful cancellation cases pass. No dependencies/contracts/lockfile or production publication changed.",
         "2026-11-07T11:15Z Favorites accordion on continuation: T06 getSummaries + exclusive Library songBrowseBySlugs hydrate, unstar, empty copy, search-focus hide. Play/Shuffle not started. Settings Back assertion untouched. browser-006 24 passed/1 skipped (honest mouse-drag fixme). Partial T10.",
-        "2026-11-07T11:23Z Recent Selections on continuation: HistoryManager MRU-10, focused-empty only, existing slug hydrate/order. Artist recents persisted, UI skipped. browser-001 25 passed/1 skipped (honest mouse-drag fixme). Partial T10."
+        "2026-11-07T11:23Z Recent Selections on continuation: HistoryManager MRU-10, focused-empty only, existing slug hydrate/order. Artist recents persisted, UI skipped. browser-001 25 passed/1 skipped (honest mouse-drag fixme). Partial T10.",
+        "2026-11-07T11:29Z All Songs alphabetical on continuation: SongDao count/membership RPCs + overlay, search-focus hide, one expansion. Complexity/mode/filter/scrubber omitted. browser-001 26 passed/1 skipped (honest mouse-drag fixme). Partial T10."
       ],
       "blocker": "Exact Settings->Library scroll restoration remains64pxdifferent after2diagnose/fix/retest cycles. Query/draft/40loaded rows andsongBack focus/scroll pass;artist/browserBack/ownership andoffline320px200percent cases pass. User AGENTS.mdrequiresaskingbeforeexpanding;asyncapproval question pending. Do not attempt a third scroll fix or relax assertion without that answer. Continue independent packages.",
       "dependencyGates": {

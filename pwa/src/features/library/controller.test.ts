@@ -5,7 +5,9 @@ import type {SongPage} from '../../storage/catalog/library-queries';
 function deferred<T>(){let resolve!:(value:T)=>void,reject!:(error:unknown)=>void;const promise=new Promise<T>((yes,no)=>{resolve=yes;reject=no;});return {promise,resolve,reject};}
 const page=(slug:string,sourceSnapshot='one',nextOffset:number|null=null):SongPage=>({sourceSnapshot,rows:[{slug,title:slug,artist:'Artist',complexityRating:null}],hasMore:nextOffset!==null,nextOffset});
 function fixture(){
-  const client={songPage:vi.fn<LibraryClient['songPage']>(),songBrowseBySlugs:vi.fn<LibraryClient['songBrowseBySlugs']>(),terminate:vi.fn()};
+  const client={songPage:vi.fn<LibraryClient['songPage']>(),songBrowseBySlugs:vi.fn<LibraryClient['songBrowseBySlugs']>(),
+    songAlphabeticalGroupCounts:vi.fn<LibraryClient['songAlphabeticalGroupCounts']>(),
+    songSongsInAlphabeticalGroup:vi.fn<LibraryClient['songSongsInAlphabeticalGroup']>(),terminate:vi.fn()};
   return {client,open:vi.fn(async()=>client)};
 }
 afterEach(()=>vi.useRealTimers());
@@ -77,4 +79,18 @@ it('hydrates playlist slugs through the exclusive reader and stops after dispose
   expect(client.songBrowseBySlugs).toHaveBeenCalledWith(['gone','a']);
   library.dispose();
   await expect(library.browseBySlugs(['a'])).resolves.toEqual([]);
+});
+
+it('hydrates alphabetical All Songs groups through the exclusive reader and stops after dispose',async()=>{
+  const {client,open}=fixture();client.songPage.mockResolvedValue(page('a'));
+  client.songAlphabeticalGroupCounts.mockResolvedValue([{groupKey:'A',songCount:2}]);
+  client.songSongsInAlphabeticalGroup.mockResolvedValue([{slug:'a-alpha',artist:'Artist-A',title:'Alpha Song',complexityRating:77}]);
+  const library=new LibraryController(undefined,open);await library.start();
+  await expect(library.alphabeticalGroupCounts('')).resolves.toEqual([{groupKey:'A',songCount:2}]);
+  await expect(library.songsInAlphabeticalGroup('A')).resolves.toEqual([{slug:'a-alpha',artist:'Artist-A',title:'Alpha Song',complexityRating:77}]);
+  expect(client.songAlphabeticalGroupCounts).toHaveBeenCalledWith('');
+  expect(client.songSongsInAlphabeticalGroup).toHaveBeenCalledWith('A','');
+  library.dispose();
+  await expect(library.alphabeticalGroupCounts()).resolves.toEqual([]);
+  await expect(library.songsInAlphabeticalGroup('A')).resolves.toEqual([]);
 });

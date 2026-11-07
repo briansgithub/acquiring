@@ -62,6 +62,11 @@ test('native scalar song paging/search/artist parity,reopen and catalog switch',
   expect(bySlugs.map(row=>row.slug).sort()).toEqual(['a-alpha','quote']);
   expect(await call(page,'songBrowseBySlugs',['reader',[]])).toEqual([]);
   await expect(call(page,'songBrowseBySlugs',['reader',['a\0b']])).rejects.toThrow('Invalid song slug');
+  const alphaCounts=await call<{groupKey:string;songCount:number}[]>(page,'songAlphabeticalGroupCounts',['reader','']);
+  expect(alphaCounts.find(row=>row.groupKey==='A')?.songCount).toBeGreaterThan(0);
+  const inA=await call<{slug:string}[]>(page,'songSongsInAlphabeticalGroup',['reader','A','']);
+  expect(inA.map(row=>row.slug)).toContain('a-alpha');
+  await expect(call(page,'songSongsInAlphabeticalGroup',['reader','AA',''])).rejects.toThrow('Invalid alphabetical group');
   await call(page,'close',['reader']);
   await call(page,'open',['reader']);
   expect(await query({mode:'search',text:'ALPHA',limit:2})).toEqual(first);

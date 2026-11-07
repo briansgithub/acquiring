@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {MAX_BROWSE_SLUGS,songBrowseBySlugsQuery,songPageQuery,type SongPageRequest} from './library-queries';
+import {alphabeticalGroupCountsQuery,MAX_BROWSE_SLUGS,songBrowseBySlugsQuery,songPageQuery,songsInAlphabeticalGroupQuery,type SongPageRequest} from './library-queries';
 it('bounds every untrusted page before query execution',()=>{
   for(const request of [null,{},[],{mode:'sql',text:'x'},{mode:'search',text:3},{mode:'search',text:'x'.repeat(513)},{mode:'search',text:'a\0b'},
     ...[0,-1,101,1.5,NaN,Infinity,null].map(limit=>({mode:'search',text:'x',limit})),
@@ -25,4 +25,17 @@ it('binds slug IN lists and refuses oversized or untrusted values',()=>{
   expect(()=>songBrowseBySlugsQuery(['x'.repeat(513)])).toThrow(/Invalid song slug/);
   expect(()=>songBrowseBySlugsQuery(['ok','a\0b'])).toThrow(/Invalid song slug/);
   expect(()=>songBrowseBySlugsQuery(Array.from({length:MAX_BROWSE_SLUGS+1},(_,i)=>`s-${i}`))).toThrow(/Invalid song slug/);
+});
+it('binds All Songs alphabetical counts/membership without interpolating filter text',()=>{
+  const text=" ' OR 1=1 --_% ";
+  const counts=alphabeticalGroupCountsQuery(text);
+  expect(counts.sql).not.toContain(text);
+  expect(counts.bind).toEqual([text,text,text]);
+  const songs=songsInAlphabeticalGroupQuery('A',text);
+  expect(songs.sql).not.toContain(text);
+  expect(songs.bind).toEqual(['A',text,text,text]);
+  expect(songs.sql).toContain('alphaGroup = ?');
+  expect(()=>songsInAlphabeticalGroupQuery('AA','')).toThrow(/Invalid alphabetical group/);
+  expect(()=>alphabeticalGroupCountsQuery('x'.repeat(513))).toThrow(/Invalid song browse filter/);
+  expect(()=>alphabeticalGroupCountsQuery('a\0b')).toThrow(/Invalid song browse filter/);
 });

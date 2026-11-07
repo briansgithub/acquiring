@@ -12,3 +12,5 @@ Final targeted strict type check passed using primary installed dependencies and
 2026-11-07T11:15Z Playlists accordion above search (native LibraryView order). Section expanded by default, Favorites collapsed, 280px song list, unstar ★. Hide while search focused / artist view. Result-button mousedown preventDefault preserves clicks when chrome remounts. Play/Shuffle omitted this slice.
 
 2026-11-07T11:23Z Recent Selections below search when focused+empty (native LibrarySearchSuggestions heading). Recents buttons use `data-recent-selections` + `data-song-slug`; tests must scope recents so `rows()` is not inflated. mousedown preventDefault on recents open. Empty recents render null. Artist recents UI not this slice.
+
+2026-11-07T11:29Z All Songs chrome button below paging (native LibraryView). Overlay replaces Library with A–Z/0–9/# headings, one expansion, counts, empty copy. Sort locked to Alphabetical; complexity/mode dropdown, filter, and prefix scrubber omitted. Back control is aria-label Back to Library so exact `Back` song/settings locators stay unique.

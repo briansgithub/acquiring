@@ -17,6 +17,8 @@ export type CatalogCommand =
   | { kind: 'status'; attemptId: string }
   | { kind: 'songPage'; query: SongPageRequest }
   | { kind: 'songBrowseBySlugs'; slugs: string[] }
+  | { kind: 'songAlphabeticalGroupCounts'; filterText: string }
+  | { kind: 'songSongsInAlphabeticalGroup'; groupKey: string; filterText: string }
   | { kind: 'songPayload'; slug: string }
   | { kind: 'auralHeader' }
   | { kind: 'auralTarget'; query: AuralCatalogTargetQuery }
