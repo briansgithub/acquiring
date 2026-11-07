@@ -27,6 +27,15 @@ export class MicrophonePitchCoordinator {
     return new OwnedPitchSource(this, requestedOwner);
   }
 
+  /** True page departure revokes both leases without permanently disposing the owner. */
+  stopAll(): void {
+    if(this.released)return;
+    this.delegate.stop();
+    this.owner=null;
+    this.ownerTrackingMode=PitchTrackingMode.STANDARD;
+    for(const owner of this.ownership.keys())this.ownership.set(owner,false);
+  }
+
   release(): void {
     if (this.released) return;
     this.released = true;

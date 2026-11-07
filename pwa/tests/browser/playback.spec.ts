@@ -837,3 +837,51 @@ for(const stage of ['permission','worklet'] as const)test('pending capture '+sta
  await page.locator('[data-singing-slot="1"]').dblclick();await expect.poll(async()=>(await proof()).graphs).toBe(1);
  await page.getByRole('button',{name:'Stop microphone',exact:true}).click();await expect.poll(async()=>(await proof()).tracks.every(state=>state==='ended')).toBe(true);
 });
+
+// Genuine browser navigation receipts. Fake/silent streams and optional async worklet gate are NOT physical mic/BFCache proof.
+async function instrumentCaptureDeparture(page:Page,holdModule=false){
+ await page.addInitScript(hold=>{
+  const streams:MediaStream[]=[],contexts:AudioContext[]=[];let calls=0,graphs=0,modulePending=false,release!:()=>void;
+  const gate=new Promise<void>(resolve=>{release=resolve;});
+  const gum=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+  navigator.mediaDevices.getUserMedia=async constraints=>{calls++;const stream=await gum(constraints);streams.push(stream);return stream;};
+  const Native=window.AudioContext;
+  window.AudioContext=class extends Native{constructor(options?:AudioContextOptions){super(options);if(options?.sampleRate===16000)contexts.push(this);}createMediaStreamSource(stream:MediaStream){graphs++;return super.createMediaStreamSource(stream);}};
+  const add=AudioWorklet.prototype.addModule;
+  AudioWorklet.prototype.addModule=async function(url,options){await add.call(this,url,options);if(hold){modulePending=true;await gate;}};
+  const autoTimers=new Set<number>(),set=window.setTimeout.bind(window),clear=window.clearTimeout.bind(window);
+  window.setTimeout=((handler:TimerHandler,delay?:number,...args:unknown[])=>{const id=set(handler,delay,...args);if(delay===800)autoTimers.add(id);return id;}) as typeof window.setTimeout;
+  window.clearTimeout=(id)=>{autoTimers.delete(Number(id));clear(id);};
+  const snapshot=()=>({calls,graphs,modulePending,autoTimers:autoTimers.size,tracks:streams.flatMap(stream=>stream.getTracks().map(track=>track.readyState)),contexts:contexts.map(context=>context.state)});
+  (window as unknown as {captureDeparture:{snapshot:typeof snapshot;release:()=>void;observe:()=>void}}).captureDeparture={snapshot,release,observe:()=>window.addEventListener('pagehide',event=>{sessionStorage.setItem('capture-departure-proof',JSON.stringify({trusted:event.isTrusted,persisted:event.persisted,capture:snapshot()}));},{once:true})};
+ },holdModule);
+}
+async function captureDeparture(page:Page){return page.evaluate(()=>(window as unknown as {captureDeparture:{snapshot:()=>{calls:number;graphs:number;modulePending:boolean;autoTimers:number;tracks:string[];contexts:string[]}}}).captureDeparture.snapshot());}
+for(const mode of ['active monitoring','armed 800ms singing'] as const)test('product genuine reload pagehide retires '+mode+' and fresh document stays idle',async({page,context},info)=>{
+ await context.grantPermissions(['microphone']);await instrument(page);await instrumentCaptureDeparture(page);await installAndOpen(page);
+ if(mode==='active monitoring'){
+  await page.getByRole('button',{name:'Pitch monitoring',exact:true}).click();await expect.poll(async()=>(await captureDeparture(page)).graphs).toBe(1);
+  await page.getByRole('button',{name:'Play',exact:true}).click();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-phase','playing');
+ }else{
+  await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();await expect.poll(async()=>(await captureDeparture(page)).autoTimers).toBeGreaterThan(0);expect((await captureDeparture(page)).calls).toBe(0);
+ }
+ await page.evaluate(()=>(window as unknown as {captureDeparture:{observe:()=>void}}).captureDeparture.observe());
+ await page.reload();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+ const departure=await page.evaluate(()=>JSON.parse(sessionStorage.getItem('capture-departure-proof')!)) as {trusted:boolean;persisted:boolean;capture:{calls:number;graphs:number;autoTimers:number;tracks:string[];contexts:string[]}};
+ expect(departure.trusted).toBe(true);expect(departure.persisted).toBe(false);expect(departure.capture.autoTimers).toBe(0);
+ if(mode==='active monitoring'){expect(departure.capture.calls).toBe(1);expect(departure.capture.tracks).not.toHaveLength(0);expect(departure.capture.tracks.every(state=>state==='ended')).toBe(true);expect(departure.capture.contexts.every(state=>state==='closed')).toBe(true);}else expect(departure.capture.calls).toBe(0);
+ await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');await expect(page.getByRole('button',{name:'Pitch monitoring',exact:true})).toHaveAttribute('aria-pressed','false');await expect(page.locator('[data-singing-dock="collapsed"]')).toBeVisible();
+ await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(0);expect((await captureDeparture(page)).contexts).toEqual([]);expect((await audio(page)).contexts).toEqual([]);
+ await page.getByRole('button',{name:'Pitch monitoring',exact:true}).click();await expect.poll(async()=>(await captureDeparture(page)).graphs).toBe(1);await page.getByRole('button',{name:'Pitch monitoring',exact:true}).click();await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);
+ await info.attach('trusted-pagehide-capture.json',{body:JSON.stringify(departure,null,2),contentType:'application/json'});
+});
+test('product route Back retires pending capture; late worklet cannot revive it or bypass explicit restart',async({page,context},info)=>{
+ await context.grantPermissions(['microphone']);await instrument(page);await instrumentCaptureDeparture(page,true);await installAndOpen(page);
+ await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();await expect.poll(async()=>(await captureDeparture(page)).modulePending).toBe(true);expect((await captureDeparture(page)).graphs).toBe(0);
+ await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+ await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);await expect.poll(async()=>(await captureDeparture(page)).contexts.every(state=>state==='closed')).toBe(true);
+ await page.evaluate(()=>(window as unknown as {captureDeparture:{release:()=>void}}).captureDeparture.release());await page.waitForTimeout(900);expect((await captureDeparture(page)).graphs).toBe(0);
+ await page.getByRole('button',{name:'Play song',exact:true}).click();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');await expect(page.locator('[data-singing-dock="collapsed"]')).toBeVisible();await expect(page.getByRole('button',{name:'Pitch monitoring',exact:true})).toHaveAttribute('aria-pressed','false');expect((await captureDeparture(page)).calls).toBe(1);
+ await page.getByRole('button',{name:'Pitch monitoring',exact:true}).click();await expect.poll(async()=>(await captureDeparture(page)).graphs).toBe(1);await page.getByRole('button',{name:'Pitch monitoring',exact:true}).click();await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);
+ await info.attach('route-capture-retirement.json',{body:JSON.stringify(await captureDeparture(page),null,2),contentType:'application/json'});
+});

@@ -20,6 +20,10 @@ export function usePlaybackMicrophone(): {
     () => coordinator.sourceFor(MicrophonePitchOwner.SINGING_TOOL),
     [coordinator],
   );
-  useEffect(() => () => { coordinator.release(); }, [coordinator]);
+  useEffect(() => {
+    const hide=()=>coordinator.stopAll();
+    window.addEventListener('pagehide',hide);
+    return()=>{window.removeEventListener('pagehide',hide);coordinator.release();};
+  }, [coordinator]);
   return {capture, persistent, singing};
 }

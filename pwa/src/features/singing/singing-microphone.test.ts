@@ -215,3 +215,9 @@ describe('SingingMicrophoneSession listen/Flip-Flop', () => {
     session.release();
   });
 });
+
+it('true-background clear cancels Flip-Flop rest and cannot reacquire when the rest deadline passes',()=>{
+ const now={t:1000},session=sessionAt(now);session.setFlipFlop(true);
+ now.t+=FLIPFLOP_SLOT_MS;session.tick();now.t+=FLIPFLOP_SLOT_MS;session.tick();expect(session.action.kind).toBe('flipflop-rest');
+ session.clearCollapsedToolState();now.t+=FLIPFLOP_REST_MS;session.tick();expect(session.action.kind).toBe('idle');expect(session.ownsMicrophone).toBe(false);expect(session.capture.isRunning).toBe(false);expect(session.slot1).toBeNull();expect(session.slot2).toBeNull();session.release();
+});

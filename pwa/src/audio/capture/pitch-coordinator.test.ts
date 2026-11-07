@@ -59,3 +59,13 @@ describe('MicrophonePitchCoordinator exclusive lease', () => {
     coordinator.release();
   });
 });
+
+it('true departure revokes both old leases and requires a fresh explicit claim, not permanent disposal',()=>{
+ const tracker=new PitchPublisher(69),coordinator=new MicrophonePitchCoordinator(tracker);
+ const persistent=coordinator.sourceFor(MicrophonePitchOwner.PLAYBACK_PERSISTENT),singing=coordinator.sourceFor(MicrophonePitchOwner.SINGING_TOOL);
+ persistent.claim(PitchTrackingMode.MELODY_FAST);persistent.start(69);coordinator.stopAll();
+ expect(persistent.ownsMicrophone).toBe(false);expect(singing.ownsMicrophone).toBe(false);expect(tracker.isRunning).toBe(false);expect(tracker.current).toBe(NO_SIGNAL);
+ persistent.start(60);singing.start(60);expect(tracker.isRunning).toBe(false);
+ singing.claim();singing.start(64);expect(tracker.isRunning).toBe(true);expect(tracker.targetMidi).toBe(64);
+ coordinator.release();coordinator.stopAll();singing.claim();singing.start(60);expect(tracker.isRunning).toBe(false);
+});

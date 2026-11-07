@@ -518,9 +518,9 @@
       "owner": "codex",
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace/acquiring",
-      "baseCommit": "df6a7340751caf9d27b7d671cc4c273c510b1e66",
-      "slice": "trusted-tab-bounded-proof",
-      "nextAction": "Real tab gate remains open until browser/environment genuinely emits hidden/blur on departure; do not loop retries or weaken assertions. Next ready primary bounded proof: product navigation/pagehide capture retirement and explicit fresh-document restart; distinguish available genuine pagehide from unavailable real-tab visibility.",
+      "baseCommit": "a262cbb4a211549d7911a7ba93cc9d67bdbee8dd",
+      "slice": "product-pagehide-capture",
+      "nextAction": "Genuine product reload/pagehide and route capture retirement slice validated; real-tab gate still OPEN unchanged and BFCache/device not proven. Next primary bounded slice: pinned HummingIntervalPopup visible 300ms collapse/shrink and clearAfterCollapse (stop mic immediately, retain visible targets/slots during exit, clear after completion); true pagehide keeps immediate empty/collapse behavior. No trusted-tab environment retries.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -638,6 +638,24 @@
           "revision": "same original assertions/candidate",
           "result": "FAIL 1/1 6.4s. Headed Chromium with focus emulation disabled also visible/lifecycle []. No DOM event dispatch or visibility/isTrusted patch. Private display terminated in finally. Investigation stopped after two distinct environment attempts.",
           "log": "pwa/.artifacts/pwa-port/t08-tab-headed-001"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T08-pagehide-check-001 --owner codex --task T08 --next-action 'Validate pagehide lease and singing cancellation with original unit parity types and production build' --cwd pwa -- npm run check",
+          "revision": "a262cbb4 + source SHA256 .artifacts/pwa-port/t08-pagehide-source.json",
+          "result": "PASS 1210 unit /109 files (2 new native lifecycle cases); 1 parity; strict types; production shell be295c62f8ec /12 files. Existing app bundle warning.",
+          "log": ".artifacts/pwa-port/runs/T08-pagehide-check-001/result.json"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T08-pagehide-browser-001 --owner codex --task T08 --next-action 'Run genuine product pagehide/navigation capture proofs and original policy A/pagehide assertions; no trusted-tab retry' --cwd pwa -- npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/playback.spec.ts tests/browser/audio-preview.spec.ts --grep 'product genuine reload|product route Back|policy A|real tab departure|trusted pagehide' --output .artifacts/pwa-port/t08-pagehide-browser-001",
+          "revision": "same source hashes",
+          "result": "PASS FIRST RUN 9 passed/1 original trusted-tab fixme skipped, reported 1.7m. New reload active monitoring 11.4s, armed 800ms singing 13.6s, pending-worklet route Back 14.1s; original 5 policy A and preview pagehide assertions passed. No synthetic lifecycle events.",
+          "log": "pwa/.artifacts/pwa-port/t08-pagehide-browser-001"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T08-pagehide-proof-002 --owner codex --task T08 --next-action 'Retain actual trusted navigation receipt attachments in JSON report for three new product proofs; assertions unchanged' --cwd pwa -- env PLAYWRIGHT_JSON_OUTPUT_FILE=.artifacts/pwa-port/t08-pagehide-proof-002/report.json npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/playback.spec.ts --grep 'product genuine reload|product route Back' --reporter=line,json --output .artifacts/pwa-port/t08-pagehide-proof-002",
+          "revision": "same source hashes",
+          "result": "PASS 3/3 43.3s; JSON reporter retained inline attachments (line reporter alone discarded them). Exact new cases 12.613s/12.269s/14.033s. Trusted pagehide true, persisted false. Active capture 1 call/1 graph, track ended/context closed; armed singing 0 calls/graphs/timers. Route Back retires pending worklet; late completion 0 graphs until explicit restart, final both tracks ended/contexts closed. Fake/silent Chromium media, artificial worklet delay, not physical mic/permission/Safari/BFCache/trusted-tab proof.",
+          "log": "pwa/.artifacts/pwa-port/t08-pagehide-proof-002/report.json"
         }
       ],
       "progress": [
@@ -681,7 +699,8 @@
         "2026-10-16T17:10:47.582870+00:00 e084ccb6 composed owner185units/strict types/build PASS(shell ee0b60b5be75). First actualChrome2failed before first source, error Selected audio clock regressed; immutable guard window10-owner-browser-first-20261016, proof+traces unique browser-first. No assertion weakened. Bounded diagnostic1: record actual timestamp/currentTime without alteration in fixture, rerun exact2cases unique browser-clock-diagnostic. Same Sol/high read-only cause review; no worker source edits. FullT08/App/device acceptance open.",
         "2026-10-16T17:12:33.827866+00:00 raw-clock diagnostic recorded both rates:44100 output .000069->.000021 at render .040635;48000 .000029->.000009 at render .04,0sources. Same error, no correction/retest yet. Inference: premature monotonic baseline during silent module startup. WebAudio getOutputTimestamp source https://webaudio.github.io/web-audio-api/#dom-audiocontext-getoutputtimestamp describes outputframe vsrendercurrentTime, zero beforeprocessing; no monotonic guarantee added. Root bounded startup correction intent; no clock blending or active-regression relaxation.",
         "2026-10-16T17:16:50.841873+00:00 accepted composed owner and narrow silent-start clock correction; worker read-only reviewed4paths/no material findings. Current primary10ownedpaths only; guard0recovery, no relevant node/python process observed afterbrowserexit. All old branches/profiles/failuretraces preserved. Lastlive34%/67%; later usage query produced no response through bounded waits and was cancelled(read-only). No new slice while current quota unavailable; this is temporary scheduling state, no credits/resets/model action.",
-        "2026-11-07 Codex bounded genuine-tab attempt: inspected installed Playwright default Emulation.setFocusEmulationEnabled true; disabling it did not produce departure events in headless or private-Xorg headed Chromium. Both actual bringToFront attempts failed added hidden assertion; original tracked test.fixme and body untouched. No tab/Safari/BFCache/Pixel acceptance. Independent T09 pending capture stop race repaired and tested instead."
+        "2026-11-07 Codex bounded genuine-tab attempt: inspected installed Playwright default Emulation.setFocusEmulationEnabled true; disabling it did not produce departure events in headless or private-Xorg headed Chromium. Both actual bringToFront attempts failed added hidden assertion; original tracked test.fixme and body untouched. No tab/Safari/BFCache/Pixel acceptance. Independent T09 pending capture stop race repaired and tested instead.",
+        "2026-11-07 a262cbb4 source/native ON_STOP slice: coordinator.stopAll revokes both capture leases without permanent release; playback mic hook binds genuine pagehide; SingingDock cancels 800ms target timer, stops Flip-Flop including rest, clears slots/target and collapses immediately on true departure. No blur/visibility hook added (permission sheet ON_PAUSE semantics unchanged). Native MainActivity/PlaybackView/HummingIntervalPopup match 801cf798. Unit stale-lease/Flip-Flop-rest cases + genuine product reload/Back tests pass. No parent completion, no trusted-tab/BFCache/physical proof, no scores algorithm change. Settings Back unchanged/unrun, no remote/data mutations. Next visible 300ms collapse semantics, not T22 polish or Aural."
       ],
       "blocker": "T08-tab-candidate-001 headless and T08-tab-headed-001 private Xorg headed both FAILED real hidden assertion: visible, lifecycle []. Native focus restored by disabling Playwright focus emulation; genuine bringToFront still yields no trusted visibility/blur. Original test.fixme/body unchanged. No more tab retries this pass.",
       "proposalAssignment": {

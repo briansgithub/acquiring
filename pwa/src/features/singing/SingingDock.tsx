@@ -37,6 +37,8 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   const expandedRef=useRef(expanded);
   const midiRef=useRef({transpose,octaveOffset});
   const previewGen=useRef(0);
+  const onExpandedChangeRef=useRef(onExpandedChange);
+  onExpandedChangeRef.current=onExpandedChange;
   const [displayedTarget,setDisplayedTarget]=useState(target);
   const displayedTargetRef=useRef(displayedTarget);
   expandedRef.current=expanded;
@@ -66,8 +68,16 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
       const midi=midiRef.current;
       session.maybeAutoListen(1,effectiveTargetMidi(first,midi.transpose,midi.octaveOffset));
     },AUTO_LISTEN_MS);
-    return()=>window.clearTimeout(id);
+    const cancelAutoListen=()=>window.clearTimeout(id);
+    window.addEventListener('pagehide',cancelAutoListen);
+    return()=>{cancelAutoListen();window.removeEventListener('pagehide',cancelAutoListen);};
   },[target?.requestId,session]);
+  useEffect(()=>{
+    // Native HummingIntervalPopup ON_STOP: collapse, stop even Flip-Flop rest, clear slots/target.
+    const hide=()=>{session.clearCollapsedToolState();expandedRef.current=false;displayedTargetRef.current=null;setDisplayedTarget(null);onExpandedChangeRef.current(false);};
+    window.addEventListener('pagehide',hide);
+    return()=>window.removeEventListener('pagehide',hide);
+  },[session]);
   useEffect(()=>{
     if(mic.action.kind==='idle')return;
     const id=window.setInterval(()=>{session.tick();setNowTick((n)=>n+1);},100);
