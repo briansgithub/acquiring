@@ -5,7 +5,7 @@
  * identity or T27 proof. Hidden in root-only/simple. Tap seeks currentBeat+(tapX-centerX)/60.
  * Drag scrubs startBeat-deltaX/60 (finger right → earlier beat). Chord-lane Roman uses
  * accepted getRomanSymbol / getRelativeIonianRomanSymbol + T04 display. No inertia/coast
- * overlay uses accepted PersistentPlaybackPitchPractice medians when Pitch monitoring is on.
+ * overlay uses accepted PersistentPlaybackPitchPractice medians plus live halo/marker when Pitch monitoring is on.
  */
 import type {ExtractedSection,MelodyNote} from '../../contracts';
 import {getKeys,keyAtBeat} from '../../domain/data';

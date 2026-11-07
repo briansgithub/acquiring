@@ -10,15 +10,16 @@ import {
 } from './timeline-layout';
 import {chordLaneRomanCenterY,chordLaneRomanFit,paintChordLaneRoman} from './timeline-roman';
 import {paintMelodyRunScores} from './timeline-scores';
+import {liveMelodyPitchLabel,paintLiveMelodyPitch,type LiveMelodyPitch} from './timeline-live-pitch';
 import {useTimelineScrub,type TimelineScrub} from './timeline-scrub';
 import {formatMelodyTimelinePitchScore,type MelodyRunScoreOutcome} from './melody-timeline-score';
 
 export type {TimelineScrub};
 
-/** Product timeline: Canvas lanes/playhead, tap/drag, chord-lane Roman, banked melody scores. No inertia. */
-export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onScrub,scores=emptyScores,monitoring=false}:{
+/** Product timeline: Canvas lanes/playhead, tap/drag, chord-lane Roman, banked melody scores, live halo. No inertia. */
+export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onScrub,scores=emptyScores,monitoring=false,live=null}:{
   section:ExtractedSection;beat:number;rootOnly:boolean;majorLocked?:boolean;onScrub?:TimelineScrub;
-  scores?:ReadonlyMap<number,MelodyRunScoreOutcome>;monitoring?:boolean;
+  scores?:ReadonlyMap<number,MelodyRunScoreOutcome>;monitoring?:boolean;live?:LiveMelodyPitch|null;
 }){
   const canvasRef=useRef<HTMLCanvasElement>(null);
   const hostRef=useRef<HTMLDivElement>(null);
@@ -69,7 +70,11 @@ export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onScru
     ctx.restore();
     ctx.fillStyle='#ffffff';
     ctx.fillRect(layoutNow.playheadX-TIMELINE_PLAYHEAD_STROKE_PX/2,0,TIMELINE_PLAYHEAD_STROKE_PX,layoutNow.height);
-  },[chords,layout,melody,scores]);
+    if(monitoring&&live){
+      const active=melody.find(note=>beat>=note.beat&&beat<note.beat+note.duration);
+      paintLiveMelodyPitch(ctx,layoutNow,live,active?active.staffDegree:null);
+    }
+  },[beat,chords,layout,live,melody,monitoring,scores]);
 
   if(rootOnly||layout&&!layout.visible){
     return <div ref={hostRef} className="playback-timeline-host" data-playback-timeline="hidden" hidden/>;
@@ -85,6 +90,9 @@ export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onScru
       data-timeline-romans={chords.map(chord=>chord.roman?.symbol??'').join('|')}
       data-timeline-scores={scoreAttr(scores)}
       data-pitch-monitoring={monitoring?'true':'false'}
+      data-timeline-halo={monitoring&&live?'true':'false'}
+      data-timeline-live-estimate={live?.hasEstimate?'true':'false'}
+      data-timeline-live-cents={monitoring&&live?liveMelodyPitchLabel(live):''}
       data-timeline-playhead={layout?String(layout.playheadX):''}
       height={TIMELINE_HEIGHT_PX} draggable={false}/>
   </div>;

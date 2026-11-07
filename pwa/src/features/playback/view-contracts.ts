@@ -17,12 +17,12 @@
  * Lock in Major fixes a sectioninitial relativeIoniancontext; cardlabels/registers follow native,
  * rootOnly andmelody taps staysource register (normalizedtarget is futureT13 singing),
  * fullchord/Home/sourcekey/transport remain sourcebased. Localstate is not globalpersistence.
- * Remaining slices: timeline inertia. Pitch-score overlay uses accepted kernel + opt-in Pitch monitoring.
+ * Remaining slices: timeline inertia. Pitch-score overlay uses accepted kernel + opt-in Pitch monitoring + live halo.
  * Route-position memory, Favorites star, T21 selectAsDefault, tap-to-seek, and live drag scrub are in.
  * wholeT12 remains in_progress,
  * device/Safari acceptance remains unrun. Lock-in-Major restaffs timeline melody staff
  * (native useRelativeIonianContext). Chord-lane Roman uses accepted T03/T04. Pitch monitoring
- * is missing-impl, not device-blocked. CSS=dp
+ * live halo/marker uses captured estimate (held OK for display, not banking); silent 0¢ rest is not a banked score. CSS=dp
  * noteHeight vs density-3 raw px remains a tracked mapping gap, not T27 proof.
  */
 /** Next bounded presentation slice: previous root/melody single-pitch cards only.

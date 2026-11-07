@@ -707,3 +707,24 @@ test('policy A first-load permission denial shows Error and stays idle (stubbed 
   await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
   await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toHaveCount(0);
 });
+
+test('opt-in Pitch monitoring paints native live halo rest 0¢ from capture (Playwright fake/silent getUserMedia; not SYNTHETIC oscillator; not Pixel)',async({page,context})=>{
+  await context.grantPermissions(['microphone']);
+  await instrument(page);await installAndOpen(page);
+  const timeline=page.locator('[data-playback-timeline="visible"]');
+  const mic=page.getByRole('button',{name:'Pitch monitoring',exact:true});
+  await expect(timeline).toHaveAttribute('data-timeline-halo','false');
+  await expect(timeline).toHaveAttribute('data-timeline-live-cents','');
+  await expect(timeline).toHaveAttribute('data-timeline-scores','');
+  await mic.click();
+  await expect(mic).toHaveAttribute('aria-pressed','true');
+  await expect.poll(async()=>timeline.getAttribute('data-timeline-halo')).toBe('true');
+  await expect(timeline).toHaveAttribute('data-timeline-live-cents','0¢');
+  await expect(timeline).toHaveAttribute('data-timeline-live-estimate','false');
+  await expect(timeline).toHaveAttribute('data-timeline-scores','');
+  await mic.click();
+  await expect(mic).toHaveAttribute('aria-pressed','false');
+  await expect(timeline).toHaveAttribute('data-timeline-halo','false');
+  await expect(timeline).toHaveAttribute('data-timeline-live-cents','');
+  await expect(timeline).toHaveAttribute('data-timeline-scores','');
+});
