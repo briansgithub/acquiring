@@ -10,13 +10,13 @@ Updated 2026-11-07. Continuation branch **codex/pwa-continuation**. Android base
 
 T15 Phase 2 is preserved at **e5ed284c** (`buildAuralSongRankFragment`, 19 focused / 960 unit / types / shell `1a7e9ac45427`). Song-rank is Aural-catalog eligibility (`eligibleRankBits`); it does **not** serve Playback, singing dock, or note/chord cards. Family trees are a different Aural sibling. Do not expand T15.
 
-Landed: T13 octave kernel `165f3dbf`; T12 timeline layout `0d77407e`; Canvas `430a6430`; this checkpoint Lock-in-Major restaff + T06 song-scoped octave persistence + singing dock chrome without scores.
+Landed: T13 octave kernel `165f3dbf`; T12 timeline layout `0d77407e`; Canvas `430a6430`; Lock-in-Major restaff + T06 song-scoped octave persistence + singing dock chrome without scores `3abadc1c`; this checkpoint T12 defaults/route-position memory.
 
 Native `PlaybackView` `useRelativeIonianContext` restaffs melody timeline staff — required parity, now shared from the Lock in Major checkbox (Chrome staffDegrees change on Playback_Context). Chord-lane Roman painter still absent. CSS=dp noteHeight vs density-3 raw px remains a tracked mapping gap, not T27.
 
-**Partial, not parity:** no inertia/tap/Roman/scores; Flip-Flop/listen disabled pending T09; native auto-listen after card-target expand is not started (would need mic). Library Settings Back 64px remains excluded.
+**Partial, not parity:** no inertia/tap/Roman/scores; Flip-Flop/listen disabled pending T09; native auto-listen after card-target expand is not started (would need mic). Library Settings Back 64px remains excluded. Settings instrument default is still T21. Favorites star is not wired.
 
-Next: T12 defaults / route-position memory — do not polish inertia/Roman. Mic/scores stay T09. Aural/T15 remainder last.
+Next: T12 Playback favorites star via T06 `playlists`/`playlistEntries` (native Favorites built-in). Do not polish inertia/Roman. Mic/scores stay T09. Aural/T15 remainder last.
 
 **Pixel 9 Pro:** coordinator shared box paired/connected `100.95.230.49:38131` via `/workspace/music/android-sdk/platform-tools/adb` (get-state=device, Pixel 9 Pro, Android 17 SDK 37). That does **not** prove this cloud VM reachability. This VM still has no adb/Tailscale path. No ADB exploration unless a specific test needs it; coordinator can support device tests then. Not T27 proof, not APK/install/reset/network authority. See [TESTING_RESOURCES.md](TESTING_RESOURCES.md).
 

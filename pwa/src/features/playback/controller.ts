@@ -4,6 +4,8 @@ import {PlaybackChordMode,Waveform,type PlaybackConfig} from '../../audio/synth'
 import {preparePlaybackSection,type PreparedPlaybackSection} from './section-model';
 
 export const PLAYBACK_ARPEGGIOS=Object.freeze([.25,1/3,.5,0,1,2,3,4]);
+export const DEFAULT_PLAYBACK_TEMPO_PERCENT=100;
+export const DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX=3;
 export interface PlaybackSettings {
   readonly tempoPercent:number;readonly transpose:number;readonly melodyPercent:number;
   readonly waveform:Waveform;readonly rootOnly:boolean;readonly arpeggioIndex:number;
@@ -12,7 +14,7 @@ export interface SectionPlaybackState {
   readonly settings:PlaybackSettings;readonly transport:PlaybackTransportState;
   readonly endBeat:number;readonly baseBpm:number;readonly scrubbing:boolean;
 }
-const defaults:PlaybackSettings=Object.freeze({tempoPercent:100,transpose:0,melodyPercent:50,waveform:Waveform.CLARINET,rootOnly:false,arpeggioIndex:3});
+const defaults:PlaybackSettings=Object.freeze({tempoPercent:DEFAULT_PLAYBACK_TEMPO_PERCENT,transpose:0,melodyPercent:50,waveform:Waveform.CLARINET,rootOnly:false,arpeggioIndex:DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX});
 function config(model:PreparedPlaybackSection,settings:PlaybackSettings):PlaybackConfig {
   const {tempoPercent,transpose,melodyPercent,waveform,rootOnly,arpeggioIndex}=settings;
   for(const [value,min,max] of [[tempoPercent,0,200],[transpose,-12,12],[melodyPercent,0,100],[arpeggioIndex,0,7]])
@@ -104,6 +106,13 @@ export class SectionPlaybackController {
     this.publish();
   }
   cancelScrub():void {if(this.stopped)return;++this.revision;this.clearScrub();this.publish();}
+  restoreBeat(beat:number):void {
+    if(this.stopped)return;
+    if(!Number.isFinite(beat))throw new RangeError('Invalid playback beat');
+    this.start();const revision=++this.revision;this.clearScrub();
+    this.engine!.seek(Math.min(this.model.timeline.endBeat,Math.max(1,beat)),false);
+    if(!this.stopped&&revision===this.revision)this.publish();
+  }
   dispose():void {
     if(this.stopped)return;this.stopped=true;++this.revision;this.clearScrub();
     const engine=this.engine;this.unsubscribe?.();this.unsubscribe=null;

@@ -37,6 +37,12 @@ it('scrubs silently, resumes only prior intent and suppresses late resume after 
   s.controller.beginScrub();s.controller.scrubTo(3);s.invalidate();const calls=s.engine.seek.mock.calls.length;s.controller.finishScrub();
   expect(s.engine.seek).toHaveBeenCalledTimes(calls);expect(s.controller.getSnapshot().transport.playbackRequested).toBe(false);s.controller.dispose();
 });
+it('restores a clamped beat without leaving a scrub or starting audio',()=>{
+  const s=setup();s.controller.start();s.controller.updateSettings({tempoPercent:125,transpose:2});
+  s.controller.restoreBeat(2.5);expect(s.engine.seek).toHaveBeenLastCalledWith(2.5,false);
+  expect(s.controller.getSnapshot()).toMatchObject({scrubbing:false,settings:{tempoPercent:125,transpose:2},transport:{beat:2.5,playbackRequested:false}});
+  s.controller.restoreBeat(999);expect(s.engine.seek).toHaveBeenLastCalledWith(4,false);s.controller.dispose();
+});
 it('keeps paused and exact-end scrubs silent, cancellation never starts audio',()=>{
   const s=setup();s.controller.start();s.controller.scrubTo(999);s.controller.finishScrub();
   expect(s.engine.seek).toHaveBeenLastCalledWith(4,false);s.controller.play();s.controller.scrubTo(2);s.controller.cancelScrub();

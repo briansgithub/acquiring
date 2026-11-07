@@ -1349,9 +1349,20 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Canvas timeline restaffs on Lock in Major. Defaults/position memory/inertia/Roman/scores remain.",
-      "nextAction": "T12 defaults / route-position memory next. Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted. Canvas timeline restaffs on Lock in Major. Route-position memory landed. Favorites/T21 default/inertia/Roman/scores remain.",
+      "nextAction": "T12 Playback favorites star via T06 playlists next. Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
+        {
+          "command": "npx vitest run src/features/playback/playback-route-memory.test.ts src/features/playback/controller.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-route-memory/browser-first",
+          "revision": "3abadc1c plus named route-memory tree",
+          "guards": [
+            "T12-route-memory-unit-001",
+            "T12-route-memory-typecheck-001",
+            "T12-route-memory-check-001",
+            "T12-route-memory-browser-001"
+          ],
+          "result": "PASS 13 focused; typecheck; combined 992 unit/76 files + 1 parity + types + shell d859d1a59368; Chrome 14/14 playback.spec FIRST PASS 1.6m including Info round-trip + library re-entry. Session waveform in-memory only. No T21 Settings default, favorites, inertia, scores, device, or whole-CI-green claim. Preexisting app test:browser audio-sink/Library 64px remains."
+        },
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
           "revision": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c plus exact modelAssignment.testedSha256 tree committednext",
@@ -1909,6 +1920,37 @@
           "pwa/tests/browser/playback.spec.ts": "d0c08e8b214f8c61c55cab375898eef932ec84c4144f3c207216979851f3dffd",
           "pwa/src/features/playback/WORKLOG.md": "cea307cf17800ff37331c509ecdab5b8566a40323a323ca23959878c2e9b137a"
         }
+      },
+      "routeMemoryAssignment": {
+        "owner": "coordinator (cursor-grok /workspace)",
+        "at": "2026-11-07T09:56:00+00:00",
+        "baseCommit": "3abadc1cbce315672bb465b972dffaa057e343e2",
+        "branch": "codex/pwa-continuation",
+        "ownedPaths": [
+          "pwa/src/features/playback/playback-route-memory.ts",
+          "pwa/src/features/playback/playback-route-memory.test.ts",
+          "pwa/src/features/playback/controller.ts",
+          "pwa/src/features/playback/controller.test.ts",
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/features/playback/view-contracts.ts",
+          "pwa/src/app/App.tsx",
+          "pwa/tests/browser/playback.spec.ts",
+          "pwa/src/features/playback/WORKLOG.md"
+        ],
+        "scope": "Native MainActivity remember(slug) tempo 100 / arp 3, process transpose, PlaybackController identity skip-load, session waveform selectForSession. Info remount restores section/beat/tempo/arp/transpose/waveform. Mix/Lock/root-only remount-reset. Library re-entry resets tempo/arp; beat restores only if first-section identity matches. Settings selectAsDefault not included.",
+        "status": "unit-001 13 focused PASS; typecheck-001 PASS; check-001 992 unit/76 files + 1 parity + shell d859d1a59368; browser-001 FIRST PASS 14/14 1.6m",
+        "nextAction": "Playback favorites star via T06 playlists. T21 Settings default after that. Do not polish inertia or fake scores.",
+        "testedSha256": {
+          "pwa/src/features/playback/playback-route-memory.ts": "a5a224e31bf8a5f0bd6123a078e591f8bf1c85c11426c2e6c36f6c64ad6726f0",
+          "pwa/src/features/playback/playback-route-memory.test.ts": "9d672223f099de4643d83bbaa43913a03227f71032ce822bd87f011af10ddcf7",
+          "pwa/src/features/playback/controller.ts": "990ad8c49b4bc705322a5e2791e1bb06a140484820978cb8330fa6ccf92507ec",
+          "pwa/src/features/playback/controller.test.ts": "3cce1bea2c3e56f1af7ceff2859dbb67c35d7c708932af16c3bcbb4555b9a76b",
+          "pwa/src/features/playback/PlaybackScreen.tsx": "d6cf3b44c9d923c0fb959b824baeeef2a3a87165a13ac8350b285db1a0aca0ba",
+          "pwa/src/features/playback/view-contracts.ts": "94b5b24b580297581dbde6e1aabc274c5a01957f3795786223a50670d0e7fe92",
+          "pwa/src/app/App.tsx": "2378074188aeb0e7ae3c0723c7408891b5ea67207dd58d4249451269814b2464",
+          "pwa/tests/browser/playback.spec.ts": "2470b20b7c4ee5bf63164258850deab47cd6bc195ec916af33fe5766b055501c",
+          "pwa/src/features/playback/WORKLOG.md": "0506e05270f913aa224ad9d7f40e939a385500b8eeeb88512f47267a27bc0777"
+        }
       }
     },
     {
@@ -1928,7 +1970,7 @@
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
       "slice": "Octave kernel + T06 songOctaveOffsets session + dock chrome without scores. Flip-Flop/listen/auto-listen/mic remain T09.",
-      "nextAction": "Do not fake scores. T09 remains required for scoring/mic. Next independent T12 work is defaults/position memory. Do not start Aural/T15 remainder.",
+      "nextAction": "Do not fake scores. T09 remains required for scoring/mic. Next independent T12 work is Playback favorites star. Do not start Aural/T15 remainder.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -1986,7 +2028,7 @@
         ],
         "scope": "Native useRelativeIonianContext restaff is required parity; lift Lock in Major into timeline. SongOctaveOffsetViewModel + T06 songOctaveOffsets. Dock chrome without mic/scores. Card double-click assigns slots and pauses source.",
         "status": "typecheck-001 PASS; check-001 985 unit/75 files + 1 parity + shell 3337857970b3; browser-001 staff identity FAIL Detail_Gzip (cycle1 test-only); browser-002 restaff Playback_Context PASS; browser-003 13/13 playback.spec PASS 1.5m",
-        "nextAction": "T12 defaults/route-position memory. Do not fake scores or polish inertia.",
+        "nextAction": "Route-position memory landed later. Do not fake scores or polish inertia.",
         "testedSha256": {
           "pwa/src/features/singing/song-octave-session.ts": "294ac0f13559cce4bf0de74f2c82e735a37128866254ee7fbd67cd7d4346ea8a",
           "pwa/src/features/singing/song-octave-session.test.ts": "43207b086bc53f7152e3eb404fb77043678c24101fc94412b9319af4e11f667a",
