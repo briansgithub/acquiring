@@ -131,6 +131,8 @@ test('Artists chip typeahead uses getArtistSuggestions and Search is artist LIKE
   await expect(page.locator('[data-song-slug="a-alpha"]')).toBeVisible();
   await page.getByRole('button',{name:'Back to search',exact:true}).click();
   await page.getByRole('button',{name:'Artists',exact:true}).click();
+  await page.getByRole('button',{name:'Search',exact:true}).click();
+  await expect(page.getByText('Enter an artist to search',{exact:true})).toBeVisible();
   await page.getByRole('searchbox',{name:'Search artists',exact:true}).fill('Artist B');
   await page.getByRole('button',{name:'Search',exact:true}).click();
   await expect(page.locator('[data-song-slug="b-alpha"]')).toBeVisible();

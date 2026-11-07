@@ -77,7 +77,12 @@ export class LibraryController {
   }
   /** Native Artists-scope Search: searchBrowseSongsByArtist, not exact artist identity. */
   searchArtistSongs(text:string):Promise<void> {
-    if(this.disposed||!text.trim())return Promise.resolve();
+    if(this.disposed)return Promise.resolve();
+    if(!text.trim()){
+      this.generation++;clearTimeout(this.timer);
+      this.publish({...emptyView(),artistSearch:true,phase:'ready',message:'Enter an artist to search',loadingMore:false});
+      return Promise.resolve();
+    }
     this.generation++;clearTimeout(this.timer);
     this.publish({...emptyView(),text,artistSearch:true,phase:'loading',message:undefined,loadingMore:false});
     return this.load(false);

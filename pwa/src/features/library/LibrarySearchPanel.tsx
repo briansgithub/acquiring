@@ -89,7 +89,7 @@ export function LibrarySearchPanel({text,searchFocused,onSearchFocused,onSearch,
     </div>
     {!songs&&<button className="library-primary-action" type="button" data-library-artist-search-submit=""
       onMouseDown={(event)=>event.preventDefault()}
-      onClick={()=>{onSearchFocused(false);if(trimmed)onSearchArtistSongs(artistQuery);}}>Search</button>}
+      onClick={()=>{onSearchFocused(false);onSearchArtistSongs(artistQuery);}}>Search</button>}
     {!songs&&searchFocused&&<ArtistSuggestions query={artistQuery} names={names} recent={recent} hasMore={hasMore}
       onSelect={onArtist} onLoadMore={loadMore}/>}
   </>;

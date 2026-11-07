@@ -91,8 +91,9 @@ it('Artists Search uses artistSearch LIKE mode and suggestions stay on the exclu
   expect(library.capture().artistSearch).toBe(true);
   await expect(library.artistSuggestions('Artist A')).resolves.toEqual({sourceSnapshot:'one',names:['Artist A'],hasMore:false,nextOffset:null});
   expect(client.artistSuggestions).toHaveBeenCalledWith({query:'Artist A',limit:20,offset:0});
-  library.searchArtistSongs('   ');
+  await library.searchArtistSongs('   ');
   expect(client.songPage).toHaveBeenCalledTimes(2);
+  expect(library.getSnapshot()).toMatchObject({artistSearch:true,rows:[],phase:'ready',message:'Enter an artist to search'});
   library.dispose();
   await expect(library.artistSuggestions('Artist A')).resolves.toEqual({sourceSnapshot:'',names:[],hasMore:false,nextOffset:null});
 });

@@ -3,7 +3,7 @@ import {
   DISPLAY_PREFS_KEY,TimelineFrameRatePreference,TIMELINE_FRAME_RATE_OPTIONS,TimelineFrameRateStore,
   framesPerSecond,fromStorage,stateUpdateNanos,timelineFrameRateStore,
 } from './timeline-frame-rate';
-import {APP_VERSION_NAME,PRIVACY_POLICY_LABEL,PRIVACY_POLICY_URL} from './privacy-policy';
+import {APP_VERSION_NAME,PRIVACY_POLICY_LABEL,PRIVACY_POLICY_URL,appVersionLabel} from './privacy-policy';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 
@@ -65,13 +65,14 @@ describe('native SettingsSectionsTest.kt display and privacy placement',()=>{
     expect(PRIVACY_POLICY_LABEL).toBe('Privacy policy');
     expect(PRIVACY_POLICY_URL).toBe('https://bellsworth.dev/apps/acquiring/privacy/');
     expect(APP_VERSION_NAME).toBe('0.1.0');
+    expect(appVersionLabel()).toBe('Version 0.1.0 (build 1)');
   });
 
   it('privacyPolicyIsLastSettingsSectionNotOnSearch',()=>{
     const settings=readFileSync(resolve('src/app/App.tsx'),'utf8');
     const library=readFileSync(resolve('src/features/library/LibraryScreen.tsx'),'utf8');
     const link=settings.lastIndexOf('<PrivacyPolicyLink');
-    const version=settings.lastIndexOf('APP_VERSION_NAME');
+    const version=settings.lastIndexOf('appVersionLabel');
     expect(link).toBeGreaterThan(version);
     expect(link).toBeGreaterThan(settings.lastIndexOf('AudioDiagnosticsControl'));
     expect(library.includes('PrivacyPolicyLink')).toBe(false);

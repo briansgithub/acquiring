@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 test('Library, Settings, browser history and bookmarked screens', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Library', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Settings', exact: true })).toHaveAttribute('data-settings-update', /none|available/);
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await expect(page).toHaveURL(/\/settings$/);
   await expect(page.locator('[data-audio-diagnostics]')).toBeVisible();
@@ -17,7 +18,18 @@ test('Library, Settings, browser history and bookmarked screens', async ({ page 
   expect(JSON.parse(await page.evaluate(() => localStorage.getItem('acquiring-display') || '{}'))).toEqual({timelineFrameRate: 'maximum'});
   await page.reload();
   await expect(page.getByRole('radio', { name: 'Timeline frame rate: Maximum', exact: true })).toBeChecked();
-  await expect(page.locator('[data-app-version]')).toHaveText('Version 0.1.0');
+  await expect(page.locator('[data-app-updates]')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Open Play Store for updates', exact: true })).toBeVisible();
+  await expect.poll(async () => page.locator('[data-app-update-status]').getAttribute('data-app-update-status'))
+    .toMatch(/UP_TO_DATE|UNAVAILABLE/);
+  const updatesBeforeDisplay = await page.evaluate(() => {
+    const updates = document.querySelector('[data-app-updates]');
+    const display = [...document.querySelectorAll('h2')].find(node => node.textContent === 'Display');
+    if (!updates || !display) return false;
+    return !!(updates.compareDocumentPosition(display) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  expect(updatesBeforeDisplay).toBe(true);
+  await expect(page.locator('[data-app-version]')).toHaveText('Version 0.1.0 (build 1)');
   const privacy = page.getByRole('link', { name: 'Privacy policy', exact: true });
   await expect(privacy).toHaveAttribute('href', 'https://bellsworth.dev/apps/acquiring/privacy/');
   await expect(page.getByRole('heading', { name: 'Privacy', exact: true })).toBeVisible();

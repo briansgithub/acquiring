@@ -29,6 +29,7 @@ export function LibraryContent({
   const browsingArtist = state.artist !== null;
   const hasSearch = state.text.trim().length > 0;
   const loading = state.phase === 'loading';
+  const emptyArtistPrompt = Boolean(state.artistSearch && !hasSearch && state.phase === 'ready');
   const noResultsLabel = browsingArtist
     ? 'No songs by this artist.'
     : state.artistSearch && hasSearch
@@ -89,6 +90,7 @@ export function LibraryContent({
       <RecentSelections browseBySlugs={browseBySlugs} onOpenSong={onOpenSong} />}
 
     {loading && <p className="library-status" role="status" aria-live="polite">Loading songs...</p>}
+    {emptyArtistPrompt && <p className="library-status" role="status">{state.message ?? 'Enter an artist to search'}</p>}
 
     {state.phase === 'missing' && <div className="library-message">
       <h2>No songs yet</h2>
@@ -101,7 +103,7 @@ export function LibraryContent({
       <button className="library-primary-action" type="button" onClick={onRetry}>Retry</button>
     </div>}
 
-    {state.phase === 'ready' && state.rows.length === 0 && <div className="library-message">
+    {state.phase === 'ready' && state.rows.length === 0 && !emptyArtistPrompt && <div className="library-message">
       <h2>{noResultsLabel}</h2>
       {(hasSearch || browsingArtist) && <p>Try another search or browse the available catalogs.</p>}
       <button className="library-primary-action" type="button" onClick={onDownload}>Download catalogs</button>
