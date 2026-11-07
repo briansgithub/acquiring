@@ -17,11 +17,11 @@
  * Lock in Major fixes a sectioninitial relativeIoniancontext; cardlabels/registers follow native,
  * rootOnly andmelody taps staysource register (normalizedtarget is futureT13 singing),
  * fullchord/Home/sourcekey/transport remain sourcebased. Localstate is not globalpersistence.
- * Remaining slices: timeline inertia/Roman/scores, singing mic scoring (T09).
+ * Remaining slices: timeline inertia/scores, singing mic scoring (T09).
  * Route-position memory, Favorites star, T21 selectAsDefault, tap-to-seek, and live drag scrub are in.
  * wholeT12 remains in_progress,
  * device/Safari acceptance remains unrun. Lock-in-Major restaffs timeline melody staff
- * (native useRelativeIonianContext). Chord-lane Roman painter still absent. CSS=dp
+ * (native useRelativeIonianContext). Chord-lane Roman uses accepted T03/T04. CSS=dp
  * noteHeight vs density-3 raw px remains a tracked mapping gap, not T27 proof.
  */
 /** Next bounded presentation slice: previous root/melody single-pitch cards only.
@@ -54,6 +54,7 @@ export interface PlaybackScreenProps {
   readonly queueSectionName?:string;
   readonly onSectionComplete?:(key:string)=>void;
   readonly onSongUnavailable?:(message:string)=>void;
+  readonly onQueueSectionChange?:(sectionId:string,resume:boolean)=>void;
   readonly queueNav?:PlaybackQueueNav;
 }
 

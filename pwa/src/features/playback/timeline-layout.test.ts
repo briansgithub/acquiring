@@ -96,9 +96,25 @@ describe('native melody/chord visual construction', () => {
     ]);
     expect(melodyTimelineStaffDegree('5', 1)).toBe(12);
     expect(buildChordTimelineVisuals(source)).toEqual([
-      {beat: 1, duration: 2, rest: false},
-      {beat: 3, duration: 1, rest: true},
+      {beat: 1, duration: 2, rest: false, roman: {symbol: 'I', borrowedLabel: null}},
+      {beat: 3, duration: 1, rest: true, roman: null},
     ]);
+  });
+
+  it('Major-lock chord-lane Roman uses relative Ionian, rest stays null', () => {
+    const source = section(
+      [],
+      [
+        {root: 1, type: 5, beat: 1, duration: 1},
+        {beat: 2, duration: 1, isRest: true},
+      ],
+      [{tonic: 'D', scale: 'minor', beat: 1}],
+    );
+    expect(buildChordTimelineVisuals(source, false)).toEqual([
+      {beat: 1, duration: 1, rest: false, roman: {symbol: 'i', borrowedLabel: null}},
+      {beat: 2, duration: 1, rest: true, roman: null},
+    ]);
+    expect(buildChordTimelineVisuals(source, true)[0].roman).toEqual({symbol: 'vi', borrowedLabel: null});
   });
 
   it('Major-lock staff uses accepted ionianContextStaffDegree fallback to raw', () => {

@@ -220,10 +220,12 @@ test('Lock in Major fixes the section context across modulation while preserving
   const position=page.getByRole('slider',{name:'Position',exact:true});await position.focus();await position.press('Home');for(let i=0;i<100;i++)await position.press('ArrowRight');await expect(position).toHaveValue('2');
   await expect(band.getByLabel('Source key',{exact:true})).toHaveText('Song: D Minor');await expect(band.getByLabel('Display key',{exact:true})).toHaveText('Display: C Major');
   const timeline=page.locator('[data-playback-timeline="visible"]');await expect(timeline).toHaveAttribute('data-timeline-major','true');
+  await expect.poll(async()=>timeline.getAttribute('data-timeline-romans')).toContain('vi7');
   await expect(band.getByRole('button',{name:'Play current chord vi7',exact:true})).toBeVisible();
   const tones=band.getByRole('group',{name:'Chord tones',exact:true}).getByRole('button'),toneLabel=await tones.nth(1).getAttribute('aria-label');
   await tones.nth(1).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(5);const lockedTone=(await audio(page)).items[4].hz;
   await lock.uncheck();await expect(timeline).toHaveAttribute('data-timeline-major','false');
+  await expect.poll(async()=>timeline.getAttribute('data-timeline-romans')).toContain('v7');
   await expect(band.getByRole('button',{name:'Play current chord v7',exact:true})).toBeVisible();expect(await tones.nth(1).getAttribute('aria-label')).toBe(toneLabel);
   await tones.nth(1).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(6);const sourceTone=(await audio(page)).items[5].hz;
   expect(sourceTone/lockedTone).toBeGreaterThan(1.95);expect(sourceTone/lockedTone).toBeLessThan(2.05);
@@ -508,6 +510,11 @@ test('Library Play/Shuffle opens saved queue chrome and Play queue starts playba
   await page.getByRole('button',{name:'Play queue',exact:true}).click();
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
   await expect(page.locator('[data-song-queue-bar]')).toBeVisible();
+  const queuedSection=page.getByRole('combobox',{name:'Section',exact:true});
+  const queuedFirst=await queuedSection.inputValue();
+  await queuedSection.selectOption({index:1});
+  await expect.poll(async()=>queuedSection.inputValue()).not.toBe(queuedFirst);
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-queue-section',await queuedSection.inputValue());
   await expect(page.getByText('1 of 1',{exact:true})).toBeVisible();
   await expect(page.getByRole('button',{name:'Previous song',exact:true})).toBeDisabled();
   await expect(page.getByRole('button',{name:'Next song',exact:true})).toBeDisabled();

@@ -121,6 +121,23 @@ describe('SongQueueSession', () => {
     expect(state.index).toBe(2);
   });
 
+  it('overrides the queued section and remounts with native resume intent', () => {
+    let n = 0;
+    const state = new SongQueueSession({ uuid: () => `sec${++n}` });
+    state.finishPreparation(state.begin(false, 'Playlist'), songs(2));
+    state.start();
+    const token = state.loadToken;
+    expect(state.sectionOverride).toBeNull();
+    state.changeSection('verse', true);
+    expect(state.sectionOverride).toBe('verse');
+    expect(state.autoStart).toBe(true);
+    expect(state.loadToken).not.toBe(token);
+    expect(state.index).toBe(0);
+    state.changeSection('chorus', false);
+    expect(state.sectionOverride).toBe('chorus');
+    expect(state.autoStart).toBe(false);
+  });
+
   it('skips Aural example completion so the selected section does not auto-advance', () => {
     const state = new SongQueueSession({ uuid: () => 'aural' });
     state.finishPreparation(state.begin(true, 'Examples'), songs(3));

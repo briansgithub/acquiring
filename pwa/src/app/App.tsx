@@ -50,6 +50,7 @@ export function App() {
       queueSectionName={current?.sectionName}
       onSectionComplete={key=>mutateSongQueue(session=>session.completed(key))}
       onSongUnavailable={message=>mutateSongQueue(session=>session.unavailable(queue.loadToken,message))}
+      onQueueSectionChange={queued?(id,resume)=>mutateSongQueue(session=>session.changeSection(id,resume)):undefined}
       queueNav={queued?{
         label:`${queue.index+1} of ${queue.entries.length}`,
         previousEnabled:queue.index>0,

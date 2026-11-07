@@ -28,7 +28,7 @@ import type {PlaybackScreenProps} from './view-contracts';
 const emptySubscribe=()=>()=>{};
 const emptySnapshot=()=>emptyPlaybackState;
 
-export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,autoStart=false,queueSectionId,queueSectionName,onSectionComplete,onSongUnavailable,queueNav}:PlaybackScreenProps){
+export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,autoStart=false,queueSectionId,queueSectionName,onSectionComplete,onSongUnavailable,onQueueSectionChange,queueNav}:PlaybackScreenProps){
   const [detailController,setDetailController]=useState(()=>new SongDetailController(slug));
   const detailState=useSyncExternalStore(detailController.subscribe,detailController.getSnapshot,detailController.getSnapshot);
   const [sectionId,setSectionId]=useState<string|null>(null);
@@ -181,6 +181,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
     }catch(error){setPlaybackError(error instanceof Error?error.message:'Playback settings could not be applied.');}
   }
   function changeSection(id:string){
+    if(onQueueSectionChange){onQueueSectionChange(id,Boolean(playback&&!playback.closed&&playback.getSnapshot().transport.playbackRequested));return;}
     const next=details?.sections.find(([candidate])=>candidate===id);
     const fail=(error:unknown)=>{
       setSectionId(id);
@@ -209,7 +210,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   const active=transport.playbackRequested;
   const {phase,status}=playbackStatusCopy(playbackError,transport.phase,active);
 
-  return <AppShell title={title} onBack={onBack}><div className="playback-screen" aria-busy={detailState.phase==='loading'} data-playback-phase={phase} data-playback-requested={String(active)}>
+  return <AppShell title={title} onBack={onBack}><div className="playback-screen" aria-busy={detailState.phase==='loading'} data-playback-phase={phase} data-playback-requested={String(active)} data-queue-section={queueSectionId??''}>
     {queueNav&&<div className="playback-queue-bar panel" data-song-queue-bar="">
       <span>{queueNav.label}</span>
       <button className="action" type="button" aria-label="Previous song" disabled={!queueNav.previousEnabled} onClick={queueNav.onPrevious}>Previous</button>

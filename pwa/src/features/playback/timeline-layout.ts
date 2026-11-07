@@ -3,14 +3,18 @@
  * playhead stroke (2). Native noteHeight clamp is in raw px after dp.toPx, so a density-3
  * device yields ~9.4px staff vs 5 CSS px here; that mapping is explicit, not physical-mm
  * identity or T27 proof. Hidden in root-only/simple. Tap seeks currentBeat+(tapX-centerX)/60.
- * Drag scrubs startBeat-deltaX/60 (finger right → earlier beat). No inertia/coast,
- * Roman painter, pitch-score overlay, or spacer-alignment hacks.
+ * Drag scrubs startBeat-deltaX/60 (finger right → earlier beat). Chord-lane Roman uses
+ * accepted getRomanSymbol / getRelativeIonianRomanSymbol + T04 display. No inertia/coast
+ * or pitch-score overlay.
  */
 import type {ExtractedSection,MelodyNote} from '../../contracts';
 import {getKeys,keyAtBeat} from '../../domain/data';
 import {doubleOrUndefined} from '../../domain/data/primitives';
 import {nativeBooleanOrNull} from '../../domain/music/native-json';
-import {getRawDegree,ionianContextStaffDegree,relativeIonianKey} from '../../domain/music';
+import {
+  getRawDegree,getRelativeIonianRomanSymbol,getRomanSymbol,ionianContextStaffDegree,relativeIonianKey,
+} from '../../domain/music';
+import {romanNumeralDisplayFromChord,type RomanNumeralDisplay} from '../../ui/notation/roman-numeral';
 
 export const TIMELINE_PIXELS_PER_BEAT = 60;
 export const TIMELINE_MELODY_LANE_PX = 88;
@@ -32,6 +36,7 @@ export interface TimelineChordVisual {
   readonly beat: number;
   readonly duration: number;
   readonly rest: boolean;
+  readonly roman?: RomanNumeralDisplay | null;
 }
 
 export interface TimelineLaneRect {
@@ -95,12 +100,23 @@ export function buildMelodyTimelineVisuals(
   return Object.freeze(visuals);
 }
 
-export function buildChordTimelineVisuals(section: ExtractedSection): readonly TimelineChordVisual[] {
+export function buildChordTimelineVisuals(
+  section: ExtractedSection,
+  relativeMajor = false,
+): readonly TimelineChordVisual[] {
+  const keys = getKeys(section);
+  const ionian = relativeIonianKey(keyAtBeat(keys, 1));
   return Object.freeze((section.chords ?? []).map((chord) => {
     const beat = doubleOrUndefined(chord.beat) ?? 1;
     const duration = doubleOrUndefined(chord.duration) ?? 1;
     const rest = nativeBooleanOrNull(chord.isRest) === true || nativeBooleanOrNull(chord.rest) === true;
-    return Object.freeze({beat, duration, rest});
+    const roman = rest ? null : romanNumeralDisplayFromChord(
+      relativeMajor
+        ? getRelativeIonianRomanSymbol(chord, keyAtBeat(keys, beat), ionian)
+        : getRomanSymbol(chord, keyAtBeat(keys, beat)),
+      chord.borrowed,
+    );
+    return Object.freeze({beat, duration, rest, roman});
   }));
 }
 

@@ -14,8 +14,12 @@ export interface RomanGlyph { text: string; xPx: number; centerYPx: number; styl
 export interface RomanLayout { display: RomanNumeralDisplay; fontSizePx: number; widthPx: number; topPx: number; bottomPx: number; romanCenterYPx: number; borrowedCenterYPx: number; borrowedWidthPx: number; glyphs: RomanGlyph[] }
 export interface ScaleDegreeLayout { label: ScaleDegreeLabel; fontSizePx: number; widthPx: number; topPx: number; bottomPx: number; degreeCenterYPx:number; prefixWidthPx: number; degreeWidthPx: number; degreeCenterXPx: number; suffixXPx: number; suffixWidthPx: number; hatLeftXPx: number; hatTipXPx: number; hatRightXPx: number; hatTipYPx: number; hatBaseYPx: number }
 
-const scales: Record<NotationTextStyle, number> = { BASE:1, SUPER:.68, SUB:.58, FIGURED:.58, SUFFIX:.72, DIMINISHED:.46, BORROWED:.55, DEGREE:1, ACCIDENTAL:.66 };
+export const NOTATION_STYLE_SCALE: Record<NotationTextStyle, number> = { BASE:1, SUPER:.68, SUB:.58, FIGURED:.58, SUFFIX:.72, DIMINISHED:.46, BORROWED:.55, DEGREE:1, ACCIDENTAL:.66 };
+const scales = NOTATION_STYLE_SCALE;
 const isRegular = (style: NotationTextStyle) => style === 'SUFFIX' || style === 'BORROWED' || style === 'ACCIDENTAL';
+export function notationFontWeight(style: NotationTextStyle): '400' | '700' {
+  return isRegular(style) ? '400' : '700';
+}
 const baselineMetrics = (measure: MeasureText, text: string, style: NotationTextStyle, size: number) => measure(text, style, size);
 const widest = (...values: number[]) => Math.max(...values);
 
