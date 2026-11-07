@@ -44,6 +44,8 @@ export const catalogHarness = {
     try { return (await db.list('guest', 'harvests')).map(row => row.id); }
     finally { db.close(); }
   },
+  commitHarvest(name:string,request:import('../../src/domain/harvest/commit-harvest').HarvestCommitRequest) {return clients.get(name)!.commitHarvest(request);},
+  async harvestState(slug:string) {const db=await openUserDatabase();try{return {row:await db.get('guest','harvests',slug),pending:await db.pending('guest',1000)};}finally{db.close();}},
   songPayload(name:string,slug:string) { return clients.get(name)!.songPayload(slug); },
   async users() {
     const db = await openUserDatabase();

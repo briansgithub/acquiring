@@ -4383,9 +4383,9 @@
       "owner": "codex",
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace/acquiring",
-      "baseCommit": "b2b0f2383c4e655898e6096fcee830b1270fb46f",
-      "slice": "local-harvest-worker-handler",
-      "nextAction": "Next bounded T22 slice: explicit catalog-worker commit command for a complete validated harvest document; derive native browse alpha/modes, atomically persist T06 harvest+outbox, invalidate overlay only after commit; test abort/failure/process cuts in disposable stores. No live HTTP needed. Library UI and deployed origin/CORS/cache/rate/provider acceptance remain open.",
+      "baseCommit": "d8e26e815d9307e88fed4000b6ab437c1579e118",
+      "slice": "atomic-harvest-commit",
+      "nextAction": "T22 local commit slice validated. Remaining: Library URL/status/cancel integration and extraction->commit handoff using stable operationId/harvestedAt, native lenient JSON/Unicode titlecase/wider URL/HTML corners; deployed origin/CORS/cache/rate/provider acceptance. Reassess primary T08 trusted-tab proof next, not T22 polish or Aural.",
       "validation": [
         {
           "command": "python pwa/scripts/run-control/run_control.py run --run-id T22-query-final-check-002 --owner codex --task T22 --next-action \"Validate final combined revision after correcting unordered membership comparator\" --cwd pwa -- npm run check",
@@ -4416,13 +4416,26 @@
           "revision": "same source manifest, built ES-module factory",
           "result": "PASS built bundle executes Request->complete document using 2 injected responses, exact long ID, no live fetch.",
           "log": ".artifacts/pwa-port/runs/T22-worker-bundle-smoke-001/result.json"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T22-atomic-check-001 --owner codex --task T22 --next-action 'Run original unit parity strict types production build and standalone worker build' --cwd pwa -- sh -c 'npm run check && npm run build:harvest-worker'",
+          "revision": "d8e26e81 + source hashes .artifacts/pwa-port/t22-atomic-source.json",
+          "result": "PASS 1204 unit /109 files (10 new); 1 parity; strict types; production shell b5a1d11f1d20 /12 files; standalone worker ES build 192.56kB. Existing app bundle size warning.",
+          "log": ".artifacts/pwa-port/runs/T22-atomic-check-001/result.json"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T22-atomic-browser-001 --owner codex --task T22 --next-action 'Validate real catalog-worker atomic commit and recovery plus original T06 and swap browser gates' --cwd pwa -- npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/atomic-harvest.spec.ts tests/browser/user-storage.spec.ts tests/browser/harvest-swap.spec.ts --output .artifacts/pwa-port/t22-atomic-browser-001",
+          "revision": "same source hashes",
+          "result": "PASS FIRST RUN 7/7, 53.9s system Chromium. New real client cache visibility/duplicate/conflict/replacement/ghost/restart 7.6s; real worker IDB abort/cancel/mid-tx cut/lost-response retry 2.0s; existing harvest swap recovery 35.0s; 4 original T06 namespace/receipt/tombstone/v1-upgrade tests PASS. Test-only instrumentation imports actual worker module; no production fault hooks.",
+          "log": "pwa/.artifacts/pwa-port/t22-atomic-browser-001"
         }
       ],
       "progress": [
         "2026-11-07T14:40Z harvest-ledger kernel (in-memory ports) + Play honesty 18cd6ae5. No Hooktheory HTTP.",
         "2026-11-07T14:43Z catalog-swap wiring: adopt-before T05 pointer, T06 harvests persist, overlay replay-after. Immutable catalog.db. songPayload/songBrowseBySlugs overlay. Aural skip. Disposable sqlite+memory+Chrome fixtures for fail/cancel/restart/kept rows. check 1162 unit + 1 parity + types + shell 0521edcf3a9f. Chrome harvest-swap + library-queries 2/2 17.0s. Codex 01a1b675 GAP on incomplete swap paste (slug-wins + launch replay exist). T22 not complete. Settings Back untouched.",
         "2026-11-07 Codex exclusive handoff: fetched remote 997fa65c, clean continuation branch. SQLite CTE read overlay integrates songs + unrated browse entries + deduplicated modes before native SQL filters/counts/order/pages; main.songs slug presence suppresses all overlay surfaces including ghost. Startup confirmedSongs->active->repair retained. Readonly native replay equivalence test and focused WASM worker swap/cancel/restart/failure/missing-target recovery preserve T06 user rows/outbox. Initial browser launch lacked Chrome; download denied, used installed system Chromium. Test-only corrections: literal-percent fixture expectation, unordered IN-list comparison, 60s scenario budget after default 30s timeout. Settings Back untouched/unrun. Artists unbounded/order/fold-index/Found N remain unaccepted; binary tie-break is a deterministic paging extension. No Hooktheory HTTP, deploy, auth or real data changes.",
-        "2026-11-07 Codex local Worker Request/Response factory slice from b2b0f238: parse5 HTML tab/fallback extraction, distinct-type/shared-ID ordering, one fetch per ID, native metadata/settings/chord extraction, lossless numeric IDs/JSON lexemes, complete-only output, fixed origins/redirect refusal/stream+aggregate/section/deadline bounds and cancellation. No default live transport, deploy entry or storage writes. Browser first success case timed out because Vite cold parse5 prebundle reloaded the page; explicit optimizeDeps include fixed it, assertions unchanged. Initial scanner syntax typecheck failures corrected. Current native files match 801cf798. Native lenient jsonData, non-ASCII lowercase titlecasing, wider URL forms and parse5/Jsoup corner parity remain open. T22 incomplete; cache/rate/CORS/deployed provider and Library/T06 commit integration still open. No provider HTTP, network changes, credentials, production mutation or device claims. Settings Back deferred/unrun; playback/mic policy untouched."
+        "2026-11-07 Codex local Worker Request/Response factory slice from b2b0f238: parse5 HTML tab/fallback extraction, distinct-type/shared-ID ordering, one fetch per ID, native metadata/settings/chord extraction, lossless numeric IDs/JSON lexemes, complete-only output, fixed origins/redirect refusal/stream+aggregate/section/deadline bounds and cancellation. No default live transport, deploy entry or storage writes. Browser first success case timed out because Vite cold parse5 prebundle reloaded the page; explicit optimizeDeps include fixed it, assertions unchanged. Initial scanner syntax typecheck failures corrected. Current native files match 801cf798. Native lenient jsonData, non-ASCII lowercase titlecasing, wider URL forms and parse5/Jsoup corner parity remain open. T22 incomplete; cache/rate/CORS/deployed provider and Library/T06 commit integration still open. No provider HTTP, network changes, credentials, production mutation or device claims. Settings Back deferred/unrun; playback/mic policy untouched.",
+        "2026-11-07 Codex atomic local commit from d8e26e81: native HarvestedSong.kt Dao record REPLACE + HarvestLedger.record payload; existing PWA encodeHarvestedSong/loadUserHarvestLedger.persist and T06 mutate authority supply unchanged harvest record/outbox/sequence atomicity. No new sync schema. Validates complete ordered document, retains raw data/ID lexemes, derives existing native alpha/modes. commitHarvest RPC supports AbortSignal via immediate targeted cancel message outside serial queue; UserDatabase optional signal aborts active transaction; oncomplete wins late cancel. Overlay invalidated only after completed mutation/replay. First-pass 1204unit+1parity/types/build and 7 browser PASS, no scoped failures. Native authority files match 801cf798. Full T22 incomplete; guest-only matches existing overlay (account support remains T23–25). No provider HTTP/deploy/real-data wipe; Settings Back unrun/deferred. Next primary reassessment T08 trusted tab/audio-preview.spec.ts unchanged fixme; no Aural expansion."
       ],
       "blocker": null,
       "dependencyGates": {

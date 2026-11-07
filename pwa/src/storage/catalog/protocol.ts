@@ -1,3 +1,4 @@
+import type {HarvestCommitRequest} from '../../domain/harvest/commit-harvest';
 import type {AuralStatisticsRequest} from './aural-statistics-runtime-contracts';
 import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
 import type { ArtistSuggestionsRequest, SongBrowseSortMode, SongPageRequest } from './library-queries';
@@ -21,6 +22,8 @@ export type CatalogCommand =
   | { kind: 'songBrowseGroupSongs'; sortMode: SongBrowseSortMode; groupKey: string; filterText: string }
   | { kind: 'artistSuggestions'; query: ArtistSuggestionsRequest }
   | { kind: 'songPayload'; slug: string }
+  | { kind: 'commitHarvest'; request: HarvestCommitRequest }
+  | { kind: 'cancelHarvestCommit'; requestId: string }
   | { kind: 'auralHeader' }
   | { kind: 'auralTarget'; query: AuralCatalogTargetQuery }
   | { kind: 'auralStatistics'; request: AuralStatisticsRequest };

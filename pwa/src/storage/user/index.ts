@@ -69,20 +69,24 @@ export class UserDatabase {
     db.onversionchange = () => this.close();
   }
   close(): void { this.closed = true; this.db.close(); }
-  private transaction<T>(stores: string[], mode: IDBTransactionMode, work: (tx: IDBTransaction, result: (value: T) => void) => void): Promise<T> {
+  private transaction<T>(stores: string[], mode: IDBTransactionMode, work: (tx: IDBTransaction, result: (value: T) => void) => void, signal?: AbortSignal): Promise<T> {
+    if (signal?.aborted) return Promise.reject(new DOMException('User mutation cancelled', 'AbortError'));
     if (this.closed) return Promise.reject(new Error('User database connection is closed; reopen it'));
     return new Promise<T>((resolve, reject) => {
       let tx: IDBTransaction;
       try { tx = this.db.transaction(stores, mode); } catch (error) { reject(error); return; }
       let value: T;
       let failure: unknown;
-      tx.oncomplete = () => resolve(value);
-      tx.onabort = () => reject(failure ?? tx.error ?? new DOMException('User transaction aborted', 'AbortError'));
+      const abort = () => abortTransaction(tx);
+      const cleanup = () => signal?.removeEventListener('abort', abort);
+      signal?.addEventListener('abort', abort, {once:true});
+      tx.oncomplete = () => { cleanup(); resolve(value); };
+      tx.onabort = () => { cleanup(); reject(failure ?? tx.error ?? new DOMException('User transaction aborted', 'AbortError')); };
       try { work(tx, result => { value = result; }); }
       catch (error) { failure = error; abortTransaction(tx); }
     });
   }
-  async mutate(input: Mutation): Promise<MutationResult> {
+  async mutate(input: Mutation, signal?: AbortSignal): Promise<MutationResult> {
     const mutation = normalizedMutation(input);
     const fingerprint = canonicalJson(mutation as unknown as JsonValue);
     return this.transaction<MutationResult>(['records', 'operations', 'meta'], 'readwrite', (tx, result) => {
@@ -110,7 +114,7 @@ export class UserDatabase {
           } catch { abortTransaction(tx); }
         };
       };
-    });
+    }, signal);
   }
   get(namespace: UserNamespace, store: UserStore, id: string): Promise<UserRecord | null> {
     assertNamespace(namespace); assertId(id, 'record ID');

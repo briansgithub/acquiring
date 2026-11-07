@@ -1,3 +1,6 @@
+import {persistHarvest} from '../../domain/harvest/commit-harvest';
+import {openUserDatabase} from '../user';
+const harvestCommits=new Map<string,AbortController>();
 import {harvestQueryOverlay} from './harvest-query-overlay';
 import type {WithSongs} from './catalog-song-reads';
 import {captureAuralStatisticsRequest} from './aural-statistics-request';
@@ -306,6 +309,18 @@ async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'songBrowseGroupCounts') return songBrowseGroupCounts(withSongBrowse, command.sortMode, command.filterText);
   if (command.kind === 'songBrowseGroupSongs') return songBrowseGroupSongs(withSongBrowse, command.sortMode, command.groupKey, command.filterText);
   if (command.kind === 'artistSuggestions') return artistSuggestions(withSongBrowse, command.query);
+  if (command.kind === 'commitHarvest') {
+    const signal=harvestCommits.get(id)!.signal;
+    const db=await openUserDatabase();
+    try {
+      const result=await persistHarvest(command.request,db,signal);
+      invalidateHarvestOverlay(); // oncomplete only, including replay after a lost response
+      return result;
+    } catch(error) {
+      if(signal.aborted)throw new CatalogError('CANCELLED','Harvest commit cancelled');
+      throw error;
+    } finally {db.close();}
+  }
   if (command.kind === 'songPayload') return songPayload(command.slug);
   if (command.kind === 'prepare') return prepare(id, command.attemptId, validateManifest(command.manifest), command.baseUrl);
   if (command.kind === 'activate') return activate(command.attemptId);
@@ -317,6 +332,11 @@ async function execute(id: string, command: CatalogCommand): Promise<unknown> {
 }
 let operations = Promise.resolve();
 scope.onmessage = ({ data }) => {
+  if(data?.command?.kind==='cancelHarvestCommit') {
+    harvestCommits.get(data.command.requestId)?.abort();
+    scope.postMessage({type:'result',id:data.id,ok:true,value:null});return;
+  }
+  if(data?.command?.kind==='commitHarvest')harvestCommits.set(data.id,new AbortController());
   operations = operations.then(async () => {
     try {
       if (!data || typeof data.id !== 'string' || !data.command || typeof data.command.kind !== 'string') throw new CatalogError('INVALID_REQUEST', 'Invalid catalog request');
@@ -324,6 +344,6 @@ scope.onmessage = ({ data }) => {
       scope.postMessage({ type: 'result', id: data.id, ok: true, value });
     } catch (error) {
       scope.postMessage({ type: 'result', id: data?.id ?? '', ok: false, error: { code: error instanceof CatalogError ? error.code : 'IO', message: error instanceof Error ? error.message : 'Catalog operation failed' } });
-    }
+    } finally {harvestCommits.delete(data?.id);}
   });
 };

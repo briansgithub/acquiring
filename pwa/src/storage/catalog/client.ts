@@ -1,3 +1,4 @@
+import type {HarvestCommitRequest,HarvestCommitResult} from '../../domain/harvest/commit-harvest';
 import {captureAuralStatisticsRequest} from './aural-statistics-request';
 import type {AuralStatisticsRequest,AuralStatisticsResponse} from './aural-statistics-runtime-contracts';
 import type { SongBrowseRow } from '../../features/library/grouping';
@@ -34,17 +35,22 @@ export class CatalogWorkerClient {
     catch (error) { client.terminate(); throw error; }
     finally { signal?.removeEventListener('abort', abort); }
   }
-  private request<T>(command: CatalogCommand, timeoutMs?: number): Promise<T> {
+  private request<T>(command: CatalogCommand, timeoutMs?: number, signal?: AbortSignal): Promise<T> {
+    if (signal?.aborted) return Promise.reject(new CatalogError('CANCELLED','Harvest commit cancelled'));
     if (this.stopped) return Promise.reject(new CatalogError('CLOSED', 'Catalog worker is closed'));
+    let cleanup=()=>{};
     return new Promise<T>((resolve, reject) => {
       const id = crypto.randomUUID();
       const entry = { resolve: (value: unknown) => resolve(value as T), reject, timer: undefined as ReturnType<typeof setTimeout> | undefined };
       if (timeoutMs) entry.timer = setTimeout(() => this.terminate(new CatalogError('TIMEOUT', 'Catalog worker did not respond')), timeoutMs);
       this.pending.set(id, entry);
       const message: CatalogRequest = { id, command };
+      const abort=()=>this.worker.postMessage({id:crypto.randomUUID(),command:{kind:'cancelHarvestCommit',requestId:id}});
+      signal?.addEventListener('abort',abort,{once:true});cleanup=()=>signal?.removeEventListener('abort',abort);
       this.worker.postMessage(message);
-    });
+    }).finally(()=>cleanup());
   }
+  commitHarvest(request:HarvestCommitRequest,signal?:AbortSignal):Promise<HarvestCommitResult> {return this.request({kind:'commitHarvest',request},undefined,signal);}
   songPayload(slug: string): Promise<SongPayload|null> { return this.request({ kind: 'songPayload', slug }, 5000); }
   songPage(query: SongPageRequest): Promise<SongPage> { return this.request({ kind: 'songPage', query }); }
   songBrowseBySlugs(slugs: string[]): Promise<SongBrowseRow[]> { return this.request({ kind: 'songBrowseBySlugs', slugs }); }
