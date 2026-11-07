@@ -19,7 +19,14 @@
     "lineageTieBreaker": "docs/pwa-port/LINEAGE_PRIORITY.md; Android git lineage sequences work inside primary; skip deleted historical designs; pinned Android + accepted contracts remain authority",
     "excluded": [
       "Library Settings Back 64px (two-cycle owner decision)"
-    ]
+    ],
+    "physicalTesting": {
+      "status": "possible-resource-only",
+      "device": "Pixel 9 Pro (owner offer, shared with Music Finder wireless ADB)",
+      "tailscaleIp": "100.95.230.49",
+      "verified": false,
+      "notes": "ADB port/pairing/reachability unverified; cloud VM may lack connectivity. Do not probe, install, reset, clear data, ship APKs, or change network/auth. Not T27 proof. See docs/pwa-port/TESTING_RESOURCES.md."
+    }
   },
   "tasks": [
     {
@@ -1341,8 +1348,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Current, previous, Home, Major context and interval previews accepted; visual timeline/defaults/position memory remain",
-      "nextAction": "Do not redo accepted interval/note/chord cards. After T13 singing-octave kernel, next T12 slice is visual timeline geometry (lineage 3989f388/c2f3fcef; Canvas matching PlaybackView ~1122; no spacer hacks). Pitch-score overlay waits for T13 scoring. Defaults/route-position memory later. Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted; T13 octave kernel landed; pure timeline geometry in progress. Defaults/position memory remain.",
+      "nextAction": "Validate/checkpoint timeline-layout then Canvas+Chrome. Do not redo accepted cards. No inertia/scores in this geometry slice. Pixel 9 Pro is an unverified later resource, not device proof. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1857,6 +1864,25 @@
         "sha256": "14be16c851c77dc39a5a5d9fc8fb6c59b98d798cffab2b0c25b3da5a4b5bf6c3",
         "status": "READ-ONLY missing scrub/cancellation/staff availability inspected; no source/tests or timeline acceptance.",
         "nextAction": "Use both saved readiness notes; freeze renderer/large-text/gesture/inertia contract before source. No repeat of inspected source or accepted audio evidence."
+      },
+      "timelineLayoutAssignment": {
+        "owner": "coordinator (cursor-grok /workspace)",
+        "at": "2026-11-07T09:25:00+00:00",
+        "baseCommit": "165f3dbfa114ab10b2ba7cd86b0be97bcf247419",
+        "branch": "codex/pwa-continuation",
+        "ownedPaths": [
+          "pwa/src/features/playback/timeline-layout.ts",
+          "pwa/src/features/playback/timeline-layout.test.ts",
+          "pwa/src/features/playback/WORKLOG.md"
+        ],
+        "scope": "Pure CSS-px=dp layout from PlaybackView 309-311/441-509/1122-1321. 60/beat, 88+40 lanes, center playhead, half-open active, cull, root-only hidden, melody rests omitted, chord rests kept, rawDegree+octave*7 and Major-lock staff. No Canvas/UI/inertia/tap/scores/Roman. Native noteHeight clamp is raw px; CSS=dp yields 5 vs ~9.4 on density-3 — documented mapping, not Pixel proof.",
+        "status": "local validation PASS 7 focused; typecheck-001 unknown[] FAIL; typecheck-002 + check-002 PASS 978 unit/74 files + 1 parity + types + shell 1a7e9ac45427",
+        "nextAction": "Named checkpoint then Canvas+targeted Chrome. Inertia/tap later. Pixel offer unverified on this VM.",
+        "testedSha256": {
+          "pwa/src/features/playback/timeline-layout.ts": "cb15f79db3606c01e8cb6e33ba7be8c6a3e50ac74d77338ebd7236f5bd3e9688",
+          "pwa/src/features/playback/timeline-layout.test.ts": "1234b0ce59c40d228a6190020950f489ee889b8d82dd861696ca62c1c1a45a1f",
+          "pwa/src/features/playback/WORKLOG.md": "a1ea6d111c45af872cd389538d54fcb29bb600b86714ab971d661ace53873150"
+        }
       }
     },
     {
@@ -3949,9 +3975,11 @@
       "worktree": null,
       "baseCommit": null,
       "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing. Pixel 9 Pro offer is a possible resource only (TESTING_RESOURCES.md), not a completed device row.",
       "validation": [],
-      "progress": [],
+      "progress": [
+        "2026-11-07 Pixel 9 Pro offered for later Android/PWA testing, shared with Music Finder ADB; Tailscale 100.95.230.49 unverified. Not access, not proof, not APK/network authority."
+      ],
       "blocker": null
     },
     {

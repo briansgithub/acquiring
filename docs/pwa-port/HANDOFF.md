@@ -8,7 +8,9 @@ Updated 2026-11-07. Continuation branch **codex/pwa-continuation**. Android base
 
 T15 Phase 2 is preserved at **e5ed284c** (`buildAuralSongRankFragment`, 19 focused / 960 unit / types / shell `1a7e9ac45427`). Song-rank is Aural-catalog eligibility (`eligibleRankBits`); it does **not** serve Playback cards or the singing dock. Do not expand T15.
 
-Current slice: T13 pure singing octave on `e5ed284c`. Next after that kernel: T12 visual timeline geometry, then octave selector/persistence. T09 still required for scoring/mic. Library Settings Back 64px remains excluded.
+Current slice: T12 pure timeline geometry after T13 octave kernel `165f3dbf`. Next: Canvas binding + targeted Chrome, then octave selector/persistence. T09 still required for scoring/mic. Library Settings Back 64px remains excluded.
+
+**Pixel 9 Pro:** owner offered it as a possible later Android/PWA test device, shared with Music Finder wireless ADB. Shared-memory Tailscale IP `100.95.230.49`; port/pairing/reachability unverified; this VM may have no path. Not access, not T27 proof, not APK/install/reset/network authority. See [TESTING_RESOURCES.md](TESTING_RESOURCES.md). When physical testing is actually needed, report exact non-invasive needs for Music Finder coordination.
 
 Window23 accepted milestones:
 - The external approval-review capacity failure recovered through the SAME permitted route. OS audit found no owned test processes/listeners; prior rejected requests never executed. Saved root8metadata/header/target Chrome checks passed FIRST actual run37.6s (window23-metadata-browser-first-20261019); exact NUL/BOM byte transport and refusal proof retained. No permission/model bypass.
