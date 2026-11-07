@@ -8,6 +8,8 @@ import {HelpScreen} from '../features/help/HelpScreen';
 import {IntroductionScreen} from '../features/onboarding/IntroductionScreen';
 import {hasCompletedIntroduction,markIntroductionCompleted} from '../features/onboarding/introduction-prefs';
 import {DefaultInstrumentControl} from '../features/settings/DefaultInstrumentControl';
+import {AudioDiagnosticsControl} from '../features/settings/AudioDiagnosticsControl';
+import {audioDiagnostics} from '../features/settings/audio-diagnostics';
 import {hydrateAppInstrumentSession,openGuestInstrumentPreferences} from '../features/settings/instrument-session';
 import {useEffect,useState,useSyncExternalStore} from 'react';
 import { CatalogPanel } from '../features/catalog/CatalogPanel';
@@ -17,6 +19,7 @@ import { navigate, parseRoute, subscribeRoute } from './routes';
 export function App() {
   const [introDone,setIntroDone]=useState(()=>hasCompletedIntroduction());
   useEffect(()=>{
+    audioDiagnostics.record('app.audioInitialized');
     let db:Awaited<ReturnType<typeof openGuestInstrumentPreferences>>;
     let cancelled=false;
     void openGuestInstrumentPreferences().then(opened=>{
@@ -47,6 +50,7 @@ export function App() {
       <CatalogPanel />
       <section className="panel"><h2>Default Instrument</h2><DefaultInstrumentControl /></section>
       <section className="panel"><h2>Appearance</h2><p>Dark theme</p></section>
+      <section className="panel"><h2>Audio diagnostics</h2><AudioDiagnosticsControl /></section>
       <button className="action" onClick={() => navigate('/help')}>Help</button>
     </AppShell> : route.kind === 'help' ? <AppShell title="Help" onBack={() => navigate('/settings')}>
       <HelpScreen />

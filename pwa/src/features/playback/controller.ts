@@ -1,5 +1,6 @@
 import type {ExtractedSection} from '../../contracts';
 import {PlaybackTransport,type AudioPlaybackTransport,type PlaybackTransportState} from '../../audio/transport';
+import {audioDiagnostics,registerAudioEngine} from '../settings/audio-diagnostics';
 import {PlaybackChordMode,Waveform,type PlaybackConfig} from '../../audio/synth';
 import {preparePlaybackSection,type PreparedPlaybackSection} from './section-model';
 
@@ -37,6 +38,7 @@ export class SectionPlaybackController {
   private scrubbing=false;
   private resumeAfterScrub=false;
   private scrubRevision:number|null=null;
+  private unregisterEngine:(()=>void)|null=null;
   constructor(section:ExtractedSection,private readonly factory:(config:PlaybackConfig)=>AudioPlaybackTransport=config=>new PlaybackTransport({initialConfig:config}),private readonly playOnceKey:string|null=null) {
     this.model=preparePlaybackSection(section,playOnceKey);this.state=this.snapshot();
   }
@@ -57,11 +59,15 @@ export class SectionPlaybackController {
     const revision=++this.revision,engine=this.factory(config(this.model,this.settings));
     if(this.stopped||revision!==this.revision){engine.release();return;}
     this.engine=engine;this.unsubscribe=engine.subscribe(()=>{if(!this.stopped)this.publish();});
+    this.unregisterEngine=registerAudioEngine({
+      stopAll:()=>{this.engine?.pause();},
+      reset:()=>{this.reset();},
+    });
     engine.load(this.model.timeline,false);this.publish();
   }
   play():void {if(this.stopped)return;this.start();++this.revision;this.clearScrub();this.engine!.playFromGesture();this.publish();}
   pause():void {if(this.stopped)return;++this.revision;this.clearScrub();this.engine?.pause();this.publish();}
-  reset():void {if(this.stopped)return;++this.revision;this.clearScrub();this.engine?.reset();this.publish();}
+  reset():void {if(this.stopped)return;++this.revision;this.clearScrub();audioDiagnostics.record('playback.reset');this.engine?.reset();this.publish();}
   updateSettings(input:Partial<PlaybackSettings>):void {
     if(this.stopped)return;
     const revision=this.revision;
@@ -115,6 +121,7 @@ export class SectionPlaybackController {
   }
   dispose():void {
     if(this.stopped)return;this.stopped=true;++this.revision;this.clearScrub();
+    this.unregisterEngine?.();this.unregisterEngine=null;
     const engine=this.engine;this.unsubscribe?.();this.unsubscribe=null;
     try{engine?.release();}finally{this.publish();this.listeners.clear();}
   }

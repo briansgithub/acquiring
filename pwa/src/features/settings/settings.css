@@ -1,3 +1,5 @@
 .default-instrument__group { border: 1px solid #79747E; border-radius: .5rem; margin: .75rem 0; padding: .5rem; min-width: 0; }
 .default-instrument__option { display: flex; align-items: center; gap: .5rem; min-height: 44px; overflow-wrap: anywhere; }
 .default-instrument__option input { width: 24px; height: 24px; margin: 10px; }
+.audio-diagnostics { display: grid; gap: .5rem; min-width: 0; }
+.audio-diagnostics .action { min-height: 44px; justify-self: start; }

@@ -5,6 +5,16 @@ test('Library, Settings, browser history and bookmarked screens', async ({ page 
   await expect(page.getByRole('heading', { name: 'Library', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await expect(page).toHaveURL(/\/settings$/);
+  await expect(page.locator('[data-audio-diagnostics]')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Share audio diagnostics', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Reset audio engine', exact: true })).toBeVisible();
+  await expect(page.getByText('No song IDs or audio samples are included.')).toBeVisible();
+  await page.context().grantPermissions(['clipboard-read','clipboard-write']);
+  await page.getByRole('button', { name: 'Share audio diagnostics', exact: true }).click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('"schemaVersion":1');
+  expect(await page.evaluate(() => navigator.clipboard.readText())).not.toContain('pcm');
+  await page.getByRole('button', { name: 'Reset audio engine', exact: true }).click();
+  expect(await page.evaluate(() => localStorage.getItem('acquiring-onboarding'))).toContain('hasCompletedIntroduction');
   await page.goBack();
   await expect(page.getByRole('heading', { name: 'Library', exact: true })).toBeVisible();
   await page.goto('/help');
