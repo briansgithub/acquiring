@@ -1,5 +1,7 @@
 # PWA implementation continuation
 
+For the November 7, 2026 transfer to another machine, start with [Remote continuation](REMOTE_CONTINUATION.md). It supersedes the local checkout, worker assignments and prior no-push directions below for work on `codex/pwa-continuation`. The October record remains the source for accepted evidence and unresolved gates.
+
 Updated 2026-10-19T14:13:34.489538+00:00. Primary **codex/pwa-foundation**, latest native-reference integration **0bb77d9b391f178b0621cb31d78595b9749740f8** plus this documentation checkpoint; tested production statistics implementation **7b372d14640961369406725f0702a6799ba5de40**. Coordinator runtime **unknown**, unchanged. Android baseline **801cf7984171d772afc4406ddb5c79c0cb7fd20a** preserved. This introduction and current task assignments supersede historical notes below.
 
 Window23 accepted milestones:
