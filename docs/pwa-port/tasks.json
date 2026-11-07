@@ -1,9 +1,26 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-10-19T14:13:34.489538+00:00",
+  "updated": "2026-11-07T09:20:00+00:00",
   "implementationAuthorized": true,
-  "currentStage": "implementation_foundation",
+  "currentStage": "playback_singing_priority",
+  "ownerPriority": {
+    "at": "2026-11-07T09:20:00+00:00",
+    "primary": [
+      "playback UI/behavior to pinned 801cf798",
+      "singing tool (Playback dock, not Aural Sing)",
+      "note cards and chord cards (already accepted; do not redo)"
+    ],
+    "deferredLast": [
+      "T14 remaining Aural quiz",
+      "T15 remaining song-rank/SQL/groups/UI",
+      "progression family trees / T17 catalog-first Aural browser"
+    ],
+    "lineageTieBreaker": "docs/pwa-port/LINEAGE_PRIORITY.md; Android git lineage sequences work inside primary; skip deleted historical designs; pinned Android + accepted contracts remain authority",
+    "excluded": [
+      "Library Settings Back 64px (two-cycle owner decision)"
+    ]
+  },
   "tasks": [
     {
       "id": "T00",
@@ -1325,7 +1342,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
       "slice": "Current, previous, Home, Major context and interval previews accepted; visual timeline/defaults/position memory remain",
-      "nextAction": "Interval previews/cards are accepted; do not repeat their native/component/browser checks. Remaining T12 visual timeline/defaults/route-position memory can follow an explicit bounded contract. Current T14 typed helper accepted; full saved-JSON/session integration remains open.",
+      "nextAction": "Do not redo accepted interval/note/chord cards. After T13 singing-octave kernel, next T12 slice is visual timeline geometry (lineage 3989f388/c2f3fcef; Canvas matching PlaybackView ~1122; no spacer hacks). Pitch-score overlay waits for T13 scoring. Defaults/route-position memory later. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1853,16 +1870,53 @@
         "pwa/src/features/singing/"
       ],
       "acceptance": "Fresh-only median scoring, rest/dropout/seek/permission cleanup and transpose-once",
-      "status": "planned",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
-      "validation": [],
-      "progress": [],
-      "blocker": null
+      "status": "in_progress",
+      "owner": "coordinator (cursor-grok /workspace)",
+      "branch": "codex/pwa-continuation",
+      "worktree": "/workspace",
+      "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
+      "slice": "Pure singing octave MIDI kernel (SingingTargets.kt + idealIntervalPlaybackMidis). No mic/dock/Aural/timeline.",
+      "nextAction": "Checkpoint this kernel; next lineage-informed playback surface is T12 visual timeline geometry, then octave selector/persistence. T09 remains required for scoring/mic. Do not start Aural/T15 remainder.",
+      "validation": [
+        {
+          "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
+          "revision": "e5ed284c plus named singing-octave tree",
+          "guards": [
+            "T13-octave-unit-001",
+            "T13-octave-typecheck-001",
+            "T13-octave-check-001"
+          ],
+          "result": "PASS 11 focused 123ms; typecheck; combined 971 unit/73 files 16.15s + 1 parity + types + production shell 1a7e9ac45427. Unbundled; App shell unchanged. No browser/mic/Aural claim."
+        }
+      ],
+      "progress": [
+        "2026-11-07T09:20:00Z Brian playback/singing/cards-first; Aural/song-rank/family trees last. Lineage is tie-breaker inside that order (LINEAGE_PRIORITY.md). T09 not required for pure octave math; development gate is accepted T12 interval cards. Library Settings Back excluded."
+      ],
+      "blocker": null,
+      "dependencyGates": {
+        "T12": "interval-cards-accepted",
+        "T09": "not-required-for-pure-octave-math; required-for-scoring-and-exclusive-mic"
+      },
+      "octaveAssignment": {
+        "owner": "coordinator (cursor-grok /workspace)",
+        "at": "2026-11-07T09:20:00+00:00",
+        "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
+        "branch": "codex/pwa-continuation",
+        "ownedPaths": [
+          "pwa/src/features/singing/singing-octave.ts",
+          "pwa/src/features/singing/singing-octave.test.ts",
+          "pwa/src/features/singing/SINGING_WORKLOG.md"
+        ],
+        "scope": "Frozen 801cf798 SingingTargets.kt entire file plus HummingIntervalPopup.kt 810-821 idealIntervalPlaybackMidis. Clamp -2..+3, signed label, 12-semitone shift, mic MIDI includes transpose once, preview MIDI omits transpose, both slots share shift. Song playback never shifted. Browser non-Int refusal. No UI/store/mic/Aural/timeline/card recapture.",
+        "status": "local validation PASS 11 focused / 971 combined unit / 1 parity / types / shell 1a7e9ac45427",
+        "nextAction": "Named checkpoint then T12 timeline geometry. Selector/persistence and dock later. No T15 remainder.",
+        "expectedCheck": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
+        "testedSha256": {
+          "pwa/src/features/singing/singing-octave.ts": "257eb513a0725e5b62a32b64b9975ea6748e884a3e8479adb4c7a3b447effffb",
+          "pwa/src/features/singing/singing-octave.test.ts": "41eaf0a1ffc734d9798a1f7ded2514b74af16fffafbdf593060988fe06466611",
+          "pwa/src/features/singing/SINGING_WORKLOG.md": "2d925a7a562e4aa5a47e66b9bf5b6903489da5c160cea75b1c52ae22e087cac0"
+        }
+      }
     },
     {
       "id": "T14",
@@ -1881,7 +1935,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "fb3f23b15a5bfe27fa473a7afcaf800441d0fdec",
       "slice": "Pure builtin initializer accepted: saved current/return metadata, lesson-state/warning/fresh ordering. Generator/scheduler/envelope repair and exact JSON/typed restore remain accepted. Actions/persistence/corpus/pattern/UI remain open.",
-      "nextAction": "Do not repeat accepted initializer/decoder/native evidence. Future learning work requires a bounded session-action/view proposal and frozen contract; no new T14 source assigned.",
+      "nextAction": "Aural remaining work is LAST. Do not repeat accepted initializer/decoder/native evidence. No new T14 source assigned until playback/singing/cards priority completes.",
       "validation": [
         {
           "command": "python pwa/src/domain/learning/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/domain/learning/pitch-assessment.test.ts; node node_modules/typescript/lib/tsc.js --noEmit (node commands from pwa)",
@@ -2385,8 +2439,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace",
       "baseCommit": "1a1c939cd40eb98f0cbe22e630fdc6cfe9f2fcac",
-      "slice": "T15 Phase 2 pure buildAuralSongRankFragment accepted locally (960 unit + 1 parity + types + production build). SQL scan/cache/buckets/frontier/groups/pages/UI remain open.",
-      "nextAction": "Direct push of validated Phase 2 checkpoint to origin/codex/pwa-continuation. Next T15 slice is resumable SQL scan/cache after this lands; do not start Library Settings Back or T11/T08 audit-validator work.",
+      "slice": "T15 Phase 2 pure buildAuralSongRankFragment accepted at e5ed284c (19 focused, 960 unit + 1 parity + types + shell 1a7e9ac45427; CI check/recovery PASS, preexisting test:browser fail). Remaining SQL/cache/groups/UI deferred LAST.",
+      "nextAction": "Do not expand T15. Remaining song-rank/SQL/catalog UI waits with Aural quiz and family trees. Preserve e5ed284c. Playback/singing/cards-first; Library Settings Back excluded.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -3563,7 +3617,7 @@
         "worktree": "/workspace",
         "previousBranch": "codex/pwa-song-rank-eligibility",
         "previousTip": "efd7a0e82d75c71df859862aab9f1967d0e54fa0",
-        "status": "PHASE2 source validated on 1a1c939c dirty tree; awaiting direct push. 19 focused + 960 combined unit + types + production build PASS",
+        "status": "PHASE2 accepted and pushed e5ed284cb96f938335f2c77f9bda54185e3ff5bf. Remaining T15 deferred LAST per 2026-11-07 owner priority.",
         "contract": "pwa/src/domain/catalog/song-rank-contracts.ts",
         "phase1OwnedPaths": [
           "pwa/src/domain/catalog/fixtures/generate-song-rank-native.py",
@@ -3575,7 +3629,7 @@
           "pwa/src/domain/catalog/song-rank-eligibility.test.ts",
           "pwa/src/domain/catalog/SONG_RANK_WORKLOG.md"
         ],
-        "nextAction": "Direct push validated Phase 2 files to origin/codex/pwa-continuation. Next T15 is SQL scan/cache contract, not this kernel. No native recapture/Library-scroll.",
+        "nextAction": "Stop T15 remainder. Resume only after playback/singing/cards priority. No native recapture/Library-scroll.",
         "expectedCheck": "npm exec -- vitest run src/domain/catalog/song-rank-eligibility.test.ts; npm run typecheck; npm run check. Cover 25 native probes plus browser invalid/bounds/UTF16/snapshot/packing/freeze/reentry/composition.",
         "validation": {
           "contractTypes": "window23-song-rank-contract-types-20261019:fullstrict types exit0 FIRSTPASS",

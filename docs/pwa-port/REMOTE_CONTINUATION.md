@@ -32,11 +32,11 @@ The separate `python docs/pwa-port/validate_audit.py` check still rejects the ex
 
 ## First slice
 
-Resume **T15 Phase 2**, the pure `buildAuralSongRankFragment` port. The API is frozen in `64ba88ec`. The native oracle commit `efd7a0e8` is already in this branch through `0bb77d9b`, and its 25 probes in 12 groups are committed. The TypeScript implementation is still pending at the handoff.
+**2026-11-07 owner priority supersedes the original T15-first agenda.** Playback UI, singing tool, and note/chord cards first. Aural quiz, remaining T15 song-rank, and progression family trees last. Android git lineage is the sequencer/tie-breaker inside that primary band; see [LINEAGE_PRIORITY.md](LINEAGE_PRIORITY.md). Do not repeat the 262-entry history audit. Pinned `801cf798` plus accepted contracts remain authority.
 
-- Read `pwa/src/domain/catalog/song-rank-contracts.ts`, `pwa/src/domain/catalog/fixtures/native-song-rank.json`, and `pwa/src/domain/catalog/SONG_RANK_WORKLOG.md`. The Android sources are `AuralCatalog.kt` (the `eligibleRankBits` method around line 186), `AuralRankEligibility.kt` and `AuralCorpus.kt` under `android/app/src/main/java/com/acquiring/android/`.
-- Record the owner, exact base, intended check, and the three claimed paths in the T15 task. Implement `pwa/src/domain/catalog/song-rank-eligibility.ts`, its `.test.ts`, and the worklog entry. Reuse the oracle. Cover bounds and refusal, UTF-16 identity, input snapshots, unsigned word packing and padding, freezing, reentry, and composition across fragments.
-- From `pwa/`, run `npm exec -- vitest run src/domain/catalog/song-rank-eligibility.test.ts` and `npm run typecheck` through the wrapper. Commit the validated slice. Later T15 slices cover the resumable SQL scan and cache, global eligibility, query buckets and frontier, groups, pages, and UI. Keep interval-level acceptance separate from global acceptance.
+T15 Phase 2 `buildAuralSongRankFragment` is already accepted on this branch at `e5ed284c`. Preserve it; do not expand T15.
+
+Current work: T13 pure singing-octave kernel (`pwa/src/features/singing/singing-octave.ts` and test/worklog) from frozen `SingingTargets.kt` and `idealIntervalPlaybackMidis`. Then T12 visual timeline geometry (Canvas matching `PlaybackView` ~1122; no spacer hacks; score overlay waits for T13 scoring). Accepted interval/note/chord cards are not redone. T09 remains required for singing scores/mic. Library Settings Back 64px stays owner-blocked.
 
 ## Accepted work and open gates
 

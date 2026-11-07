@@ -1,7 +1,9 @@
 # Android-to-PWA implementation plan
 
-Status: implementation authorized and underway; current task evidence and resume instructions are in tasks.json and HANDOFF.md. Updated 2026-10-14, America/New_York.
+Status: implementation authorized and underway; current task evidence and resume instructions are in tasks.json and HANDOFF.md. Updated 2026-11-07.
 Android authority: `801cf7984171d772afc4406ddb5c79c0cb7fd20a`. Runtime model: unknown.
+
+2026-11-07 owner sequencing: playback UI, singing tool, note/chord cards first; Aural quiz, T15 song-rank, and progression family trees last. Inside that primary band, Android git lineage is the default sequencer/tie-breaker. Reuse [LINEAGE_PRIORITY.md](LINEAGE_PRIORITY.md) and the existing 262-entry [HISTORY.md](HISTORY.md); do not repeat the ledger. Pinned Android plus accepted contracts remain authority — skip deleted historical designs (puck, calibration, floating transport, six-family landing, background media). Note/chord cards are already accepted.
 
 ## Outcome and boundaries
 
