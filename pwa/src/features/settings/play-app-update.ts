@@ -1,4 +1,4 @@
-/** Frozen 801cf798 PlayAppUpdate.kt. Play Store apply remains T26; SW skipWaiting is not this chrome. */
+/** Frozen 801cf798 PlayAppUpdate.kt mapper/labels only. PWA has no Play Store; SW apply is T26. */
 export const PlayUpdateStatus = Object.freeze({
   UPDATE_AVAILABLE: 'UPDATE_AVAILABLE',
   UP_TO_DATE: 'UP_TO_DATE',
@@ -25,79 +25,9 @@ export function playUpdateStatusFromAvailability(availability: number): PlayUpda
   return PlayUpdateStatus.UNAVAILABLE;
 }
 
-export type ServiceWorkerRegistrationLike = {
-  waiting: unknown;
-  active: unknown;
-  update?: () => Promise<unknown>;
-} | null | undefined;
-
-export function playUpdateStatusFromRegistration(registration: ServiceWorkerRegistrationLike): PlayUpdateStatus {
-  if (!registration) return PlayUpdateStatus.UNAVAILABLE;
-  if (registration.waiting) return PlayUpdateStatus.UPDATE_AVAILABLE;
-  if (registration.active) return PlayUpdateStatus.UP_TO_DATE;
-  return PlayUpdateStatus.UNAVAILABLE;
-}
-
 export function settingsUpdatesHeading(status: PlayUpdateStatus): string {
   return status === PlayUpdateStatus.UPDATE_AVAILABLE ? 'Updates •' : 'Updates';
 }
 
-export interface AppUpdateSnapshot {readonly status: PlayUpdateStatus}
-
-type WorkerHost = {
-  ready: Promise<ServiceWorkerRegistrationLike>;
-  getRegistration(): Promise<ServiceWorkerRegistrationLike>;
-};
-
-function workerHost(): WorkerHost | undefined {
-  const worker = typeof navigator === 'undefined' ? undefined : navigator.serviceWorker;
-  return worker ? worker : undefined;
-}
-
-export async function checkAppUpdateStatus(worker: WorkerHost | undefined = workerHost()): Promise<PlayUpdateStatus> {
-  if (!worker) return PlayUpdateStatus.UNAVAILABLE;
-  try {
-    const ready = await Promise.race([
-      worker.ready,
-      new Promise<null>(resolve => { globalThis.setTimeout(() => resolve(null), 2000); }),
-    ]);
-    return playUpdateStatusFromRegistration(ready ?? await worker.getRegistration());
-  } catch {
-    return PlayUpdateStatus.UNAVAILABLE;
-  }
-}
-
-let snapshot: AppUpdateSnapshot = Object.freeze({status: PlayUpdateStatus.UNAVAILABLE});
-const listeners = new Set<() => void>();
-
-export function subscribeAppUpdate(listener: () => void): () => void {
-  listeners.add(listener);
-  return () => { listeners.delete(listener); };
-}
-export function getAppUpdateSnapshot(): AppUpdateSnapshot { return snapshot; }
-
-function publish(status: PlayUpdateStatus): void {
-  if (status === snapshot.status) return;
-  snapshot = Object.freeze({status});
-  for (const listener of listeners) listener();
-}
-
-export async function refreshAppUpdateStatus(worker: WorkerHost | undefined = workerHost()): Promise<PlayUpdateStatus> {
-  const status = await checkAppUpdateStatus(worker);
-  publish(status);
-  return status;
-}
-
-/** Native Open Play leaves the app for Play Store. PWA rechecks SW; does not skipWaiting (audio-session policy). */
-export async function requestAppUpdateCheck(worker: WorkerHost | undefined = workerHost()): Promise<PlayUpdateStatus> {
-  try {
-    const registration = await worker?.getRegistration();
-    await registration?.update?.();
-  } catch { /* still recheck */ }
-  return refreshAppUpdateStatus(worker);
-}
-
-export function resetAppUpdateForTests(): void {
-  snapshot = Object.freeze({status: PlayUpdateStatus.UNAVAILABLE});
-  listeners.clear();
-}
+/** This PWA is not on Play; Play Core cannot run. Do not map service workers to these labels. */
+export const PWA_PLAY_UPDATE_STATUS = PlayUpdateStatus.UNAVAILABLE;

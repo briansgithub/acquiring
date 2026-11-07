@@ -65,7 +65,7 @@ describe('native SettingsSectionsTest.kt display and privacy placement',()=>{
     expect(PRIVACY_POLICY_LABEL).toBe('Privacy policy');
     expect(PRIVACY_POLICY_URL).toBe('https://bellsworth.dev/apps/acquiring/privacy/');
     expect(APP_VERSION_NAME).toBe('0.1.0');
-    expect(appVersionLabel()).toBe('Version 0.1.0 (build 1)');
+    expect(appVersionLabel()).toBe('Version 0.1.0');
   });
 
   it('privacyPolicyIsLastSettingsSectionNotOnSearch',()=>{

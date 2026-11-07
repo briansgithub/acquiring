@@ -14,7 +14,6 @@ import {PrivacyPolicyLink} from '../features/settings/PrivacyPolicyLink';
 import {AppUpdateControl} from '../features/settings/AppUpdateControl';
 import {audioDiagnostics} from '../features/settings/audio-diagnostics';
 import {appVersionLabel} from '../features/settings/privacy-policy';
-import {getAppUpdateSnapshot,PlayUpdateStatus,refreshAppUpdateStatus,subscribeAppUpdate} from '../features/settings/play-app-update';
 import {bindTimelineFrameRateWindow} from '../features/settings/timeline-frame-rate';
 import {hydrateAppInstrumentSession,openGuestInstrumentPreferences} from '../features/settings/instrument-session';
 import {useEffect,useState,useSyncExternalStore} from 'react';
@@ -26,7 +25,6 @@ export function App() {
   const [introDone,setIntroDone]=useState(()=>hasCompletedIntroduction());
   useEffect(()=>{
     audioDiagnostics.record('app.audioInitialized');
-    void refreshAppUpdateStatus();
     const unbindDisplay=bindTimelineFrameRateWindow();
     let db:Awaited<ReturnType<typeof openGuestInstrumentPreferences>>;
     let cancelled=false;
@@ -38,7 +36,6 @@ export function App() {
   },[]);
   const pathname = useSyncExternalStore(subscribeRoute, () => location.pathname, () => '/');
   const queueVersion = useSyncExternalStore(subscribeSongQueue, songQueueVersion, songQueueVersion);
-  const appUpdate = useSyncExternalStore(subscribeAppUpdate, getAppUpdateSnapshot, getAppUpdateSnapshot);
   const route = parseRoute(pathname);
   const queue = songQueueSession();
   void queueVersion;
@@ -60,7 +57,7 @@ export function App() {
       <section className="panel"><h2>Default Instrument</h2><DefaultInstrumentControl /></section>
       <button className="action" onClick={() => navigate('/help')}>Help</button>
       <section className="panel"><h2>Appearance</h2><p>Dark theme</p></section>
-      <AppUpdateControl status={appUpdate.status} />
+      <AppUpdateControl />
       <section className="panel"><h2>Display</h2>
         <p>Controls visual smoothness, not song tempo.</p>
         <TimelineFrameRateControl />
@@ -91,8 +88,7 @@ export function App() {
     : route.kind === 'not-found' ? <AppShell title={'Page unavailable'} onBack={backToLibrary}>
       <section className="panel"><h2>{'Page unavailable'}</h2><p>Return to your library to choose a song.</p><button className="action" onClick={home}>Open Library</button></section>
     </AppShell>
-    : <AppShell title="Library" settingsUpdateAvailable={appUpdate.status===PlayUpdateStatus.UPDATE_AVAILABLE}
-        onSettings={() => {saveLibraryView();navigate('/settings',{fromLibrary:true});}}>
+    : <AppShell title="Library" onSettings={() => {saveLibraryView();navigate('/settings',{fromLibrary:true});}}>
       <LibraryScreen />
     </AppShell>}
   </>;
