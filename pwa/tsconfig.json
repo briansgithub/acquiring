@@ -24,6 +24,7 @@
   "include": [
     "src",
     "tests",
+    "worker",
     "vite.config.ts",
     "playwright.config.ts"
   ]

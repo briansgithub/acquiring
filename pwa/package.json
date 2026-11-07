@@ -18,11 +18,13 @@
     "check": "npm run test:unit && npm run test:parity && npm run build",
     "test:catalog": "python -m unittest discover -s scripts/catalog -p test_package_catalog.py -v",
     "test:sqlite-compat": "node --test scripts/sqlite-compat/patch.test.mjs",
-    "test:sqlite-browser": "node scripts/sqlite-compat/browser-regression.mjs"
+    "test:sqlite-browser": "node scripts/sqlite-compat/browser-regression.mjs",
+    "build:harvest-worker": "vite build --config worker/vite.config.ts"
   },
   "dependencies": {
     "@noble/hashes": "2.4.0",
     "@sqlite.org/sqlite-wasm": "3.53.4-build2",
+    "parse5": "8.0.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },

@@ -4,7 +4,7 @@ import { sqlitePreservationPlugin } from './scripts/sqlite-compat/patch.mjs';
 
 export default defineConfig({
   plugins: [sqlitePreservationPlugin(), react()],
-  optimizeDeps: { exclude: ['@sqlite.org/sqlite-wasm'] },
+  optimizeDeps: { include: ['parse5'], exclude: ['@sqlite.org/sqlite-wasm'] },
   worker: { format: 'es', plugins: () => [sqlitePreservationPlugin()] },
   build: {
     assetsInlineLimit(filePath) {

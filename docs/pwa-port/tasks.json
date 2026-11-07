@@ -4383,9 +4383,9 @@
       "owner": "codex",
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace/acquiring",
-      "baseCommit": "997fa65c",
-      "slice": "harvest-query-integration",
-      "nextAction": "Next bounded slice: local-only Hooktheory harvest worker/extraction with disposable fixtures, invalidate read overlay after new harvest persistence; no HTTP or production mutation. Full T22 remains incomplete.",
+      "baseCommit": "b2b0f2383c4e655898e6096fcee830b1270fb46f",
+      "slice": "local-harvest-worker-handler",
+      "nextAction": "Next bounded T22 slice: explicit catalog-worker commit command for a complete validated harvest document; derive native browse alpha/modes, atomically persist T06 harvest+outbox, invalidate overlay only after commit; test abort/failure/process cuts in disposable stores. No live HTTP needed. Library UI and deployed origin/CORS/cache/rate/provider acceptance remain open.",
       "validation": [
         {
           "command": "python pwa/scripts/run-control/run_control.py run --run-id T22-query-final-check-002 --owner codex --task T22 --next-action \"Validate final combined revision after correcting unordered membership comparator\" --cwd pwa -- npm run check",
@@ -4398,12 +4398,31 @@
           "revision": "same owned source manifest",
           "result": "PASS 2/2 in 54.9s. System Chromium 156.0.8078.79, executablePath /usr/bin/chromium; otherwise repository config/assertions. Harvest scenario 36.4s, query baseline 10.6s. Disposable dev worker; production shell built separately. No device/whole-CI claim.",
           "log": "pwa/.artifacts/pwa-port/t22-query-browser-004"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T22-worker-final-check-001 --owner codex --task T22 --next-action 'Validate final combined source with original checks and standalone bundle' --cwd pwa -- sh -c 'npm run check && npm run build:harvest-worker'",
+          "revision": "b2b0f238 + source SHA256 manifest .artifacts/pwa-port/t22-worker-source.json",
+          "result": "PASS 1194 unit /108 files (31 new fixture handler cases); 1 parity; strict types; production shell 83afa2481af2 (12 files); standalone ES factory 192.56 kB. Existing >500kB app bundle warning.",
+          "log": ".artifacts/pwa-port/runs/T22-worker-final-check-001/result.json"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T22-worker-browser-002 --owner codex --task T22 --next-action 'Recheck fixture-only browser worker after startup prebundle fix; assertions unchanged' --cwd pwa -- npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/harvest-worker.spec.ts tests/browser/harvest-swap.spec.ts --output .artifacts/pwa-port/t22-worker-browser-002",
+          "revision": "same source manifest",
+          "result": "PASS 3/3 43.0s, installed system Chromium. Existing swap recovery 34.5s; actual module-worker whole document 1.3s; cancel/termination/failure/retry 1.3s. Disposable fixture-only HTTP; user rows/outbox unchanged. Dev module worker; no deployed Cloudflare/device/provider proof.",
+          "log": "pwa/.artifacts/pwa-port/t22-worker-browser-002"
+        },
+        {
+          "command": "T22-worker-bundle-smoke-001 (run-control, cwd pwa, node --input-type=module -; exact fixture command in session)",
+          "revision": "same source manifest, built ES-module factory",
+          "result": "PASS built bundle executes Request->complete document using 2 injected responses, exact long ID, no live fetch.",
+          "log": ".artifacts/pwa-port/runs/T22-worker-bundle-smoke-001/result.json"
         }
       ],
       "progress": [
         "2026-11-07T14:40Z harvest-ledger kernel (in-memory ports) + Play honesty 18cd6ae5. No Hooktheory HTTP.",
         "2026-11-07T14:43Z catalog-swap wiring: adopt-before T05 pointer, T06 harvests persist, overlay replay-after. Immutable catalog.db. songPayload/songBrowseBySlugs overlay. Aural skip. Disposable sqlite+memory+Chrome fixtures for fail/cancel/restart/kept rows. check 1162 unit + 1 parity + types + shell 0521edcf3a9f. Chrome harvest-swap + library-queries 2/2 17.0s. Codex 01a1b675 GAP on incomplete swap paste (slug-wins + launch replay exist). T22 not complete. Settings Back untouched.",
-        "2026-11-07 Codex exclusive handoff: fetched remote 997fa65c, clean continuation branch. SQLite CTE read overlay integrates songs + unrated browse entries + deduplicated modes before native SQL filters/counts/order/pages; main.songs slug presence suppresses all overlay surfaces including ghost. Startup confirmedSongs->active->repair retained. Readonly native replay equivalence test and focused WASM worker swap/cancel/restart/failure/missing-target recovery preserve T06 user rows/outbox. Initial browser launch lacked Chrome; download denied, used installed system Chromium. Test-only corrections: literal-percent fixture expectation, unordered IN-list comparison, 60s scenario budget after default 30s timeout. Settings Back untouched/unrun. Artists unbounded/order/fold-index/Found N remain unaccepted; binary tie-break is a deterministic paging extension. No Hooktheory HTTP, deploy, auth or real data changes."
+        "2026-11-07 Codex exclusive handoff: fetched remote 997fa65c, clean continuation branch. SQLite CTE read overlay integrates songs + unrated browse entries + deduplicated modes before native SQL filters/counts/order/pages; main.songs slug presence suppresses all overlay surfaces including ghost. Startup confirmedSongs->active->repair retained. Readonly native replay equivalence test and focused WASM worker swap/cancel/restart/failure/missing-target recovery preserve T06 user rows/outbox. Initial browser launch lacked Chrome; download denied, used installed system Chromium. Test-only corrections: literal-percent fixture expectation, unordered IN-list comparison, 60s scenario budget after default 30s timeout. Settings Back untouched/unrun. Artists unbounded/order/fold-index/Found N remain unaccepted; binary tie-break is a deterministic paging extension. No Hooktheory HTTP, deploy, auth or real data changes.",
+        "2026-11-07 Codex local Worker Request/Response factory slice from b2b0f238: parse5 HTML tab/fallback extraction, distinct-type/shared-ID ordering, one fetch per ID, native metadata/settings/chord extraction, lossless numeric IDs/JSON lexemes, complete-only output, fixed origins/redirect refusal/stream+aggregate/section/deadline bounds and cancellation. No default live transport, deploy entry or storage writes. Browser first success case timed out because Vite cold parse5 prebundle reloaded the page; explicit optimizeDeps include fixed it, assertions unchanged. Initial scanner syntax typecheck failures corrected. Current native files match 801cf798. Native lenient jsonData, non-ASCII lowercase titlecasing, wider URL forms and parse5/Jsoup corner parity remain open. T22 incomplete; cache/rate/CORS/deployed provider and Library/T06 commit integration still open. No provider HTTP, network changes, credentials, production mutation or device claims. Settings Back deferred/unrun; playback/mic policy untouched."
       ],
       "blocker": null,
       "dependencyGates": {
