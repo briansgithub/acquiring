@@ -56,13 +56,13 @@ export const catalogHarness = {
     await writer.write(new Uint8Array([1,2])); await writer.close();
   },
   // Test-only state mutation models a pointer whose just-activated files disappeared.
-  async simulateMissingActiveTarget(fakeId: string) {
+  async simulateMissingActiveTarget(fakeId: string,kind:'songs'|'aural'='aural') {
     const db = await new Promise<IDBDatabase>((resolve, reject) => { const request = indexedDB.open('acquiring-catalog-state', 1); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); });
     try {
       await new Promise<void>((resolve, reject) => {
         const tx = db.transaction(['pointers','installs'], 'readwrite');
         const pointers = tx.objectStore('pointers'), installs = tx.objectStore('installs');
-        const request = pointers.get('aural');
+        const request = pointers.get(kind);
         request.onsuccess = () => {
           const pointer = request.result as import('../../src/storage/catalog/journal').CatalogPointer;
           const record = installs.get(pointer.activeId);

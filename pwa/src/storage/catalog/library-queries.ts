@@ -14,8 +14,8 @@ const SORT_MODES=new Set<SongBrowseSortMode>(['alphabetical','complexity','mode'
 const ALPHA_GROUP_KEYS=new Set(alphabeticalGroups.map(group=>group.key));
 const COMPLEXITY_GROUP_KEYS=new Set(complexityGroups.map(group=>group.key));
 const MODE_GROUP_KEYS=new Set(modeGroups.map(group=>group.key));
-const TITLE_ORDER=`CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END, title COLLATE NOCASE, artist COLLATE NOCASE, slug COLLATE NOCASE`;
-const ENTRY_TITLE_ORDER=`CASE WHEN entries.title IS NULL OR TRIM(entries.title) = '' THEN 1 ELSE 0 END, entries.title COLLATE NOCASE, entries.artist COLLATE NOCASE, entries.slug COLLATE NOCASE`;
+const TITLE_ORDER=`CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END, title COLLATE NOCASE, artist COLLATE NOCASE, slug COLLATE NOCASE, slug`;
+const ENTRY_TITLE_ORDER=`CASE WHEN entries.title IS NULL OR TRIM(entries.title) = '' THEN 1 ELSE 0 END, entries.title COLLATE NOCASE, entries.artist COLLATE NOCASE, entries.slug COLLATE NOCASE, entries.slug`;
 /** Frozen SongDao BROWSE_FILTER_SQL: title/artist INSTR after stripping space/hyphen/underscore. */
 const BROWSE_FILTER_SQL=`(
   TRIM(?) = '' OR
@@ -86,7 +86,7 @@ export function songPageQuery(request:SongPageRequest):{sql:string;bind:(string|
     sql:`SELECT slug,artist,title,NULL AS complexityRating FROM songs
       WHERE dataBlob IS NOT NULL AND ${condition}
       ORDER BY CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
-        title COLLATE NOCASE,${artistOrder}slug COLLATE NOCASE LIMIT ? OFFSET ?`,
+        title COLLATE NOCASE,${artistOrder}slug COLLATE NOCASE,slug LIMIT ? OFFSET ?`,
     bind:[...bind,limit+1,offset],limit,offset,
   };
 }
@@ -102,7 +102,7 @@ export function artistSuggestionsQuery(request:ArtistSuggestionsRequest):{sql:st
     sql:`SELECT DISTINCT REPLACE(artist, '-', ' ') AS artistName FROM songs
       WHERE dataBlob IS NOT NULL AND artist IS NOT NULL
         AND REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(TRIM(?), '-', ' ') || '%'
-      ORDER BY artistName COLLATE NOCASE LIMIT ? OFFSET ?`,
+      ORDER BY artistName COLLATE NOCASE,artistName LIMIT ? OFFSET ?`,
     bind:[request.query,limit+1,offset],limit,offset,
   };
 }

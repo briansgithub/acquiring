@@ -4380,16 +4380,30 @@
       ],
       "acceptance": "Multi-tab section extraction, bounded fetch, offline overlay and catalog-swap preservation",
       "status": "in-progress",
-      "owner": null,
-      "branch": null,
-      "worktree": null,
-      "baseCommit": null,
-      "slice": "catalog-swap-wiring",
-      "nextAction": "T22 Hooktheory harvest worker still local-only; All Songs overlay remaining. No remote fetch.",
-      "validation": [],
+      "owner": "codex",
+      "branch": "codex/pwa-continuation",
+      "worktree": "/workspace/acquiring",
+      "baseCommit": "997fa65c",
+      "slice": "harvest-query-integration",
+      "nextAction": "Next bounded slice: local-only Hooktheory harvest worker/extraction with disposable fixtures, invalidate read overlay after new harvest persistence; no HTTP or production mutation. Full T22 remains incomplete.",
+      "validation": [
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T22-query-final-check-002 --owner codex --task T22 --next-action \"Validate final combined revision after correcting unordered membership comparator\" --cwd pwa -- npm run check",
+          "revision": "997fa65c + owned source SHA256 manifest .artifacts/pwa-port/t22-query-source.json",
+          "result": "PASS 1163 unit / 107 files; 1 parity; strict types; production build; shell 76a35936058e (12 files). Existing >500kB bundle warning.",
+          "log": ".artifacts/pwa-port/runs/T22-query-final-check-002/result.json"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T22-query-browser-004 --owner codex --task T22 --next-action \"Final focused query swap and missing-target recovery browser validation\" --cwd pwa -- npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/harvest-swap.spec.ts tests/browser/library-queries.spec.ts --output .artifacts/pwa-port/t22-query-browser-004",
+          "revision": "same owned source manifest",
+          "result": "PASS 2/2 in 54.9s. System Chromium 156.0.8078.79, executablePath /usr/bin/chromium; otherwise repository config/assertions. Harvest scenario 36.4s, query baseline 10.6s. Disposable dev worker; production shell built separately. No device/whole-CI claim.",
+          "log": "pwa/.artifacts/pwa-port/t22-query-browser-004"
+        }
+      ],
       "progress": [
         "2026-11-07T14:40Z harvest-ledger kernel (in-memory ports) + Play honesty 18cd6ae5. No Hooktheory HTTP.",
-        "2026-11-07T14:43Z catalog-swap wiring: adopt-before T05 pointer, T06 harvests persist, overlay replay-after. Immutable catalog.db. songPayload/songBrowseBySlugs overlay. Aural skip. Disposable sqlite+memory+Chrome fixtures for fail/cancel/restart/kept rows. check 1162 unit + 1 parity + types + shell 0521edcf3a9f. Chrome harvest-swap + library-queries 2/2 17.0s. Codex 01a1b675 GAP on incomplete swap paste (slug-wins + launch replay exist). T22 not complete. Settings Back untouched."
+        "2026-11-07T14:43Z catalog-swap wiring: adopt-before T05 pointer, T06 harvests persist, overlay replay-after. Immutable catalog.db. songPayload/songBrowseBySlugs overlay. Aural skip. Disposable sqlite+memory+Chrome fixtures for fail/cancel/restart/kept rows. check 1162 unit + 1 parity + types + shell 0521edcf3a9f. Chrome harvest-swap + library-queries 2/2 17.0s. Codex 01a1b675 GAP on incomplete swap paste (slug-wins + launch replay exist). T22 not complete. Settings Back untouched.",
+        "2026-11-07 Codex exclusive handoff: fetched remote 997fa65c, clean continuation branch. SQLite CTE read overlay integrates songs + unrated browse entries + deduplicated modes before native SQL filters/counts/order/pages; main.songs slug presence suppresses all overlay surfaces including ghost. Startup confirmedSongs->active->repair retained. Readonly native replay equivalence test and focused WASM worker swap/cancel/restart/failure/missing-target recovery preserve T06 user rows/outbox. Initial browser launch lacked Chrome; download denied, used installed system Chromium. Test-only corrections: literal-percent fixture expectation, unordered IN-list comparison, 60s scenario budget after default 30s timeout. Settings Back untouched/unrun. Artists unbounded/order/fold-index/Found N remain unaccepted; binary tie-break is a deterministic paging extension. No Hooktheory HTTP, deploy, auth or real data changes."
       ],
       "blocker": null,
       "dependencyGates": {

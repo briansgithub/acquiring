@@ -1,5 +1,13 @@
 # PWA implementation continuation
 
+## 2026-11-07 Codex harvest query continuation (supersedes overlay gap below)
+
+Base/remote verified `997fa65c`, branch `codex/pwa-continuation`; Android reference files match pinned `801cf798`. SQLite read-only CTEs now combine catalog rows with missing T06 harvests before the existing native-derived search, artist, suggestions, slug-membership, All Songs counts and group queries. Replay contributes an unrated browse entry and deduplicated modes. Catalog slug presence wins across every query, including a ghost row without payload/browse metadata. Payload precedence and launch `active()` / `repairSongsHarvests` remain intact; no catalog writes. Final binary tie-breaks stabilize NOCASE-equivalent page rows (an explicit PWA ordering extension).
+
+Validation under run-control: `T22-query-final-check-002` **1163 unit / 107 files + 1 parity + strict types + production shell 76a35936058e PASS**. `T22-query-browser-004` **2/2 PASS, 54.9s**, system Chromium 156.0.8078.79 via ignored executablePath config. Native replay-table equivalence includes SQLite Unicode/LIKE/INSTR and ordered pages; disposable WASM worker checks cover ghost/catalog precedence, duplicate-free membership/modes, counts, search/artists/suggestions, swap, cancellation, restart, failed install and missing-target startup recovery, preserved user rows/outbox. Production shell built separately; browser uses dev worker harness. Initial test setup lacked Chrome and browser download was policy-denied; installed system Chromium works. Intermediate test-only failures: wrong literal-percent expectation, unordered IN-list comparison, default 30s budget for expanded multi-lifecycle scenario (now 60s). No remaining failures in these scoped checks. No whole-CI/device claim; Settings Back DEFERRED gate untouched/unrun.
+
+Next bounded step: local-only Hooktheory harvest extraction/worker using disposable fixtures; invalidate the read overlay when new harvests persist. No HTTP needed. T22 remains incomplete. Existing Artists paging/order/fold index/Found N, T08 real browser/device lifecycle and T23–T28 remain open. No deployment or production mutation.
+
 For the November 7, 2026 transfer to another machine, start with [Remote continuation](REMOTE_CONTINUATION.md). It supersedes the local checkout, worker assignments and prior no-push directions below for work on `codex/pwa-continuation`. The October record remains the source for accepted evidence and unresolved gates.
 
 Updated 2026-11-07. Continuation branch **codex/pwa-continuation**. Android baseline **801cf7984171d772afc4406ddb5c79c0cb7fd20a** preserved. Coordinator runtime **unknown**. This introduction and current task assignments supersede historical notes below.

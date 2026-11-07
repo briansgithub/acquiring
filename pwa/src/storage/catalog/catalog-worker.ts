@@ -1,3 +1,5 @@
+import {harvestQueryOverlay} from './harvest-query-overlay';
+import type {WithSongs} from './catalog-song-reads';
 import {captureAuralStatisticsRequest} from './aural-statistics-request';
 import {readAuralStatisticsFacts} from './aural-statistics-query';
 import {readAuralPopularity} from './aural-popularity-query';
@@ -9,7 +11,7 @@ import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
 import {readAuralHeader} from './aural-header';
 import {artistSuggestions,songBrowseBySlugs,songBrowseGroupCounts,songBrowseGroupSongs,songPage} from './catalog-song-reads';
 import {activateSongsCatalog,harvestOverlaySongs,invalidateHarvestOverlay,repairSongsHarvests,type SongsCatalogHandle} from './catalog-harvest';
-import {harvestedSongPayload,mergeHarvestBrowseBySlugs} from '../../domain/harvest/overlay-reads';
+import {harvestedSongPayload} from '../../domain/harvest/overlay-reads';
 import {songDetailQuery,songPayloadRecord,readSongComplexity,type SongPayload} from './detail-query';
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { sha256 as incrementalSha256 } from '@noble/hashes/sha2.js';
@@ -229,6 +231,7 @@ async function withSongs<T>(read:(db:InstanceType<Sqlite3Static['oo1']['DB']>,so
   } catch(error){confirmedSongRead=null;throw error;}
   finally {db?.close();}
 }
+const withSongBrowse:WithSongs=read=>withSongs(async(db,source)=>read(harvestQueryOverlay(db,await harvestOverlaySongs()),source));
 async function songPayload(slug:string):Promise<SongPayload|null> {
   const plan=songDetailQuery(slug);
   return withSongs(async(db,source)=>{
@@ -296,14 +299,13 @@ async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'auralTarget') return auralTarget(command.query);
   if (command.kind === 'auralStatistics') return auralStatistics(command.request);
   if (command.kind === 'auralHeader') return auralHeader();
-  if (command.kind === 'songPage') return songPage(withSongs, command.query);
+  if (command.kind === 'songPage') return songPage(withSongBrowse, command.query);
   if (command.kind === 'songBrowseBySlugs') {
-    const rows = await songBrowseBySlugs(withSongs, command.slugs);
-    return mergeHarvestBrowseBySlugs(rows, command.slugs, await harvestOverlaySongs());
+    return songBrowseBySlugs(withSongBrowse, command.slugs);
   }
-  if (command.kind === 'songBrowseGroupCounts') return songBrowseGroupCounts(withSongs, command.sortMode, command.filterText);
-  if (command.kind === 'songBrowseGroupSongs') return songBrowseGroupSongs(withSongs, command.sortMode, command.groupKey, command.filterText);
-  if (command.kind === 'artistSuggestions') return artistSuggestions(withSongs, command.query);
+  if (command.kind === 'songBrowseGroupCounts') return songBrowseGroupCounts(withSongBrowse, command.sortMode, command.filterText);
+  if (command.kind === 'songBrowseGroupSongs') return songBrowseGroupSongs(withSongBrowse, command.sortMode, command.groupKey, command.filterText);
+  if (command.kind === 'artistSuggestions') return artistSuggestions(withSongBrowse, command.query);
   if (command.kind === 'songPayload') return songPayload(command.slug);
   if (command.kind === 'prepare') return prepare(id, command.attemptId, validateManifest(command.manifest), command.baseUrl);
   if (command.kind === 'activate') return activate(command.attemptId);
