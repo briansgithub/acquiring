@@ -971,8 +971,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
-      "slice": "Pure native pitch core integrated; capture and timed publication remain open",
-      "nextAction": "Start bounded exclusive MicrophonePitchTracker owner: hop/window, 200ms hold publication, start/stop/release against accepted YIN+smoother. Fake PCM clock first; no fabricated cents, no singing-dock scores, no Aural. Actual getUserMedia/device later. Library prefix polish is not next.",
+      "slice": "Pure native pitch core plus PitchPublisher hop/200ms hold/start/stop/release (injected clock). Exclusive coordinator lease, getUserMedia, scoring remain open",
+      "nextAction": "PitchPublisher hop/200ms hold landed. Next exclusive MicrophonePitchCoordinator lease (claim/ownsMicrophone) or getUserMedia hop clock. No fabricated cents, no singing-dock scores, no Aural. Library prefix polish is not next.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
@@ -983,12 +983,23 @@
           "command": "npm run check; focused client cancellation3cases; npm run build (node npm-cli; from pwa)",
           "revision": "906c9243 plus named Library lifecycle tree committed next",
           "result": "266unit+1input PASS;new test fixture missing result discriminator caused typecheck failure only,corrected once;focused3cases and full strict/build PASS in window4-library-final-covering-20261015. No production changes after final covering checks."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit; npm run check (from pwa)",
+          "revision": "53e875d1 plus named PitchPublisher tree",
+          "guards": [
+            "T09-pitch-publisher-unit-001",
+            "T09-pitch-publisher-typecheck-001",
+            "T09-pitch-publisher-check-001"
+          ],
+          "result": "PASS 27 capture then 1023 unit/81 files + 1 parity + types + shell 24b6cc12e562. Hop buffer 2048/512; 200ms hold then NoSignal; retarget preserves hold; stop/release ignore ingest. Injected clock only; no getUserMedia; no fabricated cents; no singing-dock scores. Partial T09, not device/whole-CI-green."
         }
       ],
       "progress": [
         "2026-10-15 pre-branch:primary7a75f69cowned dirty Library lifecycle/App/controller/tests anduntracked LibraryScreen,allpreserved. Existing data-compat tree codex/pwa-synth c242f775clean/idle;UIworker e968599bclean/idle andintegrated. Live33%five-hour/5%weekly. Create narrow pitch branch from clean committed primary base;no duplicates/deletion. PureT07complete atb11a3af4;actual microphone remains open.",
         "2026-10-15 pre-integration:primary30d10a75 has8owned tracked Library changes plus LibraryScreen/library browser untracked;no staged changes. Pitch24a3f78b clean/idle,9capture-only additions;native62PCM/18gate/68smoother outputs exact and22tests/types passed. Root reviewed implementation/fixtures/bounds;normal merge preserves UI partials and all branches. Live60%five-hour/9%weekly;no unresolved guard runs/helpers.",
-        "Pure pitch24a3f78b normally integrated at906c9243 preserving owned Library work. Combined266unit+1input PASS;final focused3cancellation/types/build and10coveringChrome cases PASS after one test-only discriminator correction. T09 remains in_progress:actual microphone/clock/dropout owner unimplemented. All workers idle."
+        "Pure pitch24a3f78b normally integrated at906c9243 preserving owned Library work. Combined266unit+1input PASS;final focused3cancellation/types/build and10coveringChrome cases PASS after one test-only discriminator correction. T09 remains in_progress:actual microphone/clock/dropout owner unimplemented. All workers idle.",
+        "2026-11-07T11:50Z PitchPublisher hop/200ms hold/start/stop/release on continuation. Injected clock; exclusive coordinator and getUserMedia remain. 27 capture / 1023 unit PASS. Partial T09."
       ],
       "blocker": null
     },
@@ -1024,7 +1035,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
       "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter. Prefix-scrubber, Artists chip, Play-Shuffle remain. Settings Back 64px still owner-blocked.",
-      "nextAction": "All Songs in-view filter landed. Rotate off Library polish: next T09 exclusive MicrophonePitchTracker owner (hop/200ms hold) to unblock singing. Artists chip needs new getArtistSuggestions RPC. SongQueueViewModel is implementable later. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
+      "nextAction": "All Songs in-view filter landed 53e875d1. PitchPublisher hop/200ms hold landed this checkpoint. Rotate off Library polish: next exclusive MicrophonePitchCoordinator lease or getUserMedia hop clock. Artists chip needs new getArtistSuggestions RPC. SongQueueViewModel is implementable later. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-all-songs-filter/browser-001",
