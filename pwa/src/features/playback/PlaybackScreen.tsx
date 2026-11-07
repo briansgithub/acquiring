@@ -12,7 +12,9 @@ import {INSTRUMENTS,Waveform} from '../../audio/synth';
 import type {PlaybackSettings} from './controller';
 import {PLAYBACK_ARPEGGIOS,SectionPlaybackController} from './controller';
 import {appInstrumentSession} from '../settings/instrument-session';
-import {capturePlayback,enterPlayback,setSessionTranspose,setSessionWaveform} from './playback-route-memory';
+import {enterPlayback} from './playback-route-memory';
+import {PLAYBACK_ARPEGGIO_NAMES,emptyPlaybackState,rememberPlayback} from './playback-screen-support';
+import {useQueuePlayback} from './queue-playback';
 import {formatBeat} from '../details/overview';
 import {displayTitle,safeSectionName} from '../../domain/data';
 import {AppShell} from '../../ui/shell/AppShell';
@@ -20,22 +22,10 @@ import {SongDetailController} from '../details/controller';
 import './playback.css';
 import type {PlaybackScreenProps} from './view-contracts';
 
-const emptyState=Object.freeze({
-  settings:Object.freeze({tempoPercent:100,transpose:0,melodyPercent:50,waveform:Waveform.CLARINET,rootOnly:false,arpeggioIndex:3}),
-  transport:Object.freeze({phase:'stopped' as const,transportRevision:0,playbackRequested:false,beat:1,bpm:120,window:null,renderEnded:false,completion:null,error:null,clock:null}),
-  endBeat:32,baseBpm:120,scrubbing:false,
-});
 const emptySubscribe=()=>()=>{};
-const emptySnapshot=()=>emptyState;
-const arpeggioNames=['1/4','1/3','1/2','Off','1x','2x','3x','4x'];
-function rememberPlayback(slug:string,sectionId:string|null,owner:SectionPlaybackController|null):void {
-  if(!owner||owner.closed||!sectionId)return;
-  const {settings,transport}=owner.getSnapshot();
-  capturePlayback(slug,{sectionId,beat:transport.beat,tempoPercent:settings.tempoPercent,arpeggioIndex:settings.arpeggioIndex});
-  setSessionTranspose(settings.transpose);setSessionWaveform(settings.waveform);
-}
+const emptySnapshot=()=>emptyPlaybackState;
 
-export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenProps){
+export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,autoStart=false,onSectionComplete,onSongUnavailable,queueNav}:PlaybackScreenProps){
   const [detailController,setDetailController]=useState(()=>new SongDetailController(slug));
   const detailState=useSyncExternalStore(detailController.subscribe,detailController.getSnapshot,detailController.getSnapshot);
   const [sectionId,setSectionId]=useState<string|null>(null);
@@ -116,7 +106,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
     setSectionId(section[0]);
     let owner:SectionPlaybackController|null=null;
     try{
-      owner=new SectionPlaybackController(section[1]);
+      owner=new SectionPlaybackController(section[1],undefined,playOnceKey);
       playbackOwner.current=owner;
       loadedSection.current=section[0];
       owner.start();
@@ -139,7 +129,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
       current?.dispose();
       if(current!==owner)owner?.dispose();
     };
-  },[details,slug]);
+  },[details,slug,playOnceKey]);
 
   useEffect(()=>{
     if(!playback||playback.closed||playback.getSnapshot().settings.waveform===instrument.session)return;
@@ -177,7 +167,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
     if(!playback||playback.closed){
       let owner:SectionPlaybackController|null=null;
       try{
-        owner=new SectionPlaybackController(next[1]);
+        owner=new SectionPlaybackController(next[1],undefined,playOnceKey);
         playbackOwner.current=owner;
         loadedSection.current=id;
         owner.start();
@@ -206,6 +196,12 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
     }
   }
 
+  useQueuePlayback({
+    playback,playbackError,autoStart,playOnceKey,phase:transport.phase,
+    completionKey:transport.completion?.completionKey??null,
+    detailPhase:detailState.phase,title,
+    onSectionComplete,onSongUnavailable,
+  });
   const beat=Math.max(1,Math.min(playbackState.endBeat,transport.beat));
   const active=transport.playbackRequested;
   const phase=playbackError?'error':transport.phase;
@@ -217,6 +213,11 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
     active?'Playback requested.':'Playback paused.');
 
   return <AppShell title={title} onBack={onBack}><div className="playback-screen" aria-busy={detailState.phase==='loading'} data-playback-phase={phase} data-playback-requested={String(active)}>
+    {queueNav&&<div className="playback-queue-bar panel" data-song-queue-bar="">
+      <span>{queueNav.label}</span>
+      <button className="action" type="button" aria-label="Previous song" disabled={!queueNav.previousEnabled} onClick={queueNav.onPrevious}>Previous</button>
+      <button className="action" type="button" aria-label="Next song" disabled={!queueNav.nextEnabled} onClick={queueNav.onNext}>Next</button>
+    </div>}
     {detailState.phase==='loading'?<p role="status">Opening song...</p>:detailState.phase!=='ready'?<section className="panel">
       <h2>{detailState.phase==='download'?'Song library needed':detailState.phase==='missing'?'Song unavailable':'Unable to open song'}</h2>
       <p role={detailState.phase==='error'?'alert':undefined}>{detailState.message}</p>
@@ -287,7 +288,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
           {!settings.rootOnly&&<label className="playback-field">Arpeggio
             <select aria-label="Arpeggio" value={settings.arpeggioIndex} disabled={!playback}
               onChange={event=>updateSettings({arpeggioIndex:Number(event.target.value)})}>
-              {PLAYBACK_ARPEGGIOS.map((_,index)=><option key={index} value={index}>{arpeggioNames[index]}</option>)}
+              {PLAYBACK_ARPEGGIOS.map((_,index)=><option key={index} value={index}>{PLAYBACK_ARPEGGIO_NAMES[index]}</option>)}
             </select>
           </label>}
         </section>

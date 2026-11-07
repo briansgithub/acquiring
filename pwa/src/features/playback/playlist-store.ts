@@ -15,8 +15,10 @@ export interface PlaylistStore {
   addEntry(entry:PlaylistEntryRecord):Promise<void>;
   removeEntry(playlistId:string,slug:string):Promise<void>;
   getSlugsIn(playlistId:string):Promise<string[]>;
+  getEntriesIn(playlistId:string):Promise<PlaylistEntryRecord[]>;
   getSummaries():Promise<PlaylistSummary[]>;
   deletePlaylist(playlistId:string):Promise<void>;
+  saveGeneratedPlaylist(playlist:PlaylistRecord,entries:readonly PlaylistEntryRecord[]):Promise<void>;
 }
 
 export function playlistEntryId(playlistId:string,slug:string):string {return `${playlistId}\t${slug}`;}
@@ -74,10 +76,18 @@ export function userPlaylistStore(db:UserDatabase,namespace:UserNamespace='guest
       await db.mutate({namespace,store:'playlistEntries',id,operationId:crypto.randomUUID(),
         value:null,deleted:true,createdAt:Date.now()});
     },
-    async getSlugsIn(playlistId){
+    async getEntriesIn(playlistId){
       const rows=await db.list(namespace,'playlistEntries');
       return rows.map(row=>parsePlaylistEntryValue(row.value)).filter((entry):entry is PlaylistEntryRecord=>entry?.playlistId===playlistId)
-        .sort(slugOrder).map(entry=>entry.slug);
+        .sort(slugOrder);
+    },
+    async getSlugsIn(playlistId){
+      return (await this.getEntriesIn(playlistId)).map(entry=>entry.slug);
+    },
+    async saveGeneratedPlaylist(playlist,entries){
+      await db.mutate({namespace,store:'playlists',id:playlist.id,operationId:crypto.randomUUID(),
+        value:{name:playlist.name,isBuiltIn:playlist.isBuiltIn,createdAt:playlist.createdAt},createdAt:playlist.createdAt});
+      for(const entry of entries)await this.addEntry(entry);
     },
     async getSummaries(){
       const playlists=(await db.list(namespace,'playlists')).map(row=>parsePlaylistValue(row.id,row.value)).filter((row):row is PlaylistRecord=>row!==null);

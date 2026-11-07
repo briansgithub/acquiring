@@ -17,8 +17,10 @@ function eventEnd(beat:number,duration:number,rest:boolean):number|null {
 }
 const rest=(note:ExtractedSection['chords'][number])=>nativeBooleanOrNull(note.isRest)===true||nativeBooleanOrNull(note.rest)===true;
 
-/** Frozen native PlaybackView melody/base tempo and PlaybackTiming audible-end projection. */
-export function preparePlaybackSection(section:ExtractedSection):PreparedPlaybackSection {
+/** Frozen native PlaybackView melody/base tempo and PlaybackTiming audible-end projection.
+ * completionKey is applied by the caller (queue playOnceKey); the timeline builder never invents it.
+ */
+export function preparePlaybackSection(section:ExtractedSection,completionKey:string|null=null):PreparedPlaybackSection {
   const raw=Array.isArray(section.notes)?section.notes:isObject(section.notes)&&Array.isArray(section.notes.melody1)?section.notes.melody1:[];
   if(raw.length+section.chords.length>STREAM_LIMITS.events)throw new RangeError('This section exceeds the playback event limit.');
   const melody=raw.filter(isObject).map(note=>Object.freeze({
@@ -33,5 +35,9 @@ export function preparePlaybackSection(section:ExtractedSection):PreparedPlaybac
   const endBeat=end??(metadataEnd!==undefined&&Number.isFinite(metadataEnd)&&metadataEnd>1?metadataEnd:32);
   const baseBpm=Math.fround(Math.min(240,Math.max(40,Math.fround(getBpm(section)))));
   if(!Number.isFinite(baseBpm))throw new RangeError('This section has an invalid playback tempo.');
-  return Object.freeze({melody:Object.freeze(melody),baseBpm,timeline:buildPlaybackTimeline(section,melody,endBeat)});
+  const timeline=buildPlaybackTimeline(section,melody,endBeat);
+  return Object.freeze({
+    melody:Object.freeze(melody),baseBpm,
+    timeline:completionKey===null?timeline:Object.freeze({...timeline,completionKey}),
+  });
 }

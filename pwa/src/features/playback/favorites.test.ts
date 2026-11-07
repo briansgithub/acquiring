@@ -20,7 +20,7 @@ class MemoryStore implements PlaylistStore {
   async removeEntry(playlistId:string,slug:string):Promise<void> {
     this.entries.delete(playlistEntryId(playlistId,slug));
   }
-  async getSlugsIn(playlistId:string):Promise<string[]> {
+  async getEntriesIn(playlistId:string){
     return [...this.entries.values()].filter(entry=>entry.playlistId===playlistId)
       .sort((a,b)=>{
         const aPos=a.position===null?1:0,bPos=b.position===null?1:0;
@@ -28,7 +28,14 @@ class MemoryStore implements PlaylistStore {
         if(a.position!==null&&b.position!==null&&a.position!==b.position)return a.position-b.position;
         if(a.addedAt!==b.addedAt)return b.addedAt-a.addedAt;
         return a.slug.localeCompare(b.slug,'en',{sensitivity:'accent'});
-      }).map(entry=>entry.slug);
+      });
+  }
+  async getSlugsIn(playlistId:string):Promise<string[]> {
+    return (await this.getEntriesIn(playlistId)).map(entry=>entry.slug);
+  }
+  async saveGeneratedPlaylist(playlist:PlaylistRecord,entries:readonly PlaylistEntryRecord[]):Promise<void> {
+    this.playlists.set(playlist.id,playlist);
+    for(const entry of entries)await this.addEntry(entry);
   }
   async getSummaries(){
     const playlists=[...this.playlists.values()].sort((a,b)=>{
@@ -124,7 +131,8 @@ describe('native MainActivity favorite star',()=>{
     const session=new FavoriteSession();
     session.attachStore({
       ensureBuiltInPlaylist:async()=>{throw new Error('quota');},
-      isInPlaylist:async()=>false,addEntry:async()=>{},removeEntry:async()=>{},getSlugsIn:async()=>[],getSummaries:async()=>[],deletePlaylist:async()=>{},
+      isInPlaylist:async()=>false,addEntry:async()=>{},removeEntry:async()=>{},getSlugsIn:async()=>[],getEntriesIn:async()=>[],
+      getSummaries:async()=>[],deletePlaylist:async()=>{},saveGeneratedPlaylist:async()=>{},
     });
     await session.enterSong('detail-gzip');
     const toggling=session.toggle();

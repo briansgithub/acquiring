@@ -975,7 +975,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
       "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop opt-in, 2s rest, measured interval, opt-in-only auto-listen. Device mic/AudioWorklet/median Aural scores remain open",
-      "nextAction": "Flip-Flop 2s rest + measured interval + opt-in-only auto-listen landed. SongQueue kernel next-landed; Play/Shuffle chrome or AudioWorklet or coordinated device mic remain. SYNTHETIC fixture is not Pixel acceptance. No fabricated cents. First-load auto-listen 800ms is a Brian decision (getUserMedia is not transient-gated). Library prefix polish is not next.",
+      "nextAction": "Flip-Flop rest/interval landed; Play/Shuffle chrome landed. Next AudioWorklet (feasible, not switched) or coordinated device mic. SYNTHETIC fixture is not Pixel acceptance. No fabricated cents. First-load auto-listen B pending Brian, not parity. Library prefix polish is not next.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
@@ -1082,8 +1082,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
-      "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter plus SongQueueViewModel kernel. Prefix-scrubber, Artists chip, Play-Shuffle chrome remain. Settings Back 64px still owner-blocked.",
-      "nextAction": "SongQueue kernel landed. Next Play/Shuffle chrome or playlist save or section resolve. Artists chip needs new getArtistSuggestions RPC. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
+      "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter plus SongQueue kernel plus Play/Shuffle chrome. Prefix-scrubber, Artists chip, Aural queue begin, section-identity RPC remain. Settings Back 64px still owner-blocked.",
+      "nextAction": "Play/Shuffle chrome landed. Next playlist-save browser proof, section resolve, or AudioWorklet. Artists chip needs new getArtistSuggestions RPC. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last. Mic policy B pending Brian.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-all-songs-filter/browser-001",
@@ -1105,6 +1105,17 @@
             "T10-song-queue-check-001"
           ],
           "result": "PASS 6 focused then 1044 unit/87 files + 1 parity + types + shell b46ee11bd284 (unbundled; App import unchanged). Native SongQueueTest popularity order/dedupe, shuffle restore, playlist advance/pause intent, Aural originQuiz completion-skip. No Play/Shuffle chrome, PlaylistDao, PlaybackController.pause, or section-identity RPC. Partial T10, not device/whole-CI-green."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/library/playlists.test.ts src/features/library/song-queue.test.ts src/features/library/song-queue-host.test.ts src/features/playback/controller.test.ts src/features/playback/section-model.test.ts src/features/singing/singing-microphone.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts --project chrome --workers 1 --grep \"Library Play/Shuffle|Library Playlists Favorites|singing dock loads|Playlists Favorites accordion is empty\"",
+          "revision": "53df124f plus named Play/Shuffle chrome tree",
+          "guards": [
+            "T10-song-queue-chrome-unit-002",
+            "T10-song-queue-chrome-typecheck-002",
+            "T10-song-queue-chrome-check-001",
+            "T10-song-queue-chrome-browser-001"
+          ],
+          "result": "PASS 36 focused then 1048 unit/88 files + 1 parity + types + shell 3f326b5abb2a. browser-001 FIRST PASS 4/4: empty Favorites has no Play; singing dock still idle/interval —; accordion unstar; Play playlist → queue chrome → Play queue → 1 of 1 bar, Back dismisses. playOnceKey on timeline; missing slugs stay in queue. Aural begin deferred. Mic policy B pending, not parity. Partial T10, not device/whole-CI-green."
         },
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-all-songs-modes/browser-001",
@@ -1205,7 +1216,8 @@
         "2026-11-07T11:29Z All Songs alphabetical on continuation: SongDao count/membership RPCs + overlay, search-focus hide, one expansion. Complexity/mode/filter/scrubber omitted. browser-001 26 passed/1 skipped (honest mouse-drag fixme). Partial T10.",
         "2026-11-07T11:34Z All Songs complexity/mode on continuation: unified group RPCs, Sort by, unrated empty, ionian fixture membership. Filter/scrubber omitted. browser-001 26 passed/1 skipped (honest mouse-drag fixme). Partial T10.",
         "2026-11-07T11:41Z All Songs in-view filter on continuation: 250ms debounce, existing group RPCs, unmatched copy, heading stays open. Artists chip deferred (new RPC). browser-001 26 passed/1 skipped (honest mouse-drag fixme). Next T09 mic owner. Partial T10.",
-        "2026-11-07T12:08Z SongQueueViewModel kernel on continuation: orderedQueue + session begin/shuffle/start/select/completed/unavailable/dismiss. Unbundled. Play/Shuffle chrome next. Partial T10."
+        "2026-11-07T12:08Z SongQueueViewModel kernel on continuation: orderedQueue + session begin/shuffle/start/select/completed/unavailable/dismiss. Unbundled. Play/Shuffle chrome next. Partial T10.",
+        "2026-11-07T12:12Z Play/Shuffle chrome on continuation: Favorites Play/Shuffle play, queue screen, Play queue, playOnceKey complete/unavailable, Back dismisses. Aural begin deferred. browser-001 4/4. Partial T10."
       ],
       "blocker": "Exact Settings->Library scroll restoration remains64pxdifferent after2diagnose/fix/retest cycles. Query/draft/40loaded rows andsongBack focus/scroll pass;artist/browserBack/ownership andoffline320px200percent cases pass. User AGENTS.mdrequiresaskingbeforeexpanding;asyncapproval question pending. Do not attempt a third scroll fix or relax assertion without that answer. Continue independent packages.",
       "dependencyGates": {
@@ -2196,7 +2208,7 @@
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
       "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + opt-in listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + opt-in-only auto-listen. Median Aural scores and first-load auto-listen remain.",
-      "nextAction": "Do not fake scores. Flip-Flop rest and measured interval landed. First-load auto-listen is a Brian decision (A native-parity 800ms / B current opt-in-only / C never). SongQueue kernel landed; Play/Shuffle chrome next. Do not start Aural/T15 remainder.",
+      "nextAction": "Do not fake scores. Flip-Flop rest and measured interval landed. First-load auto-listen B pending Brian, not parity. Play/Shuffle chrome landed. Do not start Aural/T15 remainder.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",

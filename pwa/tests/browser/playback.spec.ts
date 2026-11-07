@@ -488,6 +488,34 @@ test('Library Playlists Favorites accordion lists starred songs and can unstar t
   const image=testInfo.outputPath('library-favorites-accordion-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
 
+test('Library Play/Shuffle opens saved queue chrome and Play queue starts playback',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  await page.getByRole('button',{name:'Add to Favorites',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Remove from Favorites',exact:true})).toHaveAttribute('aria-pressed','true');
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Expand Favorites',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Play playlist',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Shuffle play playlist',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Play playlist',exact:true}).click();
+  await expect(page.locator('[data-song-queue-screen]')).toBeVisible();
+  await expect(page.getByRole('button',{name:'Play queue',exact:true})).toBeVisible();
+  await expect(page.getByRole('switch',{name:'Shuffle',exact:true})).toBeDisabled();
+  await page.getByRole('button',{name:'Play queue',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect(page.locator('[data-song-queue-bar]')).toBeVisible();
+  await expect(page.getByText('1 of 1',{exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Previous song',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Next song',exact:true})).toBeDisabled();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
+  await expect(page.locator('[data-song-queue-screen]')).toHaveCount(0);
+  const image=testInfo.outputPath('library-play-shuffle-queue-narrow.png');
+  await page.setViewportSize({width:320,height:640});
+  await page.evaluate(()=>{document.documentElement.style.fontSize='32px';scrollTo(0,0);});
+  await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
+});
+
 test('settings default instrument persists and playback session does not overwrite it',async({page},testInfo)=>{
   await instrument(page);await installAndOpen(page);
   await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('CLARINET');

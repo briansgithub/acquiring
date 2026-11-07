@@ -37,8 +37,8 @@ export class SectionPlaybackController {
   private scrubbing=false;
   private resumeAfterScrub=false;
   private scrubRevision:number|null=null;
-  constructor(section:ExtractedSection,private readonly factory:(config:PlaybackConfig)=>AudioPlaybackTransport=config=>new PlaybackTransport({initialConfig:config})) {
-    this.model=preparePlaybackSection(section);this.state=this.snapshot();
+  constructor(section:ExtractedSection,private readonly factory:(config:PlaybackConfig)=>AudioPlaybackTransport=config=>new PlaybackTransport({initialConfig:config}),private readonly playOnceKey:string|null=null) {
+    this.model=preparePlaybackSection(section,playOnceKey);this.state=this.snapshot();
   }
   get closed():boolean{return this.stopped;}
   getSnapshot=():SectionPlaybackState=>this.state;
@@ -75,7 +75,7 @@ export class SectionPlaybackController {
   }
   loadSection(section:ExtractedSection):void {
     if(this.stopped)return;
-    const previous=this.revision,model=preparePlaybackSection(section),updated=config(model,this.settings);
+    const previous=this.revision,model=preparePlaybackSection(section,this.playOnceKey),updated=config(model,this.settings);
     if(this.stopped||previous!==this.revision)throw new Error('Playback section superseded');
     const resume=this.engine?.getSnapshot().playbackRequested??false,revision=++this.revision;
     this.clearScrub();this.model=model;this.engine?.updateConfig(updated);

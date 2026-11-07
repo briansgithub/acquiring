@@ -3,6 +3,8 @@ import {navigate,subscribeRoute} from '../../app/routes';
 import {LibraryController,type LibraryView} from './controller';
 import {recordOpenedSong} from './history-store';
 import {LibraryContent} from './LibraryContent';
+import {SongQueueScreen} from './SongQueueScreen';
+import {mutateSongQueue,songQueueSession,songQueueVersion,subscribeSongQueue} from './song-queue-host';
 
 interface Remembered {view:LibraryView;scrollY:number}
 // Transient view state only. Durable favorites/recents remain in user storage.
@@ -27,6 +29,9 @@ function remember(controller:LibraryController):void {
 export function LibraryScreen(){
   const [reader,setReader]=useState(makeReader),controller=reader.controller;
   const state=useSyncExternalStore(controller.subscribe,controller.getSnapshot,controller.getSnapshot);
+  const queueVersion=useSyncExternalStore(subscribeSongQueue,songQueueVersion,songQueueVersion);
+  const queue=songQueueSession();
+  void queueVersion;
   const pendingRestore=useRef<Remembered|undefined>(reader.remembered);
   const departureSaved=useRef(false);
   useEffect(()=>{
@@ -63,6 +68,15 @@ export function LibraryScreen(){
     });
     return ()=>cancelAnimationFrame(frame);
   },[state.phase,state.rows,state.sourceSnapshot,state.focusSlug]);
+  if(queue.active&&!queue.started){
+    return <SongQueueScreen
+      onDismiss={()=>mutateSongQueue(session=>session.dismiss())}
+      onOpenEntry={song=>{
+        void recordOpenedSong(song.slug,song.artist||null);
+        controller.rememberFocused(song.slug);saveLibraryView();
+        navigate('/playback/'+encodeURIComponent(song.slug),{fromQueue:true});window.scrollTo(0,0);
+      }}/>;
+  }
   return <LibraryContent state={state}
     onSearch={text=>{
       if(state.artist!==null){remember(controller);history.replaceState({libraryArtist:null},'',location.href);}

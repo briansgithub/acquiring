@@ -49,6 +49,23 @@ it('keeps paused and exact-end scrubs silent, cancellation never starts audio',(
   expect(s.engine.seek).toHaveBeenLastCalledWith(2,false);expect(s.controller.getSnapshot().scrubbing).toBe(false);
   s.controller.reset();expect(s.controller.getSnapshot().transport).toMatchObject({beat:1,phase:'stopped',playbackRequested:false});s.controller.dispose();
 });
+it('loads a queue playOnceKey onto the timeline and keeps it across section replace',()=>{
+  const kernel=new PlaybackIntentKernel(90),listeners=new Set<()=>void>(),configs:PlaybackConfig[]=[];
+  const emit=()=>{for(const listener of listeners)listener();};
+  const engine={getSnapshot:()=>({...kernel.getSnapshot(),clock:null}),subscribe:(fn:()=>void)=>{listeners.add(fn);return()=>{listeners.delete(fn);};},
+    load:vi.fn((timeline,resume)=>{kernel.load(timeline,resume);emit();}),playFromGesture:vi.fn(()=>{kernel.play();emit();}),
+    pause:vi.fn(()=>{kernel.pause();emit();}),pauseForScrub:vi.fn(()=>{const resume=kernel.pauseForScrub();emit();return resume;}),
+    seek:vi.fn((beat,resume)=>{kernel.seek(beat,resume);emit();}),reset:vi.fn(()=>{kernel.reset();emit();}),
+    updateConfig:vi.fn((config:PlaybackConfig)=>{configs.push(config);kernel.updateTempo(config.bpm);emit();}),
+    isCurrentCompletion:guard=>kernel.isCurrentCompletion(guard),release:vi.fn(()=>{kernel.release();emit();}),
+  } satisfies AudioPlaybackTransport;
+  const controller=new SectionPlaybackController(section(),()=>engine,'queue-token');
+  controller.start();
+  expect(engine.load).toHaveBeenCalledWith(expect.objectContaining({completionKey:'queue-token'}),false);
+  controller.loadSection(section(120,7));
+  expect(engine.load).toHaveBeenLastCalledWith(expect.objectContaining({completionKey:'queue-token'}),false);
+  controller.dispose();
+});
 it('replaces section at start with current settings and requested intent using the same transport',()=>{
   const s=setup();s.controller.play();s.controller.updateSettings({tempoPercent:75,rootOnly:true});s.controller.loadSection(section(120,7));
   expect(s.factory).toHaveBeenCalledTimes(1);expect(s.engine.load).toHaveBeenLastCalledWith(expect.objectContaining({endBeat:8}),true);

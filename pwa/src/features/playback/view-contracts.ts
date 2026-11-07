@@ -39,8 +39,20 @@
  * Keep 44px targets, 320px/200%text wrapping and keyboard operation. No interval-play button
  * before separately accepted sequenceaudio; no placeholder/debugtext, singing or persistence.
  */
+export interface PlaybackQueueNav {
+  readonly label:string;
+  readonly previousEnabled:boolean;
+  readonly nextEnabled:boolean;
+  readonly onPrevious:()=>void;
+  readonly onNext:()=>void;
+}
 export interface PlaybackScreenProps {
   readonly slug:string;readonly onBack:()=>void;readonly onHome:()=>void;readonly onDownload:()=>void;
+  readonly playOnceKey?:string|null;
+  readonly autoStart?:boolean;
+  readonly onSectionComplete?:(key:string)=>void;
+  readonly onSongUnavailable?:(message:string)=>void;
+  readonly queueNav?:PlaybackQueueNav;
 }
 
 /** Interval integration boundary: one stable PreviewOwner with renderCardPreview injection.

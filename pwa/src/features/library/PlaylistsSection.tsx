@@ -3,6 +3,7 @@ import {displayArtist,displayTitle} from '../../domain/data';
 import {openGuestPlaylistStore,PLAYLIST_IDS,type PlaylistStore,type PlaylistSummary} from '../playback/playlist-store';
 import {toggledExpandedGroup,type SongBrowseRow} from './grouping';
 import {PLAYLIST_SONGS_MAX_HEIGHT_PX,PLAYLISTS_EMPTY_COPY,songsForPlaylist} from './playlists';
+import {startSavedQueue} from './song-queue-host';
 
 interface PlaylistsSectionProps {
   browseBySlugs(slugs:string[]):Promise<SongBrowseRow[]>;
@@ -85,6 +86,14 @@ export function PlaylistsSection({browseBySlugs,onOpenSong}:PlaylistsSectionProp
           <span aria-hidden="true">{expanded?'▴':'▾'}</span>
         </button>
         {expanded&&<>
+          {summary.songCount>0&&<div className="library-queue-actions">
+            <button className="library-back" type="button" disabled={!store} aria-label="Play playlist"
+              onMouseDown={event=>event.preventDefault()}
+              onClick={()=>{if(store)void startSavedQueue(store,browseBySlugs,summary.id,false);}}>Play</button>
+            <button className="library-back" type="button" disabled={!store} aria-label="Shuffle play playlist"
+              onMouseDown={event=>event.preventDefault()}
+              onClick={()=>{if(store)void startSavedQueue(store,browseBySlugs,summary.id,true);}}>Shuffle play</button>
+          </div>}
           {loadError&&<p className="library-playlist-error" role="alert">{loadError}</p>}
           {loadingSongs&&<p className="library-status" role="status" aria-live="polite">Loading playlist...</p>}
           {!loadingSongs&&!loadError&&songs.length===0&&

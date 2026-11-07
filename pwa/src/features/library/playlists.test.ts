@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {PLAYLIST_IDS,playlistEntryId,type PlaylistEntryRecord,type PlaylistRecord,type PlaylistStore} from '../playback/playlist-store';
-import {songsForPlaylist} from './playlists';
+import {queuedSongsFromEntries,songsForPlaylist} from './playlists';
 
 class MemoryStore implements PlaylistStore {
   playlists=new Map<string,PlaylistRecord>();
@@ -20,10 +20,16 @@ class MemoryStore implements PlaylistStore {
   async removeEntry(playlistId:string,slug:string):Promise<void> {
     this.entries.delete(playlistEntryId(playlistId,slug));
   }
-  async getSlugsIn(playlistId:string):Promise<string[]> {
+  async getEntriesIn(playlistId:string){
     return [...this.entries.values()].filter(entry=>entry.playlistId===playlistId)
-      .sort((a,b)=>b.addedAt-a.addedAt||a.slug.localeCompare(b.slug,'en',{sensitivity:'accent'}))
-      .map(entry=>entry.slug);
+      .sort((a,b)=>b.addedAt-a.addedAt||a.slug.localeCompare(b.slug,'en',{sensitivity:'accent'}));
+  }
+  async getSlugsIn(playlistId:string):Promise<string[]> {
+    return (await this.getEntriesIn(playlistId)).map(entry=>entry.slug);
+  }
+  async saveGeneratedPlaylist(playlist:PlaylistRecord,entries:readonly PlaylistEntryRecord[]):Promise<void> {
+    this.playlists.set(playlist.id,playlist);
+    for(const entry of entries)await this.addEntry(entry);
   }
   async getSummaries(){
     const playlists=[...this.playlists.values()].sort((a,b)=>{
@@ -75,5 +81,14 @@ describe('native PlaylistsSection hydration',()=>{
       {id:'favorites',name:'Favorites',songCount:1},
       {id:'practice',name:'Practice',songCount:1},
     ]);
+  });
+  it('keeps missing catalog slugs in a saved queue and fills First section',()=>{
+    const songs=queuedSongsFromEntries([
+      {playlistId:'favorites',slug:'gone',addedAt:1,position:0,sectionId:null,sectionName:null},
+      {playlistId:'favorites',slug:'kept',addedAt:2,position:1,sectionId:'verse',sectionName:'Verse'},
+    ],[{slug:'kept',artist:'Artist-A',title:'Kept',complexityRating:null}]);
+    expect(songs.map(song=>song.slug)).toEqual(['gone','kept']);
+    expect(songs[0]).toMatchObject({title:'gone',artist:'',sectionId:'',sectionName:'First section'});
+    expect(songs[1]).toMatchObject({title:'Kept',sectionId:'verse',sectionName:'Verse'});
   });
 });

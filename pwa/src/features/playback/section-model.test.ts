@@ -11,6 +11,11 @@ it('matches independent frozen native melody, exact audible end and Float base t
     expect(model.timeline.completionKey).toBeNull();
   }
 });
+it('applies caller playOnceKey without changing builder looping default',()=>{
+  const section:ExtractedSection={chords:[{root:1,type:5,beat:1,duration:2}]};
+  expect(preparePlaybackSection(section).timeline.completionKey).toBeNull();
+  expect(preparePlaybackSection(section,'queue-token').timeline.completionKey).toBe('queue-token');
+});
 it('snapshots timeline/melody and rejects browser resource/tempo limits without audio',()=>{
   const section:ExtractedSection={chords:[{root:1,type:5,beat:1,duration:2}],notes:[{sd:'1',beat:1,duration:1}]};
   const model=preparePlaybackSection(section);section.chords[0].duration=10;
