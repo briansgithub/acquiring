@@ -5,6 +5,7 @@ import {
 import { calculateMeasuredInterval, type MeasuredInterval, SpelledPitch } from '../../domain/music';
 
 export const LISTEN_TIMEOUT_MS = 3000;
+export const RECORD_TIMEOUT_MS = 3000;
 export const FLIPFLOP_SLOT_MS = 3000;
 /** Native HummingIntervalPopup after slot 2: pitchTracker.stop() then delay(2000). */
 export const FLIPFLOP_REST_MS = 2000;
@@ -14,6 +15,7 @@ export const AUTO_LISTEN_MS = 800;
 export type SingingMicAction =
   | { readonly kind: 'idle' }
   | { readonly kind: 'listening'; readonly slot: 1 | 2; readonly targetMidi: number }
+  | { readonly kind: 'recording'; readonly slot: 1 | 2 }
   | { readonly kind: 'flipflop'; readonly slot: 1 | 2 }
   | { readonly kind: 'flipflop-rest'; readonly until: number };
 
@@ -88,6 +90,26 @@ export class SingingMicrophoneSession {
     return true;
   }
 
+  /** Native empty-slot Record: start(60), nearest-cents, 3s, slot cleared at start. */
+  record(slot: 1 | 2): void {
+    this.optedIn = true;
+    this.error = null;
+    this.lease.stop();
+    this.lease.claim();
+    if (slot === 1) this.slot1 = null; else this.slot2 = null;
+    this.action = { kind: 'recording', slot };
+    this.startedAt = this.now();
+    this.lease.start(60);
+    this.emit();
+  }
+
+  /** Native LaunchedEffect(requestId): drop captured pitches without finishing a listen. */
+  clearSlots(): void {
+    this.slot1 = null;
+    this.slot2 = null;
+    this.emit();
+  }
+
   setFlipFlop(enabled: boolean): void {
     this.lease.stop();
     if (!enabled) {
@@ -114,7 +136,9 @@ export class SingingMicrophoneSession {
   /** Native listenTimeRemaining / recordingTimeRemaining. Rest shows none. */
   remainingMs(now = this.now()): number {
     if (this.action.kind === 'listening') return Math.max(0, LISTEN_TIMEOUT_MS - (now - this.startedAt));
-    if (this.action.kind === 'flipflop') return Math.max(0, FLIPFLOP_SLOT_MS - (now - this.startedAt));
+    if (this.action.kind === 'recording' || this.action.kind === 'flipflop') {
+      return Math.max(0, RECORD_TIMEOUT_MS - (now - this.startedAt));
+    }
     return 0;
   }
 
@@ -150,6 +174,12 @@ export class SingingMicrophoneSession {
     if (this.action.kind === 'listening') {
       if (live) this.writeSlot(this.action.slot, live, (live.midi - this.action.targetMidi) * 100);
       if (now - this.startedAt >= LISTEN_TIMEOUT_MS) this.stop();
+      else this.emit();
+      return;
+    }
+    if (this.action.kind === 'recording') {
+      if (live) this.writeSlot(this.action.slot, live, centsFromNearest(live.midi));
+      if (now - this.startedAt >= RECORD_TIMEOUT_MS) this.stop();
       else this.emit();
       return;
     }

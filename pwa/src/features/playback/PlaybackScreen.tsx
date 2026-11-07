@@ -269,7 +269,8 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
           onScrub={{tap:t=>{cardPreviewStop.current?.();playback.scrubTo(t);playback.finishScrub();},dragTo:t=>{cardPreviewStop.current?.();playback.scrubTo(t);},end:()=>playback.finishScrub()}}/>}
         <SingingDock octaveOffset={octaveOffset} onOctaveOffsetChange={offset=>octaveSession.updateOctaveOffset(offset)}
           target={singingTarget} expanded={dockExpanded} onExpandedChange={setDockExpanded} transpose={settings.transpose}
-          capture={mic.capture} source={mic.singing}/>
+          capture={mic.capture} source={mic.singing} waveform={settings.waveform}
+          stopCardPreview={()=>cardPreviewStop.current?.()}/>
         <PlaybackSettingsPanel settings={settings} disabled={!playback} onChange={updateSettings}/>
       </>}
     </>}

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  displayedSlotData, intervalCentsClose, pitchAccuracyBand, pitchAccuracyColor,
-  recordedPitchPlaybackFrequency, remainingSeconds, PITCH_ACCURACY_COLORS,
+  capturedPreviewFreqs, displayedSlotData, intervalCentsClose, intervalPreviewStages,
+  pitchAccuracyBand, pitchAccuracyColor, recordedPitchPlaybackFrequency, remainingSeconds,
+  PITCH_ACCURACY_COLORS,
 } from './singing-score';
 
 describe('displayedSlotData native HummingIntervalPopup', () => {
@@ -76,5 +77,19 @@ describe('recordedPitchPlaybackFrequency', () => {
     expect(recordedPitchPlaybackFrequency(null)).toBeNull();
     expect(recordedPitchPlaybackFrequency(Number.NaN)).toBeNull();
     expect(recordedPitchPlaybackFrequency(Number.POSITIVE_INFINITY)).toBeNull();
+  });
+
+  it('preview freqs are literal captured Hz with no extra transpose', () => {
+    expect(capturedPreviewFreqs(null)).toBeNull();
+    const hz = recordedPitchPlaybackFrequency(69.37)!;
+    expect(capturedPreviewFreqs({ midi: 69.37, cents: 37, label: 'A4' })).toEqual([hz]);
+    expect(intervalPreviewStages(
+      { midi: 69.37, cents: 37, label: 'A4' },
+      { midi: 73, cents: 0, label: 'C5' },
+    )).toEqual([
+      [hz],
+      [recordedPitchPlaybackFrequency(73)],
+      [hz, recordedPitchPlaybackFrequency(73)],
+    ]);
   });
 });

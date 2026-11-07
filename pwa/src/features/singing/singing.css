@@ -21,3 +21,17 @@
   position: absolute; top: .25rem; right: .25rem; font-size: .75rem;
   background: #3d6ea8; color: #fff; border-radius: .25rem; padding: 0 .3rem;
 }
+.singing-dock__prompt { font-size: .7rem; opacity: .5; text-align: center; }
+.singing-dock__tape {
+  position: relative; flex: 1 1 auto; width: 100%; min-height: 3.25rem; overflow: hidden;
+}
+.singing-dock__tape-center {
+  position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: currentColor; opacity: .9;
+}
+.singing-dock__tape-row {
+  position: absolute; left: 50%; top: 50%; font-size: .7rem; white-space: nowrap; opacity: .7;
+}
+.singing-dock__tape-row[data-tape-center] { font-size: .85rem; opacity: 1; }
+.singing-dock__tape-oct {
+  position: absolute; left: .15rem; bottom: .1rem; font-size: .65rem; opacity: .55;
+}

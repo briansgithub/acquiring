@@ -90,4 +90,6 @@ T12-timeline-layout-unit-001 FIRST PASS 7 tests/1 file 166ms. T12-timeline-layou
 
 2026-11-07T14:00Z Singing-dock slot scoring is not timeline banked scores. Halo rest 0¢ / banked ¢ / Unscored · unchanged. Dock +0¢ target placeholder is native unsung preview, distinct from those three. SYNTHETIC singing listen writes captured slot ¢ vs current target and retargets on octave. Fake/silent dock stays target +0¢. Settings Back untouched. No preferredRefreshRate / 120fps claim.
 
+2026-11-07T14:05Z PlaybackScreen passes waveform + stopCardPreview into the dock. Captured-pitch preview uses PreviewOwner 1000ms literal Hz. Separate from timeline banked scores. Settings Back untouched.
+
 2026-11-07T13:41Z Native unmount-without-finish scoring: PlaybackView scoring DisposableEffect onDispose finish() banks the current run while still composed (run-id change). Scoring-disable empties the map. Controller cancel() does not clear scores. Leaving PlaybackView drops remember(sessionKey) state, so banked scores do not persist off-page. PWA cancel() still clears (matches disable); hook unmount drops useState. Do not finish() on every interval-effect cleanup — transpose is in that dep list and would bank re-aim. Distinction remains tracked, not a silent “fix”. SectionPlaybackController.reset records playback.reset. Diagnostics engine-stop registers pause/reset hooks.

@@ -1,7 +1,7 @@
 /** Frozen 801cf798 HummingIntervalPopup displayedSlotData / getPitchColor / recordedPitchPlaybackFrequency.
  * Slot bar/cents are scored against the current effectiveTargetMidi. Unsung target placeholder is 0¢,
  * not a sung score. Flip-Flop/Record store nearest-cents; display still retargets when a target exists.
- * Rolling tape, empty-slot Record, and click-to-preview playback remain later.
+ * Rolling tape snaps (no Compose animateFloatAsState). Record/preview/request-clear are session/UI.
  */
 
 import { SpelledPitch } from '../../domain/music';
@@ -75,4 +75,24 @@ export function displayedSlotData(
 export function recordedPitchPlaybackFrequency(midi: number | null | undefined): number | null {
   if (midi == null || !Number.isFinite(midi)) return null;
   return 440 * 2 ** ((midi - 69) / 12);
+}
+
+/** Native playExactFrequencies: captured raw MIDI only, no extra transpose. */
+export function capturedPreviewFreqs(captured: SlotPitchCapture | null): readonly number[] | null {
+  const hz = recordedPitchPlaybackFrequency(captured?.midi);
+  return hz == null ? null : Object.freeze([hz]);
+}
+
+export function intervalPreviewStages(
+  slot1: SlotPitchCapture | null,
+  slot2: SlotPitchCapture | null,
+): readonly (readonly number[])[] | null {
+  const first = recordedPitchPlaybackFrequency(slot1?.midi);
+  const second = recordedPitchPlaybackFrequency(slot2?.midi);
+  if (first == null || second == null) return null;
+  return Object.freeze([
+    Object.freeze([first]),
+    Object.freeze([second]),
+    Object.freeze([first, second]),
+  ]);
 }

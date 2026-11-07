@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { BrowserMicrophoneCapture, PITCH_SAMPLE_RATE } from '../../audio/capture';
 import type { MicrophoneCaptureTransport } from '../../audio/capture';
 import {
-  AUTO_LISTEN_MS, FLIPFLOP_REST_MS, FLIPFLOP_SLOT_MS, LISTEN_TIMEOUT_MS,
+  AUTO_LISTEN_MS, FLIPFLOP_REST_MS, FLIPFLOP_SLOT_MS, LISTEN_TIMEOUT_MS, RECORD_TIMEOUT_MS,
   SingingMicrophoneSession, formatSungIntervalCents, sungInterval,
 } from './singing-microphone';
 
@@ -141,5 +141,58 @@ describe('SingingMicrophoneSession listen/Flip-Flop', () => {
     expect(interval?.centsDeviation).toBeCloseTo(0, 8);
     expect(formatSungIntervalCents(15)).toBe('+15¢');
     expect(formatSungIntervalCents(-30.4)).toBe('-30¢');
+  });
+
+  it('Record clears the slot, writes nearest-cents, and times out without fabricating silence', () => {
+    const now = { t: 0 };
+    const session = sessionAt(now);
+    session.listen(1, 69);
+    let hops = 0;
+    for (let i = 0; i < 16; i++) {
+      session.capture.pushAudio(sine(440, 512, hops), PITCH_SAMPLE_RATE, now.t);
+      hops += 512;
+    }
+    session.tick(now.t);
+    expect(session.slot1).not.toBeNull();
+    session.record(1);
+    expect(session.action).toMatchObject({ kind: 'recording', slot: 1 });
+    expect(session.slot1).toBeNull();
+    expect(session.remainingMs(now.t)).toBe(RECORD_TIMEOUT_MS);
+    session.release();
+    const silent = sessionAt(now);
+    silent.record(1);
+    now.t += RECORD_TIMEOUT_MS;
+    silent.tick(now.t);
+    expect(silent.action.kind).toBe('idle');
+    expect(silent.slot1).toBeNull();
+    silent.record(2);
+    let n = 0;
+    for (let i = 0; i < 16; i++) {
+      silent.capture.pushAudio(sine(440, 512, n), PITCH_SAMPLE_RATE, now.t);
+      n += 512;
+    }
+    silent.tick(now.t);
+    expect(silent.slot2?.label).toMatch(/A4/);
+    expect(Math.abs(silent.slot2?.cents ?? 99)).toBeLessThan(15);
+    silent.release();
+  });
+
+  it('clearSlots drops captured pitches without stopping a later listen', () => {
+    const now = { t: 0 };
+    const session = sessionAt(now);
+    session.listen(1, 60);
+    let hops = 0;
+    for (let i = 0; i < 16; i++) {
+      session.capture.pushAudio(sine(440, 512, hops), PITCH_SAMPLE_RATE, now.t);
+      hops += 512;
+    }
+    session.tick(now.t);
+    session.stop();
+    expect(session.slot1).not.toBeNull();
+    session.clearSlots();
+    expect(session.slot1).toBeNull();
+    expect(session.slot2).toBeNull();
+    expect(session.action.kind).toBe('idle');
+    session.release();
   });
 });

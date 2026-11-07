@@ -362,6 +362,8 @@ test('singing dock loads card targets without scores and octave persists per son
   await expect(page.locator('[data-singing-slot="1"]')).not.toHaveText('—');
   await expect(page.locator('[data-singing-slot="1"] [data-singing-cents]')).toHaveText('+0¢');
   await expect(page.locator('[data-singing-slot="1"] [data-singing-cents]')).toHaveAttribute('data-singing-cents-source','target');
+  await expect(page.locator('[data-singing-slot="1"] [data-singing-tape]')).toBeVisible();
+  await expect(page.locator('[data-singing-slot="2"] [data-singing-prompt="record"]')).toHaveText('Double tap to record');
   await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
   await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
   await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-opted-in','false');

@@ -123,3 +123,21 @@ test('SYNTHETIC singing-dock listen scores slot cents against the current target
   await expect(slot).toHaveAttribute('data-singing-cents-source','captured');
   await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
 });
+
+test('SYNTHETIC empty-slot Record writes nearest cents; new card request clears captured slots (not Pixel)',async({page,context})=>{
+  await context.grantPermissions(['microphone']);
+  await installSyntheticOscillatorCapture(page);
+  await openPlayback(page);
+  await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+  const slot1=page.locator('[data-singing-slot="1"] [data-singing-cents]');
+  await expect.poll(async()=>slot1.getAttribute('data-singing-cents-source'),{timeout:8_000}).toBe('captured');
+  await page.locator('[data-singing-slot="2"]').dblclick();
+  await expect.poll(async()=>page.locator('[data-singing-dock]').getAttribute('data-mic-state'),{timeout:2_000}).toBe('recording');
+  const slot2=page.locator('[data-singing-slot="2"] [data-singing-cents]');
+  await expect.poll(async()=>slot2.getAttribute('data-singing-cents-source'),{timeout:8_000}).toBe('captured');
+  await expect(slot2).toHaveText(/^[+-]\d+¢$/);
+  await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+  await expect.poll(async()=>slot1.getAttribute('data-singing-cents-source'),{timeout:2_000}).toBe('target');
+  await expect(page.locator('[data-singing-slot="2"] [data-singing-prompt="record"]')).toBeVisible();
+  await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+});
