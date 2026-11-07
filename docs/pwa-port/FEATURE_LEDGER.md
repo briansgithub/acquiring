@@ -1,8 +1,8 @@
 # Bounded Android history / current PWA feature ledger
 
-Native authority: `801cf7984171d772afc4406ddb5c79c0cb7fd20a`. PWA code/test inspection: `7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5` on `codex/pwa-continuation`.
+Native authority: `801cf7984171d772afc4406ddb5c79c0cb7fd20a`. Default frozen PWA inspection: `7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5` on `codex/pwa-continuation`; a row's explicit inspectionHead pins its bounded follow-up.
 
-Docs-only breadth-first feature discovery. Feature rows are bounded behavior groups, not total feature count. No new acceptance, task completion or production/runtime claims.
+Initial docs-only breadth-first feature discovery; feature rows are bounded groups, not a total app feature count. Later bounded implementation updates may pin individual PWA rows to a newer inspectionHead without advancing other frozen rows or claiming full acceptance.
 
 new_current_gap means a concrete current-PWA omission newly itemized here, not an Android feature absent from all prior history inventory. Broad T12/T13/T21 packages already exist.
 
@@ -17,6 +17,8 @@ new_current_gap means a concrete current-PWA omission newly itemized here, not a
 | [N03](#n03) | Contextual Playback help scrim dismisses anywhere without activating covered controls. | T12, T21 |
 | [N04](#n04) | Tempo/arpeggio/mix rotary controls support angular drag and tap reset (100%, DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX, 0.5 mix). | T12 |
 | [N05](#n05) | Singing tape note names use section-key relative-major signature preference for sharps/flats. | T03, T13 |
+
+**Bounded implementation follow-up:** S06 is **implemented** at [d30df565](https://github.com/briansgithub/acquiring/commit/d30df5659016dee6068f92dbdb83d44e069f8cbc). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete T13 or the port.
 
 ## Method, range, coverage and limits
 
@@ -38,7 +40,7 @@ Settings Back strict <3px versus earlier 110px remains DEFERRED, unchanged. The 
 
 The five NEW rows are current integration omissions, despite their introductions already appearing in the old history ledger. Root-only Mic is source-backed; triple-tap and merely surviving ChordTone types are not new requirements. Full-title sheet and local help are separate from displaying a title/global Help. Tape key spelling is separate from captured-slot relative spelling. Rotary/reset behavior is separate from exposing numerical settings. Favorited confirmation already exists and is not a new gap. Current fixed transport does not establish old beat-step buttons as a requirement merely because an earlier plan mentioned them.
 
-**Next implementation remains a separate authorized slice:** known collapsed persistent-monitoring Stop (S06), followed by N01 root-only monitoring integration. This audit implements neither and makes no owner tradeoff decision. New title/help/tape/reset leaves can be bounded thereafter; Aural remains last.
+**Next independent ready primary slice:** N01 actual root-only persistent-monitoring selection/target/gauge with native mode/session/section reset and explicit opt-in/cancellation. S06 Stop/owner handoff now has a separately pinned bounded implementation follow-up. The original audit made no owner tradeoff decision; title/help/tape/reset leaves remain open and Aural stays last.
 
 ## Behavior ledger
 
@@ -243,12 +245,12 @@ Exit retains inert visual content for native 300ms shrink; immediate operational
 
 Collapsed singing handle exposes Stop while persistent monitoring remains active.
 
-- Native: **surviving**. [HummingIntervalPopup.kt](https://github.com/briansgithub/acquiring/blob/801cf7984171d772afc4406ddb5c79c0cb7fd20a/android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt)
-- History: [45e7012e](https://github.com/briansgithub/acquiring/commit/45e7012ed33d18cded02093780152494461009bd). Persistent root/melody/chord-tone practice and exclusive triple-tap activation.
-- PWA: **missing**. Native isPersistentMonitoring/onStopPersistent collapsed header at lines565–593; current HANDOFF already names next implementation. This audit does not implement it.
-- Current code/tests: [SingingDock.tsx](https://github.com/briansgithub/acquiring/blob/7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5/pwa/src/features/singing/SingingDock.tsx); [PlaybackScreen.tsx](https://github.com/briansgithub/acquiring/blob/7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5/pwa/src/features/playback/PlaybackScreen.tsx)
-- Tracking: **known**; T13. Priority **primary**; dependencies T03, T08.
-- Acceptance still required / boundary: Actual collapsed Stop stops current/pending capture/targets without expanding or starting mic; accessible control and rapid handoff/cancellation.
+- Native: **surviving**. [HummingIntervalPopup.kt](https://github.com/briansgithub/acquiring/blob/801cf7984171d772afc4406ddb5c79c0cb7fd20a/android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt); [PlaybackDestination.kt](https://github.com/briansgithub/acquiring/blob/801cf7984171d772afc4406ddb5c79c0cb7fd20a/android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt); [MainActivity.kt](https://github.com/briansgithub/acquiring/blob/801cf7984171d772afc4406ddb5c79c0cb7fd20a/android/app/src/main/java/com/acquiring/android/MainActivity.kt)
+- History: [45e7012e](https://github.com/briansgithub/acquiring/commit/45e7012ed33d18cded02093780152494461009bd). Adds the collapsed persistent-monitoring Stop and SimpleRoot/Melody header selection while retiring calibration; current pinned callers establish the surviving owner-handoff contract.
+- PWA: **implemented**. Bounded desktop S06 follow-up: collapsed Stop cancels persistent only; explicit persistent activation collapses/cleans ordinary singing without killing the new owner; expanding cancels persistent without capture; pagehide clears controller latch immediately. Approved ordinary immediate cleanup and 800ms policy unchanged. Native distinction: ordinary exit snapshot is visual-only while explicitly enabled persistent may own capture. N01 root-only integration remains missing. Tests:1216 unit+1parity+types/build; browser29pass/1observer-race fail/1original skip then failed case1/1pass after waiting on unchanged completion predicate; all6new owner/async/navigation cases first-pass. Exact receipts and source hashes in HANDOFF/tasks T13; implementation checkpoint d30df5659016dee6068f92dbdb83d44e069f8cbc.
+- Current code/tests: [SingingDock.tsx](https://github.com/briansgithub/acquiring/blob/d30df5659016dee6068f92dbdb83d44e069f8cbc/pwa/src/features/singing/SingingDock.tsx); [singing.css](https://github.com/briansgithub/acquiring/blob/d30df5659016dee6068f92dbdb83d44e069f8cbc/pwa/src/features/singing/singing.css); [PlaybackScreen.tsx](https://github.com/briansgithub/acquiring/blob/d30df5659016dee6068f92dbdb83d44e069f8cbc/pwa/src/features/playback/PlaybackScreen.tsx); [use-playback-pitch-practice.ts](https://github.com/briansgithub/acquiring/blob/d30df5659016dee6068f92dbdb83d44e069f8cbc/pwa/src/features/playback/use-playback-pitch-practice.ts); [persistent-pitch.test.ts](https://github.com/briansgithub/acquiring/blob/d30df5659016dee6068f92dbdb83d44e069f8cbc/pwa/src/features/playback/persistent-pitch.test.ts); [playback.spec.ts](https://github.com/briansgithub/acquiring/blob/d30df5659016dee6068f92dbdb83d44e069f8cbc/pwa/tests/browser/playback.spec.ts)
+- Tracking: **known**; T13. Priority **primary**; dependencies T08, T09, T12.
+- Acceptance still required / boundary: Retain current explicit opt-in/Stop/owner-safe delayed permission, rapid reopen, ordinary collapse, Back and genuine reload assertions. Desktop fake/silent and gated-delivery proof is bounded; trusted tab/BFCache/Safari/physical mic/Pixel remain open. N01 SimpleRoot selection/target/gauge and native mode/session/section reset not implemented by this Stop slice.
 
 <a id="n05"></a>
 

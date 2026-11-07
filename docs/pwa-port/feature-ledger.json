@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "nativeAuthority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
   "pwaInspectionHead": "7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5",
-  "scope": "Docs-only breadth-first feature discovery. Feature rows are bounded behavior groups, not total feature count. No new acceptance, task completion or production/runtime claims.",
+  "scope": "Initial docs-only breadth-first feature discovery; feature rows are bounded groups, not a total app feature count. Later bounded implementation updates may pin individual PWA rows to a newer inspectionHead without advancing other frozen rows or claiming full acceptance.",
   "newGapMeaning": "new_current_gap means a concrete current-PWA omission newly itemized here, not an Android feature absent from all prior history inventory. Broad T12/T13/T21 packages already exist.",
   "method": "Reverified the exact 262-commit android/contracts full-history inventory and 575 prior evidence objects; reviewed scoped functional excerpts from 50 selected first-parent patches plus surviving native/PWA entry points. See FEATURE_AUDIT_COVERAGE.json. Not exhaustive line-by-line review.",
   "rows": [
@@ -645,7 +645,9 @@
       "native": {
         "disposition": "surviving",
         "paths": [
-          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt",
+          "android/app/src/main/java/com/acquiring/android/MainActivity.kt"
         ],
         "history": [
           "45e7012ed33d18cded02093780152494461009bd"
@@ -654,15 +656,20 @@
           "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
           "9973e748:android/app/src/androidTest/java/com/sacredring/android/TripleClickableUiTest.kt"
         ],
-        "historicalDelta": "Persistent root/melody/chord-tone practice and exclusive triple-tap activation."
+        "historicalDelta": "Adds the collapsed persistent-monitoring Stop and SimpleRoot/Melody header selection while retiring calibration; current pinned callers establish the surviving owner-handoff contract."
       },
       "pwa": {
-        "status": "missing",
+        "status": "implemented",
         "paths": [
           "pwa/src/features/singing/SingingDock.tsx",
-          "pwa/src/features/playback/PlaybackScreen.tsx"
+          "pwa/src/features/singing/singing.css",
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/features/playback/use-playback-pitch-practice.ts",
+          "pwa/src/features/playback/persistent-pitch.test.ts",
+          "pwa/tests/browser/playback.spec.ts"
         ],
-        "inspection": "Native isPersistentMonitoring/onStopPersistent collapsed header at lines565–593; current HANDOFF already names next implementation. This audit does not implement it."
+        "inspection": "Bounded desktop S06 follow-up: collapsed Stop cancels persistent only; explicit persistent activation collapses/cleans ordinary singing without killing the new owner; expanding cancels persistent without capture; pagehide clears controller latch immediately. Approved ordinary immediate cleanup and 800ms policy unchanged. Native distinction: ordinary exit snapshot is visual-only while explicitly enabled persistent may own capture. N01 root-only integration remains missing. Tests:1216 unit+1parity+types/build; browser29pass/1observer-race fail/1original skip then failed case1/1pass after waiting on unchanged completion predicate; all6new owner/async/navigation cases first-pass. Exact receipts and source hashes in HANDOFF/tasks T13; implementation checkpoint d30df5659016dee6068f92dbdb83d44e069f8cbc.",
+        "inspectionHead": "d30df5659016dee6068f92dbdb83d44e069f8cbc"
       },
       "tracking": {
         "tasks": [
@@ -670,11 +677,12 @@
         ],
         "classification": "known"
       },
-      "acceptanceRequired": "Actual collapsed Stop stops current/pending capture/targets without expanding or starting mic; accessible control and rapid handoff/cancellation.",
+      "acceptanceRequired": "Retain current explicit opt-in/Stop/owner-safe delayed permission, rapid reopen, ordinary collapse, Back and genuine reload assertions. Desktop fake/silent and gated-delivery proof is bounded; trusted tab/BFCache/Safari/physical mic/Pixel remain open. N01 SimpleRoot selection/target/gauge and native mode/session/section reset not implemented by this Stop slice.",
       "priority": "primary",
       "dependencies": [
-        "T03",
-        "T08"
+        "T08",
+        "T09",
+        "T12"
       ]
     },
     {

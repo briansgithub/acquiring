@@ -22,12 +22,16 @@ def render(data, coverage):
     rows = data["rows"]
     new = [r for r in rows if r["tracking"]["classification"] == "new_current_gap"]
     lines = ["# Bounded Android history / current PWA feature ledger", "",
-        f"Native authority: `{data['nativeAuthority']}`. PWA code/test inspection: `{data['pwaInspectionHead']}` on `codex/pwa-continuation`.", "",
+        f"Native authority: `{data['nativeAuthority']}`. Default frozen PWA inspection: `{data['pwaInspectionHead']}` on `codex/pwa-continuation`; a row's explicit inspectionHead pins its bounded follow-up.", "",
         data["scope"], "", data["newGapMeaning"], "", "## Findings and use", "",
         f"**{len(rows)} behavior groups; {len(new)} newly itemized current-integration gaps.** This is not a count of all app features. Existing task IDs are broad packages; NEW rows do not create acceptance decisions or change their statuses.", "",
         "| New gap | Surviving behavior / current omission | Existing package |", "|---|---|---|"]
     for r in new:
         lines.append(f"| [{r['id']}](#{r['id'].lower()}) | {r['behavior']} | {', '.join(r['tracking']['tasks'])} |")
+    for r in rows:
+        if r["pwa"].get("inspectionHead"):
+            sha=r["pwa"]["inspectionHead"]
+            lines += ["", f"**Bounded implementation follow-up:** {r['id']} is **{r['pwa']['status']}** at [{sha[:8]}]({URL}/commit/{sha}). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete T13 or the port."]
     lines += ["", "## Method, range, coverage and limits", "", data["method"], "",
         "The reused inventory is [HISTORY.md](HISTORY.md) with foundation/revision/Aural JSON and findings. Its 262 commits equal `git log --full-history <authority> -- android contracts`, through the pinned authority, including reachable merge ancestry. The earliest scoped inventory commit is `099cadf943b30f3d6dd57604e6035354754de3a7` (2026-07-28); the end is the pinned authority. All 575 historical object references were rechecked: 572 present directly, three deletion references present in the deleting commit's first parent. Object validation verifies references, not the truth of every old summary.", "",
         "Fresh patch scope: 50 selected commits spanning introduction, behavioral fixes, replacement/deletion and package/monorepo renames. Full first-parent Android/contracts diffs were captured locally; only bounded matching functional excerpts were read, not all patch lines. Merge-resolution/second-parent history is covered by the prior inventory, not freshly reconstructed here. `5f706322` changes shared contracts/tooling rather than native production source. No literal revert subjects were found in the scoped log; deletion/replacement diffs, not that subject search, determine disposition.", "",
@@ -37,14 +41,14 @@ def render(data, coverage):
         "Owner priority remains playback/singing/note/chord cards first, secondary full-port infrastructure next, Aural quiz/T15 song-rank/family trees last; motion polish follows functional work. [HANDOFF.md](HANDOFF.md) is chronological; [LINEAGE_PRIORITY.md](LINEAGE_PRIORITY.md), [tasks.json](tasks.json), [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) and [historical roadmap](../ios-android-parity-roadmap.md) contain historical snapshots. That pointer now leads to the iOS-only porting-plan; its execution/review rules and iOS completion claims do not govern this PWA audit. This ledger inspects code at the stated head and supersedes stale *descriptive* claims only: T22 is no longer payload-only (query overlays, handler and atomic persistence landed); 300ms singing exit landed. Their remaining UI/service/parse/device gaps stay open. No task status, original assertion, owner acceptance or sequencing rule is changed.", "",
         "Settings Back strict <3px versus earlier 110px remains DEFERRED, unchanged. The original trusted-tab skip remains open after both unsupported environments failed to hide tabs; no retry or fabricated event proof. SYNTHETIC oscillator, fake/silent capture, emulated touch and physical-device evidence remain distinct. Updates must say status unavailable with no fake Play/SW mapping or build number. No live Hooktheory/deployment/production mutations occurred.", "",
         "The five NEW rows are current integration omissions, despite their introductions already appearing in the old history ledger. Root-only Mic is source-backed; triple-tap and merely surviving ChordTone types are not new requirements. Full-title sheet and local help are separate from displaying a title/global Help. Tape key spelling is separate from captured-slot relative spelling. Rotary/reset behavior is separate from exposing numerical settings. Favorited confirmation already exists and is not a new gap. Current fixed transport does not establish old beat-step buttons as a requirement merely because an earlier plan mentioned them.", "",
-        "**Next implementation remains a separate authorized slice:** known collapsed persistent-monitoring Stop (S06), followed by N01 root-only monitoring integration. This audit implements neither and makes no owner tradeoff decision. New title/help/tape/reset leaves can be bounded thereafter; Aural remains last.", "", "## Behavior ledger", ""]
+        "**Next independent ready primary slice:** N01 actual root-only persistent-monitoring selection/target/gauge with native mode/session/section reset and explicit opt-in/cancellation. S06 Stop/owner handoff now has a separately pinned bounded implementation follow-up. The original audit made no owner tradeoff decision; title/help/tape/reset leaves remain open and Aural stays last.", "", "## Behavior ledger", ""]
     for r in rows:
         n=r["native"]; p=r["pwa"]; t=r["tracking"]
         lines += [f"<a id=\"{r['id'].lower()}\"></a>", "", f"### {r['id']} — {r['domain']}", "", r["behavior"], "",
             f"- Native: **{n['disposition']}**. " + "; ".join(f"[{Path(x).name}]({URL}/blob/{data['nativeAuthority']}/{x})" for x in n["paths"]),
             "- History: " + ", ".join(f"[{s[:8]}]({URL}/commit/{s})" for s in n["history"]) + ". " + n["historicalDelta"],
             f"- PWA: **{p['status']}**. " + p["inspection"],
-            "- Current code/tests: " + "; ".join(f"[{Path(x).name}]({URL}/blob/{data['pwaInspectionHead']}/{x})" for x in p["paths"]),
+            "- Current code/tests: " + "; ".join(f"[{Path(x).name}]({URL}/blob/{p.get('inspectionHead',data['pwaInspectionHead'])}/{x})" for x in p["paths"]),
             f"- Tracking: **{t['classification']}**; {', '.join(t['tasks'])}. Priority **{r['priority']}**; dependencies {', '.join(r['dependencies']) or 'none (excluded history)' }.",
             "- Acceptance still required / boundary: " + r["acceptanceRequired"], ""]
     lines += ["## Audit validation", "", "`python docs/pwa-port/validate_feature_ledger.py` verifies frozen source/historical references, task IDs, coverage hashes, enums, NEW count and exact generated-document consistency. This validates audit integrity, not product parity. The older `validate_audit.py` exits1 at its task-graph line70: T11 complete depends on T08 in_progress. RUNBOOK/tasks already allow the T08 static-preview milestone; the old validator does not honor that milestone. T22 also currently uses `in-progress`, outside that validator’s underscore enum (not reached in this run). Neither status nor validator assertion was changed. No acceptance is rewritten to make it green.", ""]
@@ -64,7 +68,9 @@ def main():
         assert set(r["tracking"]["tasks"])<=tasks and set(r["dependencies"])<=tasks
         assert r["behavior"] and r["acceptanceRequired"] and r["pwa"]["inspection"]
         refs.update(data["nativeAuthority"]+":"+p for p in r["native"]["paths"])
-        refs.update(data["pwaInspectionHead"]+":"+p for p in r["pwa"]["paths"])
+        inspection=r["pwa"].get("inspectionHead",data["pwaInspectionHead"])
+        assert re.fullmatch("[0-9a-f]{40}",inspection)
+        refs.update(inspection+":"+p for p in r["pwa"]["paths"])
         for s in r["native"]["history"]:
             assert re.fullmatch("[0-9a-f]{40}",s)
             assert subprocess.run(["git","merge-base","--is-ancestor",s,data["nativeAuthority"]],cwd=ROOT).returncode==0
