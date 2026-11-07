@@ -1,5 +1,6 @@
 import { CatalogWorkerClient } from '../../src/storage/catalog/client';
 import {readSongDetails} from '../../src/features/details/reader';
+import {encodeHarvestedSong} from '../../src/domain/harvest/user-harvest-ledger';
 import { openUserDatabase, USER_STORES } from '../../src/storage/user';
 import type { CatalogManifest } from '../../src/storage/catalog/manifest';
 const clients = new Map<string, CatalogWorkerClient>();
@@ -29,6 +30,21 @@ export const catalogHarness = {
     try { for (const store of USER_STORES) await db.mutate({ namespace: 'guest', store, id: 'kept', operationId: 'seed-' + store, value: { name: 'Preserved ' + store }, createdAt: 1 }); }
     finally { db.close(); }
   },
+  async seedHarvest(entry: {slug:string;artist:string|null;title:string|null;url:string;status:string;dataBlob:number[];alphaGroup:string;modes:string;harvestedAt:number}) {
+    const db = await openUserDatabase();
+    try {
+      await db.mutate({
+        namespace: 'guest', store: 'harvests', id: entry.slug, operationId: 'seed-harvest-' + entry.slug,
+        value: encodeHarvestedSong({...entry, dataBlob: Uint8Array.from(entry.dataBlob)}), createdAt: entry.harvestedAt,
+      });
+    } finally { db.close(); }
+  },
+  async harvestIds() {
+    const db = await openUserDatabase();
+    try { return (await db.list('guest', 'harvests')).map(row => row.id); }
+    finally { db.close(); }
+  },
+  songPayload(name:string,slug:string) { return clients.get(name)!.songPayload(slug); },
   async users() {
     const db = await openUserDatabase();
     try { return { rows: await Promise.all(USER_STORES.map(store => db.get('guest', store, 'kept'))), pending: await db.pending('guest') }; }

@@ -24,7 +24,7 @@ export type CatalogCommand =
   | { kind: 'auralHeader' }
   | { kind: 'auralTarget'; query: AuralCatalogTargetQuery }
   | { kind: 'auralStatistics'; request: AuralStatisticsRequest };
-export interface ActiveCatalog { pointer: CatalogPointer; inspection: CatalogInspection; recovered: boolean }
+export interface ActiveCatalog { pointer: CatalogPointer; inspection: CatalogInspection; recovered: boolean; harvestedRestored?: number }
 export type InstallStatus = CatalogInstall | null;
 export interface CatalogRequest { id: string; command: CatalogCommand }
 export interface CatalogProgress { type: 'progress'; id: string; file: string; chunkIndex: number; verifiedBytes: number }

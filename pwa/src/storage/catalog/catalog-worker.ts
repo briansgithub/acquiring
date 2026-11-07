@@ -8,6 +8,8 @@ import {decodeAuralCatalogRun,createAuralCatalogTarget} from './aural-target-cod
 import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
 import {readAuralHeader} from './aural-header';
 import {artistSuggestions,songBrowseBySlugs,songBrowseGroupCounts,songBrowseGroupSongs,songPage} from './catalog-song-reads';
+import {activateSongsCatalog,harvestOverlaySongs,invalidateHarvestOverlay,repairSongsHarvests,type SongsCatalogHandle} from './catalog-harvest';
+import {harvestedSongPayload,mergeHarvestBrowseBySlugs} from '../../domain/harvest/overlay-reads';
 import {songDetailQuery,songPayloadRecord,readSongComplexity,type SongPayload} from './detail-query';
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { sha256 as incrementalSha256 } from '@noble/hashes/sha2.js';
@@ -162,10 +164,28 @@ async function prepare(id: string, attemptId: string, manifest: CatalogManifest,
     await journal!.save(record).catch(() => {}); throw error;
   }
 }
+function openSongsHandle(attemptId: string): SongsCatalogHandle {
+  const db = new sqlite!.oo1.DB(stagedPath(attemptId, 'catalog.db'), 'r', owner().vfsName);
+  return {
+    db: {selectValue: (sql, bind = []) => db.selectValue(sql, bind), selectObjects: (sql, bind = []) => db.selectObjects(sql, bind)},
+    close: () => db.close(),
+  };
+}
 async function activate(attemptId: string): Promise<ActiveCatalog> {
   const record = await validatedInstall(attemptId), inspection = inspect(attemptId, record.manifest);
-  const pointer = await journal!.activate(record, sessionId);
-  return { pointer, inspection, recovered: false };
+  if (record.manifest.kind !== 'songs') {
+    return { pointer: await journal!.activate(record, sessionId), inspection, recovered: false };
+  }
+  const current = await journal!.pointer('songs');
+  return activateSongsCatalog({
+    currentAttemptId: current?.activeId ?? null, stagedAttemptId: attemptId,
+    openCatalog: openSongsHandle, activate: () => journal!.activate(record, sessionId), inspection,
+  });
+}
+async function finishSongsActive(result: ActiveCatalog): Promise<ActiveCatalog> {
+  invalidateHarvestOverlay();
+  await repairSongsHarvests(() => openSongsHandle(result.pointer.activeId));
+  return result;
 }
 async function active(kind: CatalogManifest['kind']): Promise<ActiveCatalog | null> {
   if (kind !== 'aural' && kind !== 'songs') throw new CatalogError('INVALID_REQUEST', 'Unknown catalog kind');
@@ -176,14 +196,16 @@ async function active(kind: CatalogManifest['kind']): Promise<ActiveCatalog | nu
     if (record.manifest.kind !== kind) throw new CatalogError('INTEGRITY', 'Active catalog kind mismatch');
     const inspection = inspect(record.id, record.manifest);
     const confirmed = !pointer.confirmed && pointer.activatedBySession !== sessionId ? await journal!.updatePointer(pointer, { ...pointer, confirmed: true }) : pointer;
-    return { pointer: confirmed, inspection, recovered: false };
+    const current = { pointer: confirmed, inspection, recovered: false };
+    return kind === 'songs' ? finishSongsActive(current) : current;
   } catch (error) {
     if (!pointer.previousId) throw error;
     const previous = await validatedInstall(pointer.previousId);
     if (previous.manifest.kind !== kind) throw new CatalogError('INTEGRITY', 'Previous catalog kind mismatch');
     const inspection = inspect(previous.id, previous.manifest);
     const restored = await journal!.updatePointer(pointer, { kind, activeId: previous.id, previousId: pointer.activeId, confirmed: true, activatedBySession: sessionId });
-    return { pointer: restored, inspection, recovered: true };
+    const recovered = { pointer: restored, inspection, recovered: true };
+    return kind === 'songs' ? finishSongsActive(recovered) : recovered;
   }
 }
 /** Check active/cold recovery once per snapshot; never scan the full catalog per page. */
@@ -198,20 +220,22 @@ async function confirmedSongs():Promise<{id:string;sourceSnapshot:string}> {
   }
   return confirmedSongRead!;
 }
-async function withSongs<T>(read:(db:InstanceType<Sqlite3Static['oo1']['DB']>,source:{id:string;sourceSnapshot:string})=>T):Promise<T> {
+async function withSongs<T>(read:(db:InstanceType<Sqlite3Static['oo1']['DB']>,source:{id:string;sourceSnapshot:string})=>T|Promise<T>):Promise<T> {
   const source=await confirmedSongs();
   let db:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
   try {
     db=new sqlite!.oo1.DB(stagedPath(source.id,'catalog.db'),'r',owner().vfsName);
-    return read(db,source);
+    return await read(db,source);
   } catch(error){confirmedSongRead=null;throw error;}
   finally {db?.close();}
 }
 async function songPayload(slug:string):Promise<SongPayload|null> {
   const plan=songDetailQuery(slug);
-  return withSongs((db,source)=>{
+  return withSongs(async(db,source)=>{
     const payload=songPayloadRecord(source.sourceSnapshot,db.selectObjects(plan.sql,plan.bind)[0]);
-    return payload&&{...payload,complexityRating:readSongComplexity(slug,(sql,bind)=>db.selectValue(sql,bind))};
+    if(payload)return {...payload,complexityRating:readSongComplexity(slug,(sql,bind)=>db.selectValue(sql,bind))};
+    const harvested=(await harvestOverlaySongs()).get(slug);
+    return harvested?harvestedSongPayload(source.sourceSnapshot,harvested):null;
   });
 }
 /** One immutable attempt/readonly handle for the entire awaited command. */
@@ -273,7 +297,10 @@ async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'auralStatistics') return auralStatistics(command.request);
   if (command.kind === 'auralHeader') return auralHeader();
   if (command.kind === 'songPage') return songPage(withSongs, command.query);
-  if (command.kind === 'songBrowseBySlugs') return songBrowseBySlugs(withSongs, command.slugs);
+  if (command.kind === 'songBrowseBySlugs') {
+    const rows = await songBrowseBySlugs(withSongs, command.slugs);
+    return mergeHarvestBrowseBySlugs(rows, command.slugs, await harvestOverlaySongs());
+  }
   if (command.kind === 'songBrowseGroupCounts') return songBrowseGroupCounts(withSongs, command.sortMode, command.filterText);
   if (command.kind === 'songBrowseGroupSongs') return songBrowseGroupSongs(withSongs, command.sortMode, command.groupKey, command.filterText);
   if (command.kind === 'artistSuggestions') return artistSuggestions(withSongs, command.query);

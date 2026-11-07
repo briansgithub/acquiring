@@ -111,7 +111,11 @@ export class CatalogInstaller {
       await client.prepare(attempt.id, manifest, baseUrl); stillActive();
       this.update(kind, { phase: 'activating', bytes: total });
       const active = await client.activate(attempt.id); stillActive();
-      this.update(kind, { phase: 'idle', installed: await this.installed(client, active), message: undefined });
+      const kept = kind === 'songs' ? active.harvestedRestored ?? 0 : 0;
+      this.update(kind, {
+        phase: 'idle', installed: await this.installed(client, active),
+        message: kept > 0 ? `Database Refreshed! (${kept} harvested song${kept === 1 ? '' : 's'} kept)` : undefined,
+      });
     } catch (error) {
       const paused = generation !== this.generation;
       this.update(kind, { phase: paused ? 'paused' : 'error', message: paused ? 'Download paused. You can resume it here.' : errorMessage(error) });

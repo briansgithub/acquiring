@@ -4379,15 +4379,18 @@
         "pwa/src/domain/harvest/"
       ],
       "acceptance": "Multi-tab section extraction, bounded fetch, offline overlay and catalog-swap preservation",
-      "status": "planned",
+      "status": "in-progress",
       "owner": null,
       "branch": null,
       "worktree": null,
       "baseCommit": null,
-      "slice": null,
-      "nextAction": "Select a bounded ready slice after dependencies complete; record intent before editing.",
+      "slice": "catalog-swap-wiring",
+      "nextAction": "T22 Hooktheory harvest worker still local-only; All Songs overlay remaining. No remote fetch.",
       "validation": [],
-      "progress": [],
+      "progress": [
+        "2026-11-07T14:40Z harvest-ledger kernel (in-memory ports) + Play honesty 18cd6ae5. No Hooktheory HTTP.",
+        "2026-11-07T14:43Z catalog-swap wiring: adopt-before T05 pointer, T06 harvests persist, overlay replay-after. Immutable catalog.db. songPayload/songBrowseBySlugs overlay. Aural skip. Disposable sqlite+memory+Chrome fixtures for fail/cancel/restart/kept rows. check 1162 unit + 1 parity + types + shell 0521edcf3a9f. Chrome harvest-swap + library-queries 2/2 17.0s. Codex 01a1b675 GAP on incomplete swap paste (slug-wins + launch replay exist). T22 not complete. Settings Back untouched."
+      ],
       "blocker": null,
       "dependencyGates": {
         "T05": "desktop-catalog-runtime"

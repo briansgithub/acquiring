@@ -27,7 +27,7 @@ test('native scalar song paging/search/artist parity,reopen and catalog switch',
   const query=(request:SongPageRequest)=>call<SongPage>(page,'songPage',['reader',request]);
   await expect(query({mode:'search',text:'alpha'})).rejects.toThrow('Download the song catalog');
   await call(page,'seedUsers');
-  const users=await call(page,'users');
+  const users=await call<{rows:unknown[]}>(page,'users');
   const id='e2345678-1234-1234-1234-123456789012';
   await call(page,'prepare',['reader',id,fixtures.get('old')!.manifest,'http://127.0.0.1:5173/library-fixtures/old/']);
   await call(page,'activate',['reader',id]);
@@ -92,6 +92,6 @@ test('native scalar song paging/search/artist parity,reopen and catalog switch',
   expect(changed.sourceSnapshot).toBe(fixtures.get('new')!.manifest.sourceSnapshot);
   expect(changed.sourceSnapshot).not.toBe(first.sourceSnapshot);
   expect(changed.rows[0]!.title).toBe('Updated Search');
-  expect(await call(page,'users')).toEqual(users);
+  expect((await call<{rows:unknown[]}>(page,'users')).rows).toEqual(users.rows);
   await call(page,'close',['reader']);
 });
