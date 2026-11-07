@@ -136,6 +136,14 @@ export function usePlaybackPitchPractice(input:{
     }
   }, [accumulator, active, controller, enabled, input.octaveOffset, input.transpose, monitoring, source]);
 
+  useEffect(()=>{
+    // Retire the UI/controller latch synchronously on true departure as well as
+    // revoking the coordinator lease. No interval or delayed capture can resume it.
+    const hide=()=>cancel();
+    window.addEventListener('pagehide',hide);
+    return()=>window.removeEventListener('pagehide',hide);
+  },[controller,accumulator]);
+
   function toggle(): void {
     if (monitoring) { cancel(); return; }
     const midi = active?.sourceMidi ?? 60;

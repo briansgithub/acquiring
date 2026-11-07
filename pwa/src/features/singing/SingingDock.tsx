@@ -23,7 +23,7 @@ interface DockVisual {target:SingingTargetRequest|null;slot1:SingingSlotPitch|nu
  * Flip-Flop nulls local displayedTarget (native activeTarget) without changing requestId, so slots
  * and the pending auto-listen LaunchedEffect stay intact; labels stay empty after Flip-Flop off.
  */
-export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0,capture,source,waveform=DEFAULT_WAVEFORM,previewOwner}:{
+export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0,capture,source,waveform=DEFAULT_WAVEFORM,previewOwner,isPersistentMonitoring=false,onStopPersistent}:{
   octaveOffset:number;
   onOctaveOffsetChange:(offset:number)=>void;
   target:SingingTargetRequest|null;
@@ -34,6 +34,8 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   source?:ExclusivePitchSource;
   waveform?:Waveform;
   previewOwner?:{current:AudioPreviewOwner|null};
+  isPersistentMonitoring?:boolean;
+  onStopPersistent?:()=>void;
 }){
   const session=useMemo(()=>new SingingMicrophoneSession({capture,source}),[capture,source]);
   const micVersion=useSyncExternalStore(session.subscribe,()=>session.version,()=>session.version);
@@ -98,6 +100,11 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
     const id=window.setInterval(()=>{session.tick();setNowTick((n)=>n+1);},100);
     return()=>window.clearInterval(id);
   },[mic.action.kind,session]);
+  // Native PlaybackDestination collapses the ordinary tool on persistent opt-in.
+  // Clear only SINGING_TOOL work; its revoked lease must never stop the new owner.
+  useLayoutEffect(()=>{
+    if(isPersistentMonitoring&&expandedRef.current)collapse();
+  },[isPersistentMonitoring]);
   useLayoutEffect(()=>{
     const element=body.current;if(!element)return;
     if(expanded&&exitVisual){exit.current.clear();setExitVisual(null);return;}
@@ -170,11 +177,16 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
     data-mic-owns={mic.ownsMicrophone?'true':'false'}
     data-preview-owner={previewOwner?'shared':'none'}
     data-singing-transition={expanded?'expanded':exitVisual?'exiting':'collapsed'} aria-label="Interval Singing Tool">
+    <div className="singing-dock__header">
     <button ref={handle} type="button" className="singing-dock__handle action" aria-expanded={expanded}
       aria-label={expanded?'Collapse humming tool':'Expand Humming Tool'}
       onClick={()=>expanded?collapse():reopen()}>
       {expanded?'Collapse':'Interval Singing Tool'}
     </button>
+    {!expanded&&isPersistentMonitoring&&<button type="button" className="action"
+      data-singing-persistent-stop="" aria-label="Stop persistent pitch practice"
+      onClick={onStopPersistent}>Stop</button>}
+    </div>
     {(expanded||exitVisual)&&<div ref={body} className="singing-dock__body" data-singing-body="" data-singing-exit-snapshot={!expanded?"true":undefined} inert={!expanded} aria-hidden={!expanded}>
       <div className="singing-dock__toolbar">
         <label className="playback-check singing-dock__flipflop">

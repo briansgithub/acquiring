@@ -2310,9 +2310,9 @@
       "owner": "codex",
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace/acquiring",
-      "baseCommit": "a5328b7982216aa483a0ff5702ebfb153cd6df97",
-      "slice": "singing-collapse-visual-exit",
-      "nextAction": "Bounded desktop collapse slice validated, not full T13/device parity. Next independent ready primary gap: native collapsed singing-tool persistent-monitoring Stop affordance and owner-safe cancellation (HummingIntervalPopup collapsed header isPersistentMonitoring/onStopPersistent). Keep 800ms policy, tab/BFCache/Safari/Pixel and other visual gaps open; Aural last.",
+      "baseCommit": "c808fe0eef9ef1be6eb3515bb1e513365c40dd60",
+      "slice": "collapsed-persistent-stop-owner-handoff",
+      "nextAction": "Bounded S06 collapsed persistent Stop/owner handoff is desktop-tested, not full T13. Next independent ready primary slice N01: wire actual SimpleRoot header selection/target/gauge, STANDARD tracking, source/context MIDI plus transpose/octave, no-target latch and mode/session/section reset per pinned native; keep explicit activation/Stop and ordinary immediate collapse/nav/pagehide cleanup. Aural/T15/family trees last. Real-device/trusted-tab/Safari/BFCache and Settings Back acceptance unchanged.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -2432,6 +2432,33 @@
           "revision": "same final hashes",
           "result": "PASS 17/1 skipped (original trusted-tab fixme), 3.6m system Chromium. New SYNTHETIC retained A4 pair/300ms shrink/rapid reopen/stale tap+interval audio cancellation 15.2s; genuine navigation/pagehide 17.3s; reduced motion 12.6s. Original singing octave, policy A, exclusive leases, pending capture and pagehide cases pass. Saved JSON evidence: 16 exit frames duration300/inert/aria-hidden/mic idle, tracks ended/contexts closed, autoTimers0; trusted pagehide true persistedfalse/runningAnimations0; reduced-motion calls0. Not physical mic/real prompt/Pixel/Safari/BFCache/trusted-tab proof.",
           "log": "pwa/.artifacts/pwa-port/t13-collapse-browser-002"
+        },
+        {
+          "revision": "c808fe0 plus named owner-handoff tree (sliceSourceHashes); final browser observer-only change built/typechecked separately",
+          "guards": [
+            "T13-owner-focused-005",
+            "T13-owner-check-006",
+            "T13-owner-browser-007",
+            "T13-owner-build-009",
+            "T13-owner-browser-fix-010",
+            "T13-owner-legacy-011",
+            "T13-owner-scope-check-012"
+          ],
+          "commands": [
+            "npm exec -- vitest run src/features/playback/persistent-pitch.test.ts src/audio/capture/pitch-coordinator.test.ts src/features/singing/singing-microphone.test.ts src/features/singing/singing-exit.test.ts",
+            "npm run check",
+            "npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/playback.spec.ts tests/browser/playback-synthetic-scores.spec.ts tests/browser/audio-preview.spec.ts --grep <exact pattern retained in ignored command.json/report> --reporter=json --output .artifacts/pwa-port/t13-owner-browser-007/results",
+            "npm run build",
+            "npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/playback.spec.ts --grep \"singing exit SYNTHETIC pitches\" --output .artifacts/pwa-port/t13-owner-browser-fix-010",
+            "python docs/pwa-port/validate_audit.py"
+          ],
+          "result": "Focused29/4files PASS; full1216unit/110files+1parity+strict types+production build PASS; final observer change types/build PASS same e52b6fb564cf/12files. Covering browser29PASS/1FAIL/1original trusted-tab SKIP,351.278s; all6new owner cases FIRST PASS. Failure was old frame observer before completion sample; original 300ms/inert/content/cleanup assertions retained, await same completion predicate; failed case rerun1PASS/19.4s. 30 distinct scoped cases passed across runs; no combined-green/CI/device claim. Legacy audit validator FAIL exit1 line70 same T11complete/T08in_progress milestone issue; statuses/assertions unchanged. Native six paths pinned and original library/audio-preview files unchanged.",
+          "evidence": [
+            "pwa/.artifacts/pwa-port/t13-owner-browser-007/command.json",
+            "pwa/.artifacts/pwa-port/t13-owner-browser-007/report.json",
+            "pwa/.artifacts/pwa-port/t13-owner-browser-007/results/playback-singing-exit-SYNT-be980-t-revive-preview-or-capture-chrome/trace.zip",
+            "pwa/.artifacts/pwa-port/t13-owner-browser-fix-010"
+          ]
         }
       ],
       "progress": [
@@ -2501,6 +2528,27 @@
           "pwa/src/features/playback/PlaybackTimeline.tsx": "bdd8786daf01a999c524abb4192c788467d1307ac95adc77df10a583465ea6e9",
           "pwa/tests/browser/playback.spec.ts": "1c01e8c6f6efd2490b253c616c002330cf97cdbbd2dba9c85366ab8571f3ea83"
         }
+      },
+      "ownedPaths": [
+        "pwa/src/features/singing/SingingDock.tsx",
+        "pwa/src/features/singing/singing.css",
+        "pwa/src/features/playback/PlaybackScreen.tsx",
+        "pwa/src/features/playback/use-playback-pitch-practice.ts",
+        "pwa/src/features/playback/persistent-pitch.test.ts",
+        "pwa/tests/browser/playback.spec.ts",
+        "docs/pwa-port/tasks.json",
+        "docs/pwa-port/HANDOFF.md",
+        "docs/pwa-port/feature-ledger.json",
+        "docs/pwa-port/FEATURE_LEDGER.md",
+        "docs/pwa-port/LINEAGE_PRIORITY.md"
+      ],
+      "sliceSourceHashes": {
+        "pwa/src/features/singing/SingingDock.tsx": "95bfdeac9d5b012b75fc54fd92cce662e4188c0131e4cc6262d74d70ca83e54c",
+        "pwa/src/features/singing/singing.css": "437ff4c524698fd7fe703adbf1b501f0159ab0857534dcbd69f0a2a3fb9cbed5",
+        "pwa/src/features/playback/PlaybackScreen.tsx": "78de1a60c6097e2cf0168fd8f27eb3be9fd3abec6438f22e0869be8ebdde8ca0",
+        "pwa/src/features/playback/use-playback-pitch-practice.ts": "42c93b9cf046216a0e240927f52eaacebf61bfbea6f3cb45d4faf7274ad3e109",
+        "pwa/src/features/playback/persistent-pitch.test.ts": "3a48b3c505ecb5460b9dfd7ec32a62e0fb0084813e1c75d70f0c075f0d0a4a9c",
+        "pwa/tests/browser/playback.spec.ts": "dc1d3064823f94909e00cadd28a5d4bebbe745e708d7503740e43ef49ab07e5e"
       }
     },
     {
@@ -3151,11 +3199,7 @@
         },
         {
           "command": "npm exec -- vitest run src/domain/catalog/song-rank-eligibility.test.ts; npm run typecheck; npm run check",
-          "guards": [
-            "T15-p2-unit-002",
-            "T15-p2-typecheck-001",
-            "T15-p2-check-001"
-          ],
+          "guards": ["T15-p2-unit-002", "T15-p2-typecheck-001", "T15-p2-check-001"],
           "revision": "1a1c939cd40eb98f0cbe22e630fdc6cfe9f2fcac",
           "result": "FIRST PASS focused 19tests/1file 164ms (12 native groups/25 probes + 7 browser). typecheck exit0. Combined 960 unit/72 files 17.21s + 1 parity + strict types + production build shell 1a7e9ac45427, wrapper exit0. Unit-001 Vite JSON lone-surrogate load failed before tests; cycle1 test-only Node JSON.parse, oracle unchanged. No native recapture/SQL/UI/browser-app claim. Handoff 941 not re-claimed; actual this tree is 960."
         }

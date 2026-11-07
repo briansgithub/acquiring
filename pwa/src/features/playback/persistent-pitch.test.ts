@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {PitchTrackingMode, type ExclusivePitchSource, type PitchResult} from '../../audio/capture';
+import {MicrophonePitchCoordinator, MicrophonePitchOwner, PitchPublisher, PitchTrackingMode, type ExclusivePitchSource, type PitchResult} from '../../audio/capture';
 import {
   PersistentPitchPhase, PersistentPlaybackPitchController, effectiveTargetMidi, melodyTimelineDisplayCents,
   melodyTimelinePitchEstimate, resolvePersistentPitchTarget, retargetPitchResult,
@@ -98,5 +98,37 @@ describe('native persistent pitch selection/controller', () => {
     const resolved = {sourceMidi: 60, label: '1̂', position: {kind: 'simple-root' as const}};
     expect(effectiveTargetMidi(resolved, 5, 1)).toBe(77);
     expect(effectiveTargetMidi(resolved, 5, 0)).toBe(65);
+  });
+});
+
+
+describe('persistent Stop across real coordinator owners',()=>{
+  it('late permission and delayed persistent cleanup cannot stop the new singing lease',()=>{
+    const tracker=new PitchPublisher(69),coordinator=new MicrophonePitchCoordinator(tracker);
+    const persistent=coordinator.sourceFor(MicrophonePitchOwner.PLAYBACK_PERSISTENT);
+    const singing=coordinator.sourceFor(MicrophonePitchOwner.SINGING_TOOL);
+    const controller=new PersistentPlaybackPitchController(persistent);
+    controller.activate({kind:'melody'},72,false);
+    singing.claim();singing.start(65);
+    controller.cancel();controller.onPermissionResult(true);controller.updateTarget(80);
+    expect(controller.phase).toBe(PersistentPitchPhase.IDLE);
+    expect(controller.selection).toBeNull();
+    expect(singing.ownsMicrophone).toBe(true);expect(tracker.isRunning).toBe(true);expect(tracker.targetMidi).toBe(65);
+  });
+  it('ordinary collapse cleanup preserves explicitly enabled persistent owner; departure revokes pending permission',()=>{
+    const tracker=new PitchPublisher(69),coordinator=new MicrophonePitchCoordinator(tracker);
+    const persistent=coordinator.sourceFor(MicrophonePitchOwner.PLAYBACK_PERSISTENT);
+    const singing=coordinator.sourceFor(MicrophonePitchOwner.SINGING_TOOL);
+    singing.claim();singing.start(65);
+    const controller=new PersistentPlaybackPitchController(persistent);
+    controller.activate({kind:'melody'},72,true);
+    singing.stop();singing.start(65);
+    expect(persistent.ownsMicrophone).toBe(true);expect(tracker.isRunning).toBe(true);expect(tracker.targetMidi).toBe(72);
+    controller.cancel();controller.activate({kind:'melody'},74,false);
+    coordinator.stopAll();controller.onPermissionResult(true);
+    expect(controller.phase).toBe(PersistentPitchPhase.IDLE);expect(controller.selection).toBeNull();expect(tracker.isRunning).toBe(false);
+    controller.activate({kind:'melody'},76,true);
+    expect(tracker.isRunning).toBe(true);expect(tracker.targetMidi).toBe(76);
+    controller.cancel();expect(tracker.isRunning).toBe(false);
   });
 });

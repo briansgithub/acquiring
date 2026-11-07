@@ -270,9 +270,9 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
           scores={pitch.scores} monitoring={pitch.monitoring} live={pitch.live}
           onScrub={{tap:t=>{cardPreviewStop.current?.();playback.scrubTo(t);playback.finishScrub();},dragTo:t=>{cardPreviewStop.current?.();playback.scrubTo(t);},end:()=>playback.finishScrub()}}/>}
         <SingingDock octaveOffset={octaveOffset} onOctaveOffsetChange={offset=>octaveSession.updateOctaveOffset(offset)}
-          target={singingTarget} expanded={dockExpanded} onExpandedChange={(next)=>{setDockExpanded(next);if(!next)setSingingTarget(null);}}
+          target={singingTarget} expanded={dockExpanded} onExpandedChange={(next)=>{if(next)pitch.cancel();setDockExpanded(next);if(!next)setSingingTarget(null);}}
           transpose={settings.transpose} capture={mic.capture} source={mic.singing} waveform={settings.waveform}
-          previewOwner={cardPreviewOwner}/>
+          previewOwner={cardPreviewOwner} isPersistentMonitoring={pitch.monitoring} onStopPersistent={pitch.cancel}/>
         <PlaybackSettingsPanel settings={settings} disabled={!playback} onChange={updateSettings}/>
       </>}
     </>}

@@ -1,4 +1,7 @@
 .singing-dock { margin: .75rem 0; min-width: 0; }
+.singing-dock__header { display: flex; align-items: center; gap: .5rem; }
+.singing-dock__header > .singing-dock__handle { flex: 1; min-width: 0; }
+.singing-dock__header > [data-singing-persistent-stop] { min-width: 44px; min-height: 44px; }
 .singing-dock__handle { min-width: 44px; min-height: 44px; width: 100%; }
 .singing-dock__toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .5rem; }
 .singing-dock__flipflop { margin: 0; }

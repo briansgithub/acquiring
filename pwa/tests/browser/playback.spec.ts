@@ -763,7 +763,12 @@ test('exclusive PLAYBACK_PERSISTENT vs SINGING_TOOL lease (Playwright fake/silen
   await expect.poll(async()=>dock.getAttribute('data-mic-state'),{timeout:2_000}).toBe('idle');
   await expect(dock).toHaveAttribute('data-mic-owns','false');
   await expect(mic).toHaveAttribute('aria-pressed','true');
-  await page.locator('[data-singing-slot="1"]').dblclick();
+  await expect(dock).toHaveAttribute('data-singing-dock','collapsed');
+  await expect(page.getByRole('button',{name:'Stop persistent pitch practice',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+  await expect(mic).toHaveAttribute('aria-pressed','false');
+  // Native collapse clears ordinary targets; request a new target explicitly, not an obsolete hidden slot.
+  await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
   await expect.poll(async()=>dock.getAttribute('data-mic-state'),{timeout:2_000}).toBe('listening');
   await expect(dock).toHaveAttribute('data-mic-owns','true');
   await expect(mic).toHaveAttribute('aria-pressed','false');
@@ -924,10 +929,12 @@ test('singing exit SYNTHETIC pitches retain only frozen 300ms visuals; interrupt
  // A pending single tap must be cancelled even when reopen restores the same passive pitch before 300ms.
  const beforeTap=(await audio(page)).items.length;await slot1.click();await handle.focus();await page.keyboard.press('Space');await page.keyboard.press('Space');await page.waitForTimeout(400);expect((await audio(page)).items).toHaveLength(beforeTap);expect(await dock.locator('.singing-dock__sung').allTextContents()).toEqual(captured);
  await handle.focus();await page.keyboard.press('Space');await expect(dock.locator('[data-singing-body]')).toHaveCount(0);
- const rows=await singingExitRows(page),exits=rows.filter(row=>row.phase==='exiting'&&row.start!==null&&row.time!==null);
+ let rows=await singingExitRows(page);const exits=rows.filter(row=>row.phase==='exiting'&&row.start!==null&&row.time!==null);
  expect(exits.length).toBeGreaterThan(1);expect(exits.every(row=>row.duration===300&&row.inert&&row.hidden==='true'&&row.mic==='idle'&&row.owns==='false')).toBe(true);
  const lastStart=exits.at(-1)!.start!,lastExit=exits.filter(row=>row.start===lastStart);expect(lastExit.every(row=>row.text===lastExit[0]!.text)).toBe(true);expect(lastExit[0]!.height).toBeGreaterThan(lastExit.at(-1)!.height);
- const completed=rows.find(row=>!row.body&&row.at>=lastStart+300);expect(completed).toBeTruthy();await expect(handle).toBeFocused();
+ // DOM removal can complete before the next rAF observer sample. Wait for the original completion predicate, not a weaker duration/cleanup assertion.
+ await expect.poll(async()=>(await singingExitRows(page)).some(row=>!row.body&&row.at>=lastStart+300),{timeout:1_000}).toBe(true);
+ rows=await singingExitRows(page);const completed=rows.find(row=>!row.body&&row.at>=lastStart+300);expect(completed).toBeTruthy();await expect(handle).toBeFocused();
  await handle.click();await expect(slot1.locator('[data-singing-degree]')).toHaveText('—');await expect(dock.locator('.singing-dock__sung')).toHaveCount(0);await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(2);
  await mkdir(info.outputDir,{recursive:true});await writeFile(info.outputPath('synthetic-singing-exit.json'),JSON.stringify({label:'SYNTHETIC oscillator, not hardware',captured,rows,capture:await captureDeparture(page)},null,2));
 });
@@ -953,4 +960,91 @@ test('singing exit reduced motion removes visuals immediately and cancels an in-
  await page.keyboard.press('Space');await expect(dock.locator('[data-singing-slot="1"] [data-singing-degree]')).toHaveText('—');await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(0);
  await page.emulateMedia({reducedMotion:'no-preference'});await observeSingingExit(page);await handle.focus();await page.keyboard.press('Space');await page.emulateMedia({reducedMotion:'reduce'});await expect(dock.locator('[data-singing-body]')).toHaveCount(0);await page.keyboard.press('Space');await page.waitForTimeout(400);await expect(dock).toHaveAttribute('data-singing-dock','expanded');expect((await captureDeparture(page)).calls).toBe(0);
  await mkdir(info.outputDir,{recursive:true});await writeFile(info.outputPath('singing-reduced-motion.json'),JSON.stringify({rows:await singingExitRows(page),capture:await captureDeparture(page)},null,2));
+});
+
+
+// Native owner handoff: genuine product UI, actual fake/silent browser streams. Not physical permission/device proof.
+test('persistent collapsed Stop and expand handoff cancel armed ordinary singing without stale 800ms restart',async({page,context},info)=>{
+ await context.grantPermissions(['microphone']);await instrument(page);await instrumentCaptureDeparture(page);await installAndOpen(page);
+ const mic=page.getByRole('button',{name:'Pitch monitoring',exact:true}),dock=page.locator('[data-singing-dock]');
+ const stop=page.getByRole('button',{name:'Stop persistent pitch practice',exact:true});
+ await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+ expect((await captureDeparture(page)).autoTimers).toBe(1);
+ await mic.click();
+ await expect(dock).toHaveAttribute('data-singing-dock','collapsed');await expect(dock).toHaveAttribute('data-mic-state','idle');await expect(dock).toHaveAttribute('data-mic-owns','false');await expect(stop).toBeVisible();
+ await expect.poll(async()=>(await captureDeparture(page)).graphs).toBe(1);
+ await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(1);expect((await captureDeparture(page)).autoTimers).toBe(0);await expect(mic).toHaveAttribute('aria-pressed','true');
+ await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+ await expect(mic).toHaveAttribute('aria-pressed','false');await expect(stop).toHaveCount(0);await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);
+ await page.getByRole('button',{name:'Collapse humming tool',exact:true}).click();await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+ await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(1);await expect(dock).toHaveAttribute('data-mic-state','idle');
+ await mic.click();await expect(dock).toHaveAttribute('data-singing-dock','collapsed');await expect(stop).toBeVisible();await expect.poll(async()=>(await captureDeparture(page)).graphs).toBe(2);
+ await stop.click();await expect(mic).toHaveAttribute('aria-pressed','false');await expect(stop).toHaveCount(0);await expect(dock).toHaveAttribute('data-singing-dock','collapsed');
+ await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);await expect.poll(async()=>(await captureDeparture(page)).contexts.every(state=>state==='closed')).toBe(true);
+ await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(2);
+ await info.attach('persistent-owner-handoff.json',{body:JSON.stringify(await captureDeparture(page)),contentType:'application/json'});
+});
+
+async function gatePersistentPermission(page:Page){
+ await page.addInitScript(()=>{
+  const streams:MediaStream[]=[],contexts:AudioContext[]=[];let calls=0,graphs=0,pending=false,release!:()=>void;
+  const gate=new Promise<void>(resolve=>{release=resolve;}),gum=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+  navigator.mediaDevices.getUserMedia=async constraints=>{calls++;const stream=await gum(constraints);streams.push(stream);if(calls===1){pending=true;await gate;pending=false;}return stream;};
+  const Native=window.AudioContext;
+  window.AudioContext=class extends Native{constructor(options?:AudioContextOptions){super(options);if(options?.sampleRate===16000)contexts.push(this);}createMediaStreamSource(stream:MediaStream){graphs++;return super.createMediaStreamSource(stream);}};
+  (window as unknown as {persistentPermission:{release:()=>void;snapshot:()=>unknown}}).persistentPermission={release,snapshot:()=>({pending,calls,graphs,tracks:streams.map(stream=>stream.getTracks().map(track=>track.readyState)),contexts:contexts.map(context=>context.state)})};
+ });
+}
+async function pendingPersistent(page:Page){return page.evaluate(()=>(window as unknown as {persistentPermission:{snapshot:()=>{pending:boolean;calls:number;graphs:number;tracks:string[][];contexts:string[]}}}).persistentPermission.snapshot());}
+for(const action of ['Stop','rapid reopen','singing owner switch'] as const)test('persistent pending permission '+action+' discards late delivery without reviving capture',async({page,context},info)=>{
+ await context.grantPermissions(['microphone']);await instrument(page);await gatePersistentPermission(page);await installAndOpen(page);
+ const mic=page.getByRole('button',{name:'Pitch monitoring',exact:true}),dock=page.locator('[data-singing-dock]');
+ await mic.click();await expect.poll(async()=>(await pendingPersistent(page)).pending).toBe(true);
+ await expect(page.getByRole('button',{name:'Stop persistent pitch practice',exact:true})).toBeVisible();
+ if(action==='Stop')await page.getByRole('button',{name:'Stop persistent pitch practice',exact:true}).click();
+ else{
+  await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+  if(action==='rapid reopen'){
+   await page.getByRole('button',{name:'Collapse humming tool',exact:true}).click();await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+  }else{
+   await page.locator('[data-singing-slot="1"]').dblclick();await expect(dock).toHaveAttribute('data-mic-state','recording');await expect(dock).toHaveAttribute('data-mic-owns','true');
+  }
+ }
+ await expect(mic).toHaveAttribute('aria-pressed','false');expect((await pendingPersistent(page)).graphs).toBe(0);expect((await pendingPersistent(page)).contexts).toEqual([]);
+ await page.evaluate(()=>(window as unknown as {persistentPermission:{release:()=>void}}).persistentPermission.release());
+ await expect.poll(async()=>(await pendingPersistent(page)).tracks[0]?.every(state=>state==='ended')).toBe(true);
+ if(action==='singing owner switch'){
+  await expect.poll(async()=>(await pendingPersistent(page)).graphs).toBe(1);await expect(dock).toHaveAttribute('data-mic-owns','true');await expect(dock).toHaveAttribute('data-mic-state','recording');
+  expect((await pendingPersistent(page)).calls).toBe(2);expect((await pendingPersistent(page)).tracks[1]?.every(state=>state==='live')).toBe(true);
+  await page.getByRole('button',{name:'Stop microphone',exact:true}).click();
+ }else{
+  await page.waitForTimeout(900);expect((await pendingPersistent(page)).graphs).toBe(0);expect((await pendingPersistent(page)).calls).toBe(1);
+  await mic.click();await expect.poll(async()=>(await pendingPersistent(page)).graphs).toBe(1);await page.getByRole('button',{name:'Stop persistent pitch practice',exact:true}).click();
+ }
+ await expect.poll(async()=>(await pendingPersistent(page)).tracks.flat().every(state=>state==='ended')).toBe(true);
+ await expect.poll(async()=>(await pendingPersistent(page)).contexts.every(state=>state==='closed')).toBe(true);
+ await expect(mic).toHaveAttribute('aria-pressed','false');await page.waitForTimeout(900);expect((await pendingPersistent(page)).calls).toBe(2);
+ await info.attach('pending-persistent-'+action+'.json',{body:JSON.stringify(await pendingPersistent(page)),contentType:'application/json'});
+});
+
+for(const departure of ['Back','reload'] as const)test('persistent pending worklet '+departure+' retires lease and cannot resume without explicit opt-in',async({page,context},info)=>{
+ await context.grantPermissions(['microphone']);await instrument(page);await instrumentCaptureDeparture(page,true);await installAndOpen(page);
+ await page.getByRole('button',{name:'Pitch monitoring',exact:true}).click();await expect.poll(async()=>(await captureDeparture(page)).modulePending).toBe(true);
+ if(departure==='Back'){
+  await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('button',{name:'Play song',exact:true})).toBeVisible();
+  await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);
+  await expect.poll(async()=>(await captureDeparture(page)).contexts.every(state=>state==='closed')).toBe(true);
+  await page.evaluate(()=>(window as unknown as {captureDeparture:{release:()=>void}}).captureDeparture.release());
+  await page.waitForTimeout(900);expect((await captureDeparture(page)).graphs).toBe(0);
+  await page.getByRole('button',{name:'Play song',exact:true}).click();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect(page.getByRole('button',{name:'Pitch monitoring',exact:true})).toHaveAttribute('aria-pressed','false');await expect(page.getByRole('button',{name:'Stop persistent pitch practice',exact:true})).toHaveCount(0);
+  await info.attach('pending-persistent-Back.json',{body:JSON.stringify(await captureDeparture(page)),contentType:'application/json'});
+ }else{
+  await page.evaluate(()=>(window as unknown as {captureDeparture:{observe:()=>void}}).captureDeparture.observe());
+  await page.reload();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  const receipt=await page.evaluate(()=>JSON.parse(sessionStorage.getItem('capture-departure-proof')!));
+  expect(receipt.trusted).toBe(true);expect(receipt.persisted).toBe(false);expect(receipt.capture.graphs).toBe(0);expect(receipt.capture.tracks.every((state:string)=>state==='ended')).toBe(true);expect(receipt.capture.contexts.every((state:string)=>state==='closed')).toBe(true);
+  await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(0);await expect(page.getByRole('button',{name:'Pitch monitoring',exact:true})).toHaveAttribute('aria-pressed','false');await expect(page.getByRole('button',{name:'Stop persistent pitch practice',exact:true})).toHaveCount(0);
+  await info.attach('pending-persistent-pagehide.json',{body:JSON.stringify(receipt),contentType:'application/json'});
+ }
 });
