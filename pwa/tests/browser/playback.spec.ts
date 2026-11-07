@@ -501,6 +501,10 @@ test('Library Play/Shuffle opens saved queue chrome and Play queue starts playba
   await expect(page.locator('[data-song-queue-screen]')).toBeVisible();
   await expect(page.getByRole('button',{name:'Play queue',exact:true})).toBeVisible();
   await expect(page.getByRole('switch',{name:'Shuffle',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Save playlist',exact:true})).toBeEnabled();
+  await page.getByRole('textbox',{name:'Playlist name',exact:true}).fill('Practice queue');
+  await page.getByRole('button',{name:'Save playlist',exact:true}).click();
+  await expect(page.getByText('Playlist saved',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Play queue',exact:true}).click();
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
   await expect(page.locator('[data-song-queue-bar]')).toBeVisible();
@@ -510,6 +514,9 @@ test('Library Play/Shuffle opens saved queue chrome and Play queue starts playba
   await page.getByRole('button',{name:'Back',exact:true}).click();
   await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
   await expect(page.locator('[data-song-queue-screen]')).toHaveCount(0);
+  await expect(page.getByText('Practice queue',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Expand Practice queue',exact:true}).click();
+  await expect(page.locator('[data-playlists-section] [data-song-slug="detail-gzip"]')).toBeVisible();
   const image=testInfo.outputPath('library-play-shuffle-queue-narrow.png');
   await page.setViewportSize({width:320,height:640});
   await page.evaluate(()=>{document.documentElement.style.fontSize='32px';scrollTo(0,0);});

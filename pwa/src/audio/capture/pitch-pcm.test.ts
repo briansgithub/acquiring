@@ -11,17 +11,16 @@ describe('float32ToPcm16 and 16kHz resample (browser difference)', () => {
     expect([...pcm]).toEqual([32767, -32768, 0, 16383, 32767, 0]);
   });
 
-  it('resamples a 48000Hz A4 sine so YIN still finds ~440 at 16kHz', () => {
-    const rate = 48_000;
-    const seconds = 0.2;
-    const f32 = sineF32(440, Math.round(rate * seconds), rate);
-    const pcm = new LinearPcmResampler().push(float32ToPcm16(f32), rate);
-    expect(pcm.length).toBeGreaterThan(PITCH_SAMPLE_RATE * 0.15);
-    const window = pcm.slice(0, 2048);
-    const estimate = estimatePitch(window, PITCH_SAMPLE_RATE);
-    expect(estimate.frequencyHz).toBeGreaterThan(430);
-    expect(estimate.frequencyHz).toBeLessThan(450);
-    expect(estimate.confidence).toBeGreaterThanOrEqual(0.4);
+  it('resamples 44100 and 48000 A4 sines so YIN still finds ~440 at 16kHz', () => {
+    for (const rate of [44_100, 48_000]) {
+      const f32 = sineF32(440, Math.round(rate * 0.2), rate);
+      const pcm = new LinearPcmResampler().push(float32ToPcm16(f32), rate);
+      expect(pcm.length).toBeGreaterThan(PITCH_SAMPLE_RATE * 0.15);
+      const estimate = estimatePitch(pcm.slice(0, 2048), PITCH_SAMPLE_RATE);
+      expect(estimate.frequencyHz).toBeGreaterThan(430);
+      expect(estimate.frequencyHz).toBeLessThan(450);
+      expect(estimate.confidence).toBeGreaterThanOrEqual(0.4);
+    }
   });
 
   it('emits native-sized hops and keeps remainder', () => {

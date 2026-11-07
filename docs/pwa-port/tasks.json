@@ -974,8 +974,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
-      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop opt-in, 2s rest, measured interval, opt-in-only auto-listen. Device mic/AudioWorklet/median Aural scores remain open",
-      "nextAction": "Queue section resolve landed. Next AudioWorklet (feasible same hop contract; ScriptProcessor tracked not parity) or coordinated device mic. SYNTHETIC fixture is not Pixel acceptance. No fabricated cents. First-load auto-listen B pending Brian, not parity. Library prefix polish is not next.",
+      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop opt-in, 2s rest, measured interval, opt-in-only auto-listen. AudioWorklet same-origin hashed module. Device mic/median Aural scores remain open",
+      "nextAction": "AudioWorklet hashed module landed. Next remaining playback inertia/Roman, or coordinated device mic when a specific ADB test exists. SYNTHETIC fixture is not Pixel acceptance. No fabricated cents. First-load auto-listen B pending Brian, not parity. Library prefix polish is not next.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
@@ -1037,6 +1037,17 @@
             "T13-flipflop-rest-browser-001"
           ],
           "result": "PASS 34 focused then 1038 unit/86 files + 1 parity + types + shell b46ee11bd284. browser-001 FIRST PASS 4/4: SYNTHETIC 440Hz; permission Error; Flip-Flop enabled; card-target still idle/opted-in false after 900ms and interval — without scores. Flip-Flop rests 2s after slot 2 with mic stopped. Measured interval uses accepted calculateMeasuredInterval. Auto-listen only after prior opt-in. ScriptProcessor+linear resample tracked not parity. Not real mic/Pixel/whole-CI-green."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/audio/capture src/features/singing/singing-microphone.test.ts src/features/library/song-queue-host.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/microphone-capture.spec.ts tests/browser/playback.spec.ts tests/browser/library.spec.ts --project chrome --workers 1 --grep \"SYNTHETIC microphone capture|Library Play/Shuffle|Library Playlists Favorites|singing dock loads|Playlists Favorites accordion is empty\" --output .artifacts/pwa-port/audioworklet/browser-001",
+          "revision": "2f89752f plus named AudioWorklet tree",
+          "guards": [
+            "T09-audioworklet-unit-002",
+            "T09-audioworklet-typecheck-003",
+            "T09-audioworklet-check-002",
+            "T09-audioworklet-browser-001"
+          ],
+          "result": "PASS 47 focused then 1055 unit/89 files + 1 parity + types + shell f9f384ba3f97. typecheck-001/002 FAIL worklet test node types, fixed. check-001 inlined worklet as data: URL; assetsInlineLimit + ?url&no-inline emits hashed dist/assets/microphone-capture-worklet-*.js (12 shell files). browser-001 FIRST PASS 6/6: SYNTHETIC AudioWorklet 440Hz under fixture CSP script-src/worker-src 'self' (not blob/data); permission Error; singing dock idle/interval —; empty Favorites no Play; accordion unstar; Play/Shuffle save Practice queue persists. Linear resample 44100/48000 still exact-enough for YIN. ScriptProcessor gone. Mic policy B pending, not parity. Not real mic/Pixel/whole-CI-green."
         }
       ],
       "progress": [
@@ -1047,7 +1058,8 @@
         "2026-11-07T11:52Z Exclusive MicrophonePitchCoordinator lease on continuation. Delayed previous-owner stop ignored. getUserMedia hop clock next. Partial T09.",
         "2026-11-07T11:55Z MicrophonePitchTracker hop-to-YIN on continuation. Injected PCM hops; getUserMedia adapter remains. Partial T09.",
         "2026-11-07T12:00Z BrowserMicrophoneCapture + dock listen/Flip-Flop. SYNTHETIC oscillator fixture. Auto-listen skipped. Partial T09.",
-        "2026-11-07T12:05Z Flip-Flop 2s rest after slot 2, measured interval readout, opt-in-only 800ms auto-listen. First-load auto-listen is a Brian decision; getUserMedia is not transient-gated. AudioWorklet deferred. Partial T09/T13."
+        "2026-11-07T12:05Z Flip-Flop 2s rest after slot 2, measured interval readout, opt-in-only 800ms auto-listen. First-load auto-listen is a Brian decision; getUserMedia is not transient-gated. AudioWorklet deferred. Partial T09/T13.",
+        "2026-11-07T12:25Z AudioWorklet same-origin hashed module replaces ScriptProcessor. Hop/resample/lease/permission fail-closed preserved. SYNTHETIC labeled. Playlist-save Chrome proof included. Device mic/Pixel remain. Partial T09."
       ],
       "blocker": null
     },
@@ -1082,8 +1094,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
-      "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter plus SongQueue kernel plus Play/Shuffle chrome plus resolveQueuedSection. Prefix-scrubber, Artists chip, Aural queue begin, auralSectionIdentity RPC remain. Settings Back 64px still owner-blocked.",
-      "nextAction": "resolveQueuedSection landed (empty→first, exact key, unique name; missing skips). Next playlist-save browser proof or AudioWorklet. Artists chip needs new getArtistSuggestions RPC. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last. Mic policy B pending Brian.",
+      "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter plus SongQueue kernel plus Play/Shuffle chrome plus resolveQueuedSection plus playlist-save Chrome proof. Prefix-scrubber, Artists chip, Aural queue begin, auralSectionIdentity RPC remain. Settings Back 64px still owner-blocked.",
+      "nextAction": "Playlist-save Chrome proof landed with AudioWorklet. Next remaining playback inertia/Roman, or Artists chip (needs getArtistSuggestions RPC). Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last. Mic policy B pending Brian.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-all-songs-filter/browser-001",
@@ -2219,7 +2231,7 @@
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
       "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + opt-in listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + opt-in-only auto-listen. Median Aural scores and first-load auto-listen remain.",
-      "nextAction": "Do not fake scores. Flip-Flop rest and measured interval landed. First-load auto-listen B pending Brian, not parity. Queue section resolve landed. Do not start Aural/T15 remainder.",
+      "nextAction": "Do not fake scores. Flip-Flop rest and measured interval landed. AudioWorklet hashed module landed. First-load auto-listen B pending Brian, not parity. Do not start Aural/T15 remainder.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",

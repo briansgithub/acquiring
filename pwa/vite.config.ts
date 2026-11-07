@@ -6,5 +6,10 @@ export default defineConfig({
   plugins: [sqlitePreservationPlugin(), react()],
   optimizeDeps: { exclude: ['@sqlite.org/sqlite-wasm'] },
   worker: { format: 'es', plugins: () => [sqlitePreservationPlugin()] },
+  build: {
+    assetsInlineLimit(filePath) {
+      if (filePath.includes('microphone-capture-worklet')) return false;
+    },
+  },
   test: { environment: 'node', maxWorkers: 2, exclude: ['tests/browser/**', 'node_modules/**', 'dist/**'] },
 });

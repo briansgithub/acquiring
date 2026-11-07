@@ -8,7 +8,7 @@ import './singing.css';
  * activation (MDN: getUserMedia does not require it). AudioContext autoplay is sticky.
  * First-load auto-listen without prior mic opt-in remains a Brian decision (permission-prompt
  * UX). This slice auto-listens only after explicit listen/Flip-Flop this session, with
- * visible mic state and Stop. No fabricated cents. ScriptProcessor+linear resample tracked.
+ * visible mic state and Stop. No fabricated cents. AudioWorklet + linear resample; not real mic.
  */
 export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0}:{
   octaveOffset:number;

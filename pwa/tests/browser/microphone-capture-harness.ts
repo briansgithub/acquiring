@@ -10,7 +10,9 @@ const proof: {
   stops: number;
   denied: boolean;
   tracksLive: boolean;
-} = { label: 'SYNTHETIC', current: null, starts: 0, stops: 0, denied: false, tracksLive: false };
+  processor: 'audioworklet' | null;
+  workletUrl: string;
+} = { label: 'SYNTHETIC', current: null, starts: 0, stops: 0, denied: false, tracksLive: false, processor: null, workletUrl: '' };
 
 let capture: BrowserMicrophoneCapture | null = null;
 let oscillator: OscillatorNode | null = null;
@@ -45,6 +47,12 @@ document.querySelector('#start')!.addEventListener('click', () => {
     onPageHide: false,
     transport: createWebAudioMicrophoneTransport({
       getUserMedia: async () => dest.stream,
+      addWorkletModule: async (context, url) => {
+        if (url.startsWith('blob:')) throw new Error('Worklet must be a same-origin module, not blob:');
+        await context.audioWorklet.addModule(url);
+        proof.processor = 'audioworklet';
+        proof.workletUrl = url;
+      },
     }),
   });
   capture.start(69);

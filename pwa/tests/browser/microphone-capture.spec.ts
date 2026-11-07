@@ -4,6 +4,7 @@ type SyntheticProof={
   label:'SYNTHETIC';
   current:{kind:string;midi?:number;isHeld?:boolean;message?:string}|null;
   starts:number;stops:number;denied:boolean;tracksLive:boolean;
+  processor:'audioworklet'|null;workletUrl:string;
 };
 const snapshot=(page:Page)=>page.evaluate(()=>(window as unknown as {microphoneCaptureProof:SyntheticProof}).microphoneCaptureProof);
 
@@ -15,6 +16,9 @@ test.describe('SYNTHETIC microphone capture (not real mic / Pixel)',()=>{
     await expect.poll(async()=>(await snapshot(page)).current?.kind,{timeout:8_000}).toBe('estimate');
     const live=await snapshot(page);
     expect(live.label).toBe('SYNTHETIC');
+    expect(live.processor).toBe('audioworklet');
+    expect(live.workletUrl).toMatch(/microphone-capture-worklet/);
+    expect(live.workletUrl.startsWith('blob:')).toBe(false);
     expect(live.current).toMatchObject({kind:'estimate',isHeld:false});
     if(live.current?.kind==='estimate'){
       expect(live.current.midi).toBeGreaterThan(67);

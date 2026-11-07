@@ -12,7 +12,10 @@ export type { ExclusivePitchSource } from './pitch-coordinator';
 export { MicrophonePitchTracker } from './pitch-tracker';
 export { float32ToPcm16, LinearPcmResampler, PcmHopEmitter } from './pitch-pcm';
 export { BrowserMicrophoneCapture } from './microphone-capture';
-export { createWebAudioMicrophoneTransport } from './microphone-transport';
+export { captureWorkletFrame, CAPTURE_WORKLET_NAME } from './microphone-worklet-process';
+export {
+  createWebAudioMicrophoneTransport, CAPTURE_WORKLET_MODULE_URL,
+} from './microphone-transport';
 export type { MicrophoneCaptureTransport, WebAudioMicrophoneTransportOptions } from './microphone-transport';
 
 

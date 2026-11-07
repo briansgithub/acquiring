@@ -19,3 +19,5 @@ T13-octave-unit-001 FIRST PASS 11 tests/1 file 123ms. T13-octave-typecheck-001 P
 2026-11-07T12:12Z Policy B (opt-in-only 800ms auto-listen) kept pending Brian — not accepted parity. Flip-Flop rest/interval units still PASS in T10-song-queue-chrome-unit-002; singing dock Chrome still idle/interval — without scores. No first-load auto-listen change.
 
 2026-11-07T12:18Z Policy B still pending, not parity. Flip-Flop rest units still PASS in T10-song-queue-resolve-unit-001; singing dock Chrome still idle/interval — without scores. No first-load auto-listen change. AudioWorklet not switched.
+
+2026-11-07T12:25Z AudioWorklet hashed module on capture transport. Policy B still pending, not changed. Flip-Flop rest units still PASS; singing dock Chrome still idle/interval — without scores. SYNTHETIC capture now proves AudioWorklet under fixture CSP. Not real mic/Pixel.
