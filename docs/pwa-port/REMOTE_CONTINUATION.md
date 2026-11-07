@@ -36,7 +36,11 @@ The separate `python docs/pwa-port/validate_audit.py` check still rejects the ex
 
 T15 Phase 2 `buildAuralSongRankFragment` is already accepted on this branch at `e5ed284c`. Preserve it; do not expand T15.
 
-Current work: T13 pure singing-octave kernel (`pwa/src/features/singing/singing-octave.ts` and test/worklog) from frozen `SingingTargets.kt` and `idealIntervalPlaybackMidis`. Then T12 visual timeline geometry (Canvas matching `PlaybackView` ~1122; no spacer hacks; score overlay waits for T13 scoring). Accepted interval/note/chord cards are not redone. T09 remains required for singing scores/mic. Library Settings Back 64px stays owner-blocked.
+**Breadth-first (2026-11-07 4:31AM EST):** sequencing, not acceptance relaxation. Bounded tested vertical slices, then iterate. Do not wait at checkpoints. Direct pushes to `codex/pwa-continuation` authorized. ADB only if a specific test needs it.
+
+T15 Phase 2 `buildAuralSongRankFragment` is already accepted on this branch at `e5ed284c`. Preserve it; do not expand T15. Song-rank is Aural-catalog eligibility only — not Playback/singing/cards.
+
+Landed: T13 octave kernel `165f3dbf`; T12 timeline layout `0d77407e`; T12 visible Canvas + local singing-octave chrome (partial; see HANDOFF gaps). Next: octave persistence, then singing dock chrome without fake scores. Accepted interval/note/chord cards are not redone. T09 remains required for singing scores/mic. Library Settings Back 64px stays owner-blocked.
 
 ## Accepted work and open gates
 

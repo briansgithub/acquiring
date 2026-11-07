@@ -17,8 +17,9 @@
  * Lock in Major fixes a sectioninitial relativeIoniancontext; cardlabels/registers follow native,
  * rootOnly andmelody taps staysource register (normalizedtarget is futureT13 singing),
  * fullchord/Home/sourcekey/transport remain sourcebased. Localstate is not globalpersistence.
- * Remaining slices: previous/interval cards,visualtimeline/singing/favorites/default persistence
- * and routepositionmemory; wholeT12 remains in_progress, device/Safari acceptance remains unrun.
+ * Remaining slices: timeline tap/inertia/Roman/scores, singing dock/mic scoring, octave
+ * persistence, Lock-in-Major restaff of timeline, favorites/default persistence and
+ * routepositionmemory; wholeT12 remains in_progress, device/Safari acceptance remains unrun.
  */
 /** Next bounded presentation slice: previous root/melody single-pitch cards only.
  * Use accepted PlaybackActiveEventIndex, showsRootOnlyPrevious, melodyPitchCardDisplayMode,

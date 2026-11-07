@@ -1,4 +1,6 @@
 import {PlaybackCards} from './PlaybackCards';
+import {PlaybackTimeline} from './PlaybackTimeline';
+import {clampSingingOctaveOffset,singingOctaveOffsetLabel} from '../singing/singing-octave';
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {INSTRUMENTS,Waveform} from '../../audio/synth';
 import type {PlaybackSettings} from './controller';
@@ -23,6 +25,8 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
   const [detailController,setDetailController]=useState(()=>new SongDetailController(slug));
   const detailState=useSyncExternalStore(detailController.subscribe,detailController.getSnapshot,detailController.getSnapshot);
   const [sectionId,setSectionId]=useState<string|null>(null);
+  const [octaveOffset,setOctaveOffset]=useState(0);
+  useEffect(()=>{setOctaveOffset(0);},[slug]);
   const [playback,setPlayback]=useState<SectionPlaybackController|null>(null);
   const [playbackError,setPlaybackError]=useState<string|null>(null);
   const playbackOwner=useRef<SectionPlaybackController|null>(null);
@@ -183,6 +187,15 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
         </section>
         {playbackError&&<section className="panel"><p role="alert">{playbackError}</p></section>}
         {playback&&!playbackError&&<PlaybackCards section={selected[1]} beat={beat} baseBpm={playbackState.baseBpm} settings={settings} stopPreview={cardPreviewStop}/>}
+        {playback&&!playbackError&&<PlaybackTimeline section={selected[1]} beat={beat} rootOnly={settings.rootOnly}/>}
+        <section className="panel playback-octave" aria-label="Singing octave">
+          <button type="button" className="action" aria-label="Lower singing octave" disabled={octaveOffset<=-2}
+            onClick={()=>setOctaveOffset(value=>clampSingingOctaveOffset(value-1))}>−</button>
+          <output role="status" aria-label="Singing octave">{singingOctaveOffsetLabel(octaveOffset)}</output>
+          <button type="button" className="action" aria-label="Raise singing octave" disabled={octaveOffset>=3}
+            onClick={()=>setOctaveOffset(value=>clampSingingOctaveOffset(value+1))}>+</button>
+          <span>Singing octave does not transpose source playback.</span>
+        </section>
         <section className="panel playback-settings" aria-label="Playback settings">
           <label className="playback-field">Tempo (%)
             <input aria-label="Tempo (%)" type="range" min="0" max="200" step="1" value={settings.tempoPercent} disabled={!playback}

@@ -4,7 +4,9 @@ Updated 2026-11-07. None of this is T27/device acceptance, physical-hearing proo
 
 ## Pixel 9 Pro (owner offer, unverified)
 
-Brian offered a Pixel 9 Pro for relevant Android/PWA testing, shared with Music Finder wireless ADB work. Shared-memory Tailscale IP `100.95.230.49`. **ADB port, pairing, and reachability are not verified.** This cloud VM may have no path to the device.
+Brian offered a Pixel 9 Pro for relevant Android/PWA testing, shared with Music Finder wireless ADB work. Shared-memory Tailscale IP `100.95.230.49`.
+
+**Coordinator shared-box FYI 2026-11-07:** Music Finder host paired/connected `100.95.230.49:38131` using `/workspace/music/android-sdk/platform-tools/adb`, `get-state=device`, live model Pixel 9 Pro, Android 17 SDK 37. That does **not** prove this cloud coding VM can reach the device. Do not ADB-explore from here unless a specific test needs it; coordinator can run device tests when asked.
 
 Do not assume access. Do not probe, pair, install, reset, clear data, push APKs, or change networking/auth/security. Do not disrupt Music Finder tests. No extra coding agent.
 
@@ -20,7 +22,7 @@ Environment: **Cursor cloud coding VM**, not Brian's shared box / Music Finder h
 | --- | --- |
 | `adb` on PATH / common SDK paths | missing (`adb_not_on_PATH`; no `/usr/bin/adb`, no Android SDK dirs) |
 | already-connected devices | not queried (no adb); no default transport |
-| `adb get-state` / `ro.product.model` / `ro.build.version.release` / sdk | **not run** (no authorized endpoint on this VM) |
+| `adb get-state` / `ro.product.model` / `ro.build.version.release` / sdk | **not run on this VM** (no authorized endpoint here; coordinator box later reported Pixel 9 Pro / Android 17 SDK 37) |
 | `tailscale` | not installed |
 | CGNAT `100.x` routes | none in `/proc/net/route`; default iface `enp0s3` |
 | ping `100.95.230.49` (host only, 4 packets, no port scan) | 100% loss |

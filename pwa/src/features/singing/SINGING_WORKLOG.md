@@ -7,3 +7,5 @@ Pure Int tessitura math: clamp -2..+3, signed label, 12-semitone shift, mic MIDI
 Expected checks: focused vitest, `npm run typecheck`, `npm run check`. Android `SingingTargetsTest` / interval MIDI cases are the oracle; no JVM recapture of this 65-line leaf. Browser UI proofs wait for a later selector/dock slice.
 
 T13-octave-unit-001 FIRST PASS 11 tests/1 file 123ms. T13-octave-typecheck-001 PASS. Combined T13-octave-check-001 FIRST PASS: 971 unit/73 files 16.15s + 1 parity + types + production shell `1a7e9ac45427` (unbundled; App import unchanged). Lineage note: remaining T15/Aural last; next playback surface after this kernel is visual timeline geometry, then octave selector/dock (T09 still required for scoring).
+
+2026-11-07T09:36Z thin PlaybackScreen −/+ chrome reuses this kernel (no singing/ source edits). Local only; T06 songOctaveOffsets persistence is next. Octave buttons do not start source audio (Chrome proof). No mic/dock/Flip-Flop/scores.

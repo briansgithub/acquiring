@@ -302,3 +302,27 @@ test('interval cards play native three-stage written pitches with exclusive prev
  await seek(2);await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';scrollTo(0,0);});await expect(interval).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await band.getByRole('button').evaluateAll(elements=>elements.every(e=>{const r=e.getBoundingClientRect();return r.width>=44&&r.height>=44;}))).toBe(true);const image=testInfo.outputPath('interval-cards-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
  await interval.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(8);await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');await expect.poll(async()=>(await audio(page)).items[7].stops).toBeGreaterThan(0);expect((await audio(page)).contexts).toHaveLength(1);await writeFile(testInfo.outputPath('interval-card-proof.json'),JSON.stringify(await audio(page),null,2));
 });
+
+test('visible timeline hides in root-only and singing octave does not start source audio',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  const timeline=page.locator('[data-playback-timeline="visible"]');
+  await expect(timeline).toBeVisible();
+  expect(Number(await timeline.getAttribute('data-timeline-melody'))).toBeGreaterThan(0);
+  expect(Number(await timeline.getAttribute('data-timeline-chords'))).toBeGreaterThan(0);
+  await page.getByRole('checkbox',{name:'Root only',exact:true}).check();
+  await expect(page.locator('[data-playback-timeline="hidden"]')).toHaveCount(1);
+  await expect(page.locator('[data-playback-timeline="visible"]')).toHaveCount(0);
+  await page.getByRole('checkbox',{name:'Root only',exact:true}).uncheck();
+  await expect(timeline).toBeVisible();
+  expect((await audio(page)).contexts).toHaveLength(0);
+  await page.getByRole('button',{name:'Raise singing octave',exact:true}).click();
+  await expect(page.getByRole('status',{name:'Singing octave',exact:true})).toHaveText('+1');
+  expect((await audio(page)).contexts).toHaveLength(0);
+  await page.getByRole('button',{name:'Play',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','true');
+  await page.getByRole('button',{name:'Pause',exact:true}).click();
+  await page.setViewportSize({width:320,height:640});
+  await page.evaluate(()=>{document.documentElement.style.fontSize='32px';scrollTo(0,0);});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  const path=testInfo.outputPath('timeline-octave-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});
+});

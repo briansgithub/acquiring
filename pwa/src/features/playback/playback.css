@@ -39,3 +39,10 @@
 .playback-melody-card--center { align-self: center; }
 .playback-interval-card { flex: 0 1 160px; }
 .playback-interval-card__symbol { font-size: 1.5rem; line-height: 1.2; }
+
+.playback-timeline-host { width: 100%; min-width: 0; max-width: 100%; margin: .75rem 0; }
+.playback-timeline-host[hidden] { display: none; }
+.playback-timeline { display: block; box-sizing: border-box; width: 100%; height: 128px; max-width: 100%; background: #1a1c1e; border-radius: .5rem; }
+.playback-octave { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; min-height: 44px; margin: .75rem 0; }
+.playback-octave .action { min-width: 44px; min-height: 44px; }
+.playback-octave span { flex: 1 1 12rem; overflow-wrap: anywhere; }
