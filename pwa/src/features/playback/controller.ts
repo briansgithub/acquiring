@@ -1,6 +1,7 @@
 import type {ExtractedSection} from '../../contracts';
 import {PlaybackTransport,type AudioPlaybackTransport,type PlaybackTransportState} from '../../audio/transport';
 import {audioDiagnostics,registerAudioEngine} from '../settings/audio-diagnostics';
+import {timelineFrameRateStore} from '../settings/timeline-frame-rate';
 import {PlaybackChordMode,Waveform,type PlaybackConfig} from '../../audio/synth';
 import {preparePlaybackSection,type PreparedPlaybackSection} from './section-model';
 
@@ -39,6 +40,7 @@ export class SectionPlaybackController {
   private resumeAfterScrub=false;
   private scrubRevision:number|null=null;
   private unregisterEngine:(()=>void)|null=null;
+  private lastStateUpdateNanos=0;
   constructor(section:ExtractedSection,private readonly factory:(config:PlaybackConfig)=>AudioPlaybackTransport=config=>new PlaybackTransport({initialConfig:config}),private readonly playOnceKey:string|null=null) {
     this.model=preparePlaybackSection(section,playOnceKey);this.state=this.snapshot();
   }
@@ -49,7 +51,10 @@ export class SectionPlaybackController {
     const transport=this.engine?.getSnapshot()??Object.freeze({phase:'stopped' as const,transportRevision:0,playbackRequested:false,beat:1,bpm:config(this.model,this.settings).bpm,window:null,renderEnded:false,completion:null,error:null,clock:null});
     return Object.freeze({settings:this.settings,transport,endBeat:this.model.timeline.endBeat,baseBpm:this.model.baseBpm,scrubbing:this.scrubbing});
   }
-  private publish():void {
+  private publish(force=true):void {
+    const now=performance.now()*1e6;
+    if(!force&&now-this.lastStateUpdateNanos<timelineFrameRateStore.minStateUpdateNanos)return;
+    this.lastStateUpdateNanos=now;
     const state=this.state=this.snapshot();
     for(const listener of [...this.listeners]){if(this.state!==state)break;try{listener();}catch{/* Subscribers cannot prevent ownership cleanup. */}}
   }
@@ -58,7 +63,11 @@ export class SectionPlaybackController {
     if(this.stopped||this.engine)return;
     const revision=++this.revision,engine=this.factory(config(this.model,this.settings));
     if(this.stopped||revision!==this.revision){engine.release();return;}
-    this.engine=engine;this.unsubscribe=engine.subscribe(()=>{if(!this.stopped)this.publish();});
+    this.engine=engine;this.unsubscribe=engine.subscribe(()=>{
+      if(this.stopped)return;
+      const phase=this.engine?.getSnapshot().phase;
+      this.publish(phase!=='playing');
+    });
     this.unregisterEngine=registerAudioEngine({
       stopAll:()=>{this.engine?.pause();},
       reset:()=>{this.reset();},

@@ -3,6 +3,7 @@ import type {ExtractedSection} from '../../contracts';
 import {PlaybackIntentKernel,type AudioPlaybackTransport} from '../../audio/transport';
 import {PlaybackChordMode,Waveform,type PlaybackConfig} from '../../audio/synth';
 import {SectionPlaybackController} from './controller';
+import {TimelineFrameRatePreference,timelineFrameRateStore} from '../settings/timeline-frame-rate';
 const section=(bpm=90,duration=3):ExtractedSection=>({chords:[{root:1,type:5,beat:1,duration}],metadata:{tempos:[{bpm}]}});
 function setup(){
   const kernel=new PlaybackIntentKernel(90),listeners=new Set<()=>void>(),configs:PlaybackConfig[]=[];
@@ -78,4 +79,25 @@ it('rejects invalid controls without mutation, isolates observers and permanentl
   expect(s.controller.getSnapshot()).toBe(before);expect(Object.isFrozen(before)).toBe(true);expect(Object.isFrozen(before.settings)).toBe(true);
   s.controller.subscribe(()=>{throw new Error('observer');});s.controller.pause();s.controller.dispose();s.controller.dispose();s.controller.play();
   expect(s.engine.release).toHaveBeenCalledTimes(1);expect(s.listeners.size).toBe(0);expect(s.controller.getSnapshot().transport.phase).toBe('released');
+});
+it('throttles playing ticks to the display preference but forces completion like native publish()',()=>{
+  timelineFrameRateStore.apply(TimelineFrameRatePreference.STANDARD,60);
+  const s=setup();s.controller.start();
+  const now=vi.spyOn(performance,'now');
+  now.mockReturnValue(1_000);
+  s.controller.play();
+  const afterPlay=s.controller.getSnapshot();
+  now.mockReturnValue(1_001);
+  s.kernel.observePlayed({transportRevision:s.kernel.getSnapshot().transportRevision,completionKey:null},2);
+  s.listeners.forEach(listener=>listener());
+  expect(s.controller.getSnapshot()).toBe(afterPlay);
+  now.mockReturnValue(1_000+17);
+  s.kernel.observePlayed({transportRevision:s.kernel.getSnapshot().transportRevision,completionKey:null},2.5);
+  s.listeners.forEach(listener=>listener());
+  expect(s.controller.getSnapshot().transport.beat).toBe(2.5);
+  now.mockReturnValue(1_001);
+  s.kernel.observeError({transportRevision:s.kernel.getSnapshot().transportRevision,completionKey:null},'sink');
+  s.listeners.forEach(listener=>listener());
+  expect(s.controller.getSnapshot().transport.phase).toBe('error');
+  now.mockRestore();s.controller.dispose();timelineFrameRateStore.resetForTests();
 });

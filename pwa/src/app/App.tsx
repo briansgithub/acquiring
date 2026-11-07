@@ -9,7 +9,11 @@ import {IntroductionScreen} from '../features/onboarding/IntroductionScreen';
 import {hasCompletedIntroduction,markIntroductionCompleted} from '../features/onboarding/introduction-prefs';
 import {DefaultInstrumentControl} from '../features/settings/DefaultInstrumentControl';
 import {AudioDiagnosticsControl} from '../features/settings/AudioDiagnosticsControl';
+import {TimelineFrameRateControl} from '../features/settings/TimelineFrameRateControl';
+import {PrivacyPolicyLink} from '../features/settings/PrivacyPolicyLink';
 import {audioDiagnostics} from '../features/settings/audio-diagnostics';
+import {APP_VERSION_NAME} from '../features/settings/privacy-policy';
+import {bindTimelineFrameRateWindow} from '../features/settings/timeline-frame-rate';
 import {hydrateAppInstrumentSession,openGuestInstrumentPreferences} from '../features/settings/instrument-session';
 import {useEffect,useState,useSyncExternalStore} from 'react';
 import { CatalogPanel } from '../features/catalog/CatalogPanel';
@@ -20,13 +24,14 @@ export function App() {
   const [introDone,setIntroDone]=useState(()=>hasCompletedIntroduction());
   useEffect(()=>{
     audioDiagnostics.record('app.audioInitialized');
+    const unbindDisplay=bindTimelineFrameRateWindow();
     let db:Awaited<ReturnType<typeof openGuestInstrumentPreferences>>;
     let cancelled=false;
     void openGuestInstrumentPreferences().then(opened=>{
       if(cancelled){opened?.close();return;}
       db=opened;if(opened)void hydrateAppInstrumentSession(opened);
     });
-    return ()=>{cancelled=true;db?.close();};
+    return ()=>{cancelled=true;unbindDisplay();db?.close();};
   },[]);
   const pathname = useSyncExternalStore(subscribeRoute, () => location.pathname, () => '/');
   const queueVersion = useSyncExternalStore(subscribeSongQueue, songQueueVersion, songQueueVersion);
@@ -49,9 +54,15 @@ export function App() {
     {route.kind === 'settings' ? <AppShell title="Settings" onBack={backToLibrary}>
       <CatalogPanel />
       <section className="panel"><h2>Default Instrument</h2><DefaultInstrumentControl /></section>
-      <section className="panel"><h2>Appearance</h2><p>Dark theme</p></section>
-      <section className="panel"><h2>Audio diagnostics</h2><AudioDiagnosticsControl /></section>
       <button className="action" onClick={() => navigate('/help')}>Help</button>
+      <section className="panel"><h2>Appearance</h2><p>Dark theme</p></section>
+      <section className="panel"><h2>Display</h2>
+        <p>Controls visual smoothness, not song tempo.</p>
+        <TimelineFrameRateControl />
+      </section>
+      <section className="panel"><h2>Audio diagnostics</h2><AudioDiagnosticsControl /></section>
+      <p data-app-version="true">Version {APP_VERSION_NAME}</p>
+      <section className="panel"><h2>Privacy</h2><PrivacyPolicyLink /></section>
     </AppShell> : route.kind === 'help' ? <AppShell title="Help" onBack={() => navigate('/settings')}>
       <HelpScreen />
     </AppShell> : route.kind === 'playback' ? <PlaybackScreen key={queued?queue.loadToken:route.slug} slug={route.slug}

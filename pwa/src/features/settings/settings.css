@@ -3,3 +3,5 @@
 .default-instrument__option input { width: 24px; height: 24px; margin: 10px; }
 .audio-diagnostics { display: grid; gap: .5rem; min-width: 0; }
 .audio-diagnostics .action { min-height: 44px; justify-self: start; }
+.display-frame-rate { display: grid; min-width: 0; }
+.privacy-policy { display: inline-flex; align-items: center; text-decoration: none; }
