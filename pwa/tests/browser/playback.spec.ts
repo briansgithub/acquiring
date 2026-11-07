@@ -219,10 +219,12 @@ test('Lock in Major fixes the section context across modulation while preserving
   expect(proof.items[3].pcmHash).toBe(before.items[1].pcmHash);expect(proof.items[3].frames).toBe(before.items[1].frames);
   const position=page.getByRole('slider',{name:'Position',exact:true});await position.focus();await position.press('Home');for(let i=0;i<100;i++)await position.press('ArrowRight');await expect(position).toHaveValue('2');
   await expect(band.getByLabel('Source key',{exact:true})).toHaveText('Song: D Minor');await expect(band.getByLabel('Display key',{exact:true})).toHaveText('Display: C Major');
+  const timeline=page.locator('[data-playback-timeline="visible"]');await expect(timeline).toHaveAttribute('data-timeline-major','true');
   await expect(band.getByRole('button',{name:'Play current chord vi7',exact:true})).toBeVisible();
   const tones=band.getByRole('group',{name:'Chord tones',exact:true}).getByRole('button'),toneLabel=await tones.nth(1).getAttribute('aria-label');
   await tones.nth(1).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(5);const lockedTone=(await audio(page)).items[4].hz;
-  await lock.uncheck();await expect(band.getByRole('button',{name:'Play current chord v7',exact:true})).toBeVisible();expect(await tones.nth(1).getAttribute('aria-label')).toBe(toneLabel);
+  await lock.uncheck();await expect(timeline).toHaveAttribute('data-timeline-major','false');
+  await expect(band.getByRole('button',{name:'Play current chord v7',exact:true})).toBeVisible();expect(await tones.nth(1).getAttribute('aria-label')).toBe(toneLabel);
   await tones.nth(1).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(6);const sourceTone=(await audio(page)).items[5].hz;
   expect(sourceTone/lockedTone).toBeGreaterThan(1.95);expect(sourceTone/lockedTone).toBeLessThan(2.05);
   await lock.check();await page.getByRole('checkbox',{name:'Root only',exact:true}).check();
@@ -263,7 +265,10 @@ test('previous pitch cards preserve event keys, written unison and rest barriers
   const position=page.getByRole('slider',{name:'Position',exact:true});
   async function seek(beat:number){await position.focus();await position.press('Home');for(let i=0;i<10&&Number(await position.inputValue())<beat;i++)await position.press('PageUp');expect(Number(await position.inputValue())).toBeGreaterThanOrEqual(beat);expect(Number(await position.inputValue())).toBeLessThan(beat+1);}
   await page.getByRole('combobox',{name:'Instrument',exact:true}).selectOption('SINE');
-  await expect(melody.getByRole('button',{name:/Play previous melody/})).toHaveCount(0);await seek(2);await expect(melody.getByRole('button',{name:'Play previous melody 1̂',exact:true})).toBeVisible();await expect(melody.getByRole('button',{name:'Play melody 1̂',exact:true})).toBeVisible();await lock.check();
+  await expect(melody.getByRole('button',{name:/Play previous melody/})).toHaveCount(0);await seek(2);await expect(melody.getByRole('button',{name:'Play previous melody 1̂',exact:true})).toBeVisible();await expect(melody.getByRole('button',{name:'Play melody 1̂',exact:true})).toBeVisible();
+  const timeline=page.locator('[data-playback-timeline="visible"]');const unlockedStaff=await timeline.getAttribute('data-timeline-staff');
+  await lock.check();await expect(timeline).toHaveAttribute('data-timeline-major','true');
+  await expect.poll(async()=>timeline.getAttribute('data-timeline-staff')).not.toBe(unlockedStaff);
   const previous=melody.getByRole('button',{name:'Play previous melody 1̂',exact:true}),current=melody.getByRole('button',{name:'Play melody ♭7̂',exact:true});
   await expect(previous).toBeVisible();await expect(current).toBeVisible();expect((await previous.boundingBox())!.y).toBeLessThan((await current.boundingBox())!.y);
   expect((await audio(page)).contexts).toHaveLength(0);await previous.focus();await previous.press('Enter');await expect.poll(async()=>(await audio(page)).items.length).toBe(1);await current.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(2);
@@ -315,6 +320,10 @@ test('visible timeline hides in root-only and singing octave does not start sour
   await page.getByRole('checkbox',{name:'Root only',exact:true}).uncheck();
   await expect(timeline).toBeVisible();
   expect((await audio(page)).contexts).toHaveLength(0);
+  await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+  await expect(page.locator('[data-singing-dock="expanded"]')).toBeVisible();
+  await expect(page.getByRole('switch',{name:'Flip-Flop',exact:true})).toBeDisabled();
+  await expect(page.locator('[data-singing-interval="empty"]')).toBeVisible();
   await page.getByRole('button',{name:'Raise singing octave',exact:true}).click();
   await expect(page.getByRole('status',{name:'Singing octave',exact:true})).toHaveText('+1');
   expect((await audio(page)).contexts).toHaveLength(0);
@@ -325,4 +334,39 @@ test('visible timeline hides in root-only and singing octave does not start sour
   await page.evaluate(()=>{document.documentElement.style.fontSize='32px';scrollTo(0,0);});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   const path=testInfo.outputPath('timeline-octave-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});
+});
+
+test('singing dock loads card targets without scores and octave persists per song',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  await page.getByRole('button',{name:'Play',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','true');
+  await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
+  await expect(page.locator('[data-singing-dock="expanded"]')).toBeVisible();
+  await expect(page.locator('[data-singing-slot="1"]')).not.toHaveText('—');
+  await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+  await page.getByRole('button',{name:'Raise singing octave',exact:true}).click();
+  await expect(page.getByRole('status',{name:'Singing octave',exact:true})).toHaveText('+1');
+  const section=page.getByRole('combobox',{name:'Section',exact:true});
+  if(await section.locator('option').count()>1){
+    await section.selectOption({index:1});
+    await expect(page.getByRole('status',{name:'Singing octave',exact:true})).toHaveText('+1');
+  }
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Playback_Context');
+  await page.locator('[data-song-slug="playback-context"]').click();
+  await page.getByRole('button',{name:'Play song',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+  await expect(page.getByRole('status',{name:'Singing octave',exact:true})).toHaveText('0');
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Detail_Gzip');
+  await page.locator('[data-song-slug="detail-gzip"]').click();
+  await page.getByRole('button',{name:'Play song',exact:true}).click();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+  await expect.poll(async()=>page.getByRole('status',{name:'Singing octave',exact:true}).textContent()).toBe('+1');
+  const image=testInfo.outputPath('singing-dock-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });

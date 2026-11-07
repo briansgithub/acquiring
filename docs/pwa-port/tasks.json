@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-11-07T09:35:00+00:00",
+  "updated": "2026-11-07T09:45:00+00:00",
   "implementationAuthorized": true,
   "currentStage": "playback_singing_priority",
   "ownerPriority": {
@@ -1349,8 +1349,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Visible Canvas timeline + local singing-octave chrome landed (partial). Defaults/position memory/inertia/Roman/scores remain.",
-      "nextAction": "Checkpoint Canvas+octave chrome. Next: T06 songOctaveOffsets persistence — do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted. Canvas timeline restaffs on Lock in Major. Defaults/position memory/inertia/Roman/scores remain.",
+      "nextAction": "T12 defaults / route-position memory next. Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
         {
           "command": "python pwa/src/features/playback/fixtures/generate-native.py; node node_modules/vitest/vitest.mjs run src/features/playback src/audio/transport/timeline-builder.test.ts; node C:/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js run build (node frompwa via rootguard)",
@@ -1899,8 +1899,8 @@
           "pwa/src/features/playback/WORKLOG.md"
         ],
         "scope": "Visible Canvas-2D timeline from landed layout math plus thin local singing-octave chrome. Hidden in root-only. No inertia/tap/Roman/scores. Octave does not transpose source. Lock-in-Major not lifted into timeline (gap).",
-        "status": "local validation PASS typecheck-001 + check-001 978 unit/74 files + 1 parity + types + shell d5331721eae9; browser-001 python ENOENT; browser-002 missing bundled chromium; browser-003 1 Chrome PASS; browser-004 12/12 playback.spec PASS 1.3m",
-        "nextAction": "Named checkpoint then T06 songOctaveOffsets persistence. Do not polish inertia/Roman. T09 still required for scores. Pixel ADB only if a specific later test needs coordinator relay.",
+        "status": "accepted checkpoint 430a6430; later restaff/persist/dock assignment supersedes the Lock-in-Major gap.",
+        "nextAction": "Do not recapture this Canvas slice. Restaff/persist/dock landed later.",
         "testedSha256": {
           "pwa/src/features/playback/PlaybackTimeline.tsx": "ee4733353d076dc3ffd191f2c04944b73e433ecb8c0ae33dc5087d958126149b",
           "pwa/src/features/playback/PlaybackScreen.tsx": "0351ccd892393387ceaea3d94a1b69b5318d49651aa1e1483f9bec71d78f093a",
@@ -1927,8 +1927,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
-      "slice": "Pure singing octave MIDI kernel accepted. Thin local −/+ chrome is on PlaybackScreen (does not transpose source). Persistence/dock/mic remain.",
-      "nextAction": "Song-scoped T06 songOctaveOffsets persistence next. Do not fake scores. T09 remains required for scoring/mic. Do not start Aural/T15 remainder.",
+      "slice": "Octave kernel + T06 songOctaveOffsets session + dock chrome without scores. Flip-Flop/listen/auto-listen/mic remain T09.",
+      "nextAction": "Do not fake scores. T09 remains required for scoring/mic. Next independent T12 work is defaults/position memory. Do not start Aural/T15 remainder.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -1967,6 +1967,35 @@
           "pwa/src/features/singing/singing-octave.ts": "257eb513a0725e5b62a32b64b9975ea6748e884a3e8479adb4c7a3b447effffb",
           "pwa/src/features/singing/singing-octave.test.ts": "41eaf0a1ffc734d9798a1f7ded2514b74af16fffafbdf593060988fe06466611",
           "pwa/src/features/singing/SINGING_WORKLOG.md": "2d925a7a562e4aa5a47e66b9bf5b6903489da5c160cea75b1c52ae22e087cac0"
+        }
+      },
+      "persistDockAssignment": {
+        "owner": "coordinator (cursor-grok /workspace)",
+        "at": "2026-11-07T09:45:00+00:00",
+        "baseCommit": "430a6430dd1af4334ac6e91ac9eb82497891a5b0",
+        "branch": "codex/pwa-continuation",
+        "ownedPaths": [
+          "pwa/src/features/singing/song-octave-session.ts",
+          "pwa/src/features/singing/song-octave-session.test.ts",
+          "pwa/src/features/singing/SingingDock.tsx",
+          "pwa/src/features/singing/singing.css",
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/features/playback/PlaybackCards.tsx",
+          "pwa/src/features/playback/PlaybackTimeline.tsx",
+          "pwa/tests/browser/playback.spec.ts"
+        ],
+        "scope": "Native useRelativeIonianContext restaff is required parity; lift Lock in Major into timeline. SongOctaveOffsetViewModel + T06 songOctaveOffsets. Dock chrome without mic/scores. Card double-click assigns slots and pauses source.",
+        "status": "typecheck-001 PASS; check-001 985 unit/75 files + 1 parity + shell 3337857970b3; browser-001 staff identity FAIL Detail_Gzip (cycle1 test-only); browser-002 restaff Playback_Context PASS; browser-003 13/13 playback.spec PASS 1.5m",
+        "nextAction": "T12 defaults/route-position memory. Do not fake scores or polish inertia.",
+        "testedSha256": {
+          "pwa/src/features/singing/song-octave-session.ts": "294ac0f13559cce4bf0de74f2c82e735a37128866254ee7fbd67cd7d4346ea8a",
+          "pwa/src/features/singing/song-octave-session.test.ts": "43207b086bc53f7152e3eb404fb77043678c24101fc94412b9319af4e11f667a",
+          "pwa/src/features/singing/SingingDock.tsx": "2690981a062b3a7856dc3611d9361851c6697ab57c4e7adac7221924ef0bb4af",
+          "pwa/src/features/singing/singing.css": "972eddf4f582af99308cf05031e615079165dbda1b2bbbfb055c8bada57ed449",
+          "pwa/src/features/playback/PlaybackScreen.tsx": "edeeb5188a11256b6bd72305fec97cbbec136ff03213d81306ff8766cd8a5a3a",
+          "pwa/src/features/playback/PlaybackCards.tsx": "68fdc0a74d1f831f334d7e7865136899dbe1a3dbfeaa9795595b4e26a1bebdd5",
+          "pwa/src/features/playback/PlaybackTimeline.tsx": "bdd8786daf01a999c524abb4192c788467d1307ac95adc77df10a583465ea6e9",
+          "pwa/tests/browser/playback.spec.ts": "1c01e8c6f6efd2490b253c616c002330cf97cdbbd2dba9c85366ab8571f3ea83"
         }
       }
     },

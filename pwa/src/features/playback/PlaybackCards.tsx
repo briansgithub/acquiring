@@ -1,6 +1,7 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {ExtractedSection} from '../../contracts';
 import type {SpelledPitch} from '../../domain/music';
+import {singingTargetNote,singingTargetRequest,type SingingTargetRequest} from '../singing/singing-octave';
 import {getKeys,keyAtBeat} from '../../domain/data';
 import {doubleOrUndefined} from '../../domain/data/primitives';
 import {canonicalScaleName,getChordNotes,getDegreeLabelFromSpelling,getMidiNote,getRelativeIonianRomanSymbol,interpret,ionianContextDegreeLabel,ionianContextPreviewAudioNote,relativeIonianKey,resolveChordRoot,resolveScaleDegreePitch} from '../../domain/music';
@@ -21,9 +22,11 @@ function cardDuration(duration:number,bpm:number):number|null {
 /** First current-card band. Native source pitches stay independent of manual audio transpose.
  * Full interval/relative-context/singing/timeline controls remain separate slices.
  */
-export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{section:ExtractedSection;beat:number;baseBpm:number;settings:PlaybackSettings;stopPreview:{current:(()=>void)|null}}){
+export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,majorLocked,onMajorLockedChange,onSing}:{
+  section:ExtractedSection;beat:number;baseBpm:number;settings:PlaybackSettings;stopPreview:{current:(()=>void)|null};
+  majorLocked:boolean;onMajorLockedChange:(locked:boolean)=>void;onSing:(request:SingingTargetRequest)=>void;
+}){
   const model=useMemo(()=>{const prepared=preparePlaybackSection(section);return {index:new PlaybackActiveEventIndex(section,prepared.melody),keys:getKeys(section)};},[section]);
-  const [majorLocked,setMajorLocked]=useState(false);
   const ionianKey=useMemo(()=>relativeIonianKey(keyAtBeat(model.keys,1)),[model]);
   const owner=useRef<PreviewOwner|null>(null);
   const [preview,setPreview]=useState<PreviewState>({phase:'idle',revision:0,requestId:null});
@@ -78,7 +81,7 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
   const scale=key.scale.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,first=>first.toLocaleUpperCase());
   return <section className="panel playback-cards" aria-label="At this beat" data-card-preview-phase={preview.phase}>
     <h2>At this beat</h2>
-    <label className="playback-check"><input type="checkbox" checked={majorLocked} onChange={event=>setMajorLocked(event.target.checked)}/>Lock in Major</label>
+    <label className="playback-check"><input type="checkbox" checked={majorLocked} onChange={event=>onMajorLockedChange(event.target.checked)}/>Lock in Major</label>
     {majorLocked&&<p aria-label="Display key">Display: {ionianKey.tonic} Major</p>}
     <p aria-label="Source key">{majorLocked?'Song: ':null}{key.tonic} {scale}</p>
     <div role="group" aria-label="Home references" className="playback-home-references">
@@ -90,10 +93,14 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
         {showsRootOnlyPrevious(root.previousIntervalPitch)&&<button className="playback-card" aria-label={'Play previous root '+(majorLocked?ionianContextDegreeLabel(root.previousIntervalPitch!,ionianKey):root.previousDegreeLabel)} onClick={()=>play('previous-root',[root.previousIntervalPitch!.toAudioNoteNumber()])}>
           <ScaleDegree label={majorLocked?ionianContextDegreeLabel(root.previousIntervalPitch!,ionianKey):root.previousDegreeLabel!} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/><span>Previous</span>
         </button>}
-        <button className="playback-card" aria-label={'Play current root '+rootLabel} onClick={()=>play('root',[rootMidi!])}>
+        <button className="playback-card" aria-label={'Play current root '+rootLabel} onClick={()=>play('root',[rootMidi!])}
+          onDoubleClick={()=>{if(rootMidi!=null)onSing(singingTargetRequest(singingTargetNote(rootMidi,rootLabel),null,0));}}>
           <ScaleDegree label={rootLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>{showsRootOnlyPrevious(root.previousIntervalPitch)&&<span>Current</span>}
         </button>
-        {root.previousIntervalPitch&&root.interval&&showsRootOnlyInterval(root.previousIntervalPitch,root.currentIntervalPitch,root.interval)&&<button className="playback-card playback-interval-card" aria-label={'Play root interval '+root.interval.spokenName} onClick={()=>playInterval('root-interval',root.previousIntervalPitch!,root.currentIntervalPitch)}>
+        {root.previousIntervalPitch&&root.interval&&showsRootOnlyInterval(root.previousIntervalPitch,root.currentIntervalPitch,root.interval)&&<button className="playback-card playback-interval-card" aria-label={'Play root interval '+root.interval.spokenName} onClick={()=>playInterval('root-interval',root.previousIntervalPitch!,root.currentIntervalPitch)}
+          onDoubleClick={()=>onSing(singingTargetRequest(
+            singingTargetNote(root.previousIntervalPitch!.toAudioNoteNumber(),majorLocked?ionianContextDegreeLabel(root.previousIntervalPitch!,ionianKey):root.previousDegreeLabel??''),
+            singingTargetNote(root.currentIntervalPitch.toAudioNoteNumber(),rootLabel),0))}>
           <span className="playback-interval-card__symbol">{root.interval.shorthand}</span><span>Interval</span>
         </button>}
       </div>:<p>No sounding root</p>}
@@ -110,13 +117,18 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview}:{secti
         </button>):null}
       </div></div>
       <div role="group" aria-label="Melody cards"><h3>Current melody</h3>{melody?melodyMode==='INTERVAL'?<div className="playback-melody-cards" data-melody-card-mode="INTERVAL">
-        {melodyCards.map(card=>{const label=card.role==='PREVIOUS'?'Play previous melody '+card.scaleDegreeLabel:'Play melody '+card.scaleDegreeLabel;const midi=card.pitch.toAudioNoteNumber();return <button key={card.role} className={'playback-card playback-melody-card playback-melody-card--'+card.verticalPosition.toLowerCase()} data-card-role={card.role.toLowerCase()} data-vertical-position={card.verticalPosition} aria-label={label} onClick={()=>play(card.role==='PREVIOUS'?'previous-melody':'melody',[midi])}>
+        {melodyCards.map(card=>{const label=card.role==='PREVIOUS'?'Play previous melody '+card.scaleDegreeLabel:'Play melody '+card.scaleDegreeLabel;const midi=card.pitch.toAudioNoteNumber();return <button key={card.role} className={'playback-card playback-melody-card playback-melody-card--'+card.verticalPosition.toLowerCase()} data-card-role={card.role.toLowerCase()} data-vertical-position={card.verticalPosition} aria-label={label} onClick={()=>play(card.role==='PREVIOUS'?'previous-melody':'melody',[midi])}
+          onDoubleClick={()=>card.role!=='PREVIOUS'&&onSing(singingTargetRequest(singingTargetNote(midi,card.scaleDegreeLabel),null,0))}>
           <ScaleDegree label={card.scaleDegreeLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/><span>{card.role==='PREVIOUS'?'Previous':'Current'}</span>
         </button>;})}
-        {melodyInterval&&<button className="playback-card playback-interval-card" aria-label={'Play melody interval '+melodyInterval.interval.spokenName} onClick={()=>playInterval('melody-interval',melodyInterval.previous,melodyInterval.current)}>
+        {melodyInterval&&<button className="playback-card playback-interval-card" aria-label={'Play melody interval '+melodyInterval.interval.spokenName} onClick={()=>playInterval('melody-interval',melodyInterval.previous,melodyInterval.current)}
+          onDoubleClick={()=>onSing(singingTargetRequest(
+            singingTargetNote(melodyInterval.previous.toAudioNoteNumber(),melodyCards.find(card=>card.role==='PREVIOUS')?.scaleDegreeLabel??melodyInterval.previousDegreeLabel),
+            singingTargetNote(melodyInterval.current.toAudioNoteNumber(),melodyCards.find(card=>card.role==='CURRENT')?.scaleDegreeLabel??melodyInterval.currentDegreeLabel),0))}>
           <span className="playback-interval-card__symbol">{melodyInterval.interval.shorthand}</span><span>Interval</span>
         </button>}
-      </div>:<div className="playback-melody-cards" data-melody-card-mode="SINGLE"><button className="playback-card playback-melody-card playback-melody-card--center" data-card-role="current" data-vertical-position={melodyCurrentCardVerticalPosition(melodyMode)} aria-label={'Play melody '+melodyLabel} onClick={()=>play('melody',[melodyMidi!])}>
+      </div>:<div className="playback-melody-cards" data-melody-card-mode="SINGLE"><button className="playback-card playback-melody-card playback-melody-card--center" data-card-role="current" data-vertical-position={melodyCurrentCardVerticalPosition(melodyMode)} aria-label={'Play melody '+melodyLabel} onClick={()=>play('melody',[melodyMidi!])}
+        onDoubleClick={()=>{if(melodyMidi!=null)onSing(singingTargetRequest(singingTargetNote(melodyMidi,melodyLabel),null,0));}}>
         <ScaleDegree label={melodyLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>
       </button></div>:<p>No sounding melody</p>}</div>
     </>}

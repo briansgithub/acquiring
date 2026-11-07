@@ -1,0 +1,9 @@
+.singing-dock { margin: .75rem 0; min-width: 0; }
+.singing-dock__handle { min-width: 44px; min-height: 44px; width: 100%; }
+.singing-dock__toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .5rem; }
+.singing-dock__flipflop { margin: 0; }
+.singing-dock .playback-octave { margin: 0; }
+.singing-dock__slots { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+.singing-dock__slot,
+.singing-dock__interval { flex: 1 1 6rem; min-height: 44px; min-width: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #a6c8ff; border-radius: .75rem; background: #273449; overflow-wrap: anywhere; padding: .5rem; }
+.singing-dock__interval output { font-size: 1.5rem; line-height: 1.2; opacity: .4; }

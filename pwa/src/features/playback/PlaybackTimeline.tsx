@@ -66,6 +66,8 @@ export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false}:{
       data-playback-timeline="visible"
       data-timeline-melody={String(melody.length)}
       data-timeline-chords={String(chords.length)}
+      data-timeline-major={majorLocked?'true':'false'}
+      data-timeline-staff={melody.map(note=>note.staffDegree).join(',')}
       data-timeline-playhead={layout?String(layout.playheadX):''}
       height={TIMELINE_HEIGHT_PX}/>
   </div>;

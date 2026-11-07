@@ -1,7 +1,10 @@
 import {PlaybackCards} from './PlaybackCards';
 import {PlaybackTimeline} from './PlaybackTimeline';
-import {clampSingingOctaveOffset,singingOctaveOffsetLabel} from '../singing/singing-octave';
-import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
+import {SingingDock} from '../singing/SingingDock';
+import {openGuestSongOctaveOffsetStore,SongOctaveOffsetSession} from '../singing/song-octave-session';
+import type {UserDatabase} from '../../storage/user';
+import {singingTargetRequest,type SingingTargetRequest} from '../singing/singing-octave';
+import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
 import {INSTRUMENTS,Waveform} from '../../audio/synth';
 import type {PlaybackSettings} from './controller';
 import {PLAYBACK_ARPEGGIOS,SectionPlaybackController} from './controller';
@@ -25,8 +28,12 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
   const [detailController,setDetailController]=useState(()=>new SongDetailController(slug));
   const detailState=useSyncExternalStore(detailController.subscribe,detailController.getSnapshot,detailController.getSnapshot);
   const [sectionId,setSectionId]=useState<string|null>(null);
-  const [octaveOffset,setOctaveOffset]=useState(0);
-  useEffect(()=>{setOctaveOffset(0);},[slug]);
+  const [majorLocked,setMajorLocked]=useState(false);
+  const [dockExpanded,setDockExpanded]=useState(false);
+  const [singingTarget,setSingingTarget]=useState<SingingTargetRequest|null>(null);
+  const singingRequestId=useRef(0);
+  const octaveSession=useMemo(()=>new SongOctaveOffsetSession(),[]);
+  const octaveOffset=useSyncExternalStore(octaveSession.subscribe,octaveSession.getSnapshot,octaveSession.getSnapshot);
   const [playback,setPlayback]=useState<SectionPlaybackController|null>(null);
   const [playbackError,setPlaybackError]=useState<string|null>(null);
   const playbackOwner=useRef<SectionPlaybackController|null>(null);
@@ -55,6 +62,22 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
 
   const details=detailState.details;
   const selected=details?.sections.find(([id])=>id===sectionId)??details?.sections[0]??null;
+  const sectionKey=selected?.[0]??'';
+
+  useEffect(()=>{
+    let closed=false;
+    let db:UserDatabase|undefined;
+    void openGuestSongOctaveOffsetStore().then(opened=>{
+      if(closed){opened?.db.close();return;}
+      if(!opened)return;
+      db=opened.db;
+      octaveSession.attachStore(opened.store);
+    });
+    return ()=>{closed=true;octaveSession.attachStore(null);db?.close();};
+  },[octaveSession]);
+
+  useEffect(()=>{void octaveSession.enterSession(slug,`${slug}:${sectionKey}`);},[octaveSession,slug,sectionKey]);
+  useEffect(()=>{setMajorLocked(false);setDockExpanded(false);setSingingTarget(null);},[slug]);
 
   useEffect(()=>{
     if(!details||details.sections.length===0)return;
@@ -186,16 +209,12 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
           <p role="status" aria-live="polite" className="playback-status">{status}</p>
         </section>
         {playbackError&&<section className="panel"><p role="alert">{playbackError}</p></section>}
-        {playback&&!playbackError&&<PlaybackCards section={selected[1]} beat={beat} baseBpm={playbackState.baseBpm} settings={settings} stopPreview={cardPreviewStop}/>}
-        {playback&&!playbackError&&<PlaybackTimeline section={selected[1]} beat={beat} rootOnly={settings.rootOnly}/>}
-        <section className="panel playback-octave" aria-label="Singing octave">
-          <button type="button" className="action" aria-label="Lower singing octave" disabled={octaveOffset<=-2}
-            onClick={()=>setOctaveOffset(value=>clampSingingOctaveOffset(value-1))}>−</button>
-          <output role="status" aria-label="Singing octave">{singingOctaveOffsetLabel(octaveOffset)}</output>
-          <button type="button" className="action" aria-label="Raise singing octave" disabled={octaveOffset>=3}
-            onClick={()=>setOctaveOffset(value=>clampSingingOctaveOffset(value+1))}>+</button>
-          <span>Singing octave does not transpose source playback.</span>
-        </section>
+        {playback&&!playbackError&&<PlaybackCards section={selected[1]} beat={beat} baseBpm={playbackState.baseBpm} settings={settings} stopPreview={cardPreviewStop}
+          majorLocked={majorLocked} onMajorLockedChange={setMajorLocked}
+          onSing={request=>{cardPreviewStop.current?.();playback.pause();singingRequestId.current+=1;setSingingTarget(singingTargetRequest(request.first,request.second,singingRequestId.current));setDockExpanded(true);}}/>}
+        {playback&&!playbackError&&<PlaybackTimeline section={selected[1]} beat={beat} rootOnly={settings.rootOnly} majorLocked={majorLocked}/>}
+        <SingingDock octaveOffset={octaveOffset} onOctaveOffsetChange={offset=>octaveSession.updateOctaveOffset(offset)}
+          target={singingTarget} expanded={dockExpanded} onExpandedChange={setDockExpanded}/>
         <section className="panel playback-settings" aria-label="Playback settings">
           <label className="playback-field">Tempo (%)
             <input aria-label="Tempo (%)" type="range" min="0" max="200" step="1" value={settings.tempoPercent} disabled={!playback}
