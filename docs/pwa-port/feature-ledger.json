@@ -3,7 +3,7 @@
   "nativeAuthority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
   "pwaInspectionHead": "7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5",
   "scope": "Initial docs-only breadth-first feature discovery; feature rows are bounded groups, not a total app feature count. Later bounded implementation updates may pin individual PWA rows to a newer inspectionHead without advancing other frozen rows or claiming full acceptance.",
-  "newGapMeaning": "new_current_gap means a concrete current-PWA omission newly itemized here, not an Android feature absent from all prior history inventory. Broad T12/T13/T21 packages already exist.",
+  "newGapMeaning": "new_current_gap records a concrete PWA omission newly itemized by the initial audit, not an Android feature absent from prior history. This discovery classification persists after a later bounded implementation; current PWA status/inspectionHead show progress. Broad T12/T13/T21 packages already exist.",
   "method": "Reverified the exact 262-commit android/contracts full-history inventory and 575 prior evidence objects; reviewed scoped functional excerpts from 50 selected first-parent patches plus surviving native/PWA entry points. See FEATURE_AUDIT_COVERAGE.json. Not exhaustive line-by-line review.",
   "rows": [
     {
@@ -705,12 +705,18 @@
         "historicalDelta": "Spells chromatic singing note labels using the song modal key's relative-major signature, supports sharp/flat preference and updates interval popup context."
       },
       "pwa": {
-        "status": "missing",
+        "status": "implemented",
         "paths": [
+          "pwa/src/domain/music/relative-ionian.ts",
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/features/singing/SingingDock.tsx",
+          "pwa/src/features/singing/SingingSlot.tsx",
           "pwa/src/features/singing/singing-tape.ts",
-          "pwa/src/features/singing/SingingDock.tsx"
+          "pwa/src/features/singing/singing-tape.test.ts",
+          "pwa/tests/browser/playback.spec.ts"
         ],
-        "inspection": "Native noteNameAccidentalPreference flows to tape fromMidi; PWA tapeNoteLabel uses default fromMidi with no key preference. Captured-slot spellRelative is a different contract, not claimed missing."
+        "inspection": "Bounded product integration at 503cfd2dda5a22fd9d8d7988727acb36d64c8a23: selected section -> existing first-chronological-key relative-major preference -> both tapes; exit snapshots freeze preference. Default flats retained. Captured raw MIDI/relative spelling/Hz/cents, target transpose/octave and capture ownership are unchanged. FIRST PASS16focused,1217unit+1parity+strict types/build;9browser pass/1original trusted-tab skip. SYNTHETIC A#4/Bb4 product test proves both sharp tapes vs captured B♭4, no per-beat/display/transpose/octave signature changes, new section flat labels and no capture from label changes. Physical mic/Pixel and full T13 remain unaccepted.",
+        "inspectionHead": "503cfd2dda5a22fd9d8d7988727acb36d64c8a23"
       },
       "tracking": {
         "tasks": [
@@ -719,7 +725,7 @@
         ],
         "classification": "new_current_gap"
       },
-      "acceptanceRequired": "NEW tape-label gap: sharp/flat/no-signature/modal keys and section changes; preserve measured Hz, captured relative spelling, octave and transpose semantics.",
+      "acceptanceRequired": "Keep native first-key/default/relative-major and tape geometry fixtures plus original capture/policy/exit/owner assertions. Bounded desktop SYNTHETIC product label proof passed; this is not physical mic/trusted-tab/Safari/BFCache/Pixel evidence, no native motion/density acceptance. N01 root-only and full T13 remain open.",
       "priority": "primary",
       "dependencies": [
         "T03",
