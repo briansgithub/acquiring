@@ -110,6 +110,14 @@ export class SingingMicrophoneSession {
     this.emit();
   }
 
+  /** Native clearCollapsedToolState: stop mic + drop slots/target. Target lives in PlaybackScreen. */
+  clearCollapsedToolState(): void {
+    this.stop();
+    this.slot1 = null;
+    this.slot2 = null;
+    this.emit();
+  }
+
   setFlipFlop(enabled: boolean): void {
     this.lease.stop();
     if (!enabled) {

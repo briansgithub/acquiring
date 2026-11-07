@@ -2,7 +2,7 @@ import {useRef} from 'react';
 import {effectiveTargetMidi,type SingingTargetNote} from './singing-octave';
 import {formatSungIntervalCents,type SingingSlotPitch} from './singing-microphone';
 import {displayedSlotData,pitchAccuracyBand,pitchAccuracyColor} from './singing-score';
-import {tapeOctaveLabel,tapeRows} from './singing-tape';
+import {TAPE_TICK_PX,TAPE_TICK_STROKE_PX,tapeOctaveLabel,tapeRows} from './singing-tape';
 
 export const SLOT_TAP_DELAY_MS = 300;
 
@@ -49,7 +49,13 @@ function SingingTape({midi,cents,recording}:{midi:number;cents:number;recording:
     <span className="singing-dock__tape-center" aria-hidden="true"/>
     {tapeRows(midi).map((row)=>
       <span key={row.midi} className="singing-dock__tape-row" data-tape-center={row.center?'true':undefined}
-        style={{transform:`translate(-50%, calc(-50% + ${-row.offsetPx}px))`}}>{row.label}</span>)}
+        style={{transform:`translateY(calc(-50% + ${-row.offsetPx}px))`}}>
+        <span className="singing-dock__tape-tick singing-dock__tape-tick--left" data-tape-tick="left"
+          style={{width:TAPE_TICK_PX,height:TAPE_TICK_STROKE_PX}} aria-hidden="true"/>
+        <span className="singing-dock__tape-label">{row.label}</span>
+        <span className="singing-dock__tape-tick singing-dock__tape-tick--right" data-tape-tick="right"
+          style={{width:TAPE_TICK_PX,height:TAPE_TICK_STROKE_PX}} aria-hidden="true"/>
+      </span>)}
     <span className="singing-dock__tape-oct">{tapeOctaveLabel(midi)}</span>
   </div>;
 }

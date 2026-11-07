@@ -1,6 +1,6 @@
 import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
 import type {BrowserMicrophoneCapture, ExclusivePitchSource} from '../../audio/capture';
-import {PreviewOwner} from '../../audio/transport';
+import type {AudioPreviewOwner} from '../../audio/transport';
 import {DEFAULT_WAVEFORM,type Waveform} from '../../audio/synth';
 import {OCTAVE_OFFSET_MAX,OCTAVE_OFFSET_MIN,clampSingingOctaveOffset,effectiveTargetMidi,singingOctaveOffsetLabel,type SingingTargetRequest} from './singing-octave';
 import {AUTO_LISTEN_MS,SingingMicrophoneSession,formatSungIntervalCents,sungInterval} from './singing-microphone';
@@ -13,8 +13,10 @@ import './singing.css';
  * slot-1 listening after AUTO_LISTEN_MS (800), including the first permission prompt.
  * Collapse/release/navigation cancel; capture generation serializes in-flight getUserMedia.
  * Visible listening + Stop. No fabricated cents. AudioWorklet + linear resample; not Pixel.
+ * Native PREVIEW is one AudioEngine channel: borrow the cards PreviewOwner, do not construct a second.
+ * User collapse matches clearCollapsedToolState immediately — PWA has no 300ms shrink animation.
  */
-export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0,capture,source,waveform=DEFAULT_WAVEFORM,stopCardPreview}:{
+export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0,capture,source,waveform=DEFAULT_WAVEFORM,previewOwner}:{
   octaveOffset:number;
   onOctaveOffsetChange:(offset:number)=>void;
   target:SingingTargetRequest|null;
@@ -24,7 +26,7 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   capture?:BrowserMicrophoneCapture;
   source?:ExclusivePitchSource;
   waveform?:Waveform;
-  stopCardPreview?:()=>void;
+  previewOwner?:{current:AudioPreviewOwner|null};
 }){
   const session=useMemo(()=>new SingingMicrophoneSession({capture,source}),[capture,source]);
   const micVersion=useSyncExternalStore(session.subscribe,()=>session.version,()=>session.version);
@@ -33,17 +35,12 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   const expandedRef=useRef(expanded);
   const targetRef=useRef(target);
   const midiRef=useRef({transpose,octaveOffset});
-  const preview=useRef<PreviewOwner|null>(null);
   const previewGen=useRef(0);
   expandedRef.current=expanded;
   targetRef.current=target;
   midiRef.current={transpose,octaveOffset};
   useEffect(()=>()=>session.release(),[session]);
-  useEffect(()=>{
-    const owner=new PreviewOwner();preview.current=owner;
-    return()=>{preview.current=null;previewGen.current+=1;void owner.release();};
-  },[]);
-  useEffect(()=>{if(!expanded)session.stop();},[expanded,session]);
+  useEffect(()=>{if(!expanded)session.clearCollapsedToolState();},[expanded,session]);
   useEffect(()=>{
     if(mic.action.kind!=='idle'&&mic.action.kind!=='flipflop-rest'&&!session.ownsMicrophone) session.tick();
   });
@@ -80,8 +77,7 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   void nowTick;void micVersion;
   function playPreview(id:string,freqs:readonly number[]){
     previewGen.current+=1;
-    stopCardPreview?.();
-    void preview.current?.play(id,{freqs:[...freqs],durationMs:1000,waveform,arpeggiate:false});
+    void previewOwner?.current?.play(id,{freqs:[...freqs],durationMs:1000,waveform,arpeggiate:false});
   }
   function onTap(slot:1|2){
     const freqs=capturedPreviewFreqs(slot===1?mic.slot1:mic.slot2);
@@ -98,11 +94,10 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
     const stages=intervalPreviewStages(mic.slot1,mic.slot2);
     if(!stages)return;
     const gen=++previewGen.current;
-    stopCardPreview?.();
     void (async()=>{
       for(let i=0;i<stages.length;i++){
         if(gen!==previewGen.current)return;
-        void preview.current?.play(`singing-interval-${i}`,{freqs:[...stages[i]!],durationMs:1000,waveform,arpeggiate:false});
+        void previewOwner?.current?.play(`singing-interval-${i}`,{freqs:[...stages[i]!],durationMs:1000,waveform,arpeggiate:false});
         if(i<stages.length-1) await new Promise((resolve)=>window.setTimeout(resolve,1000));
       }
     })();
@@ -110,6 +105,7 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   return <section className="panel singing-dock" data-singing-dock={expanded?'expanded':'collapsed'}
     data-mic-state={mic.action.kind} data-mic-opted-in={mic.optedIn?'true':'false'}
     data-mic-owns={mic.ownsMicrophone?'true':'false'}
+    data-preview-owner={previewOwner?'shared':'none'}
     aria-label="Interval Singing Tool">
     <button type="button" className="singing-dock__handle action" aria-expanded={expanded}
       aria-label={expanded?'Collapse humming tool':'Expand Humming Tool'}

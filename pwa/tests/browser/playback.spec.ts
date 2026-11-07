@@ -363,6 +363,8 @@ test('singing dock loads card targets without scores and octave persists per son
   await expect(page.locator('[data-singing-slot="1"] [data-singing-cents]')).toHaveText('+0¢');
   await expect(page.locator('[data-singing-slot="1"] [data-singing-cents]')).toHaveAttribute('data-singing-cents-source','target');
   await expect(page.locator('[data-singing-slot="1"] [data-singing-tape]')).toBeVisible();
+  await expect(page.locator('[data-singing-slot="1"] [data-tape-tick="left"]').first()).toBeVisible();
+  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-preview-owner','shared');
   await expect(page.locator('[data-singing-slot="2"] [data-singing-prompt="record"]')).toHaveText('Double tap to record');
   await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
   await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
@@ -709,7 +711,14 @@ test.describe('policy A first-listen (Playwright fake/silent getUserMedia; not S
     await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
     await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toHaveCount(0);
     await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+    await expect(page.locator('[data-singing-dock="expanded"]')).toBeVisible();
     await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+    await expect(page.locator('[data-singing-slot="1"] [data-singing-prompt="record"]')).toBeVisible();
+    await expect(page.locator('[data-singing-slot="1"] [data-singing-cents]')).toHaveCount(0);
+    await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+    await page.waitForTimeout(900);
+    await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+    await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toHaveCount(0);
   });
 
   test('prior explicit slot listen still starts immediately after Stop',async({page,context})=>{

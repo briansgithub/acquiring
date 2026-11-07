@@ -195,4 +195,23 @@ describe('SingingMicrophoneSession listen/Flip-Flop', () => {
     expect(session.action.kind).toBe('idle');
     session.release();
   });
+
+  it('clearCollapsedToolState stops listen and drops captured pitches', () => {
+    const now = { t: 0 };
+    const session = sessionAt(now);
+    session.listen(1, 60);
+    let hops = 0;
+    for (let i = 0; i < 16; i++) {
+      session.capture.pushAudio(sine(440, 512, hops), PITCH_SAMPLE_RATE, now.t);
+      hops += 512;
+    }
+    session.tick(now.t);
+    expect(session.slot1).not.toBeNull();
+    expect(session.action.kind).toBe('listening');
+    session.clearCollapsedToolState();
+    expect(session.slot1).toBeNull();
+    expect(session.slot2).toBeNull();
+    expect(session.action.kind).toBe('idle');
+    session.release();
+  });
 });

@@ -6,6 +6,9 @@ import { SpelledPitch } from '../../domain/music';
 
 export const TAPE_NOTE_HEIGHT_PX = 24;
 export const TAPE_RANGE = 5;
+/** Native 10.dp tick, 1.dp stroke. CSS px = dp. */
+export const TAPE_TICK_PX = 10;
+export const TAPE_TICK_STROKE_PX = 1;
 
 export interface TapeRow {
   readonly midi: number;

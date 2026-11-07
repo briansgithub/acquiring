@@ -141,3 +141,17 @@ test('SYNTHETIC empty-slot Record writes nearest cents; new card request clears 
   await expect(page.locator('[data-singing-slot="2"] [data-singing-prompt="record"]')).toBeVisible();
   await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
 });
+
+test('SYNTHETIC captured slot tap shares the cards PREVIEW owner (not a second PreviewOwner; not Pixel)',async({page,context})=>{
+  await context.grantPermissions(['microphone']);
+  await installSyntheticOscillatorCapture(page);
+  await openPlayback(page);
+  await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+  const slot1=page.locator('[data-singing-slot="1"] [data-singing-cents]');
+  await expect.poll(async()=>slot1.getAttribute('data-singing-cents-source'),{timeout:8_000}).toBe('captured');
+  await page.getByRole('button',{name:'Stop microphone',exact:true}).click();
+  await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-preview-owner','shared');
+  await expect(page.locator('[data-card-preview-phase]')).toHaveAttribute('data-card-preview-phase','idle');
+  await page.locator('[data-singing-slot="1"]').click();
+  await expect.poll(async()=>page.locator('[data-card-preview-phase]').getAttribute('data-card-preview-phase'),{timeout:2_000}).toMatch(/preparing|playing/);
+});

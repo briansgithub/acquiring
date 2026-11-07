@@ -1524,7 +1524,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
       "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, live drag/scrub, chord-lane Roman, queued changeSection, opt-in Pitch monitoring overlay, shared exclusive mic, real page.mouse drag, live halo/marker, emulated browser touch, and SYNTHETIC product banked-score Chrome landed. Synthetic PointerEvent is handler-only. Inertia coast remains polish.",
-      "nextAction": "Do not polish inertia/tween this pass. Singing Record/preview/tape landed. Actual CI 2c0d7de6 99/1/2 Settings Back 110 only. Next Artists chip then leftover singing collapse-clear. Aural/T15 last. Library Settings Back excluded.",
+      "nextAction": "Do not polish inertia/tween this pass. Singing collapse-clear/shared PREVIEW/ticks landed. Actual CI ba24c4d1 101/1/2 Settings Back 110 only. Next Artists chip. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
         {
           "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-drag/browser-fix2",
@@ -2253,8 +2253,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
-      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt + shared PLAYBACK_PERSISTENT/SINGING_TOOL capture + banked median kernel/hook/badges + live halo/marker from capture + SYNTHETIC banked-score Chrome + singing-dock listen slot scoring + Record/request-clear/captured-pitch preview/snap tape. Collapse slot-clear, row ticks, shared PREVIEW owner, and median Aural scores remain.",
-      "nextAction": "SYNTHETIC Record + request-clear PASS. Collapse still keeps slots. Policy A accepted. Do not fake scores. Do not start Aural/T15. Next: Artists chip, not inertia. Pixel/real-mic unproven.",
+      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt + shared PLAYBACK_PERSISTENT/SINGING_TOOL capture + banked median kernel/hook/badges + live halo/marker from capture + SYNTHETIC banked-score Chrome + singing-dock listen slot scoring + Record/request-clear/captured-pitch preview/snap tape + collapse slot-clear/shared PREVIEW/tape ticks. Flip-Flop still does not drop PWA card target. Median Aural scores remain last.",
+      "nextAction": "Collapse-clear + shared PREVIEW + ticks PASS. Policy A accepted. Do not fake scores. Do not start Aural/T15. Next: Artists chip, not inertia. Pixel/real-mic unproven.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -2338,6 +2338,15 @@
             "T13-singing-record-browser-001"
           ],
           "result": "PASS 20 focused then 1134 unit/100 files + 1 parity + types + shell 46e87cd95e1e. browser-001 FIRST PASS 11/11 including SYNTHETIC Record nearest ¢ + requestId clear + tape on target placeholder + empty-slot prompt. Codex gpt-6.1-sol 01a1b652-0eda-7db3-bc06-62ac93c9ef88 MATCH Record/clear; applied interval 1000ms launch gaps + tape gauge color. Collapse slot-clear/ticks/shared PREVIEW remain. No fabricated cents. Partial T13. Not device/whole-CI-green."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/singing/singing-score.test.ts src/features/singing/singing-tape.test.ts src/features/singing/singing-microphone.test.ts; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/playback-synthetic-scores.spec.ts --project chrome --workers 1 --grep \"singing dock loads|policy A|exclusive PLAYBACK|SYNTHETIC\" --output .artifacts/pwa-port/singing-collapse-preview/browser-001",
+          "revision": "ba24c4d1 plus named singing collapse/shared PREVIEW/ticks tree",
+          "guards": [
+            "T13-singing-collapse-preview-check-001",
+            "T13-singing-collapse-preview-browser-001"
+          ],
+          "result": "PASS 22 focused then 1136 unit/100 files + 1 parity + types + shell b9481ce3564f. browser-001 FIRST PASS 12/12 including collapse re-expand empty no auto-listen, tape ticks, SYNTHETIC slot tap shares cards PreviewOwner. Codex gpt-6.1-sol 01a1b658-d50e-7bc1-bc2e-216782a4187b MATCH collapse/shared owner; applied tick alpha unmultiplied. Flip-Flop still does not drop PWA card target. Snap/tween/density/inertia explicit nonparity. No fabricated cents. Partial T13. Not device/whole-CI-green."
         }
       ],
       "progress": [
@@ -2349,7 +2358,8 @@
         "2026-11-07T13:15Z Live halo/marker/label from captured pitch. Held estimates display-only; silent 0¢ rest is not a banked score. Deterministic units labeled. Chrome fake/silent rest 0¢. Codex gpt-6.1-sol read-only thread 01a1b61d-b2f4-7400-91e3-926ea90f6cfd. Actual CI 10effa71 interval-audio 44100 PASS; still not whole-CI-green.",
         "2026-11-07T13:20Z Emulated browser touch PASS. Banked scoring remains impl-in/acceptance-open; halo 0¢ is not a banked score. 32ms tween and 11px vs 11.sp outstanding.",
         "2026-11-07T14:00Z Singing-dock listen slot scoring: displayedSlotData retarget, getPitchColor bands, remaining countdown, rounded interval green, Flip-Flop nearest/white. SYNTHETIC captured slot ¢ Chrome. Target +0¢ placeholder ≠ sung score ≠ halo rest 0¢ ≠ banked empty/·. Codex 01a1b64a. Rolling tape/Record/preview/new-request clear remain. Settings Back untouched. No 120fps claim.",
-        "2026-11-07T14:05Z Record + request-clear + captured-pitch preview + snap tape. SYNTHETIC Record nearest ¢ and new card request clears slots. Interval 1000ms launch gaps. Collapse still keeps slots. Codex 01a1b652. Settings Back untouched. Next Artists chip."
+        "2026-11-07T14:05Z Record + request-clear + captured-pitch preview + snap tape. SYNTHETIC Record nearest ¢ and new card request clears slots. Interval 1000ms launch gaps. Collapse still keeps slots. Codex 01a1b652. Settings Back untouched. Next Artists chip.",
+        "2026-11-07T14:15Z Collapse slot-clear + shared PREVIEW owner + tape ticks. Immediate clear (no shrink animation). SYNTHETIC slot tap sets cards preview phase. Codex 01a1b658. Settings Back untouched. Next Artists chip."
       ],
       "blocker": null,
       "dependencyGates": {

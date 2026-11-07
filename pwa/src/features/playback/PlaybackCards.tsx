@@ -22,8 +22,9 @@ function cardDuration(duration:number,bpm:number):number|null {
 /** First current-card band. Native source pitches stay independent of manual audio transpose.
  * Full interval/relative-context/singing/timeline controls remain separate slices.
  */
-export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,majorLocked,onMajorLockedChange,onSing}:{
+export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,previewOwner,majorLocked,onMajorLockedChange,onSing}:{
   section:ExtractedSection;beat:number;baseBpm:number;settings:PlaybackSettings;stopPreview:{current:(()=>void)|null};
+  previewOwner?:{current:PreviewOwner|null};
   majorLocked:boolean;onMajorLockedChange:(locked:boolean)=>void;onSing:(request:SingingTargetRequest)=>void;
 }){
   const model=useMemo(()=>{const prepared=preparePlaybackSection(section);return {index:new PlaybackActiveEventIndex(section,prepared.melody),keys:getKeys(section)};},[section]);
@@ -31,10 +32,18 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,majorLo
   const owner=useRef<PreviewOwner|null>(null);
   const [preview,setPreview]=useState<PreviewState>({phase:'idle',revision:0,requestId:null});
   useEffect(()=>{
-    const current=new PreviewOwner({render:renderCardPreview});owner.current=current;const stop=()=>current.stop();stopPreview.current=stop;
+    const current=new PreviewOwner({render:renderCardPreview});owner.current=current;
+    if(previewOwner)previewOwner.current=current;
+    const stop=()=>current.stop();stopPreview.current=stop;
     const unsubscribe=current.subscribe(()=>setPreview(current.getSnapshot()));setPreview(current.getSnapshot());
-    return ()=>{unsubscribe();if(stopPreview.current===stop)stopPreview.current=null;if(owner.current===current)owner.current=null;void current.release();};
-  },[section,stopPreview]);
+    return ()=>{
+      unsubscribe();
+      if(stopPreview.current===stop)stopPreview.current=null;
+      if(previewOwner?.current===current)previewOwner.current=null;
+      if(owner.current===current)owner.current=null;
+      void current.release();
+    };
+  },[section,stopPreview,previewOwner]);
   const key=keyAtBeat(model.keys,beat),current=model.index.chordAtBeat(beat);
   const chord=current&&!isRest(current)?current:null;
   const interpretation=useMemo(()=>chord?interpret(chord,key):null,[chord,key]);

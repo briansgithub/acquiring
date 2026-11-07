@@ -29,9 +29,18 @@
   position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: currentColor; opacity: .9;
 }
 .singing-dock__tape-row {
-  position: absolute; left: 50%; top: 50%; font-size: .7rem; white-space: nowrap; opacity: .7;
+  position: absolute; left: 0; right: 0; top: 50%; font-size: .7rem; white-space: nowrap;
+  display: flex; align-items: center; justify-content: center;
 }
-.singing-dock__tape-row[data-tape-center] { font-size: .85rem; opacity: 1; }
+.singing-dock__tape-row[data-tape-center] { font-size: .85rem; }
+.singing-dock__tape-label { opacity: .7; }
+.singing-dock__tape-row[data-tape-center] .singing-dock__tape-label { opacity: 1; }
+.singing-dock__tape-tick {
+  position: absolute; top: 50%; background: #fff; opacity: .3; pointer-events: none;
+}
+.singing-dock__tape-tick--left { left: 0; }
+.singing-dock__tape-tick--right { right: 0; }
+.singing-dock__tape-row[data-tape-center] .singing-dock__tape-tick { opacity: 1; }
 .singing-dock__tape-oct {
   position: absolute; left: .15rem; bottom: .1rem; font-size: .65rem; opacity: .55;
 }
