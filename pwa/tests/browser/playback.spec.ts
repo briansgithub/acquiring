@@ -52,11 +52,11 @@ async function audio(page:Page){return page.evaluate(()=>{
   const p=(window as unknown as {playbackProof:{contexts:AudioContext[];items:{peak:number;scheduled:number;endedAt:number|null;stops:number;frames:number;hz:number;homeEnergy:Record<number,number>;pcmHash:number;intervalEnergy:Record<number,number>[]}[]}}).playbackProof;
   return {contexts:p.contexts.map(context=>({rate:context.sampleRate,state:context.state,time:context.currentTime})),items:p.items};
 });}
-async function installAndOpen(page:Page){
+async function installAndOpen(page:Page,slug='detail-gzip',query='Detail_Gzip'){
   await page.goto('/');await page.getByRole('button',{name:'Download catalogs',exact:true}).click();
   await page.getByRole('button',{name:'Download song library',exact:true}).click();await expect(page.getByText('Downloaded and verified',{exact:true})).toBeVisible({timeout:25_000});
-  await page.getByRole('button',{name:'Back',exact:true}).click();await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Detail_Gzip');
-  await page.locator('[data-song-slug="detail-gzip"]').click();await page.getByRole('button',{name:'Play song',exact:true}).click();
+  await page.getByRole('button',{name:'Back',exact:true}).click();await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill(query);
+  await page.locator(`[data-song-slug="${slug}"]`).click();await page.getByRole('button',{name:'Play song',exact:true}).click();
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
   await expect(page.getByRole('slider',{name:'Position',exact:true})).toBeEnabled();
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-phase','stopped');
@@ -844,15 +844,15 @@ for(const stage of ['permission','worklet'] as const)test('pending capture '+sta
 });
 
 // Genuine browser navigation receipts. Fake/silent streams and optional async worklet gate are NOT physical mic/BFCache proof.
-async function instrumentCaptureDeparture(page:Page,holdModule=false,synthetic=false){
- await page.addInitScript(({hold,synthetic})=>{
+async function instrumentCaptureDeparture(page:Page,holdModule=false,synthetic=false,syntheticHz=440){
+ await page.addInitScript(({hold,synthetic,hz})=>{
   const streams:MediaStream[]=[],contexts:AudioContext[]=[];let calls=0,graphs=0,modulePending=false,release!:()=>void;
   const gate=new Promise<void>(resolve=>{release=resolve;});
   const gum=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
   navigator.mediaDevices.getUserMedia=async constraints=>{
    calls++;let stream:MediaStream;
    if(synthetic){
-    const ctx=new AudioContext();await ctx.resume();const osc=ctx.createOscillator();osc.frequency.value=440;const dest=ctx.createMediaStreamDestination();osc.connect(dest);osc.start();stream=dest.stream;
+    const ctx=new AudioContext();await ctx.resume();const osc=ctx.createOscillator();osc.frequency.value=hz;const dest=ctx.createMediaStreamDestination();osc.connect(dest);osc.start();stream=dest.stream;
     for(const track of stream.getTracks()){const stop=track.stop.bind(track);track.stop=()=>{stop();try{osc.stop();}catch{}void ctx.close().catch(()=>{});};}
    }else stream=await gum(constraints);
    streams.push(stream);return stream;
@@ -866,7 +866,7 @@ async function instrumentCaptureDeparture(page:Page,holdModule=false,synthetic=f
   window.clearTimeout=(id)=>{autoTimers.delete(Number(id));clear(id);};
   const snapshot=()=>({calls,graphs,modulePending,autoTimers:autoTimers.size,tracks:streams.flatMap(stream=>stream.getTracks().map(track=>track.readyState)),contexts:contexts.map(context=>context.state)});
   (window as unknown as {captureDeparture:{snapshot:typeof snapshot;release:()=>void;observe:()=>void}}).captureDeparture={snapshot,release,observe:()=>window.addEventListener('pagehide',event=>{sessionStorage.setItem('capture-departure-proof',JSON.stringify({trusted:event.isTrusted,persisted:event.persisted,capture:snapshot()}));},{once:true})};
- },{hold:holdModule,synthetic});
+ },{hold:holdModule,synthetic,hz:syntheticHz});
 }
 async function captureDeparture(page:Page){return page.evaluate(()=>(window as unknown as {captureDeparture:{snapshot:()=>{calls:number;graphs:number;modulePending:boolean;autoTimers:number;tracks:string[];contexts:string[]}}}).captureDeparture.snapshot());}
 for(const mode of ['active monitoring','armed 800ms singing'] as const)test('product genuine reload pagehide retires '+mode+' and fresh document stays idle',async({page,context},info)=>{
@@ -1047,4 +1047,29 @@ for(const departure of ['Back','reload'] as const)test('persistent pending workl
   await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(0);await expect(page.getByRole('button',{name:'Pitch monitoring',exact:true})).toHaveAttribute('aria-pressed','false');await expect(page.getByRole('button',{name:'Stop persistent pitch practice',exact:true})).toHaveCount(0);
   await info.attach('pending-persistent-pagehide.json',{body:JSON.stringify(receipt),contentType:'application/json'});
  }
+});
+
+
+test('singing tape uses first section signature, not modulation/display/transpose or captured-pitch spelling (SYNTHETIC, not Pixel)',async({page},info)=>{
+ await instrument(page);await instrumentCaptureDeparture(page,false,true,466.1637615);await installAndOpen(page,'playback-context','Playback_Context');
+ const dock=page.locator('[data-singing-dock]'),slot1=page.locator('[data-singing-slot="1"]'),slot2=page.locator('[data-singing-slot="2"]');
+ await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();expect((await captureDeparture(page)).calls).toBe(0);
+ for(const slot of [slot1,slot2]){
+  await slot.dblclick();await expect(slot).toHaveAttribute('data-singing-cents-source','captured',{timeout:6_000});await expect(dock).toHaveAttribute('data-mic-state','idle');
+  await expect(slot.locator('.singing-dock__sung')).toHaveText('B♭4');
+  await expect(slot.locator('[data-tape-center] .singing-dock__tape-label')).toHaveText('A♯');
+ }
+ const captured=await dock.locator('.singing-dock__sung').allTextContents();
+ const position=page.getByRole('slider',{name:'Position',exact:true});await position.focus();await position.press('End');await expect(page.getByLabel('Source key',{exact:true})).toContainText('C Minor');
+ // The section begins in D major; later C minor, display lock, manual transpose and target octave do not change its tape signature.
+ await page.getByRole('checkbox',{name:'Lock in Major',exact:true}).check();
+ const transpose=page.getByRole('slider',{name:'Transpose',exact:true});await transpose.focus();await transpose.press('End');await page.getByRole('button',{name:'Raise singing octave',exact:true}).click();
+ for(const slot of [slot1,slot2])await expect(slot.locator('[data-tape-center] .singing-dock__tape-label')).toHaveText('A♯');
+ expect(await dock.locator('.singing-dock__sung').allTextContents()).toEqual(captured);expect((await captureDeparture(page)).calls).toBe(2);
+ await page.getByRole('button',{name:'Collapse humming tool',exact:true}).click();await expect(dock.locator('[data-singing-body]')).toHaveCount(0);
+ await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();
+ expect((await captureDeparture(page)).calls).toBe(2);await slot1.dblclick();await expect(slot1).toHaveAttribute('data-singing-cents-source','captured',{timeout:6_000});await expect(dock).toHaveAttribute('data-mic-state','idle');
+ await expect(slot1.locator('[data-tape-center] .singing-dock__tape-label')).toHaveText('B♭');await expect(slot1.locator('.singing-dock__sung')).toHaveText('B♭4');
+ expect((await captureDeparture(page)).calls).toBe(3);await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);await expect.poll(async()=>(await captureDeparture(page)).contexts.every(state=>state==='closed')).toBe(true);
+ await info.attach('singing-tape-section-signature.json',{body:JSON.stringify({label:'SYNTHETIC A#4/Bb4; not physical microphone',firstSectionLabels:'A♯',secondSectionLabel:await slot1.locator('[data-tape-center] .singing-dock__tape-label').textContent(),captured,capture:await captureDeparture(page)}),contentType:'application/json'});
 });

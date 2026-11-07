@@ -2310,9 +2310,9 @@
       "owner": "codex",
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace/acquiring",
-      "baseCommit": "c808fe0eef9ef1be6eb3515bb1e513365c40dd60",
-      "slice": "collapsed-persistent-stop-owner-handoff",
-      "nextAction": "Bounded S06 collapsed persistent Stop/owner handoff is desktop-tested, not full T13. Next independent ready primary slice N01: wire actual SimpleRoot header selection/target/gauge, STANDARD tracking, source/context MIDI plus transpose/octave, no-target latch and mode/session/section reset per pinned native; keep explicit activation/Stop and ordinary immediate collapse/nav/pagehide cleanup. Aural/T15/family trees last. Real-device/trusted-tab/Safari/BFCache and Settings Back acceptance unchanged.",
+      "baseCommit": "c2488e94c07776e79d9729436e95ab877e291fbb",
+      "slice": "N05-singing-tape-section-key-spelling",
+      "nextAction": "N05 source-section singing-tape labels are bounded desktop-tested, not full T13/device parity. Next independent ready primary N01: actual SimpleRoot selection/target/gauge, STANDARD tracking, transpose/octave once, no-target latch and mode/session/section reset; preserve explicit opt-in, Stop, immediate ordinary collapse/nav/pagehide cleanup and policy A800ms. Remaining title/help/reset and motion/Artists/platform/auth/sync/release gaps stay open; Aural/T15/family trees last.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -2459,6 +2459,26 @@
             "pwa/.artifacts/pwa-port/t13-owner-browser-007/results/playback-singing-exit-SYNT-be980-t-revive-preview-or-capture-chrome/trace.zip",
             "pwa/.artifacts/pwa-port/t13-owner-browser-fix-010"
           ]
+        },
+        {
+          "revision": "c2488e94c07776e79d9729436e95ab877e291fbb plus named N05 tree (sliceSourceHashes)",
+          "guards": [
+            "T13-tape-focused-005",
+            "T13-tape-check-006",
+            "T13-tape-browser-007",
+            "T13-tape-legacy-008"
+          ],
+          "commands": [
+            "npm exec -- vitest run src/features/singing/singing-tape.test.ts src/domain/music/relative-ionian.test.ts src/domain/music/spelled-pitch.test.ts src/features/singing/singing-exit.test.ts",
+            "npm run check",
+            "npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/playback.spec.ts tests/browser/audio-preview.spec.ts --grep <exact pattern in ignored command.json> --reporter=json --output .artifacts/pwa-port/t13-tape-browser-007/results",
+            "python docs/pwa-port/validate_audit.py"
+          ],
+          "result": "FIRST PASS16 focused/4files;1217unit/110files+1parity+strict types+production build PASS,shell9baa056851ed/12files. Browser9PASS/1original trusted-tab SKIP,128.957s; new SYNTHETIC tape case20.312s checks both slots sharp tape vs captured Bb4, first section key despite later modulation/display lock/transpose/octave, new section flats and exactly3 explicit captures, ended tracks/closed contexts. Original policy A800ms/first-prompt,cancel,octave persistence,owner handoff and300ms exit/navigation/reduced-motion regressions pass. No physical-mic/tab/Safari/BFCache/Pixel acceptance. Legacy audit FAIL exit1 unchanged line70 T11complete/T08in_progress; no statuses/assertions/old validator changes.",
+          "evidence": [
+            "pwa/.artifacts/pwa-port/t13-tape-browser-007/command.json",
+            "pwa/.artifacts/pwa-port/t13-tape-browser-007/report.json"
+          ]
         }
       ],
       "progress": [
@@ -2530,11 +2550,11 @@
         }
       },
       "ownedPaths": [
-        "pwa/src/features/singing/SingingDock.tsx",
-        "pwa/src/features/singing/singing.css",
         "pwa/src/features/playback/PlaybackScreen.tsx",
-        "pwa/src/features/playback/use-playback-pitch-practice.ts",
-        "pwa/src/features/playback/persistent-pitch.test.ts",
+        "pwa/src/features/singing/SingingDock.tsx",
+        "pwa/src/features/singing/SingingSlot.tsx",
+        "pwa/src/features/singing/singing-tape.ts",
+        "pwa/src/features/singing/singing-tape.test.ts",
         "pwa/tests/browser/playback.spec.ts",
         "docs/pwa-port/tasks.json",
         "docs/pwa-port/HANDOFF.md",
@@ -2543,12 +2563,12 @@
         "docs/pwa-port/LINEAGE_PRIORITY.md"
       ],
       "sliceSourceHashes": {
-        "pwa/src/features/singing/SingingDock.tsx": "95bfdeac9d5b012b75fc54fd92cce662e4188c0131e4cc6262d74d70ca83e54c",
-        "pwa/src/features/singing/singing.css": "437ff4c524698fd7fe703adbf1b501f0159ab0857534dcbd69f0a2a3fb9cbed5",
-        "pwa/src/features/playback/PlaybackScreen.tsx": "78de1a60c6097e2cf0168fd8f27eb3be9fd3abec6438f22e0869be8ebdde8ca0",
-        "pwa/src/features/playback/use-playback-pitch-practice.ts": "42c93b9cf046216a0e240927f52eaacebf61bfbea6f3cb45d4faf7274ad3e109",
-        "pwa/src/features/playback/persistent-pitch.test.ts": "3a48b3c505ecb5460b9dfd7ec32a62e0fb0084813e1c75d70f0c075f0d0a4a9c",
-        "pwa/tests/browser/playback.spec.ts": "dc1d3064823f94909e00cadd28a5d4bebbe745e708d7503740e43ef49ab07e5e"
+        "pwa/src/features/playback/PlaybackScreen.tsx": "65b523a1687f7985d7cd2cd9f7d5d8b8e4929c33ffb093e1df2016faa61ae40f",
+        "pwa/src/features/singing/SingingDock.tsx": "0ffbc45a43c33d6bcd0b70a4102149f6b28a6e6313669c0d45c8576c9da41c01",
+        "pwa/src/features/singing/SingingSlot.tsx": "4f3f40287eb52b01380be086f7a8c9524987e88c87475be063b2764e932c7528",
+        "pwa/src/features/singing/singing-tape.ts": "e12260b2da1fc00cc45b67757bbcd351308761b19fa418dd4d07c3b4af7d1b64",
+        "pwa/src/features/singing/singing-tape.test.ts": "2f0f4881803ccf4e46215a0ebe90bb643e23782fef57b8c3dba9c5a949536cd9",
+        "pwa/tests/browser/playback.spec.ts": "ec3d8740f22a1dc02d990039ef2cd08cd204eedfdf8da1dfa154d0a9f560c4bb"
       }
     },
     {

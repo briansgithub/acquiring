@@ -1,3 +1,4 @@
+import type {NoteNameAccidentalPreference} from '../../domain/music';
 import {useEffect,useRef} from 'react';
 import {effectiveTargetMidi,type SingingTargetNote} from './singing-octave';
 import {formatSungIntervalCents,type SingingSlotPitch} from './singing-microphone';
@@ -6,7 +7,7 @@ import {TAPE_TICK_PX,TAPE_TICK_STROKE_PX,tapeOctaveLabel,tapeRows} from './singi
 
 export const SLOT_TAP_DELAY_MS = 300;
 
-export function SingingSlot({slot,note,captured,transpose,octaveOffset,listening,recording,ignoreTarget,remaining,onTap,onDoubleTap,interactive=true}:{
+export function SingingSlot({slot,note,captured,transpose,octaveOffset,listening,recording,ignoreTarget,remaining,onTap,onDoubleTap,interactive=true,noteNamePreference='flats'}:{
   slot:1|2;
   note:SingingTargetNote|null;
   captured:SingingSlotPitch|null;
@@ -17,6 +18,7 @@ export function SingingSlot({slot,note,captured,transpose,octaveOffset,listening
   ignoreTarget:boolean;
   remaining:number;
   interactive?:boolean;
+  noteNamePreference?:NoteNameAccidentalPreference;
   onTap:()=>void;
   onDoubleTap:()=>void;
 }){
@@ -34,7 +36,7 @@ export function SingingSlot({slot,note,captured,transpose,octaveOffset,listening
     onClick={tap}>
     <span className="singing-dock__degree" data-singing-degree="">{degree||'—'}</span>
     {showTape
-      ? <SingingTape midi={tapeMidi} cents={displayed?.cents??0} recording={recording}/>
+      ? <SingingTape noteNamePreference={noteNamePreference} midi={tapeMidi} cents={displayed?.cents??0} recording={recording}/>
       : <span className="singing-dock__prompt" data-singing-prompt="record">Double tap to record</span>}
     {displayed?.source==='captured'&&<span className="singing-dock__sung">{displayed.label}</span>}
     {displayed&&<span className="singing-dock__cents" data-singing-cents=""
@@ -44,11 +46,11 @@ export function SingingSlot({slot,note,captured,transpose,octaveOffset,listening
   </button>;
 }
 
-function SingingTape({midi,cents,recording}:{midi:number;cents:number;recording:boolean}){
+function SingingTape({midi,cents,recording,noteNamePreference}:{midi:number;cents:number;recording:boolean;noteNamePreference:NoteNameAccidentalPreference}){
   return <div className="singing-dock__tape" data-singing-tape="" data-tape-recording={recording?'true':undefined}
     style={{color:pitchAccuracyColor(cents)}}>
     <span className="singing-dock__tape-center" aria-hidden="true"/>
-    {tapeRows(midi).map((row)=>
+    {tapeRows(midi,noteNamePreference).map((row)=>
       <span key={row.midi} className="singing-dock__tape-row" data-tape-center={row.center?'true':undefined}
         style={{transform:`translateY(calc(-50% + ${-row.offsetPx}px))`}}>
         <span className="singing-dock__tape-tick singing-dock__tape-tick--left" data-tape-tick="left"

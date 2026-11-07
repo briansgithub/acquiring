@@ -1,3 +1,4 @@
+import {noteNameAccidentalPreference} from '../../domain/music';
 import {PlaybackCards} from './PlaybackCards';
 import {PlaybackFavoriteStar} from './PlaybackFavoriteStar';
 import {PlaybackSettingsPanel} from './PlaybackSettingsPanel';
@@ -271,6 +272,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
           onScrub={{tap:t=>{cardPreviewStop.current?.();playback.scrubTo(t);playback.finishScrub();},dragTo:t=>{cardPreviewStop.current?.();playback.scrubTo(t);},end:()=>playback.finishScrub()}}/>}
         <SingingDock octaveOffset={octaveOffset} onOctaveOffsetChange={offset=>octaveSession.updateOctaveOffset(offset)}
           target={singingTarget} expanded={dockExpanded} onExpandedChange={(next)=>{if(next)pitch.cancel();setDockExpanded(next);if(!next)setSingingTarget(null);}}
+          noteNamePreference={selected?noteNameAccidentalPreference(selected[1]):'flats'}
           transpose={settings.transpose} capture={mic.capture} source={mic.singing} waveform={settings.waveform}
           previewOwner={cardPreviewOwner} isPersistentMonitoring={pitch.monitoring} onStopPersistent={pitch.cancel}/>
         <PlaybackSettingsPanel settings={settings} disabled={!playback} onChange={updateSettings}/>

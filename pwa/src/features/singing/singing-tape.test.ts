@@ -1,3 +1,4 @@
+import {noteNameAccidentalPreference} from '../../domain/music';
 import { describe, expect, it } from 'vitest';
 import { TAPE_NOTE_HEIGHT_PX, TAPE_TICK_PX, TAPE_TICK_STROKE_PX, tapeOctaveLabel, tapeRows } from './singing-tape';
 
@@ -23,4 +24,15 @@ describe('PitchRollingIndicator snap tape', () => {
     expect(tapeOctaveLabel(60)).toBe('Oct 4');
     expect(tapeOctaveLabel(59.9)).toBe('Oct 3');
   });
+});
+
+
+it('section signature changes tape spelling only: geometry, MIDI and row selection stay identical',()=>{
+ const cases=[{tonic:'D',scale:'major',sharp:true},{tonic:'E',scale:'dorian',sharp:true},{tonic:'Ab',scale:'major',sharp:false},{tonic:'G',scale:'dorian',sharp:false},{tonic:'C',scale:'major',sharp:false},{tonic:'A',scale:'minor',sharp:false}];
+ for(const key of cases){
+  const rows=tapeRows(69.37,noteNameAccidentalPreference(key));
+  expect(rows.map(({label,...geometry})=>geometry)).toEqual(tapeRows(69.37).map(({label,...geometry})=>geometry));
+  expect(rows.find(row=>row.midi===70)?.label).toBe(key.sharp?'A♯':'B♭');
+  expect(rows.find(row=>row.midi===66)?.label).toBe(key.sharp?'F♯':'G♭');
+ }
 });

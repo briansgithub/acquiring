@@ -1,3 +1,4 @@
+import type {NoteNameAccidentalPreference} from '../../domain/music';
 import {useEffect,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
 import type {BrowserMicrophoneCapture, ExclusivePitchSource} from '../../audio/capture';
 import type {AudioPreviewOwner} from '../../audio/transport';
@@ -9,7 +10,7 @@ import {SingingSlot} from './SingingSlot';
 import {SINGING_EXPAND_MS,SingingExit} from './singing-exit';
 import './singing.css';
 
-interface DockVisual {target:SingingTargetRequest|null;slot1:SingingSlotPitch|null;slot2:SingingSlotPitch|null;action:SingingMicAction;remaining:number;error:string|null;transpose:number;octaveOffset:number}
+interface DockVisual {target:SingingTargetRequest|null;slot1:SingingSlotPitch|null;slot2:SingingSlotPitch|null;action:SingingMicAction;remaining:number;error:string|null;transpose:number;octaveOffset:number;noteNamePreference:NoteNameAccidentalPreference}
 
 
 /** Playback singing dock. Expand handle does not start the microphone.
@@ -23,7 +24,7 @@ interface DockVisual {target:SingingTargetRequest|null;slot1:SingingSlotPitch|nu
  * Flip-Flop nulls local displayedTarget (native activeTarget) without changing requestId, so slots
  * and the pending auto-listen LaunchedEffect stay intact; labels stay empty after Flip-Flop off.
  */
-export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0,capture,source,waveform=DEFAULT_WAVEFORM,previewOwner,isPersistentMonitoring=false,onStopPersistent}:{
+export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0,capture,source,waveform=DEFAULT_WAVEFORM,previewOwner,isPersistentMonitoring=false,onStopPersistent,noteNamePreference='flats'}:{
   octaveOffset:number;
   onOctaveOffsetChange:(offset:number)=>void;
   target:SingingTargetRequest|null;
@@ -36,6 +37,7 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   previewOwner?:{current:AudioPreviewOwner|null};
   isPersistentMonitoring?:boolean;
   onStopPersistent?:()=>void;
+  noteNamePreference?:NoteNameAccidentalPreference;
 }){
   const session=useMemo(()=>new SingingMicrophoneSession({capture,source}),[capture,source]);
   const micVersion=useSyncExternalStore(session.subscribe,()=>session.version,()=>session.version);
@@ -119,7 +121,7 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
     void anim.finished.then(()=>{if(animation.current===anim){animation.current=null;finish();}},()=>{});
     return()=>{if(animation.current===anim){fromHeight.current??=element.getBoundingClientRect().height;animation.current=null;}anim.cancel();};
   },[expanded,exitVisual,reduced]);
-  const visual:DockVisual=!expanded&&exitVisual?exitVisual:{target:displayedTarget,slot1:mic.slot1,slot2:mic.slot2,action:mic.action,remaining:remainingSeconds(session.remainingMs()),error:mic.error,transpose,octaveOffset};
+  const visual:DockVisual=!expanded&&exitVisual?exitVisual:{target:displayedTarget,slot1:mic.slot1,slot2:mic.slot2,action:mic.action,remaining:remainingSeconds(session.remainingMs()),error:mic.error,transpose,octaveOffset,noteNamePreference};
   const flip=visual.action.kind==='flipflop'||visual.action.kind==='flipflop-rest';
   const interval=sungInterval(visual.slot1,visual.slot2);
   const listenSlot=visual.action.kind==='listening'?visual.action.slot:null;
@@ -131,7 +133,7 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   function stopAction(){cancelAutoListen();cancelPreview();session.stop();}
   function clearExit(){exit.current.clear();animation.current?.cancel();animation.current=null;setExitVisual(null);}
   function collapse(){
-    const snapshot:DockVisual={target:displayedTargetRef.current,slot1:mic.slot1,slot2:mic.slot2,action:mic.action,remaining:remainingSeconds(session.remainingMs()),error:mic.error,transpose,octaveOffset};
+    const snapshot:DockVisual={target:displayedTargetRef.current,slot1:mic.slot1,slot2:mic.slot2,action:mic.action,remaining:remainingSeconds(session.remainingMs()),error:mic.error,transpose,octaveOffset,noteNamePreference};
     fromHeight.current=body.current?.getBoundingClientRect().height??0;
     exit.current.begin(snapshot);setExitVisual(snapshot);
     expandedRef.current=false;stopAction();session.clearCollapsedToolState();displayedTargetRef.current=null;setDisplayedTarget(null);
@@ -214,10 +216,10 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
       {visual.error&&<p role="alert">{visual.error}</p>}
       <div className="singing-dock__slots" data-singing-target-row="">
         <SingingSlot slot={1} note={visual.target?.first??null} captured={visual.slot1} transpose={visual.transpose} interactive={expanded}
-          octaveOffset={visual.octaveOffset} listening={listenSlot===1} recording={recordSlot===1}
+          noteNamePreference={visual.noteNamePreference} octaveOffset={visual.octaveOffset} listening={listenSlot===1} recording={recordSlot===1}
           ignoreTarget={flip} remaining={remaining} onTap={()=>onTap(1)} onDoubleTap={()=>onDoubleTap(1)}/>
         <SingingSlot slot={2} note={visual.target?.second??null} captured={visual.slot2} transpose={visual.transpose} interactive={expanded}
-          octaveOffset={visual.octaveOffset} listening={listenSlot===2} recording={recordSlot===2}
+          noteNamePreference={visual.noteNamePreference} octaveOffset={visual.octaveOffset} listening={listenSlot===2} recording={recordSlot===2}
           ignoreTarget={flip} remaining={remaining} onTap={()=>onTap(2)} onDoubleTap={()=>onDoubleTap(2)}/>
         <div className="singing-dock__interval" data-singing-interval={interval?'measured':'empty'}
           data-interval-cents-close={interval&&intervalCentsClose(interval.centsDeviation)?'true':undefined}
