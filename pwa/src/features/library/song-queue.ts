@@ -1,5 +1,5 @@
-/** Frozen 801cf798 SongQueueViewModel.kt kernel. No Library Play/Shuffle chrome, no
- * PlaylistDao save, no PlaybackController.pause. Aural originQuiz completion-skip is
+/** Frozen 801cf798 SongQueueViewModel.kt kernel. Play/Shuffle chrome is wired;
+ * auralSectionIdentity RPC stays deferred. Aural originQuiz completion-skip is
  * preserved; Aural quiz UI stays last. */
 
 export interface QueuedSong {
@@ -26,6 +26,19 @@ export function auralMeetsMinimumPopularity(score: number | null, percent: numbe
 
 export function queuedSong(slug: string, title: string, artist: string, sectionId: string, sectionName: string): QueuedSong {
   return Object.freeze({ slug, title, artist, sectionId, sectionName });
+}
+
+/** Frozen resolveQueuedSection without auralSectionIdentity. Empty id → first in
+ * song order; else exact key; else a unique saved name. Ambiguous/missing → null. */
+export function resolveQueuedSection(
+  entry: Pick<QueuedSong, 'sectionId' | 'sectionName'>,
+  sections: readonly { key: string; name: string }[],
+): string | null {
+  if (entry.sectionId === '') return sections[0]?.key ?? null;
+  const exact = sections.find((section) => section.key === entry.sectionId);
+  if (exact) return exact.key;
+  const named = sections.filter((section) => section.name === entry.sectionName);
+  return named.length === 1 ? named[0].key : null;
 }
 
 function pickIndex(length: number, random: () => number): number {

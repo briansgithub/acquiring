@@ -50,6 +50,8 @@ export interface PlaybackScreenProps {
   readonly slug:string;readonly onBack:()=>void;readonly onHome:()=>void;readonly onDownload:()=>void;
   readonly playOnceKey?:string|null;
   readonly autoStart?:boolean;
+  readonly queueSectionId?:string;
+  readonly queueSectionName?:string;
   readonly onSectionComplete?:(key:string)=>void;
   readonly onSongUnavailable?:(message:string)=>void;
   readonly queueNav?:PlaybackQueueNav;

@@ -9,12 +9,15 @@ import type {UserDatabase} from '../../storage/user';
 import {singingTargetRequest,type SingingTargetRequest} from '../singing/singing-octave';
 import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
 import {INSTRUMENTS,Waveform} from '../../audio/synth';
-import type {PlaybackSettings} from './controller';
-import {PLAYBACK_ARPEGGIOS,SectionPlaybackController} from './controller';
+import {
+  DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,DEFAULT_PLAYBACK_TEMPO_PERCENT,PLAYBACK_ARPEGGIOS,
+  type PlaybackSettings,type SectionPlaybackController,
+} from './controller';
 import {appInstrumentSession} from '../settings/instrument-session';
-import {enterPlayback} from './playback-route-memory';
-import {PLAYBACK_ARPEGGIO_NAMES,emptyPlaybackState,rememberPlayback} from './playback-screen-support';
+import {enterPlayback,sessionTranspose} from './playback-route-memory';
+import {PLAYBACK_ARPEGGIO_NAMES,emptyPlaybackState,playbackStatusCopy,rememberPlayback,startSectionPlayback} from './playback-screen-support';
 import {useQueuePlayback} from './queue-playback';
+import {resolveQueuedSection} from '../library/song-queue';
 import {formatBeat} from '../details/overview';
 import {displayTitle,safeSectionName} from '../../domain/data';
 import {AppShell} from '../../ui/shell/AppShell';
@@ -25,7 +28,7 @@ import type {PlaybackScreenProps} from './view-contracts';
 const emptySubscribe=()=>()=>{};
 const emptySnapshot=()=>emptyPlaybackState;
 
-export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,autoStart=false,onSectionComplete,onSongUnavailable,queueNav}:PlaybackScreenProps){
+export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,autoStart=false,queueSectionId,queueSectionName,onSectionComplete,onSongUnavailable,queueNav}:PlaybackScreenProps){
   const [detailController,setDetailController]=useState(()=>new SongDetailController(slug));
   const detailState=useSyncExternalStore(detailController.subscribe,detailController.getSnapshot,detailController.getSnapshot);
   const [sectionId,setSectionId]=useState<string|null>(null);
@@ -67,7 +70,8 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   },[detailController,slug]);
 
   const details=detailState.details;
-  const selected=details?.sections.find(([id])=>id===(sectionId??intendedSection.current))??details?.sections[0]??null;
+  const selected=details?.sections.find(([id])=>id===(sectionId??intendedSection.current))
+    ??(playOnceKey?null:details?.sections[0]??null);
   const sectionKey=selected?.[0]??'';
 
   useEffect(()=>{
@@ -98,20 +102,35 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   useEffect(()=>{setMajorLocked(false);setDockExpanded(false);setSingingTarget(null);},[slug]);
 
   useEffect(()=>{
-    if(!details||details.sections.length===0)return;
-    const sectionIds=details.sections.map(([id])=>id);
-    const entry=enterPlayback(slug,sectionIds[0]!,sectionIds);
-    const section=details.sections.find(([id])=>id===entry.sectionId)??details.sections[0]!;
+    if(!details)return;
+    const named=details.sections.map(([id,section])=>({key:id,name:safeSectionName(section)}));
+    let section:typeof details.sections[number]|undefined=details.sections[0];
+    let tempoPercent=DEFAULT_PLAYBACK_TEMPO_PERCENT,transpose=sessionTranspose();
+    let waveform=instrument.session,arpeggioIndex=DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,beat=1;
+    if(playOnceKey){
+      const resolved=resolveQueuedSection({
+        sectionId:queueSectionId??'',sectionName:queueSectionName??'First section',
+      },named);
+      if(!resolved){
+        onSongUnavailable?.(`Skipped ${displayTitle(details.song.title)}: song or saved section unavailable.`);
+        return;
+      }
+      section=details.sections.find(([id])=>id===resolved);
+    }else{
+      if(!section)return;
+      const entry=enterPlayback(slug,section[0],details.sections.map(([id])=>id));
+      section=details.sections.find(([id])=>id===entry.sectionId)??section;
+      tempoPercent=entry.tempoPercent;transpose=entry.transpose;waveform=entry.waveform;
+      arpeggioIndex=entry.arpeggioIndex;beat=entry.beat;
+    }
+    if(!section)return;
     intendedSection.current=section[0];
     setSectionId(section[0]);
     let owner:SectionPlaybackController|null=null;
     try{
-      owner=new SectionPlaybackController(section[1],undefined,playOnceKey);
+      owner=startSectionPlayback(section[1],playOnceKey,{tempoPercent,transpose,waveform,arpeggioIndex},beat);
       playbackOwner.current=owner;
       loadedSection.current=section[0];
-      owner.start();
-      owner.updateSettings({tempoPercent:entry.tempoPercent,transpose:entry.transpose,waveform:entry.waveform,arpeggioIndex:entry.arpeggioIndex});
-      if(entry.beat!==1)owner.restoreBeat(entry.beat);
       setPlayback(owner);
       setPlaybackError(null);
     }catch(error){
@@ -129,7 +148,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
       current?.dispose();
       if(current!==owner)owner?.dispose();
     };
-  },[details,slug,playOnceKey]);
+  },[details,slug,playOnceKey,queueSectionId,queueSectionName]);
 
   useEffect(()=>{
     if(!playback||playback.closed||playback.getSnapshot().settings.waveform===instrument.session)return;
@@ -163,37 +182,21 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   }
   function changeSection(id:string){
     const next=details?.sections.find(([candidate])=>candidate===id);
-    if(!next){playback?.pause();setSectionId(id);setPlaybackError('This section is unavailable.');return;}
-    if(!playback||playback.closed){
-      let owner:SectionPlaybackController|null=null;
-      try{
-        owner=new SectionPlaybackController(next[1],undefined,playOnceKey);
-        playbackOwner.current=owner;
-        loadedSection.current=id;
-        owner.start();
-        setPlayback(owner);
-        setSectionId(id);
-        setPlaybackError(null);
-      }catch(error){
-        owner?.dispose();
-        playbackOwner.current=null;
-        loadedSection.current=null;
-        setPlayback(null);
-        setSectionId(id);
-        setPlaybackError(error instanceof Error?error.message:'This section could not be prepared for playback.');
-      }
-      return;
-    }
-    try{
-      playback.loadSection(next[1]);
-      loadedSection.current=id;
-      setSectionId(id);
-      setPlaybackError(null);
-    }catch(error){
-      playback.pause();
+    const fail=(error:unknown)=>{
       setSectionId(id);
       setPlaybackError(error instanceof Error?error.message:'This section could not be prepared for playback.');
+    };
+    if(!next){playback?.pause();setSectionId(id);setPlaybackError('This section is unavailable.');return;}
+    if(playback&&!playback.closed){
+      try{playback.loadSection(next[1]);loadedSection.current=id;setSectionId(id);setPlaybackError(null);}
+      catch(error){playback.pause();fail(error);}
+      return;
     }
+    let owner:SectionPlaybackController|null=null;
+    try{
+      owner=startSectionPlayback(next[1],playOnceKey,emptyPlaybackState.settings,1);
+      playbackOwner.current=owner;loadedSection.current=id;setPlayback(owner);setSectionId(id);setPlaybackError(null);
+    }catch(error){owner?.dispose();playbackOwner.current=null;loadedSection.current=null;setPlayback(null);fail(error);}
   }
 
   useQueuePlayback({
@@ -204,13 +207,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   });
   const beat=Math.max(1,Math.min(playbackState.endBeat,transport.beat));
   const active=transport.playbackRequested;
-  const phase=playbackError?'error':transport.phase;
-  const status=playbackError??(transport.phase==='error'?'Playback stopped because an audio error occurred.':
-    transport.phase==='blocked'?'Tap Play to enable audio.':
-    active&&transport.phase==='buffering'?'Preparing playback...':
-    active&&transport.phase==='playing'?'Playing':
-    transport.phase==='completed'?'Playback finished.':
-    active?'Playback requested.':'Playback paused.');
+  const {phase,status}=playbackStatusCopy(playbackError,transport.phase,active);
 
   return <AppShell title={title} onBack={onBack}><div className="playback-screen" aria-busy={detailState.phase==='loading'} data-playback-phase={phase} data-playback-requested={String(active)}>
     {queueNav&&<div className="playback-queue-bar panel" data-song-queue-bar="">

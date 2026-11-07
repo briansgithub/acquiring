@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  SongQueueSession, auralMeetsMinimumPopularity, orderedQueue, queuedSong, type QueueCandidate,
+  SongQueueSession, auralMeetsMinimumPopularity, orderedQueue, queuedSong, resolveQueuedSection,
+  type QueueCandidate,
 } from './song-queue';
 
 function candidate(slug: string, section: string, score: number | null): QueueCandidate {
@@ -31,6 +32,27 @@ describe('orderedQueue', () => {
     expect(auralMeetsMinimumPopularity(0.5, 50)).toBe(true);
     expect(auralMeetsMinimumPopularity(0.49, 50)).toBe(false);
     expect(() => auralMeetsMinimumPopularity(1, 101)).toThrow(RangeError);
+  });
+});
+
+describe('resolveQueuedSection', () => {
+  const sections = [
+    { key: 'intro', name: 'Intro' },
+    { key: 'verse', name: 'Verse' },
+    { key: 'chorus', name: 'Chorus' },
+  ];
+  it('uses the first song-order section when the saved id is empty', () => {
+    expect(resolveQueuedSection(queuedSong('s', 'S', 'A', '', 'First section'), sections)).toBe('intro');
+    expect(resolveQueuedSection(queuedSong('s', 'S', 'A', '', 'First section'), [])).toBeNull();
+  });
+  it('matches an exact section key before falling back to a unique name', () => {
+    expect(resolveQueuedSection(queuedSong('s', 'S', 'A', 'chorus', 'Chorus'), sections)).toBe('chorus');
+    expect(resolveQueuedSection(queuedSong('s', 'S', 'A', 'gone', 'Verse'), sections)).toBe('verse');
+  });
+  it('refuses ambiguous names and unknown ids rather than picking another passage', () => {
+    const doubled = sections.concat({ key: 'verse-2', name: 'Verse' });
+    expect(resolveQueuedSection(queuedSong('s', 'S', 'A', 'gone', 'Verse'), doubled)).toBeNull();
+    expect(resolveQueuedSection(queuedSong('s', 'S', 'A', 'gone', 'Bridge'), sections)).toBeNull();
   });
 });
 

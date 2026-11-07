@@ -33,6 +33,7 @@ export function App() {
   };
   const backToLibrary = () => { if(history.state?.fromLibrary||history.state?.fromSong||history.state?.fromPlayback)history.back();else home(); };
   const queued = queue.active && queue.started;
+  const current = queued ? queue.entries[queue.index] : undefined;
   return <>
     <SongQueueRouteSync />
     {route.kind === 'settings' ? <AppShell title="Settings" onBack={backToLibrary}>
@@ -45,6 +46,8 @@ export function App() {
     </AppShell> : route.kind === 'playback' ? <PlaybackScreen key={queued?queue.loadToken:route.slug} slug={route.slug}
       playOnceKey={queued?queue.playbackCompletionKey:null}
       autoStart={queued&&queue.autoStart}
+      queueSectionId={current?(queue.sectionOverride??current.sectionId):undefined}
+      queueSectionName={current?.sectionName}
       onSectionComplete={key=>mutateSongQueue(session=>session.completed(key))}
       onSongUnavailable={message=>mutateSongQueue(session=>session.unavailable(queue.loadToken,message))}
       queueNav={queued?{
