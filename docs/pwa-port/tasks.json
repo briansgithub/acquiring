@@ -2381,12 +2381,12 @@
       ],
       "acceptance": "Exact ranks/counts/query membership, recursive children, pagination and cold/warm budgets",
       "status": "in_progress",
-      "owner": "coordinator runtime unknown unchanged; both workers idle",
-      "branch": "codex/pwa-foundation",
-      "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "59300a12da8e4493493cb9148a3983452e5359e7",
-      "slice": "Accepted actualWASM bounded statistics RPC (495checks/build+4Chrome), plus oracle-first song-rank reference12groups25probes. Pure song-rank fragment source still unimplemented; fullglobal predicate/buckets/frontier/groups/pages/UI remain open.",
-      "nextAction": "Afterlivefivehour<70/ordinaryallowed, inspectHANDOFF/tasks/Git/guard/processes; samecleanSol/high existingefd7a0e8 sibling canfast-forward to namedprimaryoracle/docs base underrootclaim, thenPHASE2EXACT3: song-rank-eligibility.ts/.test.ts/SONG_RANK_WORKLOG.md. Frozen64ba88ec contract; useaccepted25nativeprobes, browserrefusal/snapshot/freeze/reentry/indexcomposition tests +scopedtypes, narrowvalidatedcommit thenrootreview/normalmerge/combinedchecks. NO native recapture/globalSQL/browsercacheclaim.",
+      "owner": "coordinator (cursor-grok /workspace)",
+      "branch": "codex/pwa-continuation",
+      "worktree": "/workspace",
+      "baseCommit": "1a1c939cd40eb98f0cbe22e630fdc6cfe9f2fcac",
+      "slice": "T15 Phase 2 pure buildAuralSongRankFragment accepted locally (960 unit + 1 parity + types + production build). SQL scan/cache/buckets/frontier/groups/pages/UI remain open.",
+      "nextAction": "Direct push of validated Phase 2 checkpoint to origin/codex/pwa-continuation. Next T15 slice is resumable SQL scan/cache after this lands; do not start Library Settings Back or T11/T08 audit-validator work.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/domain/catalog src/domain/learning src/features/playback; node node_modules/typescript/bin/tsc --noEmit",
@@ -2509,6 +2509,16 @@
           ],
           "result": "FIRST PASS11target-query regressions/644ms, strict full types, production bundle/shell1754514ffe74, then FIRST executed7actual desktop development-Chrome/WASM/OPFS/WebLock/IDB tests21.0s (session45366 exit0). All7proof JSON parsed/hash recorded. Three successful native target outputs/2native failure paths transported through real tiny SQLite+gzip+typed codec+actual WebCrypto. No source/assertion failure cycle. Production bundle built; browser test entry uses development worker, NOT new production fullcatalog/cold device acceptance.",
           "validationReference": "T15.targetRuntimeAssignment.validation"
+        },
+        {
+          "command": "npm exec -- vitest run src/domain/catalog/song-rank-eligibility.test.ts; npm run typecheck; npm run check",
+          "guards": [
+            "T15-p2-unit-002",
+            "T15-p2-typecheck-001",
+            "T15-p2-check-001"
+          ],
+          "revision": "1a1c939cd40eb98f0cbe22e630fdc6cfe9f2fcac",
+          "result": "FIRST PASS focused 19tests/1file 164ms (12 native groups/25 probes + 7 browser). typecheck exit0. Combined 960 unit/72 files 17.21s + 1 parity + strict types + production build shell 1a7e9ac45427, wrapper exit0. Unit-001 Vite JSON lone-surrogate load failed before tests; cycle1 test-only Node JSON.parse, oracle unchanged. No native recapture/SQL/UI/browser-app claim. Handoff 941 not re-claimed; actual this tree is 960."
         }
       ],
       "progress": [
@@ -2516,6 +2526,22 @@
           "at": "2026-10-19T04:10:00.307393+00:00",
           "milestone": "Window22 rank native12groups/258queries and17puretests accepted; new stats native20groups/56probes reviewed/integrated03fcde73. Root exactbyteSQL32tests +orderedfacts11tests and443combined/types pass; production shellbad6 built. New browser/worker validation blocked by approval service, drafts/hashrecovery preserved.",
           "validation": "rankEligibilityAssignment/statisticsOracleAssignment/statisticsAssignment/metadataBoundAssignment/statisticsFactsAssignment"
+        },
+        {
+          "at": "2026-11-07T09:09:00+00:00",
+          "milestone": "Owner confirmed previous-worker handover and direct pushes to codex/pwa-continuation. Coordinator claims T15 Phase 2 on exact base 1a1c939cd40eb98f0cbe22e630fdc6cfe9f2fcac. Owned paths: song-rank-eligibility.ts/.test.ts/SONG_RANK_WORKLOG.md. Frozen 64ba88ec contract; reuse native-song-rank.json 25 probes. Expected: focused vitest, typecheck, npm run check.",
+          "owner": "coordinator (cursor-grok /workspace)",
+          "baseCommit": "1a1c939cd40eb98f0cbe22e630fdc6cfe9f2fcac",
+          "expectedChecks": [
+            "npm exec -- vitest run src/domain/catalog/song-rank-eligibility.test.ts",
+            "npm run typecheck",
+            "npm run check"
+          ]
+        },
+        {
+          "at": "2026-11-07T09:12:34Z",
+          "milestone": "Phase 2 local validation complete on dirty 1a1c939c tree: 19 focused, 960 unit, 1 parity, types, production shell 1a7e9ac45427. Direct push next.",
+          "guards": ["T15-p2-unit-002", "T15-p2-typecheck-001", "T15-p2-check-001"]
         }
       ],
       "blocker": null,
@@ -3528,16 +3554,16 @@
         "proposalSha256": "0377760e5fc11f6eae9e7448cec074c780f6905c0e07862b717752a3976e3023"
       },
       "songRankAssignment": {
-        "owner": "preview_owner",
-        "model": "gpt-6.1-sol",
+        "owner": "coordinator (cursor-grok /workspace)",
+        "model": "cursor-grok-4.6",
         "thinking": "high",
-        "at": "2026-10-19T14:04:54.381867+00:00",
-        "primaryBase": "e7741959ec72f3586564ca5abe3aa2c969372594",
-        "branch": "codex/pwa-song-rank-eligibility",
-        "worktree": "H:/Desktop/Acquiring/Acquiring-pwa-data-compat",
-        "previousBranch": "codex/pwa-statistics-fixtures",
-        "previousTip": "12c637766fa03dcf815688d3cf40662ef5b92d92",
-        "status": "oracle accepted/normalmerge0bb77d9b;12nativegroups25probes/5classes+8jars verified; pureport NOTstarted",
+        "at": "2026-11-07T09:09:00+00:00",
+        "primaryBase": "1a1c939cd40eb98f0cbe22e630fdc6cfe9f2fcac",
+        "branch": "codex/pwa-continuation",
+        "worktree": "/workspace",
+        "previousBranch": "codex/pwa-song-rank-eligibility",
+        "previousTip": "efd7a0e82d75c71df859862aab9f1967d0e54fa0",
+        "status": "PHASE2 source validated on 1a1c939c dirty tree; awaiting direct push. 19 focused + 960 combined unit + types + production build PASS",
         "contract": "pwa/src/domain/catalog/song-rank-contracts.ts",
         "phase1OwnedPaths": [
           "pwa/src/domain/catalog/fixtures/generate-song-rank-native.py",
@@ -3549,8 +3575,8 @@
           "pwa/src/domain/catalog/song-rank-eligibility.test.ts",
           "pwa/src/domain/catalog/SONG_RANK_WORKLOG.md"
         ],
-        "nextAction": "Afterlivefivehour<70/ordinaryallowed, inspectHANDOFF/tasks/Git/guard/processes; samecleanSol/high existingefd7a0e8 sibling canfast-forward to namedprimaryoracle/docs base underrootclaim, thenPHASE2EXACT3: song-rank-eligibility.ts/.test.ts/SONG_RANK_WORKLOG.md. Frozen64ba88ec contract; useaccepted25nativeprobes, browserrefusal/snapshot/freeze/reentry/indexcomposition tests +scopedtypes, narrowvalidatedcommit thenrootreview/normalmerge/combinedchecks. NO native recapture/globalSQL/browsercacheclaim.",
-        "expectedCheck": "ActualKotlin2.2.10 provenance/native output; rootallhashes/input/packing review before pureport; thenmeaningful native+refusal/snapshot/freeze/indexcomposition tests/scopedtypes.",
+        "nextAction": "Direct push validated Phase 2 files to origin/codex/pwa-continuation. Next T15 is SQL scan/cache contract, not this kernel. No native recapture/Library-scroll.",
+        "expectedCheck": "npm exec -- vitest run src/domain/catalog/song-rank-eligibility.test.ts; npm run typecheck; npm run check. Cover 25 native probes plus browser invalid/bounds/UTF16/snapshot/packing/freeze/reentry/composition.",
         "validation": {
           "contractTypes": "window23-song-rank-contract-types-20261019:fullstrict types exit0 FIRSTPASS",
           "contractSha256": "c28a2e3425ee0ac325a21b430538048ff785228e9f9855cca2b2431c7f23b8a2",
@@ -3566,7 +3592,17 @@
           "primaryIntegration": "window23-song-rank-reference-integration-20261019:exact3primaryfile hashes match accepted nativecheckpoint after normalmerge; no unchangedtest/native recapture"
         },
         "oracleTip": "efd7a0e82d75c71df859862aab9f1967d0e54fa0",
-        "integrationCommit": "0bb77d9b391f178b0621cb31d78595b9749740f8"
+        "integrationCommit": "0bb77d9b391f178b0621cb31d78595b9749740f8",
+        "phase2Sha256": {
+          "song-rank-eligibility.ts": "0318591ebcd86abca5920f397b06547e93cd962e9784352e9c85915236b971ed",
+          "song-rank-eligibility.test.ts": "ce65330ae5a0cfa60010a4a17832b489855bae82a9ffe7ac70f898b8c54997cf",
+          "SONG_RANK_WORKLOG.md": "b42ac45ee3887fddcd0fb07e8ebab86d28d884047b8c36320db3687cf80666d2"
+        },
+        "phase2Validation": {
+          "focused": "T15-p2-unit-002 PASS 19tests/1file164ms",
+          "typecheck": "T15-p2-typecheck-001 PASS",
+          "combined": "T15-p2-check-001 PASS 960unit/72files17.21s +1parity +types +build shell1a7e9ac45427"
+        }
       }
     },
     {
