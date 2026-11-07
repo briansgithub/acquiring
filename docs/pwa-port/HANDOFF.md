@@ -10,13 +10,13 @@ Updated 2026-11-07. Continuation branch **codex/pwa-continuation**. Android base
 
 T15 Phase 2 is preserved at **e5ed284c** (`buildAuralSongRankFragment`, 19 focused / 960 unit / types / shell `1a7e9ac45427`). Song-rank is Aural-catalog eligibility (`eligibleRankBits`); it does **not** serve Playback, singing dock, or note/chord cards. Family trees are a different Aural sibling. Do not expand T15.
 
-Landed: T13 octave kernel `165f3dbf`; T12 timeline layout `0d77407e`; Canvas `430a6430`; Lock-in-Major restaff + T06 octave persistence + dock chrome `3abadc1c`; route-position memory `00f26f2a`; Playback Favorites star `b75165b8`; this checkpoint T21 Settings `selectAsDefault` / session-vs-default instrument on T06 `preferences.default_instrument`.
+Landed: T13 octave kernel `165f3dbf`; T12 timeline layout `0d77407e`; Canvas `430a6430`; Lock-in-Major restaff + T06 octave persistence + dock chrome `3abadc1c`; route-position memory `00f26f2a`; Playback Favorites star `b75165b8`; T21 Settings `selectAsDefault` `eb7b0d21`; this checkpoint T12 timeline tap-to-seek (no inertia coast).
 
 Native `PlaybackView` `useRelativeIonianContext` restaffs melody timeline staff — required parity, now shared from the Lock in Major checkbox (Chrome staffDegrees change on Playback_Context). Chord-lane Roman painter still absent. CSS=dp noteHeight vs density-3 raw px remains a tracked mapping gap, not T27.
 
-**Partial, not parity:** no inertia/tap/Roman/scores; Flip-Flop/listen disabled pending T09; native auto-listen after card-target expand is not started (would need mic). Library playlist accordion/T10 favorites list remain open. Library Settings Back 64px remains excluded. T21 intro/help/diagnostics/reset remain.
+**Partial, not parity:** no inertia/drag-coast/Roman/scores; Flip-Flop/listen disabled pending T09; native auto-listen after card-target expand is not started (would need mic). Library playlist accordion/T10 favorites list remain open. Library Settings Back 64px remains excluded. T21 intro/help/diagnostics/reset remain.
 
-Next: T12 timeline tap-to-seek without inertia coast. Do not polish inertia/Roman. Mic/scores stay T09. Aural/T15 remainder last.
+Next: T12 live timeline drag/scrub without inertia decay. Do not polish inertia/Roman. Mic/scores stay T09. Aural/T15 remainder last.
 
 **Pixel 9 Pro:** coordinator shared box paired/connected `100.95.230.49:38131` via `/workspace/music/android-sdk/platform-tools/adb` (get-state=device, Pixel 9 Pro, Android 17 SDK 37). That does **not** prove this cloud VM reachability. This VM still has no adb/Tailscale path. No ADB exploration unless a specific test needs it; coordinator can support device tests then. Not T27 proof, not APK/install/reset/network authority. See [TESTING_RESOURCES.md](TESTING_RESOURCES.md).
 

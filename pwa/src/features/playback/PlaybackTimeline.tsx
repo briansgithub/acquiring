@@ -1,20 +1,23 @@
-import {useEffect,useMemo,useRef,useState} from 'react';
+import {useEffect,useMemo,useRef,useState,type PointerEvent} from 'react';
 import type {ExtractedSection} from '../../contracts';
 import {preparePlaybackSection} from './section-model';
 import {
   TIMELINE_HEIGHT_PX,
   TIMELINE_PLAYHEAD_STROKE_PX,
+  TIMELINE_TAP_SLOP_PX,
   buildChordTimelineVisuals,
   buildMelodyTimelineVisuals,
   layoutPlaybackTimeline,
+  timelineTapBeat,
 } from './timeline-layout';
 
-/** First product timeline: Canvas 2D matching PlaybackView lanes/playhead. No tap/inertia/scores/Roman. */
-export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false}:{
-  section:ExtractedSection;beat:number;rootOnly:boolean;majorLocked?:boolean;
+/** Product timeline: Canvas 2D matching PlaybackView lanes/playhead plus tap-to-seek. No inertia/scores/Roman. */
+export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onTapBeat}:{
+  section:ExtractedSection;beat:number;rootOnly:boolean;majorLocked?:boolean;onTapBeat?:(beat:number)=>void;
 }){
   const canvasRef=useRef<HTMLCanvasElement>(null);
   const hostRef=useRef<HTMLDivElement>(null);
+  const pointerOrigin=useRef<{x:number;y:number}|null>(null);
   const [width,setWidth]=useState(0);
   const model=useMemo(()=>preparePlaybackSection(section),[section]);
   const melody=useMemo(()=>buildMelodyTimelineVisuals(model.melody,section,majorLocked),[model,section,majorLocked]);
@@ -61,6 +64,14 @@ export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false}:{
   if(rootOnly||layout&&!layout.visible){
     return <div ref={hostRef} className="playback-timeline-host" data-playback-timeline="hidden" hidden/>;
   }
+  function tap(event:PointerEvent<HTMLCanvasElement>){
+    const origin=pointerOrigin.current;pointerOrigin.current=null;
+    if(!onTapBeat||!origin||event.button!==0)return;
+    if(Math.hypot(event.clientX-origin.x,event.clientY-origin.y)>TIMELINE_TAP_SLOP_PX)return;
+    const rect=event.currentTarget.getBoundingClientRect();
+    onTapBeat(timelineTapBeat(beat,event.clientX-rect.left,rect.width,model.timeline.endBeat));
+  }
+
   return <div ref={hostRef} className="playback-timeline-host">
     <canvas ref={canvasRef} className="playback-timeline" role="img" aria-label="Playback timeline"
       data-playback-timeline="visible"
@@ -69,6 +80,9 @@ export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false}:{
       data-timeline-major={majorLocked?'true':'false'}
       data-timeline-staff={melody.map(note=>note.staffDegree).join(',')}
       data-timeline-playhead={layout?String(layout.playheadX):''}
-      height={TIMELINE_HEIGHT_PX}/>
+      height={TIMELINE_HEIGHT_PX}
+      onPointerDown={event=>{if(event.button===0)pointerOrigin.current={x:event.clientX,y:event.clientY};}}
+      onPointerUp={tap}
+      onPointerCancel={()=>{pointerOrigin.current=null;}}/>
   </div>;
 }

@@ -489,3 +489,18 @@ test('settings default instrument persists and playback session does not overwri
   await expect.poll(async()=>page.getByRole('combobox',{name:'Instrument',exact:true}).inputValue()).toBe('ELECTRIC_PIANO');
   const image=testInfo.outputPath('default-instrument-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
+
+test('timeline tap seeks from the centered playhead without starting playback',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  const timeline=page.locator('[data-playback-timeline="visible"]');
+  const position=page.getByRole('slider',{name:'Position',exact:true});
+  await expect(timeline).toBeVisible();
+  expect(Number(await position.inputValue())).toBe(1);
+  await expect.poll(async()=>Number(await timeline.getAttribute('data-timeline-playhead'))).toBeGreaterThan(0);
+  const playhead=Number(await timeline.getAttribute('data-timeline-playhead'));
+  await timeline.click({position:{x:playhead+60,y:20}});
+  await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(2,1);
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
+  await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','playing');
+  const image=testInfo.outputPath('timeline-tap-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
+});

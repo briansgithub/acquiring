@@ -10,6 +10,7 @@ import {
   layoutPlaybackTimeline,
   melodyTimelineStaffDegree,
   timelineNoteHeightPx,
+  timelineTapBeat,
 } from './timeline-layout';
 
 const section = (notes: JsonValue[], chords: JsonObject[], keys?: JsonValue[]): ExtractedSection => ({
@@ -64,6 +65,13 @@ describe('native PlaybackView timeline geometry, CSS px = dp', () => {
     expect(layout.melody[1].active).toBe(true);
     expect(layout.melody[1].y).toBe(44 - 5);
     expect(layout.chords[0].culled).toBe(true);
+  });
+
+  it('tap seeks from the centered playhead and clamps to 1..endBeat',()=>{
+    expect(timelineTapBeat(3,100,200,16)).toBe(3);
+    expect(timelineTapBeat(3,160,200,16)).toBe(4);
+    expect(timelineTapBeat(1,0,200,8)).toBe(1);
+    expect(timelineTapBeat(7,200,200,8)).toBe(8);
   });
 });
 

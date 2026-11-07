@@ -2,8 +2,8 @@
  * CSS px maps 1:1 to Android dp for pixelsPerBeat (60), melody lane (88), chord lane (40),
  * playhead stroke (2). Native noteHeight clamp is in raw px after dp.toPx, so a density-3
  * device yields ~9.4px staff vs 5 CSS px here; that mapping is explicit, not physical-mm
- * identity or T27 proof. Hidden in root-only/simple. No inertia/tap, Roman painter,
- * pitch-score overlay, or spacer-alignment hacks.
+ * identity or T27 proof. Hidden in root-only/simple. Tap seeks currentBeat+(tapX-centerX)/60.
+ * No inertia/coast, Roman painter, pitch-score overlay, or spacer-alignment hacks.
  */
 import type {ExtractedSection,MelodyNote} from '../../contracts';
 import {getKeys,keyAtBeat} from '../../domain/data';
@@ -16,6 +16,7 @@ export const TIMELINE_MELODY_LANE_PX = 88;
 export const TIMELINE_CHORD_LANE_PX = 40;
 export const TIMELINE_HEIGHT_PX = TIMELINE_MELODY_LANE_PX + TIMELINE_CHORD_LANE_PX;
 export const TIMELINE_PLAYHEAD_STROKE_PX = 2;
+export const TIMELINE_TAP_SLOP_PX = 18;
 export const TIMELINE_STAFF_DIVISIONS = 28;
 export const TIMELINE_NOTE_HEIGHT_MIN_PX = 5;
 export const TIMELINE_NOTE_HEIGHT_MAX_PX = 10;
@@ -162,4 +163,12 @@ export function layoutPlaybackTimeline(input: {
     visible: true, width, height: TIMELINE_HEIGHT_PX, pixelsPerBeat, noteHeight,
     playheadX, translationX, melody, chords,
   });
+}
+
+/** Frozen PlaybackView tap: currentBeat + (tapX - width/2) / pixelsPerBeat, clamped 1..endBeat. */
+export function timelineTapBeat(currentBeat:number,tapX:number,width:number,endBeat:number,pixelsPerBeat=TIMELINE_PIXELS_PER_BEAT):number {
+  const span=finite(width,'width'),rate=finite(pixelsPerBeat,'pixelsPerBeat');
+  if(span<=0||rate<=0)throw new RangeError('width and pixelsPerBeat must be > 0.');
+  const beat=finite(currentBeat,'currentBeat')+(finite(tapX,'tapX')-span/2)/rate;
+  return Math.min(finite(endBeat,'endBeat'),Math.max(1,beat));
 }

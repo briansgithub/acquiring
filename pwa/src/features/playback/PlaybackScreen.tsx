@@ -256,7 +256,8 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload}:PlaybackScreenPro
         {playback&&!playbackError&&<PlaybackCards section={selected[1]} beat={beat} baseBpm={playbackState.baseBpm} settings={settings} stopPreview={cardPreviewStop}
           majorLocked={majorLocked} onMajorLockedChange={setMajorLocked}
           onSing={request=>{cardPreviewStop.current?.();playback.pause();singingRequestId.current+=1;setSingingTarget(singingTargetRequest(request.first,request.second,singingRequestId.current));setDockExpanded(true);}}/>}
-        {playback&&!playbackError&&<PlaybackTimeline section={selected[1]} beat={beat} rootOnly={settings.rootOnly} majorLocked={majorLocked}/>}
+        {playback&&!playbackError&&<PlaybackTimeline section={selected[1]} beat={beat} rootOnly={settings.rootOnly} majorLocked={majorLocked}
+          onTapBeat={target=>{cardPreviewStop.current?.();playback.scrubTo(target);playback.finishScrub();}}/>}
         <SingingDock octaveOffset={octaveOffset} onOctaveOffsetChange={offset=>octaveSession.updateOctaveOffset(offset)}
           target={singingTarget} expanded={dockExpanded} onExpandedChange={setDockExpanded}/>
         <section className="panel playback-settings" aria-label="Playback settings">

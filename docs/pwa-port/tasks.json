@@ -1349,9 +1349,21 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position memory, Favorites star, and T21 session-vs-default instrument landed. Inertia/tap/Roman/scores remain.",
-      "nextAction": "T12 timeline tap-to-seek without inertia coast next. Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position memory, Favorites star, T21 session-vs-default, and timeline tap-to-seek landed. Inertia/drag-coast/Roman/scores remain.",
+      "nextAction": "T12 live timeline drag/scrub without inertia decay next. Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
+        {
+          "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-tap/browser-fix1",
+          "revision": "eb7b0d21 plus named timeline-tap tree",
+          "guards": [
+            "T12-timeline-tap-unit-001",
+            "T12-timeline-tap-typecheck-001",
+            "T12-timeline-tap-check-001",
+            "T12-timeline-tap-browser-001",
+            "T12-timeline-tap-browser-002"
+          ],
+          "result": "PASS 8 focused; typecheck-001 PASS; check-001 1006 unit/78 files + 1 parity + types + shell 33105f4f6fd6; browser-001 FAIL mistaken stopped-vs-paused after pauseForScrub (seek itself PASS); browser-002 FIRST PASS 17/17 2.1m including tap +60px → beat 2, requested false, not playing. No inertia/drag-coast/Roman/scores/device/whole-CI-green claim. Preexisting app test:browser audio-sink/Library 64px remains."
+        },
         {
           "command": "npx vitest run src/features/settings/instrument-session.test.ts src/features/playback/playback-route-memory.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/settings-default-instrument/browser-fix2",
           "revision": "b75165b8 plus named T21 selectAsDefault tree",
