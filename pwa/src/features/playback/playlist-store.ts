@@ -8,12 +8,14 @@ export interface PlaylistEntryRecord {
   readonly playlistId:string;readonly slug:string;readonly addedAt:number;
   readonly position:number|null;readonly sectionId:string|null;readonly sectionName:string|null;
 }
+export interface PlaylistSummary {readonly id:string;readonly name:string;readonly songCount:number}
 export interface PlaylistStore {
   ensureBuiltInPlaylist(id:string,name:string,createdAt:number):Promise<void>;
   isInPlaylist(playlistId:string,slug:string):Promise<boolean>;
   addEntry(entry:PlaylistEntryRecord):Promise<void>;
   removeEntry(playlistId:string,slug:string):Promise<void>;
   getSlugsIn(playlistId:string):Promise<string[]>;
+  getSummaries():Promise<PlaylistSummary[]>;
   deletePlaylist(playlistId:string):Promise<void>;
 }
 
@@ -76,6 +78,17 @@ export function userPlaylistStore(db:UserDatabase,namespace:UserNamespace='guest
       const rows=await db.list(namespace,'playlistEntries');
       return rows.map(row=>parsePlaylistEntryValue(row.value)).filter((entry):entry is PlaylistEntryRecord=>entry?.playlistId===playlistId)
         .sort(slugOrder).map(entry=>entry.slug);
+    },
+    async getSummaries(){
+      const playlists=(await db.list(namespace,'playlists')).map(row=>parsePlaylistValue(row.id,row.value)).filter((row):row is PlaylistRecord=>row!==null);
+      const entries=(await db.list(namespace,'playlistEntries')).map(row=>parsePlaylistEntryValue(row.value)).filter((row):row is PlaylistEntryRecord=>row!==null);
+      playlists.sort((a,b)=>{
+        if(a.isBuiltIn!==b.isBuiltIn)return a.isBuiltIn?-1:1;
+        if(a.createdAt!==b.createdAt)return a.createdAt-b.createdAt;
+        return a.name.localeCompare(b.name,'en',{sensitivity:'accent'});
+      });
+      return playlists.map(playlist=>({id:playlist.id,name:playlist.name,
+        songCount:entries.filter(entry=>entry.playlistId===playlist.id).length}));
     },
     async deletePlaylist(playlistId){
       const row=await db.get(namespace,'playlists',playlistId);

@@ -5,6 +5,21 @@ export interface SongPageRequest { mode:'search'|'artist'; text:string; limit?:n
 export interface SongPage { sourceSnapshot:string; rows:SongBrowseRow[]; hasMore:boolean; nextOffset:number|null }
 export const MAX_SONG_PAGE_SIZE=100;
 export const MAX_SONG_QUERY_LENGTH=512;
+export const MAX_BROWSE_SLUGS=1000;
+
+export function mapSongBrowseRows(records:readonly Record<string,unknown>[]):SongBrowseRow[] {
+  return records.map(row=>({slug:String(row.slug),artist:row.artist==null?null:String(row.artist),title:row.title==null?null:String(row.title),complexityRating:null}));
+}
+
+/** Frozen SongDao.getBrowseSongsBySlugs: IN-list, no payload filter; missing slugs return no row. */
+export function songBrowseBySlugsQuery(slugs:readonly string[]):{sql:string;bind:string[]} {
+  if(!Array.isArray(slugs)||slugs.length>MAX_BROWSE_SLUGS)throw new CatalogError('INVALID_REQUEST','Invalid song slug list');
+  for(const slug of slugs){
+    if(typeof slug!=='string'||!slug||slug.length>MAX_SONG_QUERY_LENGTH||slug.includes('\0'))throw new CatalogError('INVALID_REQUEST','Invalid song slug list');
+  }
+  if(slugs.length===0)return {sql:'SELECT slug,artist,title,NULL AS complexityRating FROM songs WHERE 0',bind:[]};
+  return {sql:`SELECT slug,artist,title,NULL AS complexityRating FROM songs WHERE slug IN (${slugs.map(()=>'?').join(',')})`,bind:[...slugs]};
+}
 
 /** Fixed projections from native SongDao; no chord payload ever crosses this RPC. */
 export function songPageQuery(request:SongPageRequest):{sql:string;bind:(string|number)[];limit:number;offset:number} {

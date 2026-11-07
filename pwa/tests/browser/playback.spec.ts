@@ -459,6 +459,28 @@ test('playback favorite star persists on T06 Favorites and confirms only a succe
   const image=testInfo.outputPath('favorite-star-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
 
+test('Library Playlists Favorites accordion lists starred songs and can unstar them',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  await page.getByRole('button',{name:'Add to Favorites',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Remove from Favorites',exact:true})).toHaveAttribute('aria-pressed','true');
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Expand Favorites',exact:true}).click();
+  await expect(page.locator('[data-playlists-section] [data-song-slug="detail-gzip"]')).toBeVisible();
+  await expect(page.getByRole('button',{name:'Collapse Favorites',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Remove Detail_Gzip from Favorites',exact:true}).click();
+  await expect(page.getByText('No songs yet. Tap the star on the Playback tab to add one.',{exact:true})).toBeVisible();
+  await expect(page.locator('[data-playlists-section] [data-song-slug="detail-gzip"]')).toHaveCount(0);
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Detail_Gzip');
+  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'Clear search',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
+  await page.setViewportSize({width:320,height:640});
+  await page.evaluate(()=>{document.documentElement.style.fontSize='32px';scrollTo(0,0);});
+  const image=testInfo.outputPath('library-favorites-accordion-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
+});
+
 test('settings default instrument persists and playback session does not overwrite it',async({page},testInfo)=>{
   await instrument(page);await installAndOpen(page);
   await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('CLARINET');
@@ -505,7 +527,7 @@ test('timeline tap seeks from the centered playhead without starting playback',a
   const image=testInfo.outputPath('timeline-tap-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
 
-test('timeline drag scrubs live opposite the finger without inertia or autoplay',async({page},testInfo)=>{
+test('timeline PointerEvent handler scrubs drag math; not real mouse or touch acceptance',async({page},testInfo)=>{
   await instrument(page);await installAndOpen(page);
   const timeline=page.locator('[data-playback-timeline="visible"]');
   const position=page.getByRole('slider',{name:'Position',exact:true});
@@ -530,5 +552,27 @@ test('timeline drag scrubs live opposite the finger without inertia or autoplay'
   await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(2,1);
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
   await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','playing');
-  const image=testInfo.outputPath('timeline-drag-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
+  const image=testInfo.outputPath('timeline-drag-handler-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
+});
+
+// Unproven: Playwright mouse/canvas drag stayed at beat 1 (57fa7312 cycles 1-2). Synthetic PointerEvent
+// is not mouse/touch acceptance. Keep the real-pointer assertions for a later input/device pass.
+test.fixme('real Playwright mouse canvas drag scrubs live opposite the finger without inertia',async({page})=>{
+  await instrument(page);await installAndOpen(page);
+  const timeline=page.locator('[data-playback-timeline="visible"]');
+  const position=page.getByRole('slider',{name:'Position',exact:true});
+  await expect(timeline).toBeVisible();
+  await expect.poll(async()=>Number(await timeline.getAttribute('data-timeline-playhead'))).toBeGreaterThan(0);
+  const playhead=Number(await timeline.getAttribute('data-timeline-playhead'));
+  const box=await timeline.boundingBox();
+  if(!box)throw new Error('timeline bounding box');
+  await timeline.scrollIntoViewIfNeeded();
+  await page.mouse.move(box.x+playhead,box.y+20);
+  await page.mouse.down();
+  await page.mouse.move(box.x+playhead-60,box.y+20,{steps:8});
+  await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(2,1);
+  await page.mouse.up();
+  await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(2,1);
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
+  await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','playing');
 });

@@ -16,6 +16,7 @@ export type CatalogCommand =
   | { kind: 'active'; catalogKind: CatalogManifest['kind'] }
   | { kind: 'status'; attemptId: string }
   | { kind: 'songPage'; query: SongPageRequest }
+  | { kind: 'songBrowseBySlugs'; slugs: string[] }
   | { kind: 'songPayload'; slug: string }
   | { kind: 'auralHeader' }
   | { kind: 'auralTarget'; query: AuralCatalogTargetQuery }

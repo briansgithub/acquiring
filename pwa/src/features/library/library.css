@@ -81,6 +81,27 @@
 .library-artist-action { flex: 0 0 auto; }
 .library-pagination { display: grid; justify-items: start; gap: .25rem; margin-top: 1rem; }
 .library-pagination .library-status { margin: 0; }
+.library-playlists { margin: 0 0 .75rem; display: grid; gap: .15rem; }
+.library-playlists-header, .library-playlist-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  text-align: left;
+}
+.library-playlist-name { flex: 1 1 auto; min-width: 0; }
+.library-playlist-count { flex: 0 0 auto; font-weight: 500; color: #d0cfd6; }
+.library-playlist-songs {
+  display: grid;
+  gap: .5rem;
+  margin: .5rem 0 0;
+  padding: 0;
+  list-style: none;
+  overflow: auto;
+}
+.library-playlist-empty, .library-playlist-error { margin: .5rem 0; line-height: 1.5; color: #d0cfd6; }
+.library-playlist-unstar { flex: 0 0 auto; color: #d8e6ff !important; }
 
 @media (max-width: 30rem) {
   .library-song { align-items: stretch; flex-direction: column; }

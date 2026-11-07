@@ -30,6 +30,15 @@ class MemoryStore implements PlaylistStore {
         return a.slug.localeCompare(b.slug,'en',{sensitivity:'accent'});
       }).map(entry=>entry.slug);
   }
+  async getSummaries(){
+    const playlists=[...this.playlists.values()].sort((a,b)=>{
+      if(a.isBuiltIn!==b.isBuiltIn)return a.isBuiltIn?-1:1;
+      if(a.createdAt!==b.createdAt)return a.createdAt-b.createdAt;
+      return a.name.localeCompare(b.name,'en',{sensitivity:'accent'});
+    });
+    return playlists.map(playlist=>({id:playlist.id,name:playlist.name,
+      songCount:[...this.entries.values()].filter(entry=>entry.playlistId===playlist.id).length}));
+  }
   async deletePlaylist(playlistId:string):Promise<void> {
     const playlist=this.playlists.get(playlistId);
     if(!playlist||playlist.isBuiltIn)return;
@@ -115,7 +124,7 @@ describe('native MainActivity favorite star',()=>{
     const session=new FavoriteSession();
     session.attachStore({
       ensureBuiltInPlaylist:async()=>{throw new Error('quota');},
-      isInPlaylist:async()=>false,addEntry:async()=>{},removeEntry:async()=>{},getSlugsIn:async()=>[],deletePlaylist:async()=>{},
+      isInPlaylist:async()=>false,addEntry:async()=>{},removeEntry:async()=>{},getSlugsIn:async()=>[],getSummaries:async()=>[],deletePlaylist:async()=>{},
     });
     await session.enterSong('detail-gzip');
     const toggling=session.toggle();

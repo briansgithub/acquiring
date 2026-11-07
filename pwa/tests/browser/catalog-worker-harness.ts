@@ -59,6 +59,7 @@ export const catalogHarness = {
   async open(name: string) { clients.set(name, await CatalogWorkerClient.open(value => { progress = value; })); return clients.get(name)!.info(); },
   songDetails(name:string,slug:string) {return readSongDetails(clients.get(name)!,slug);},
   songPage(name:string,query:import('../../src/storage/catalog/library-queries').SongPageRequest) { return clients.get(name)!.songPage(query); },
+  songBrowseBySlugs(name:string,slugs:string[]) { return clients.get(name)!.songBrowseBySlugs(slugs); },
   prepare(name: string, attempt: string, manifest: CatalogManifest, base: string) { return clients.get(name)!.prepare(attempt, manifest, base); },
   activate(name: string, attempt: string) { return clients.get(name)!.activate(attempt); },
   active(name: string, kind: CatalogManifest['kind']) { return clients.get(name)!.active(kind); },

@@ -82,3 +82,15 @@ test('development StrictMode releases replayed readers and supports Library remo
   await page.getByRole('button',{name:'Back',exact:true}).click();
   await expect(search).toHaveValue('ALPHA');await expect(rows(page)).toHaveCount(6);
 });
+test('Playlists Favorites accordion is empty until a song is starred and hides while search is focused',async({page})=>{
+  await install(page);
+  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Expand Favorites',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Expand Favorites',exact:true}).click();
+  await expect(page.getByText('No songs yet. Tap the star on the Playback tab to add one.',{exact:true})).toBeVisible();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Expand Favorites',exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'Clear search',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
+});

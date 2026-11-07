@@ -73,5 +73,6 @@ export function LibraryScreen(){
     onRetry={()=>{void controller.retry();}}
     onDownload={()=>{saveLibraryView();navigate('/settings',{fromLibrary:true});}}
     onOpenSong={row=>{controller.rememberFocused(row.slug);saveLibraryView();navigate('/songs/'+encodeURIComponent(row.slug),{fromLibrary:true});window.scrollTo(0,0);}}
+    browseBySlugs={controller.browseBySlugs}
   />;
 }

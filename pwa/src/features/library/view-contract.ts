@@ -10,4 +10,5 @@ export interface LibraryContentProps {
   onRetry():void;
   onDownload():void;
   onOpenSong(row:SongBrowseRow):void;
+  browseBySlugs(slugs:string[]):Promise<SongBrowseRow[]>;
 }

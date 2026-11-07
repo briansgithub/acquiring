@@ -1,5 +1,7 @@
+import {useState} from 'react';
 import { displayArtist, displayTitle } from '../../domain/data';
-import type { SongBrowseRow } from './grouping';
+import { libraryChromeVisible, type SongBrowseRow } from './grouping';
+import {PlaylistsSection} from './PlaylistsSection';
 import type { LibraryContentProps } from './view-contract';
 import './library.css';
 
@@ -12,7 +14,9 @@ export function LibraryContent({
   onRetry,
   onDownload,
   onOpenSong,
+  browseBySlugs,
 }: LibraryContentProps) {
+  const [searchFocused,setSearchFocused]=useState(false);
   const browsingArtist = state.artist !== null;
   const hasSearch = state.text.trim().length > 0;
   const loading = state.phase === 'loading';
@@ -34,6 +38,7 @@ export function LibraryContent({
             type="button"
             data-song-slug={row.slug}
             aria-label={`Open ${title}`}
+            onMouseDown={event => event.preventDefault()}
             onClick={() => onOpenSong(row)}
           >{title}</button>
         </h3>
@@ -43,12 +48,16 @@ export function LibraryContent({
         className="library-artist-action"
         type="button"
         aria-label={`Songs by ${artist}`}
+        onMouseDown={event => event.preventDefault()}
         onClick={() => onArtist(rawArtist)}
       >Songs by artist</button>}
     </li>;
   };
 
   return <section className="library-content" aria-labelledby="library-heading" aria-busy={loading || state.loadingMore}>
+    {libraryChromeVisible(searchFocused) && !browsingArtist &&
+      <PlaylistsSection browseBySlugs={browseBySlugs} onOpenSong={onOpenSong} />}
+
     <header className="library-header">
       {browsingArtist ? <>
         <button className="library-back" type="button" onClick={onClearArtist}>Back to search</button>
@@ -65,9 +74,14 @@ export function LibraryContent({
             data-library-search
             value={state.text}
             onChange={event => onSearch(event.currentTarget.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
             autoComplete="off"
           />
-          <button className="library-clear-search" type="button" onClick={() => onSearch('')}>Clear search</button>
+          <button className="library-clear-search" type="button"
+            onMouseDown={event => event.preventDefault()}
+            onClick={() => { setSearchFocused(false); onSearch(''); }}
+          >Clear search</button>
         </div>
       </>}
     </header>
@@ -96,7 +110,8 @@ export function LibraryContent({
     </ul>}
 
     {state.phase === 'ready' && state.nextOffset !== null && <div className="library-pagination">
-      <button className="library-load-more" type="button" disabled={state.loadingMore} onClick={onLoadMore}>
+      <button className="library-load-more" type="button" disabled={state.loadingMore}
+        onMouseDown={event => event.preventDefault()} onClick={onLoadMore}>
         {state.loadingMore ? 'Loading more...' : 'Load more songs'}
       </button>
       {state.loadingMore && <p className="library-status" role="status" aria-live="polite">Loading more songs...</p>}

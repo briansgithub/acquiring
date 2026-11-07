@@ -7,7 +7,7 @@ import {captureAuralTargetQuery,readAuralTargetRow} from './aural-target-query';
 import {decodeAuralCatalogRun,createAuralCatalogTarget} from './aural-target-codec';
 import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
 import {readAuralHeader} from './aural-header';
-import { songPageQuery, type SongPageRequest, type SongPage } from './library-queries';
+import { mapSongBrowseRows, songBrowseBySlugsQuery, songPageQuery, type SongPageRequest, type SongPage } from './library-queries';
 import {songDetailQuery,songPayloadRecord,readSongComplexity,type SongPayload} from './detail-query';
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { sha256 as incrementalSha256 } from '@noble/hashes/sha2.js';
@@ -198,27 +198,34 @@ async function confirmedSongs():Promise<{id:string;sourceSnapshot:string}> {
   }
   return confirmedSongRead!;
 }
-async function songPayload(slug:string):Promise<SongPayload|null> {
-  const plan=songDetailQuery(slug),source=await confirmedSongs();
+async function withSongs<T>(read:(db:InstanceType<Sqlite3Static['oo1']['DB']>,source:{id:string;sourceSnapshot:string})=>T):Promise<T> {
+  const source=await confirmedSongs();
   let db:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
   try {
     db=new sqlite!.oo1.DB(stagedPath(source.id,'catalog.db'),'r',owner().vfsName);
-    const payload=songPayloadRecord(source.sourceSnapshot,db.selectObjects(plan.sql,plan.bind)[0]);
-    return payload&&{...payload,complexityRating:readSongComplexity(slug,(sql,bind)=>db!.selectValue(sql,bind))};
+    return read(db,source);
   } catch(error){confirmedSongRead=null;throw error;}
   finally {db?.close();}
 }
+async function songPayload(slug:string):Promise<SongPayload|null> {
+  const plan=songDetailQuery(slug);
+  return withSongs((db,source)=>{
+    const payload=songPayloadRecord(source.sourceSnapshot,db.selectObjects(plan.sql,plan.bind)[0]);
+    return payload&&{...payload,complexityRating:readSongComplexity(slug,(sql,bind)=>db.selectValue(sql,bind))};
+  });
+}
 async function songPage(request:SongPageRequest):Promise<SongPage> {
-  const plan=songPageQuery(request),source=await confirmedSongs();
-  let db:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
-  try {
-    db=new sqlite!.oo1.DB(stagedPath(source.id,'catalog.db'),'r',owner().vfsName);
+  const plan=songPageQuery(request);
+  return withSongs((db,source)=>{
     const records=db.selectObjects(plan.sql,plan.bind);
     const hasMore=records.length>plan.limit;
-    const rows=records.slice(0,plan.limit).map(row=>({slug:String(row.slug),artist:row.artist===null?null:String(row.artist),title:row.title===null?null:String(row.title),complexityRating:null}));
+    const rows=mapSongBrowseRows(records.slice(0,plan.limit) as Record<string,unknown>[]);
     return {sourceSnapshot:source.sourceSnapshot,rows,hasMore,nextOffset:hasMore?plan.offset+rows.length:null};
-  } catch(error){confirmedSongRead=null;throw error;}
-  finally {db?.close();}
+  });
+}
+async function songBrowseBySlugs(slugs:string[]) {
+  const plan=songBrowseBySlugsQuery(slugs);
+  return withSongs(db=>mapSongBrowseRows(db.selectObjects(plan.sql,plan.bind) as Record<string,unknown>[]));
 }
 /** One immutable attempt/readonly handle for the entire awaited command. */
 async function withAuralDatabase<T>(read:(db:InstanceType<Sqlite3Static['oo1']['DB']>,source:{id:string;sourceSnapshot:string})=>T|Promise<T>):Promise<T> {
@@ -279,6 +286,7 @@ async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'auralStatistics') return auralStatistics(command.request);
   if (command.kind === 'auralHeader') return auralHeader();
   if (command.kind === 'songPage') return songPage(command.query);
+  if (command.kind === 'songBrowseBySlugs') return songBrowseBySlugs(command.slugs);
   if (command.kind === 'songPayload') return songPayload(command.slug);
   if (command.kind === 'prepare') return prepare(id, command.attemptId, validateManifest(command.manifest), command.baseUrl);
   if (command.kind === 'activate') return activate(command.attemptId);

@@ -58,6 +58,10 @@ test('native scalar song paging/search/artist parity,reopen and catalog switch',
   for(const bad of [{mode:'search',text:'alpha',limit:101},{mode:'search',text:'alpha',offset:-1},{mode:'sql',text:'DROP TABLE songs'}]){
     await expect(call(page,'songPage',['reader',bad])).rejects.toThrow('Invalid song');
   }
+  const bySlugs=await call<{slug:string}[]>(page,'songBrowseBySlugs',['reader',['quote','missing-slug','a-alpha']]);
+  expect(bySlugs.map(row=>row.slug).sort()).toEqual(['a-alpha','quote']);
+  expect(await call(page,'songBrowseBySlugs',['reader',[]])).toEqual([]);
+  await expect(call(page,'songBrowseBySlugs',['reader',['a\0b']])).rejects.toThrow('Invalid song slug');
   await call(page,'close',['reader']);
   await call(page,'open',['reader']);
   expect(await query({mode:'search',text:'ALPHA',limit:2})).toEqual(first);

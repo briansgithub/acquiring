@@ -1023,9 +1023,27 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
-      "slice": "Luna presentation plus coordinator lifecycle/history/browser integration",
-      "nextAction": "Partial Library flow is recoverably checkpointed with its failing Settings Back scroll test intact. Await existing owner approval before further scroll investigation or retest (two cycles exhausted). Independent T08/T09 and later Library grouping/recents/favorites/playlist work may continue under new claims. Song route still T11 placeholder;T10 not complete.",
+      "slice": "Search/paging/artist plus Favorites accordion. Recents/All Songs/Play-Shuffle remain. Settings Back 64px still owner-blocked.",
+      "nextAction": "Favorites accordion landed. Next dependency-safe T10 slice: Library recents (same slug hydrate). Play/Shuffle playlist queue still explicit gap. Do not touch Settings Back 64px. T10 not complete. Aural last.",
       "validation": [
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts src/features/playback/favorites.test.ts; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-favorites/browser-fix4",
+          "revision": "57fa7312 plus named Favorites accordion tree",
+          "guards": [
+            "T10-favorites-accordion-unit-001",
+            "T10-favorites-accordion-typecheck-001",
+            "T10-favorites-accordion-check-001",
+            "T10-favorites-accordion-browser-001",
+            "T10-favorites-accordion-browser-002",
+            "T10-favorites-accordion-browser-003",
+            "T10-favorites-accordion-browser-004",
+            "T10-favorites-accordion-check-002",
+            "T10-favorites-accordion-browser-005",
+            "T10-favorites-accordion-check-003",
+            "T10-favorites-accordion-browser-006"
+          ],
+          "result": "PASS 34 focused then 1013 unit/79 files + 1 parity + types + shell 277f3100123e. Real Playwright mouse/canvas drag remains test.fixme (stayed beat 1 at 57fa7312); synthetic PointerEvent is handler math only, not mouse/touch acceptance. browser-001..004 recovered (2-worker lock, stale dist, click-steal). browser-005 Clear-search miss after accordion remount; mousedown preventDefault on song/artist/clear/load-more. browser-006 FIRST PASS 24 passed/1 skipped (mouse drag fixme) 2.7m. Settings Back assertion unchanged and excluded. Play/Shuffle not started. catalog-worker 310 after withSongs extract (already 302). Partial T10, not recents/All Songs/device/whole-CI-green."
+        },
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library; node node_modules/typescript/lib/tsc.js --noEmit (from pwa)",
           "revision": "11c7a274 plus reviewed grouping tree committed next",
@@ -1067,7 +1085,8 @@
         "Pre-browser integration review:Settings installer singleton still retained catalog ownership after panel unmount,so add panel cleanup pause before Library opens its reader. Also save Library scroll before header Settings navigation,clear stale cached rows on missing catalog,and use h2under shell h1. These are coordinator-owned lifecycle/semantic corrections;actualbrowserproof next.",
         "First actualLibrary UI browser run:offline320px/200percent passed;open-song Back restored40rows/query/scroll/focus. Settingsroundtrip scroll failed because header was scrolled offscreen and clicking it moved the page to0;pin shell topbar like nativeScaffold. Artistview itself worked;fixture expected Artist A but native display adapter correctly preserves mixed-case Artist-A. Correct literal,remove redundantlocator assertion;one bounded fix/retest cycle1. No acceptance claimed for failed checks.",
         "Luna/medium review found independent development StrictMode effect replay starts an already disposed reader;not the blocked scroll issue. Screenshot visually inspected:controls/text wrap without obvious clipping/overflow. Pre-edit root owns a readonly closed flag and fresh-reader recreation on replay,with actual dev-origin install/search/Settings teardown proof. Do not investigate or rerun the failing scroll gate. Combined pitch tree263unit+input/types/build PASS before this narrow lifecycle fix;live63%/10%.",
-        "Actual Library integrated:search/debounce/page/artist/history/draft/focus/worker teardown/BFCache;9controller cases. Luna readonly review found dev StrictMode replay uses disposed reader;fresh replacement plus abort of pending worker open corrected one ownership race. Final10Chrome cases PASS35.3s:4installer,3shell,artist/ownership,offline320px200percent andactual dev StrictMode install/search/remount. Source not fully accepted:Settings Back64px scroll drift remains and its test is unchanged/excluded explicitly from covering run. Root source checkpoint is partial feature with known gate,not T10 completion. Optional client AbortSignal3meaningful cancellation cases pass. No dependencies/contracts/lockfile or production publication changed."
+        "Actual Library integrated:search/debounce/page/artist/history/draft/focus/worker teardown/BFCache;9controller cases. Luna readonly review found dev StrictMode replay uses disposed reader;fresh replacement plus abort of pending worker open corrected one ownership race. Final10Chrome cases PASS35.3s:4installer,3shell,artist/ownership,offline320px200percent andactual dev StrictMode install/search/remount. Source not fully accepted:Settings Back64px scroll drift remains and its test is unchanged/excluded explicitly from covering run. Root source checkpoint is partial feature with known gate,not T10 completion. Optional client AbortSignal3meaningful cancellation cases pass. No dependencies/contracts/lockfile or production publication changed.",
+        "2026-11-07T11:15Z Favorites accordion on continuation: T06 getSummaries + exclusive Library songBrowseBySlugs hydrate, unstar, empty copy, search-focus hide. Play/Shuffle not started. Settings Back assertion untouched. browser-006 24 passed/1 skipped (honest mouse-drag fixme). Partial T10."
       ],
       "blocker": "Exact Settings->Library scroll restoration remains64pxdifferent after2diagnose/fix/retest cycles. Query/draft/40loaded rows andsongBack focus/scroll pass;artist/browserBack/ownership andoffline320px200percent cases pass. User AGENTS.mdrequiresaskingbeforeexpanding;asyncapproval question pending. Do not attempt a third scroll fix or relax assertion without that answer. Continue independent packages.",
       "dependencyGates": {
@@ -1349,8 +1368,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, and live drag/scrub landed. Inertia coast/Roman/scores remain.",
-      "nextAction": "Rotate off timeline polish: T10 Library Favorites accordion next (star has no browse UI). Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, and live drag/scrub landed. Real mouse/canvas drag still failing; synthetic PointerEvent is handler-only. Inertia coast/Roman/scores remain.",
+      "nextAction": "T10 Favorites accordion landed. Do not polish inertia/Roman or spend this pass on mouse/canvas drag — track for later input/device. T09 still required for scores. Library recents next. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
         {
           "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-drag/browser-fix2",

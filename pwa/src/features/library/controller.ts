@@ -10,7 +10,11 @@ export interface LibraryView {
 export interface LibraryState extends LibraryView {
   phase:'loading'|'ready'|'missing'|'error'; loadingMore:boolean; message?:string;
 }
-export interface LibraryClient { songPage(query:SongPageRequest):Promise<SongPage>; terminate():void }
+export interface LibraryClient {
+  songPage(query:SongPageRequest):Promise<SongPage>;
+  songBrowseBySlugs(slugs:string[]):Promise<SongBrowseRow[]>;
+  terminate():void;
+}
 const emptyView=():LibraryView=>({text:'',artist:null,rows:[],sourceSnapshot:null,nextOffset:null});
 function errorMessage(error:unknown):string {
   if(error instanceof CatalogError&&error.code==='BUSY')return 'Your catalog is open in another tab. Close that tab, then try again.';
@@ -84,6 +88,12 @@ export class LibraryController {
     if(this.state.phase!=='ready'||this.state.loadingMore||this.state.nextOffset===null||this.disposed)return Promise.resolve();
     return this.load(true);
   }
+  browseBySlugs=async(slugs:string[]):Promise<SongBrowseRow[]>=>{
+    if(this.disposed)return [];
+    const reader=await this.reader();
+    if(this.disposed)return [];
+    return reader.songBrowseBySlugs(slugs);
+  };
   private async load(append:boolean,restore?:LibraryView):Promise<void> {
     const generation=this.generation,{text,artist,nextOffset}=this.state;
     if(this.disposed)return;

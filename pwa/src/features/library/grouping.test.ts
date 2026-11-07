@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {alphabeticalGroup,alphabeticalGroups,browseEntry,canonicalMode,canonicalModes,complexityBucket,complexityGroups,complexityOnesDigit,fuzzySongMatches,groupsFor,modeGroups,modesInSections,toggledExpandedGroup} from './grouping';
+import {alphabeticalGroup,alphabeticalGroups,browseEntry,canonicalMode,canonicalModes,complexityBucket,complexityGroups,complexityOnesDigit,fuzzySongMatches,groupsFor,libraryChromeVisible,modeGroups,modesInSections,toggledExpandedGroup} from './grouping';
 
 describe('native AllSongsGroupingTest at801cf798',()=>{
   it('starts collapsed, switches one heading, and toggles the same heading closed',()=>{
@@ -7,6 +7,10 @@ describe('native AllSongsGroupingTest at801cf798',()=>{
     selected=toggledExpandedGroup(selected,'A');expect(selected).toBe('A');
     selected=toggledExpandedGroup(selected,'B');expect(selected).toBe('B');
     expect(toggledExpandedGroup(selected,'B')).toBeNull();
+  });
+  it('hides library chrome while search is focused',()=>{
+    expect(libraryChromeVisible(false)).toBe(true);
+    expect(libraryChromeVisible(true)).toBe(false);
   });
   it('orders A-Z then0-9 then symbols and classifies the native title cases',()=>{
     expect(alphabeticalGroups.map(g=>g.label).join('')).toBe('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#');

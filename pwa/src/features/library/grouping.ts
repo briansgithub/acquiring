@@ -23,6 +23,8 @@ export function groupsFor(mode:AllSongsSortMode):readonly AllSongsGroup[] {
   return mode==='alphabetical'?alphabeticalGroups:mode==='complexity'?complexityGroups:modeGroups;
 }
 export const toggledExpandedGroup=(current:string|null,selected:string):string|null=>current===selected?null:selected;
+/** Frozen LibrarySearch.kt: playlists/All Songs chrome hides while the search field is focused. */
+export const libraryChromeVisible=(searchFocused:boolean):boolean=>!searchFocused;
 export function alphabeticalGroup(title:string|null):string {
   const first=title?.trim().charAt(0).toUpperCase()??'';
   return /^[A-Z0-9]$/.test(first)?first:'#';

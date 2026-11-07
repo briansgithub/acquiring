@@ -4,7 +4,10 @@ import {LibraryController,type LibraryClient} from './controller';
 import type {SongPage} from '../../storage/catalog/library-queries';
 function deferred<T>(){let resolve!:(value:T)=>void,reject!:(error:unknown)=>void;const promise=new Promise<T>((yes,no)=>{resolve=yes;reject=no;});return {promise,resolve,reject};}
 const page=(slug:string,sourceSnapshot='one',nextOffset:number|null=null):SongPage=>({sourceSnapshot,rows:[{slug,title:slug,artist:'Artist',complexityRating:null}],hasMore:nextOffset!==null,nextOffset});
-function fixture(){const client={songPage:vi.fn<LibraryClient['songPage']>(),terminate:vi.fn()};return {client,open:vi.fn(async()=>client)};}
+function fixture(){
+  const client={songPage:vi.fn<LibraryClient['songPage']>(),songBrowseBySlugs:vi.fn<LibraryClient['songBrowseBySlugs']>(),terminate:vi.fn()};
+  return {client,open:vi.fn(async()=>client)};
+}
 afterEach(()=>vi.useRealTimers());
 it('debounces text and never publishes an older response after a newer query',async()=>{
   vi.useFakeTimers();const {client,open}=fixture(),old=deferred<SongPage>(),fresh=deferred<SongPage>();
@@ -64,4 +67,14 @@ it('does not offer cached songs if the catalog has disappeared',async()=>{
   const {client,open}=fixture();client.songPage.mockRejectedValue(new CatalogError('NOT_INSTALLED','missing'));
   const library=new LibraryController({text:'',artist:null,rows:page('old').rows,sourceSnapshot:'one',nextOffset:20,focusSlug:'old'},open);
   await library.start();expect(library.getSnapshot().phase).toBe('missing');expect(library.getSnapshot().rows).toEqual([]);expect(library.getSnapshot().sourceSnapshot).toBeNull();library.dispose();
+});
+
+it('hydrates playlist slugs through the exclusive reader and stops after dispose',async()=>{
+  const {client,open}=fixture();client.songPage.mockResolvedValue(page('a'));
+  client.songBrowseBySlugs.mockResolvedValue([{slug:'a',artist:'Artist',title:'A',complexityRating:null}]);
+  const library=new LibraryController(undefined,open);await library.start();
+  await expect(library.browseBySlugs(['gone','a'])).resolves.toEqual([{slug:'a',artist:'Artist',title:'A',complexityRating:null}]);
+  expect(client.songBrowseBySlugs).toHaveBeenCalledWith(['gone','a']);
+  library.dispose();
+  await expect(library.browseBySlugs(['a'])).resolves.toEqual([]);
 });
