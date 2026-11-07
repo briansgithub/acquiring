@@ -221,3 +221,5 @@ it('true-background clear cancels Flip-Flop rest and cannot reacquire when the r
  now.t+=FLIPFLOP_SLOT_MS;session.tick();now.t+=FLIPFLOP_SLOT_MS;session.tick();expect(session.action.kind).toBe('flipflop-rest');
  session.clearCollapsedToolState();now.t+=FLIPFLOP_REST_MS;session.tick();expect(session.action.kind).toBe('idle');expect(session.ownsMicrophone).toBe(false);expect(session.capture.isRunning).toBe(false);expect(session.slot1).toBeNull();expect(session.slot2).toBeNull();session.release();
 });
+
+it('interrupted exit restores passive slots without mic intent or ownership',()=>{const session=sessionAt({t:1000});const pitch={midi:69,cents:0,label:'A4'};session.clearCollapsedToolState();session.restorePassiveSlots(pitch,pitch);expect(session.slot1).toEqual(pitch);expect(session.slot2).toEqual(pitch);expect(session.action.kind).toBe('idle');expect(session.ownsMicrophone).toBe(false);expect(session.capture.isRunning).toBe(false);session.record(1);session.restorePassiveSlots(pitch,pitch);expect(session.slot1).toBeNull();session.release();});

@@ -44,3 +44,6 @@
 .singing-dock__tape-oct {
   position: absolute; left: .15rem; bottom: .1rem; font-size: .65rem; opacity: .55;
 }
+
+.singing-dock__body { overflow: hidden; }
+.singing-dock__body[inert] { pointer-events: none; user-select: none; }

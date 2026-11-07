@@ -118,6 +118,12 @@ export class SingingMicrophoneSession {
     this.emit();
   }
 
+  /** Restore passive pitches on an interrupted visual exit; never restores microphone intent. */
+  restorePassiveSlots(first:SingingSlotPitch|null,second:SingingSlotPitch|null):void {
+    if(this.action.kind!=='idle')return;
+    this.slot1=first;this.slot2=second;this.emit();
+  }
+
   setFlipFlop(enabled: boolean): void {
     this.lease.stop();
     if (!enabled) {

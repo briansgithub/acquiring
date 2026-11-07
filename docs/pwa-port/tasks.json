@@ -2307,12 +2307,12 @@
       ],
       "acceptance": "Fresh-only median scoring, rest/dropout/seek/permission cleanup and transpose-once",
       "status": "in_progress",
-      "owner": "coordinator (cursor-grok /workspace)",
+      "owner": "codex",
       "branch": "codex/pwa-continuation",
-      "worktree": "/workspace",
-      "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
-      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt + shared PLAYBACK_PERSISTENT/SINGING_TOOL capture + banked median kernel/hook/badges + live halo/marker from capture + SYNTHETIC banked-score Chrome + singing-dock listen slot scoring + Record/request-clear/captured-pitch preview/snap tape + collapse slot-clear/shared PREVIEW/tape ticks + Flip-Flop local activeTarget drop. Median Aural scores remain last.",
-      "nextAction": "Flip-Flop target-drop PASS with Artists chip. Policy A accepted. Do not fake scores. Do not start Aural/T15. Do not polish inertia/tween. Pixel/real-mic unproven.",
+      "worktree": "/workspace/acquiring",
+      "baseCommit": "a5328b7982216aa483a0ff5702ebfb153cd6df97",
+      "slice": "singing-collapse-visual-exit",
+      "nextAction": "Bounded desktop collapse slice validated, not full T13/device parity. Next independent ready primary gap: native collapsed singing-tool persistent-monitoring Stop affordance and owner-safe cancellation (HummingIntervalPopup collapsed header isPersistentMonitoring/onStopPersistent). Keep 800ms policy, tab/BFCache/Safari/Pixel and other visual gaps open; Aural last.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -2414,6 +2414,24 @@
             "T13-flipflop-target-drop-browser-001"
           ],
           "result": "PASS 1138 unit/100 files + 1 parity + types + shell 4d3248447f6a. Flip-Flop enable/disable FIRST PASS: slot 1 degree — + record prompt; policy A 800ms still starts; collapse still cancels. Native activeTarget=null without changing requestId. Codex gpt-6.1-sol 01a1b662 MATCH. Snap/tween/density/inertia/collapse-shrink explicit nonparity. No fabricated cents. Partial T13. Not device/whole-CI-green."
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T13-collapse-check-002 --owner codex --task T13 --next-action 'Validate final live cleanup and visual-only collapse source after observer type corrections' --cwd pwa -- npm run check",
+          "revision": "a5328b79 + source hashes .artifacts/pwa-port/t13-collapse-source.json; final follow-up changes only passive test observer bookkeeping",
+          "result": "PASS 1214 unit /110 files (4 new), 1 parity, strict types and production build. Shell d5910c19b7cd /12 files. Existing >500kB bundle warning.",
+          "log": ".artifacts/pwa-port/runs/T13-collapse-check-002/result.json"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T13-collapse-build-003 --owner codex --task T13 --next-action 'Check corrected observer types and final production shell; unit/parity runtime source unchanged since check-002' --cwd pwa -- npm run build",
+          "revision": "same final hashes",
+          "result": "PASS final strict types and production build; same shell d5910c19b7cd.",
+          "log": ".artifacts/pwa-port/runs/T13-collapse-build-003/result.json"
+        },
+        {
+          "command": "python pwa/scripts/run-control/run_control.py run --run-id T13-collapse-browser-002 --owner codex --task T13 --next-action 'Validate final singing exit and original singing/policy/capture/pagehide regression assertions; keep deferred tab skip unchanged' --cwd pwa -- npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/playback.spec.ts tests/browser/audio-preview.spec.ts --grep 'singing|Singing|humming|Humming|Flip-Flop|policy A|pending capture|product genuine|product route Back|real tab departure|trusted pagehide' --output .artifacts/pwa-port/t13-collapse-browser-002",
+          "revision": "same final hashes",
+          "result": "PASS 17/1 skipped (original trusted-tab fixme), 3.6m system Chromium. New SYNTHETIC retained A4 pair/300ms shrink/rapid reopen/stale tap+interval audio cancellation 15.2s; genuine navigation/pagehide 17.3s; reduced motion 12.6s. Original singing octave, policy A, exclusive leases, pending capture and pagehide cases pass. Saved JSON evidence: 16 exit frames duration300/inert/aria-hidden/mic idle, tracks ended/contexts closed, autoTimers0; trusted pagehide true persistedfalse/runningAnimations0; reduced-motion calls0. Not physical mic/real prompt/Pixel/Safari/BFCache/trusted-tab proof.",
+          "log": "pwa/.artifacts/pwa-port/t13-collapse-browser-002"
         }
       ],
       "progress": [
@@ -2427,7 +2445,8 @@
         "2026-11-07T14:00Z Singing-dock listen slot scoring: displayedSlotData retarget, getPitchColor bands, remaining countdown, rounded interval green, Flip-Flop nearest/white. SYNTHETIC captured slot ¢ Chrome. Target +0¢ placeholder ≠ sung score ≠ halo rest 0¢ ≠ banked empty/·. Codex 01a1b64a. Rolling tape/Record/preview/new-request clear remain. Settings Back untouched. No 120fps claim.",
         "2026-11-07T14:05Z Record + request-clear + captured-pitch preview + snap tape. SYNTHETIC Record nearest ¢ and new card request clears slots. Interval 1000ms launch gaps. Collapse still keeps slots. Codex 01a1b652. Settings Back untouched. Next Artists chip.",
         "2026-11-07T14:15Z Collapse slot-clear + shared PREVIEW owner + tape ticks. Immediate clear (no shrink animation). SYNTHETIC slot tap sets cards preview phase. Codex 01a1b658. Settings Back untouched. Next Artists chip.",
-        "2026-11-07T14:22Z Flip-Flop local displayedTarget=null (native activeTarget) without changing requestId. Auto-listen gated on displayedTargetRef. After disable, labels stay empty until new card request. Same batch as Artists chip. Codex 01a1b662 MATCH. Settings Back untouched. Snap/tween/density/inertia still nonparity."
+        "2026-11-07T14:22Z Flip-Flop local displayedTarget=null (native activeTarget) without changing requestId. Auto-listen gated on displayedTargetRef. After disable, labels stay empty until new card request. Same batch as Artists chip. Codex 01a1b662 MATCH. Settings Back untouched. Snap/tween/density/inertia still nonparity.",
+        "2026-11-07 a5328b79 bounded collapse: pinned HummingIntervalPopup EXPAND_ANIMATION_MS300, clearAfterCollapse delayed clear, interrupted reopen retain passive content. Native icon only marks clearAfterCollapse and expanded=false; owner immediate capture/audio/timer/target cleanup supersedes that stop delay (native collapseTick already stops immediately). Data-only frozen exit snapshot is inert/aria-hidden, actual Web Animations height tween300, completion generation guarded; passive reopen never restores mic/action/timers; full exit clears display. Immediate pagehide/unmount cleanup cancels animation and preview/tap/auto timers. Reduced-motion query skips visual animation/removes immediately as explicit browser accessibility adaptation, not native animator-scale proof. Original Stop passive display preserved, operational work cancelled. First check failed observer Web Animations typings then corrected; first browser 2pass/1fail due observer counting an expired800ms timer, observer now deletes fired IDs with same zero-active assertion. Final 1214unit/1parity/types/build and17pass/1oldskip. No assertion weakening, score/data/sync changes, remote calls or device claims."
       ],
       "blocker": null,
       "dependencyGates": {

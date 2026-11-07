@@ -839,22 +839,29 @@ for(const stage of ['permission','worklet'] as const)test('pending capture '+sta
 });
 
 // Genuine browser navigation receipts. Fake/silent streams and optional async worklet gate are NOT physical mic/BFCache proof.
-async function instrumentCaptureDeparture(page:Page,holdModule=false){
- await page.addInitScript(hold=>{
+async function instrumentCaptureDeparture(page:Page,holdModule=false,synthetic=false){
+ await page.addInitScript(({hold,synthetic})=>{
   const streams:MediaStream[]=[],contexts:AudioContext[]=[];let calls=0,graphs=0,modulePending=false,release!:()=>void;
   const gate=new Promise<void>(resolve=>{release=resolve;});
   const gum=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-  navigator.mediaDevices.getUserMedia=async constraints=>{calls++;const stream=await gum(constraints);streams.push(stream);return stream;};
+  navigator.mediaDevices.getUserMedia=async constraints=>{
+   calls++;let stream:MediaStream;
+   if(synthetic){
+    const ctx=new AudioContext();await ctx.resume();const osc=ctx.createOscillator();osc.frequency.value=440;const dest=ctx.createMediaStreamDestination();osc.connect(dest);osc.start();stream=dest.stream;
+    for(const track of stream.getTracks()){const stop=track.stop.bind(track);track.stop=()=>{stop();try{osc.stop();}catch{}void ctx.close().catch(()=>{});};}
+   }else stream=await gum(constraints);
+   streams.push(stream);return stream;
+  };
   const Native=window.AudioContext;
   window.AudioContext=class extends Native{constructor(options?:AudioContextOptions){super(options);if(options?.sampleRate===16000)contexts.push(this);}createMediaStreamSource(stream:MediaStream){graphs++;return super.createMediaStreamSource(stream);}};
   const add=AudioWorklet.prototype.addModule;
   AudioWorklet.prototype.addModule=async function(url,options){await add.call(this,url,options);if(hold){modulePending=true;await gate;}};
   const autoTimers=new Set<number>(),set=window.setTimeout.bind(window),clear=window.clearTimeout.bind(window);
-  window.setTimeout=((handler:TimerHandler,delay?:number,...args:unknown[])=>{const id=set(handler,delay,...args);if(delay===800)autoTimers.add(id);return id;}) as typeof window.setTimeout;
+  window.setTimeout=((handler:TimerHandler,delay?:number,...args:unknown[])=>{let id:number;const callback=delay===800&&typeof handler==='function'?(...values:unknown[])=>{autoTimers.delete(id);return handler.apply(window,values);}:handler;id=set(callback,delay,...args);if(delay===800)autoTimers.add(id);return id;}) as typeof window.setTimeout;
   window.clearTimeout=(id)=>{autoTimers.delete(Number(id));clear(id);};
   const snapshot=()=>({calls,graphs,modulePending,autoTimers:autoTimers.size,tracks:streams.flatMap(stream=>stream.getTracks().map(track=>track.readyState)),contexts:contexts.map(context=>context.state)});
   (window as unknown as {captureDeparture:{snapshot:typeof snapshot;release:()=>void;observe:()=>void}}).captureDeparture={snapshot,release,observe:()=>window.addEventListener('pagehide',event=>{sessionStorage.setItem('capture-departure-proof',JSON.stringify({trusted:event.isTrusted,persisted:event.persisted,capture:snapshot()}));},{once:true})};
- },holdModule);
+ },{hold:holdModule,synthetic});
 }
 async function captureDeparture(page:Page){return page.evaluate(()=>(window as unknown as {captureDeparture:{snapshot:()=>{calls:number;graphs:number;modulePending:boolean;autoTimers:number;tracks:string[];contexts:string[]}}}).captureDeparture.snapshot());}
 for(const mode of ['active monitoring','armed 800ms singing'] as const)test('product genuine reload pagehide retires '+mode+' and fresh document stays idle',async({page,context},info)=>{
@@ -884,4 +891,66 @@ test('product route Back retires pending capture; late worklet cannot revive it 
  await page.getByRole('button',{name:'Play song',exact:true}).click();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');await expect(page.locator('[data-singing-dock="collapsed"]')).toBeVisible();await expect(page.getByRole('button',{name:'Pitch monitoring',exact:true})).toHaveAttribute('aria-pressed','false');expect((await captureDeparture(page)).calls).toBe(1);
  await page.getByRole('button',{name:'Pitch monitoring',exact:true}).click();await expect.poll(async()=>(await captureDeparture(page)).graphs).toBe(1);await page.getByRole('button',{name:'Pitch monitoring',exact:true}).click();await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);
  await info.attach('route-capture-retirement.json',{body:JSON.stringify(await captureDeparture(page),null,2),contentType:'application/json'});
+});
+
+async function observeSingingExit(page:Page){
+ await page.evaluate(()=>{
+  type Row={at:number;phase:string;body:boolean;height:number;inert:boolean;hidden:string|null;text:string;mic:string;owns:string;duration:number|string|null;start:number|null;time:number|null};
+  const rows:Row[]=[];let frame=0,last='';
+  const sample=()=>{
+   const dock=document.querySelector<HTMLElement>('[data-singing-dock]'),body=dock?.querySelector<HTMLElement>('[data-singing-body]'),anim=body?.getAnimations()[0];
+   if(dock){const row:Row={at:performance.now(),phase:dock.dataset.singingTransition??'',body:!!body,height:body?.getBoundingClientRect().height??0,inert:body?.inert??false,hidden:body?.getAttribute('aria-hidden')??null,text:body?.textContent??'',mic:dock.dataset.micState??'',owns:dock.dataset.micOwns??'',duration:typeof anim?.effect?.getTiming().duration==='number'?Number(anim.effect.getTiming().duration):anim?.effect?String(anim.effect.getTiming().duration):null,start:typeof anim?.startTime==='number'?anim.startTime:null,time:typeof anim?.currentTime==='number'?anim.currentTime:null};const key=JSON.stringify([row.phase,row.body,row.text,row.mic]);if(key!==last||anim?.playState==='running'){rows.push(row);last=key;}}
+   frame=requestAnimationFrame(sample);
+  };sample();
+  (window as unknown as {singingExitProof:{rows:Row[];stop:()=>void}}).singingExitProof={rows,stop:()=>cancelAnimationFrame(frame)};
+  window.addEventListener('pagehide',event=>{const body=document.querySelector<HTMLElement>('[data-singing-body]');sessionStorage.setItem('singing-exit-departure',JSON.stringify({trusted:event.isTrusted,persisted:event.persisted,runningAnimations:body?.getAnimations().filter(anim=>anim.playState==='running'||anim.pending).length??0,rows:rows.slice(-60)}));},{once:true});
+ });
+}
+async function singingExitRows(page:Page){return page.evaluate(()=>(window as unknown as {singingExitProof:{rows:{at:number;phase:string;body:boolean;height:number;inert:boolean;hidden:string|null;text:string;mic:string;owns:string;duration:number|string|null;start:number|null;time:number|null}[]}}).singingExitProof.rows);}
+
+test('singing exit SYNTHETIC pitches retain only frozen 300ms visuals; interrupted reopen cannot revive preview or capture',async({page},info)=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});await instrument(page);await instrumentCaptureDeparture(page,false,true);await installAndOpen(page);
+ const dock=page.locator('[data-singing-dock]'),handle=dock.locator('.singing-dock__handle'),slot1=dock.locator('[data-singing-slot="1"]'),slot2=dock.locator('[data-singing-slot="2"]');
+ await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+ await expect(slot1).toHaveAttribute('data-singing-cents-source','captured');await page.getByRole('button',{name:'Stop microphone',exact:true}).click();
+ await slot2.dblclick();await expect(slot2).toHaveAttribute('data-singing-cents-source','captured');await page.getByRole('button',{name:'Stop microphone',exact:true}).click();
+ const captured=await dock.locator('.singing-dock__sung').allTextContents();expect(captured).toHaveLength(2);await observeSingingExit(page);
+ const beforeInterval=(await audio(page)).items.length;
+ await page.getByRole('button',{name:'Sung interval',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.length).toBe(beforeInterval+1);
+ await handle.focus();await page.keyboard.press('Space');await page.keyboard.press('Space');
+ await expect(dock).toHaveAttribute('data-singing-dock','expanded');await page.waitForTimeout(1100);
+ expect(await dock.locator('.singing-dock__sung').allTextContents()).toEqual(captured);expect((await audio(page)).items).toHaveLength(beforeInterval+1);expect((await audio(page)).items.at(-1)!.stops).toBeGreaterThan(0);
+ expect((await captureDeparture(page)).calls).toBe(2);await expect(dock).toHaveAttribute('data-mic-state','idle');
+ // A pending single tap must be cancelled even when reopen restores the same passive pitch before 300ms.
+ const beforeTap=(await audio(page)).items.length;await slot1.click();await handle.focus();await page.keyboard.press('Space');await page.keyboard.press('Space');await page.waitForTimeout(400);expect((await audio(page)).items).toHaveLength(beforeTap);expect(await dock.locator('.singing-dock__sung').allTextContents()).toEqual(captured);
+ await handle.focus();await page.keyboard.press('Space');await expect(dock.locator('[data-singing-body]')).toHaveCount(0);
+ const rows=await singingExitRows(page),exits=rows.filter(row=>row.phase==='exiting'&&row.start!==null&&row.time!==null);
+ expect(exits.length).toBeGreaterThan(1);expect(exits.every(row=>row.duration===300&&row.inert&&row.hidden==='true'&&row.mic==='idle'&&row.owns==='false')).toBe(true);
+ const lastStart=exits.at(-1)!.start!,lastExit=exits.filter(row=>row.start===lastStart);expect(lastExit.every(row=>row.text===lastExit[0]!.text)).toBe(true);expect(lastExit[0]!.height).toBeGreaterThan(lastExit.at(-1)!.height);
+ const completed=rows.find(row=>!row.body&&row.at>=lastStart+300);expect(completed).toBeTruthy();await expect(handle).toBeFocused();
+ await handle.click();await expect(slot1.locator('[data-singing-degree]')).toHaveText('—');await expect(dock.locator('.singing-dock__sung')).toHaveCount(0);await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(2);
+ await mkdir(info.outputDir,{recursive:true});await writeFile(info.outputPath('synthetic-singing-exit.json'),JSON.stringify({label:'SYNTHETIC oscillator, not hardware',captured,rows,capture:await captureDeparture(page)},null,2));
+});
+
+test('singing exit genuine navigation/pagehide cancels exit and armed actions; fresh tool cannot resurrect',async({page,context},info)=>{
+ await context.grantPermissions(['microphone']);await instrument(page);await instrumentCaptureDeparture(page);await installAndOpen(page);
+ const dock=page.locator('[data-singing-dock]');await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();await expect.poll(async()=>(await captureDeparture(page)).graphs).toBe(1);
+ await observeSingingExit(page);await dock.locator('.singing-dock__handle').focus();await page.keyboard.press('Space');await expect(dock).toHaveAttribute('data-mic-state','idle');await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);
+ await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(1);expect((await audio(page)).items.filter(item=>item.endedAt===null&&item.stops===0)).toHaveLength(0);
+ await page.getByRole('button',{name:'Play song',exact:true}).click();await expect(dock).toHaveAttribute('aria-label','Interval Singing Tool');await expect(dock).toHaveAttribute('data-singing-transition','collapsed');
+ await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();await expect.poll(async()=>(await captureDeparture(page)).autoTimers).toBeGreaterThan(0);
+ await observeSingingExit(page);await page.evaluate(()=>(window as unknown as {captureDeparture:{observe:()=>void}}).captureDeparture.observe());await dock.locator('.singing-dock__handle').focus();await page.keyboard.press('Space');await page.reload();
+ await expect(dock).toHaveAttribute('data-singing-transition','collapsed');await expect(dock.locator('[data-singing-body]')).toHaveCount(0);await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(0);
+ const receipt=await page.evaluate(()=>JSON.parse(sessionStorage.getItem('singing-exit-departure')!)) as {trusted:boolean;runningAnimations:number;rows:unknown[]};expect(receipt.trusted).toBe(true);expect(receipt.runningAnimations).toBe(0);
+ const capture=await page.evaluate(()=>JSON.parse(sessionStorage.getItem('capture-departure-proof')!)) as {capture:{autoTimers:number}};expect(capture.capture.autoTimers).toBe(0);
+ await mkdir(info.outputDir,{recursive:true});await writeFile(info.outputPath('singing-exit-pagehide.json'),JSON.stringify({receipt,capture},null,2));
+});
+
+test('singing exit reduced motion removes visuals immediately and cancels an in-flight normal exit',async({page,context},info)=>{
+ await context.grantPermissions(['microphone']);await page.emulateMedia({reducedMotion:'reduce'});await instrument(page);await instrumentCaptureDeparture(page);await installAndOpen(page);
+ const dock=page.locator('[data-singing-dock]'),handle=dock.locator('.singing-dock__handle');
+ await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();await handle.focus();await page.keyboard.press('Space');await expect(dock.locator('[data-singing-body]')).toHaveCount(0);await expect(handle).toHaveAttribute('aria-expanded','false');await expect(handle).toBeFocused();
+ await page.keyboard.press('Space');await expect(dock.locator('[data-singing-slot="1"] [data-singing-degree]')).toHaveText('—');await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(0);
+ await page.emulateMedia({reducedMotion:'no-preference'});await observeSingingExit(page);await handle.focus();await page.keyboard.press('Space');await page.emulateMedia({reducedMotion:'reduce'});await expect(dock.locator('[data-singing-body]')).toHaveCount(0);await page.keyboard.press('Space');await page.waitForTimeout(400);await expect(dock).toHaveAttribute('data-singing-dock','expanded');expect((await captureDeparture(page)).calls).toBe(0);
+ await mkdir(info.outputDir,{recursive:true});await writeFile(info.outputPath('singing-reduced-motion.json'),JSON.stringify({rows:await singingExitRows(page),capture:await captureDeparture(page)},null,2));
 });

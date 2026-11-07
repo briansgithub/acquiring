@@ -1,0 +1,5 @@
+import {expect,it} from 'vitest';
+import {SingingExit,SINGING_EXPAND_MS} from './singing-exit';
+it('retains data until native exit completion, then discards it',()=>{const exit=new SingingExit<{label:string}>();const token=exit.begin({label:'A4'});expect(SINGING_EXPAND_MS).toBe(300);expect(exit.snapshot).toEqual({label:'A4'});expect(exit.finish(token)).toBe(true);expect(exit.snapshot).toBeNull();expect(exit.finish(token)).toBe(false);});
+it('rapid reopen returns passive data and rejects obsolete completion',()=>{const exit=new SingingExit<string>();const token=exit.begin('target');expect(exit.reopen()).toBe('target');expect(exit.finish(token)).toBe(false);expect(exit.snapshot).toBeNull();});
+it('old exit cannot clear a newer exit or data after departure',()=>{const exit=new SingingExit<string>();const old=exit.begin('old');exit.reopen();const fresh=exit.begin('fresh');expect(exit.finish(old)).toBe(false);expect(exit.snapshot).toBe('fresh');exit.clear();expect(exit.finish(fresh)).toBe(false);expect(exit.reopen()).toBeNull();});
