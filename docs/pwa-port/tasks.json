@@ -971,8 +971,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
-      "slice": "Pure native pitch core plus PitchPublisher hop/200ms hold plus exclusive MicrophonePitchCoordinator lease (injected clock). getUserMedia hop clock and scoring remain open",
-      "nextAction": "Exclusive MicrophonePitchCoordinator lease landed. Next getUserMedia hop clock into PitchPublisher (16kHz Int16 hop/window). Missing contract is the browser capture adapter only. No fabricated cents, no singing-dock scores, no Aural. Library prefix polish is not next.",
+      "slice": "Pure native pitch core plus PitchPublisher hop/200ms hold plus exclusive lease plus MicrophonePitchTracker hop-to-YIN (injected PCM clock). getUserMedia hop clock and scoring remain open",
+      "nextAction": "MicrophonePitchTracker hop-to-YIN landed. Next getUserMedia hop clock into MicrophonePitchTracker. Missing contract is the browser capture adapter only (permission, AudioContext/AudioWorklet, Float32→PCM16, resampling). No fabricated cents, no singing-dock scores, no Aural. Library prefix polish is not next.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
@@ -1003,6 +1003,16 @@
             "T09-pitch-coordinator-check-001"
           ],
           "result": "PASS 29 capture then 1025 unit/82 files + 1 parity + types + shell 24b6cc12e562. Previous-owner delayed stop/start ignored; same-owner claim keeps capture; coordinator.release kills leases. No getUserMedia; no fabricated cents; no singing-dock scores. Partial T09, not device/whole-CI-green."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit; npm run check (from pwa)",
+          "revision": "7418359d plus named MicrophonePitchTracker hop-to-YIN tree",
+          "guards": [
+            "T09-pitch-tracker-unit-002",
+            "T09-pitch-tracker-typecheck-001",
+            "T09-pitch-tracker-check-001"
+          ],
+          "result": "PASS 31 capture then 1027 unit/83 files + 1 parity + types + shell 24b6cc12e562. Injected 16kHz hops publish A4; rolling window must flush before 200ms hold. Exclusive singing lease uses melody-fast hop 256. No getUserMedia; no fabricated cents; no singing-dock scores. Partial T09, not device/whole-CI-green."
         }
       ],
       "progress": [
@@ -1010,7 +1020,8 @@
         "2026-10-15 pre-integration:primary30d10a75 has8owned tracked Library changes plus LibraryScreen/library browser untracked;no staged changes. Pitch24a3f78b clean/idle,9capture-only additions;native62PCM/18gate/68smoother outputs exact and22tests/types passed. Root reviewed implementation/fixtures/bounds;normal merge preserves UI partials and all branches. Live60%five-hour/9%weekly;no unresolved guard runs/helpers.",
         "Pure pitch24a3f78b normally integrated at906c9243 preserving owned Library work. Combined266unit+1input PASS;final focused3cancellation/types/build and10coveringChrome cases PASS after one test-only discriminator correction. T09 remains in_progress:actual microphone/clock/dropout owner unimplemented. All workers idle.",
         "2026-11-07T11:50Z PitchPublisher hop/200ms hold/start/stop/release on continuation. Injected clock; exclusive coordinator and getUserMedia remain. 27 capture / 1023 unit PASS. Partial T09.",
-        "2026-11-07T11:52Z Exclusive MicrophonePitchCoordinator lease on continuation. Delayed previous-owner stop ignored. getUserMedia hop clock next. Partial T09."
+        "2026-11-07T11:52Z Exclusive MicrophonePitchCoordinator lease on continuation. Delayed previous-owner stop ignored. getUserMedia hop clock next. Partial T09.",
+        "2026-11-07T11:55Z MicrophonePitchTracker hop-to-YIN on continuation. Injected PCM hops; getUserMedia adapter remains. Partial T09."
       ],
       "blocker": null
     },
@@ -1046,7 +1057,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
       "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter. Prefix-scrubber, Artists chip, Play-Shuffle remain. Settings Back 64px still owner-blocked.",
-      "nextAction": "All Songs in-view filter landed 53e875d1. T09 PitchPublisher and exclusive lease landed. Rotate off Library polish: next getUserMedia hop clock into PitchPublisher. Artists chip needs new getArtistSuggestions RPC. SongQueueViewModel is implementable later. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
+      "nextAction": "All Songs in-view filter landed 53e875d1. T09 PitchPublisher, exclusive lease, and hop-to-YIN tracker landed. Rotate off Library polish: next getUserMedia hop clock into MicrophonePitchTracker. Artists chip needs new getArtistSuggestions RPC. SongQueueViewModel is implementable later. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-all-songs-filter/browser-001",

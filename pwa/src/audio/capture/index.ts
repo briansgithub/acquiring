@@ -9,5 +9,7 @@ export {
 export type { PitchSource } from './pitch-publisher';
 export { MicrophonePitchCoordinator, MicrophonePitchOwner } from './pitch-coordinator';
 export type { ExclusivePitchSource } from './pitch-coordinator';
+export { MicrophonePitchTracker } from './pitch-tracker';
+
 
 

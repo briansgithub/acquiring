@@ -1,4 +1,4 @@
-import { PitchPublisher, type PitchSource } from './pitch-publisher';
+import type { PitchSource } from './pitch-publisher';
 import { PitchTrackingMode } from './pitch-smoother';
 import type { PitchResult } from './pitch-results';
 
@@ -48,11 +48,7 @@ export class MicrophonePitchCoordinator {
 
   start(requestedOwner: MicrophonePitchOwner, targetMidi: number): void {
     if (this.released || this.owner !== requestedOwner) return;
-    if (this.delegate instanceof PitchPublisher) {
-      this.delegate.start(targetMidi, this.ownerTrackingMode);
-    } else {
-      this.delegate.start(targetMidi);
-    }
+    this.delegate.start(targetMidi, this.ownerTrackingMode);
   }
 
   retarget(requestedOwner: MicrophonePitchOwner, targetMidi: number): void {
