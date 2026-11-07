@@ -33,6 +33,8 @@
 }
 .library-search-input:focus-visible,
 .library-content button:focus-visible { outline: 3px solid #a8c7fa; outline-offset: 2px; }
+.library-search-scopes { display: flex; flex-wrap: wrap; gap: .5rem; }
+.library-search-scope[aria-pressed="true"] { background: #334b68 !important; border-color: #9ab9df !important; }
 .library-content button {
   max-width: 100%;
   min-height: 2.75rem;

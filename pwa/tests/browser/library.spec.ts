@@ -117,6 +117,30 @@ test('focused empty search shows Recent Selections in HistoryManager order and n
   await page.getByRole('searchbox',{name:'Search songs',exact:true}).click();
   await expect.poll(async()=>page.locator('[data-recent-selections] [data-song-slug]').evaluateAll(els=>els.map(el=>el.getAttribute('data-song-slug')))).toEqual(['b-alpha','a-alpha']);
 });
+test('Artists chip typeahead uses getArtistSuggestions and Search is artist LIKE',async({page})=>{
+  await install(page);
+  await expect(page.getByRole('searchbox',{name:'Search songs',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Artists',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Artists',exact:true}).click();
+  await expect(page.getByRole('searchbox',{name:'Search artists',exact:true})).toBeVisible();
+  await page.getByRole('searchbox',{name:'Search artists',exact:true}).fill('Artist A');
+  await expect(page.locator('[data-artist-suggestion="Artist A"]')).toBeVisible();
+  await page.locator('[data-artist-suggestion="Artist A"]').click();
+  await expect(page.getByRole('heading',{name:'Artist A',exact:true})).toBeVisible();
+  await expect(rows(page)).toHaveCount(1);
+  await expect(page.locator('[data-song-slug="a-alpha"]')).toBeVisible();
+  await page.getByRole('button',{name:'Back to search',exact:true}).click();
+  await page.getByRole('button',{name:'Artists',exact:true}).click();
+  await page.getByRole('searchbox',{name:'Search artists',exact:true}).fill('Artist B');
+  await page.getByRole('button',{name:'Search',exact:true}).click();
+  await expect(page.locator('[data-song-slug="b-alpha"]')).toBeVisible();
+  await expect(rows(page)).toHaveCount(1);
+  await page.getByRole('button',{name:'Songs',exact:true}).click();
+  await expect(page.getByRole('searchbox',{name:'Search songs',exact:true})).toBeVisible();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Recent Selections',exact:true})).toHaveCount(0);
+});
+
 test('All Songs groups expand one heading, filter in place, and hide while search is focused',async({page})=>{
   await install(page);
   await expect(page.getByRole('button',{name:'All Songs',exact:true})).toBeVisible();

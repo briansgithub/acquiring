@@ -1095,9 +1095,20 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "9ce279c1",
-      "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter plus SongQueue kernel plus Play/Shuffle chrome plus resolveQueuedSection plus playlist-save Chrome proof. Prefix-scrubber, Artists chip, Aural queue begin, auralSectionIdentity RPC remain. Settings Back 64px still owner-blocked.",
-      "nextAction": "Playlist-save Chrome proof landed with AudioWorklet. Next remaining playback inertia polish, or Artists chip (needs getArtistSuggestions RPC). Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last. Policy A accepted.",
+      "slice": "Search/paging/artist plus Favorites accordion plus Recent Selections plus All Songs alphabetical/complexity/mode/filter plus SongQueue kernel plus Play/Shuffle chrome plus resolveQueuedSection plus playlist-save Chrome proof plus Artists chip/local getArtistSuggestions. Prefix-scrubber polish, Aural queue begin, auralSectionIdentity RPC remain. Settings Back 64px still owner-blocked.",
+      "nextAction": "Artists chip + local getArtistSuggestions landed (no remote deploy). Prefix scrubber skip. Do not touch Settings Back 64px. Keep mouse-drag test.fixme. T10 not complete. Aural last. Policy A accepted.",
       "validation": [
+        {
+          "command": "npm run check; npx playwright test tests/browser/library-queries.spec.ts tests/browser/library.spec.ts tests/browser/playback.spec.ts --project chrome --workers 1 --grep \"native scalar song paging|Artists chip typeahead|policy A first-listen|Flip-Flop drops\" --output .artifacts/pwa-port/library-artists-flipflop/browser-001; npx playwright test tests/browser/library.spec.ts --grep-invert \"actual Library installs\" --workers 1 --output .artifacts/pwa-port/library-artists-flipflop/browser-003",
+          "revision": "fe09d620 plus named Artists chip / Flip-Flop target-drop tree",
+          "guards": [
+            "T10-artists-chip-check-001",
+            "T10-artists-chip-browser-001",
+            "T10-artists-chip-browser-002",
+            "T10-artists-chip-browser-003"
+          ],
+          "result": "PASS 1138 unit/100 files + 1 parity + types + shell 4d3248447f6a. browser-001: library-queries localeCompare order miss then browser-002 1/1; Artists chip FIRST PASS; Flip-Flop drop + policy A 4/4. browser-003 library 7/7 excluding Settings Back test. Local worker getArtistSuggestions; ORDER BY NOCASE paging extension; Search paged 20 vs native unbounded; no remote deploy. Codex gpt-6.1-sol 01a1b662 MATCH. Settings Back assertion unchanged and excluded. Prefix scrubber omitted. Partial T10, not device/whole-CI-green."
+        },
         {
           "command": "node node_modules/vitest/vitest.mjs run src/features/library src/storage/catalog/library-queries.test.ts; node node_modules/typescript/lib/tsc.js --noEmit; npm run check; npx playwright test tests/browser/playback.spec.ts tests/browser/library.spec.ts tests/browser/library-queries.spec.ts --project chrome --workers 1 --grep-invert \"actual Library installs\" --output .artifacts/pwa-port/library-all-songs-filter/browser-001",
           "revision": "d9bba889 plus named All Songs filter tree",
@@ -1241,7 +1252,8 @@
         "2026-11-07T11:34Z All Songs complexity/mode on continuation: unified group RPCs, Sort by, unrated empty, ionian fixture membership. Filter/scrubber omitted. browser-001 26 passed/1 skipped (honest mouse-drag fixme). Partial T10.",
         "2026-11-07T11:41Z All Songs in-view filter on continuation: 250ms debounce, existing group RPCs, unmatched copy, heading stays open. Artists chip deferred (new RPC). browser-001 26 passed/1 skipped (honest mouse-drag fixme). Next T09 mic owner. Partial T10.",
         "2026-11-07T12:08Z SongQueueViewModel kernel on continuation: orderedQueue + session begin/shuffle/start/select/completed/unavailable/dismiss. Unbundled. Play/Shuffle chrome next. Partial T10.",
-        "2026-11-07T12:12Z Play/Shuffle chrome on continuation: Favorites Play/Shuffle play, queue screen, Play queue, playOnceKey complete/unavailable, Back dismisses. Aural begin deferred. browser-001 4/4. Partial T10."
+        "2026-11-07T12:12Z Play/Shuffle chrome on continuation: Favorites Play/Shuffle play, queue screen, Play queue, playOnceKey complete/unavailable, Back dismisses. Aural begin deferred. browser-001 4/4. Partial T10.",
+        "2026-11-07T14:22Z Artists chip + local catalog-worker getArtistSuggestions. SongDao DISTINCT REPLACE LIKE; ORDER BY COLLATE NOCASE paging extension; Search paged 20 vs native unbounded; empty TRIM refused. No remote deploy. Flip-Flop target-drop in same batch (T13). Settings Back untouched. Partial T10."
       ],
       "blocker": "Exact Settings->Library scroll restoration remains64pxdifferent after2diagnose/fix/retest cycles. Query/draft/40loaded rows andsongBack focus/scroll pass;artist/browserBack/ownership andoffline320px200percent cases pass. User AGENTS.mdrequiresaskingbeforeexpanding;asyncapproval question pending. Do not attempt a third scroll fix or relax assertion without that answer. Continue independent packages.",
       "dependencyGates": {
@@ -1524,7 +1536,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
       "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, live drag/scrub, chord-lane Roman, queued changeSection, opt-in Pitch monitoring overlay, shared exclusive mic, real page.mouse drag, live halo/marker, emulated browser touch, and SYNTHETIC product banked-score Chrome landed. Synthetic PointerEvent is handler-only. Inertia coast remains polish.",
-      "nextAction": "Do not polish inertia/tween this pass. Singing collapse-clear/shared PREVIEW/ticks landed. Actual CI ba24c4d1 101/1/2 Settings Back 110 only. Next Artists chip. Aural/T15 last. Library Settings Back excluded.",
+      "nextAction": "Do not polish inertia/tween this pass. Artists chip + Flip-Flop target-drop landed. Actual CI ba24c4d1 101/1/2 Settings Back 110 only. This commit unseen. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
         {
           "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-drag/browser-fix2",
@@ -1677,7 +1689,8 @@
         "2026-11-07T13:41Z T21 AudioDiagnostics export + engine-stop reset: allow-list/trim/schemaVersion 1; resetEngine native event order including second playback.reset; preview stop + registered transport pause/reset; no ApplicationAudioContext.release; no onboarding/catalog/T06 wipe; share/clipboard. Native scoring unmount: in-composition finish vs disable-clear vs remember-drop; PWA finish-on-every-cleanup refused (transpose). check 1112 unit/97 files + 1 parity + types + shell 5792f99f070b; shell browser 3/3 clipboard+preserved intro. Codex 01a1b63b-aa17-71d1-a0db-af0b422dcb40. 2b69bf32 CI still in progress. Settings Back untouched.",
         "2026-11-07T13:50Z T21 Display fps + Privacy: 60 fps/Maximum; playing-tick throttle; commands/error force; acquiring-display not T06; Privacy last after Version; diagnostics reset keeps display. check 1120 unit/98 files + 1 parity + types + shell f2f49a4ea032; shell browser 3/3 FIRST PASS. Codex 01a1b643-7666-74a3-99e9-c084116691f0. Actual CI 2b69bf32/00abb9a4 99/1/2 Settings Back 110 only; audio-sink green there. Settings Back untouched.",
         "2026-11-07T14:00Z Singing-dock listen slot scoring on T13; timeline banked overlay unchanged. No preferredRefreshRate / 120fps claim. Settings Back untouched. Next Artists chip, not inertia/tween.",
-        "2026-11-07T14:05Z Singing Record/preview/tape on T13. Settings Back untouched. Next Artists chip, not inertia/tween. Whole-port T08/T22-T28 still open."
+        "2026-11-07T14:05Z Singing Record/preview/tape on T13. Settings Back untouched. Next Artists chip, not inertia/tween. Whole-port T08/T22-T28 still open.",
+        "2026-11-07T14:22Z Artists chip + Flip-Flop target-drop. Local worker RPC only. Settings Back untouched. Not inertia/tween. Whole-port T08/T22-T28 still open."
       ],
       "blocker": null,
       "dependencyGates": {
@@ -2253,8 +2266,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
-      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt + shared PLAYBACK_PERSISTENT/SINGING_TOOL capture + banked median kernel/hook/badges + live halo/marker from capture + SYNTHETIC banked-score Chrome + singing-dock listen slot scoring + Record/request-clear/captured-pitch preview/snap tape + collapse slot-clear/shared PREVIEW/tape ticks. Flip-Flop still does not drop PWA card target. Median Aural scores remain last.",
-      "nextAction": "Collapse-clear + shared PREVIEW + ticks PASS. Policy A accepted. Do not fake scores. Do not start Aural/T15. Next: Artists chip, not inertia. Pixel/real-mic unproven.",
+      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt + shared PLAYBACK_PERSISTENT/SINGING_TOOL capture + banked median kernel/hook/badges + live halo/marker from capture + SYNTHETIC banked-score Chrome + singing-dock listen slot scoring + Record/request-clear/captured-pitch preview/snap tape + collapse slot-clear/shared PREVIEW/tape ticks + Flip-Flop local activeTarget drop. Median Aural scores remain last.",
+      "nextAction": "Flip-Flop target-drop PASS with Artists chip. Policy A accepted. Do not fake scores. Do not start Aural/T15. Do not polish inertia/tween. Pixel/real-mic unproven.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -2347,6 +2360,15 @@
             "T13-singing-collapse-preview-browser-001"
           ],
           "result": "PASS 22 focused then 1136 unit/100 files + 1 parity + types + shell b9481ce3564f. browser-001 FIRST PASS 12/12 including collapse re-expand empty no auto-listen, tape ticks, SYNTHETIC slot tap shares cards PreviewOwner. Codex gpt-6.1-sol 01a1b658-d50e-7bc1-bc2e-216782a4187b MATCH collapse/shared owner; applied tick alpha unmultiplied. Flip-Flop still does not drop PWA card target. Snap/tween/density/inertia explicit nonparity. No fabricated cents. Partial T13. Not device/whole-CI-green."
+        },
+        {
+          "command": "npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --workers 1 --grep \"policy A first-listen|Flip-Flop drops\" --output .artifacts/pwa-port/library-artists-flipflop/browser-001",
+          "revision": "fe09d620 plus named Flip-Flop displayedTarget drop tree",
+          "guards": [
+            "T13-flipflop-target-drop-check-001",
+            "T13-flipflop-target-drop-browser-001"
+          ],
+          "result": "PASS 1138 unit/100 files + 1 parity + types + shell 4d3248447f6a. Flip-Flop enable/disable FIRST PASS: slot 1 degree — + record prompt; policy A 800ms still starts; collapse still cancels. Native activeTarget=null without changing requestId. Codex gpt-6.1-sol 01a1b662 MATCH. Snap/tween/density/inertia/collapse-shrink explicit nonparity. No fabricated cents. Partial T13. Not device/whole-CI-green."
         }
       ],
       "progress": [
@@ -2359,7 +2381,8 @@
         "2026-11-07T13:20Z Emulated browser touch PASS. Banked scoring remains impl-in/acceptance-open; halo 0¢ is not a banked score. 32ms tween and 11px vs 11.sp outstanding.",
         "2026-11-07T14:00Z Singing-dock listen slot scoring: displayedSlotData retarget, getPitchColor bands, remaining countdown, rounded interval green, Flip-Flop nearest/white. SYNTHETIC captured slot ¢ Chrome. Target +0¢ placeholder ≠ sung score ≠ halo rest 0¢ ≠ banked empty/·. Codex 01a1b64a. Rolling tape/Record/preview/new-request clear remain. Settings Back untouched. No 120fps claim.",
         "2026-11-07T14:05Z Record + request-clear + captured-pitch preview + snap tape. SYNTHETIC Record nearest ¢ and new card request clears slots. Interval 1000ms launch gaps. Collapse still keeps slots. Codex 01a1b652. Settings Back untouched. Next Artists chip.",
-        "2026-11-07T14:15Z Collapse slot-clear + shared PREVIEW owner + tape ticks. Immediate clear (no shrink animation). SYNTHETIC slot tap sets cards preview phase. Codex 01a1b658. Settings Back untouched. Next Artists chip."
+        "2026-11-07T14:15Z Collapse slot-clear + shared PREVIEW owner + tape ticks. Immediate clear (no shrink animation). SYNTHETIC slot tap sets cards preview phase. Codex 01a1b658. Settings Back untouched. Next Artists chip.",
+        "2026-11-07T14:22Z Flip-Flop local displayedTarget=null (native activeTarget) without changing requestId. Auto-listen gated on displayedTargetRef. After disable, labels stay empty until new card request. Same batch as Artists chip. Codex 01a1b662 MATCH. Settings Back untouched. Snap/tween/density/inertia still nonparity."
       ],
       "blocker": null,
       "dependencyGates": {

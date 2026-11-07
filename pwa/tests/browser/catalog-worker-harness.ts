@@ -62,6 +62,7 @@ export const catalogHarness = {
   songBrowseBySlugs(name:string,slugs:string[]) { return clients.get(name)!.songBrowseBySlugs(slugs); },
   songBrowseGroupCounts(name:string,sortMode:import('../../src/storage/catalog/library-queries').SongBrowseSortMode,filterText='') { return clients.get(name)!.songBrowseGroupCounts(sortMode,filterText); },
   songBrowseGroupSongs(name:string,sortMode:import('../../src/storage/catalog/library-queries').SongBrowseSortMode,groupKey:string,filterText='') { return clients.get(name)!.songBrowseGroupSongs(sortMode,groupKey,filterText); },
+  artistSuggestions(name:string,query:import('../../src/storage/catalog/library-queries').ArtistSuggestionsRequest) { return clients.get(name)!.artistSuggestions(query); },
   prepare(name: string, attempt: string, manifest: CatalogManifest, base: string) { return clients.get(name)!.prepare(attempt, manifest, base); },
   activate(name: string, attempt: string) { return clients.get(name)!.activate(attempt); },
   active(name: string, kind: CatalogManifest['kind']) { return clients.get(name)!.active(kind); },

@@ -55,6 +55,13 @@ test('native scalar song paging/search/artist parity,reopen and catalog switch',
   expect(JSON.stringify(artist).length).toBeLessThan(1000);
   expect(Object.keys(artist.rows[0]!)).toEqual(['slug','artist','title','complexityRating']);
   expect((await query({mode:'artist',text:'artist a'})).rows.map(row=>row.slug)).toEqual(['case-artist']);
+  const artistSearch=await query({mode:'artistSearch',text:'Artist A'});
+  expect(artistSearch.rows.map(row=>row.slug).sort()).toEqual(['a-alpha','case-artist']);
+  const suggestions=await call<{names:string[]}>(page,'artistSuggestions',['reader',{query:'Artist A'}]);
+  expect(suggestions.names).toHaveLength(2);
+  expect(suggestions.names).toEqual(expect.arrayContaining(['Artist A','artist a']));
+  await expect(call(page,'artistSuggestions',['reader',{query:'   '}])).rejects.toThrow('Invalid artist');
+  await expect(query({mode:'artistSearch',text:'   '})).rejects.toThrow('Invalid song');
   for(const bad of [{mode:'search',text:'alpha',limit:101},{mode:'search',text:'alpha',offset:-1},{mode:'sql',text:'DROP TABLE songs'}]){
     await expect(call(page,'songPage',['reader',bad])).rejects.toThrow('Invalid song');
   }

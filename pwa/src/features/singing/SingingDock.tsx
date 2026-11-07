@@ -15,6 +15,8 @@ import './singing.css';
  * Visible listening + Stop. No fabricated cents. AudioWorklet + linear resample; not Pixel.
  * Native PREVIEW is one AudioEngine channel: borrow the cards PreviewOwner, do not construct a second.
  * User collapse matches clearCollapsedToolState immediately — PWA has no 300ms shrink animation.
+ * Flip-Flop nulls local displayedTarget (native activeTarget) without changing requestId, so slots
+ * and the pending auto-listen LaunchedEffect stay intact; labels stay empty after Flip-Flop off.
  */
 export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0,capture,source,waveform=DEFAULT_WAVEFORM,previewOwner}:{
   octaveOffset:number;
@@ -33,11 +35,12 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   const mic=session;
   const [nowTick,setNowTick]=useState(0);
   const expandedRef=useRef(expanded);
-  const targetRef=useRef(target);
   const midiRef=useRef({transpose,octaveOffset});
   const previewGen=useRef(0);
+  const [displayedTarget,setDisplayedTarget]=useState(target);
+  const displayedTargetRef=useRef(displayedTarget);
   expandedRef.current=expanded;
-  targetRef.current=target;
+  displayedTargetRef.current=displayedTarget;
   midiRef.current={transpose,octaveOffset};
   useEffect(()=>()=>session.release(),[session]);
   useEffect(()=>{if(!expanded)session.clearCollapsedToolState();},[expanded,session]);
@@ -46,11 +49,12 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   });
   useEffect(()=>{
     if(session.action.kind!=='listening')return;
-    const note=session.action.slot===1?target?.first:target?.second;
+    const note=session.action.slot===1?displayedTarget?.first:displayedTarget?.second;
     if(!note)return;
     session.retarget(effectiveTargetMidi(note,transpose,octaveOffset));
-  },[octaveOffset,transpose,target,session]);
+  },[octaveOffset,transpose,displayedTarget,session]);
   useEffect(()=>{
+    setDisplayedTarget(target);
     session.stop();
     session.clearSlots();
     const first=target?.first;
@@ -58,7 +62,7 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
     if(!first||requestId==null)return;
     const id=window.setTimeout(()=>{
       if(!expandedRef.current)return;
-      if(targetRef.current?.requestId!==requestId)return;
+      if(displayedTargetRef.current?.requestId!==requestId)return;
       const midi=midiRef.current;
       session.maybeAutoListen(1,effectiveTargetMidi(first,midi.transpose,midi.octaveOffset));
     },AUTO_LISTEN_MS);
@@ -86,7 +90,7 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   function onDoubleTap(slot:1|2){
     if(flip)return;
     if(mic.action.kind==='listening'&&mic.action.slot===slot){session.stop();return;}
-    const note=slot===1?target?.first:target?.second;
+    const note=slot===1?displayedTarget?.first:displayedTarget?.second;
     if(note)session.listen(slot,effectiveTargetMidi(note,transpose,octaveOffset));
     else session.record(slot);
   }
@@ -116,7 +120,13 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
       <div className="singing-dock__toolbar">
         <label className="playback-check singing-dock__flipflop">
           <input type="checkbox" role="switch" aria-label="Flip-Flop" checked={flip}
-            onChange={(event)=>session.setFlipFlop(event.target.checked)}/>
+            onChange={(event)=>{
+              if(event.target.checked){
+                displayedTargetRef.current=null;
+                setDisplayedTarget(null);
+              }
+              session.setFlipFlop(event.target.checked);
+            }}/>
           Flip-Flop
         </label>
         <div className="playback-octave" aria-label="Singing octave">
@@ -132,10 +142,10 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
       </div>
       {mic.error&&<p role="alert">{mic.error}</p>}
       <div className="singing-dock__slots" data-singing-target-row="">
-        <SingingSlot slot={1} note={target?.first??null} captured={mic.slot1} transpose={transpose}
+        <SingingSlot slot={1} note={displayedTarget?.first??null} captured={mic.slot1} transpose={transpose}
           octaveOffset={octaveOffset} listening={listenSlot===1} recording={recordSlot===1}
           ignoreTarget={flip} remaining={remaining} onTap={()=>onTap(1)} onDoubleTap={()=>onDoubleTap(1)}/>
-        <SingingSlot slot={2} note={target?.second??null} captured={mic.slot2} transpose={transpose}
+        <SingingSlot slot={2} note={displayedTarget?.second??null} captured={mic.slot2} transpose={transpose}
           octaveOffset={octaveOffset} listening={listenSlot===2} recording={recordSlot===2}
           ignoreTarget={flip} remaining={remaining} onTap={()=>onTap(2)} onDoubleTap={()=>onDoubleTap(2)}/>
         <div className="singing-dock__interval" data-singing-interval={interval?'measured':'empty'}

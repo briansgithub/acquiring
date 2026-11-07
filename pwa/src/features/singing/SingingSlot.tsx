@@ -31,7 +31,7 @@ export function SingingSlot({slot,note,captured,transpose,octaveOffset,listening
     aria-label={`Singing slot ${slot}`} data-listening={listening?'true':undefined}
     data-recording={recording?'true':undefined} data-singing-cents-source={displayed?.source}
     onClick={tap}>
-    <span className="singing-dock__degree">{degree||'—'}</span>
+    <span className="singing-dock__degree" data-singing-degree="">{degree||'—'}</span>
     {showTape
       ? <SingingTape midi={tapeMidi} cents={displayed?.cents??0} recording={recording}/>
       : <span className="singing-dock__prompt" data-singing-prompt="record">Double tap to record</span>}

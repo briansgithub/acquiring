@@ -721,6 +721,23 @@ test.describe('policy A first-listen (Playwright fake/silent getUserMedia; not S
     await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toHaveCount(0);
   });
 
+  test('Flip-Flop drops local displayed target; disable leaves empty record prompts',async({page,context})=>{
+    await context.grantPermissions(['microphone']);
+    await instrument(page);await installAndOpen(page);
+    await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+    await expect(page.locator('[data-singing-dock="expanded"]')).toBeVisible();
+    await expect(page.locator('[data-singing-slot="1"] [data-singing-degree]')).not.toHaveText('—');
+    await page.getByRole('switch',{name:'Flip-Flop',exact:true}).check();
+    await page.getByRole('switch',{name:'Flip-Flop',exact:true}).uncheck();
+    await expect(page.locator('[data-singing-slot="1"] [data-singing-degree]')).toHaveText('—');
+    await expect(page.locator('[data-singing-slot="1"] [data-singing-prompt="record"]')).toBeVisible();
+    await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+    await page.waitForTimeout(900);
+    await expect(page.locator('[data-singing-dock]')).toHaveAttribute('data-mic-state','idle');
+    await expect(page.getByRole('button',{name:'Stop microphone',exact:true})).toHaveCount(0);
+    await expect(page.locator('[data-singing-slot="1"] [data-singing-degree]')).toHaveText('—');
+  });
+
   test('prior explicit slot listen still starts immediately after Stop',async({page,context})=>{
     await context.grantPermissions(['microphone']);
     await instrument(page);await installAndOpen(page);

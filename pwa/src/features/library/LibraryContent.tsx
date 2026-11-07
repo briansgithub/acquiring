@@ -2,6 +2,7 @@ import {useState} from 'react';
 import { displayArtist, displayTitle } from '../../domain/data';
 import { libraryChromeVisible, type SongBrowseRow } from './grouping';
 import {AllSongsView} from './AllSongsView';
+import {LibrarySearchPanel,type LibrarySearchScope} from './LibrarySearchPanel';
 import {PlaylistsSection} from './PlaylistsSection';
 import {RecentSelections} from './RecentSelections';
 import type { LibraryContentProps } from './view-contract';
@@ -10,6 +11,7 @@ import './library.css';
 export function LibraryContent({
   state,
   onSearch,
+  onSearchArtistSongs,
   onArtist,
   onClearArtist,
   onLoadMore,
@@ -19,17 +21,21 @@ export function LibraryContent({
   browseBySlugs,
   browseGroupCounts,
   browseGroupSongs,
+  artistSuggestions,
 }: LibraryContentProps) {
   const [searchFocused,setSearchFocused]=useState(false);
   const [showingAllSongs,setShowingAllSongs]=useState(false);
+  const [searchScope,setSearchScope]=useState<LibrarySearchScope>('songs');
   const browsingArtist = state.artist !== null;
   const hasSearch = state.text.trim().length > 0;
   const loading = state.phase === 'loading';
   const noResultsLabel = browsingArtist
     ? 'No songs by this artist.'
-    : hasSearch
-      ? 'No matching songs.'
-      : 'No songs are available yet.';
+    : state.artistSearch && hasSearch
+      ? `No artists matching '${state.text}'`
+      : hasSearch
+        ? 'No matching songs.'
+        : 'No songs are available yet.';
 
   const renderSong = (row: SongBrowseRow) => {
     const title = displayTitle(row.title);
@@ -74,31 +80,12 @@ export function LibraryContent({
       {browsingArtist ? <>
         <button className="library-back" type="button" onClick={onClearArtist}>Back to search</button>
         <h2 id="library-heading">{displayArtist(state.artist)}</h2>
-      </> : <>
-        <h2 id="library-heading">Songs</h2>
-        <label className="library-search-label" htmlFor="library-song-search">Search songs</label>
-        <div className="library-search-row">
-          <input
-            id="library-song-search"
-            className="library-search-input"
-            type="search"
-            maxLength={512}
-            data-library-search
-            value={state.text}
-            onChange={event => onSearch(event.currentTarget.value)}
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
-            autoComplete="off"
-          />
-          <button className="library-clear-search" type="button"
-            onMouseDown={event => event.preventDefault()}
-            onClick={() => { setSearchFocused(false); onSearch(''); }}
-          >Clear search</button>
-        </div>
-      </>}
+      </> : <LibrarySearchPanel text={state.text} searchFocused={searchFocused} onSearchFocused={setSearchFocused}
+        onSearch={onSearch} onSearchArtistSongs={onSearchArtistSongs} onArtist={onArtist}
+        artistSuggestions={artistSuggestions} onScopeChange={setSearchScope}/>}
     </header>
 
-    {searchFocused && !hasSearch && !browsingArtist &&
+    {searchFocused && !hasSearch && !browsingArtist && searchScope==='songs' &&
       <RecentSelections browseBySlugs={browseBySlugs} onOpenSong={onOpenSong} />}
 
     {loading && <p className="library-status" role="status" aria-live="polite">Loading songs...</p>}

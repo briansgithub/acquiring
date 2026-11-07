@@ -68,3 +68,10 @@ export async function recordOpenedSong(slug:string,artist:string|null):Promise<v
   try {await opened.store.addSong(slug);await opened.store.addArtist(artist);}
   finally {opened.db.close();}
 }
+
+export async function recordOpenedArtist(artist:string|null):Promise<void> {
+  const opened=await openGuestHistoryStore();
+  if(!opened)return;
+  try {await opened.store.addArtist(artist);}
+  finally {opened.db.close();}
+}

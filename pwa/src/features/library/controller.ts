@@ -1,10 +1,10 @@
 import { CatalogWorkerClient } from '../../storage/catalog/client';
 import { CatalogError } from '../../storage/catalog/protocol';
-import type { SongBrowseGroupCount, SongBrowseSortMode, SongPage, SongPageRequest } from '../../storage/catalog/library-queries';
+import type { ArtistSuggestionsPage, ArtistSuggestionsRequest, SongBrowseGroupCount, SongBrowseSortMode, SongPage, SongPageRequest } from '../../storage/catalog/library-queries';
 import type { SongBrowseRow } from './grouping';
 
 export interface LibraryView {
-  text:string; artist:string|null; rows:SongBrowseRow[]; sourceSnapshot:string|null;
+  text:string; artist:string|null; artistSearch?:boolean; rows:SongBrowseRow[]; sourceSnapshot:string|null;
   nextOffset:number|null; focusSlug?:string;
 }
 export interface LibraryState extends LibraryView {
@@ -15,9 +15,10 @@ export interface LibraryClient {
   songBrowseBySlugs(slugs:string[]):Promise<SongBrowseRow[]>;
   songBrowseGroupCounts(sortMode:SongBrowseSortMode,filterText?:string):Promise<SongBrowseGroupCount[]>;
   songBrowseGroupSongs(sortMode:SongBrowseSortMode,groupKey:string,filterText?:string):Promise<SongBrowseRow[]>;
+  artistSuggestions(query:ArtistSuggestionsRequest):Promise<ArtistSuggestionsPage>;
   terminate():void;
 }
-const emptyView=():LibraryView=>({text:'',artist:null,rows:[],sourceSnapshot:null,nextOffset:null});
+const emptyView=():LibraryView=>({text:'',artist:null,artistSearch:false,rows:[],sourceSnapshot:null,nextOffset:null});
 function errorMessage(error:unknown):string {
   if(error instanceof CatalogError&&error.code==='BUSY')return 'Your catalog is open in another tab. Close that tab, then try again.';
   if(error instanceof CatalogError&&error.code==='UNSUPPORTED')return 'This browser cannot open the offline catalog.';
@@ -47,8 +48,8 @@ export class LibraryController {
     this.state={...this.state,...patch};for(const listener of this.listeners)listener();
   }
   capture():LibraryView {
-    const {text,artist,rows,sourceSnapshot,nextOffset,focusSlug}=this.state;
-    return {text,artist,rows:[...rows],sourceSnapshot,nextOffset,focusSlug};
+    const {text,artist,artistSearch,rows,sourceSnapshot,nextOffset,focusSlug}=this.state;
+    return {text,artist,...(artistSearch?{artistSearch:true}:{}),rows:[...rows],sourceSnapshot,nextOffset,focusSlug};
   }
   restore(view:LibraryView):Promise<void> {
     if(this.disposed)return Promise.resolve();
@@ -74,10 +75,17 @@ export class LibraryController {
     this.publish({...emptyView(),text,phase:'loading',message:undefined,loadingMore:false});
     this.timer=setTimeout(()=>{this.timer=undefined;void this.load(false);},200);
   }
+  /** Native Artists-scope Search: searchBrowseSongsByArtist, not exact artist identity. */
+  searchArtistSongs(text:string):Promise<void> {
+    if(this.disposed||!text.trim())return Promise.resolve();
+    this.generation++;clearTimeout(this.timer);
+    this.publish({...emptyView(),text,artistSearch:true,phase:'loading',message:undefined,loadingMore:false});
+    return this.load(false);
+  }
   showArtist(artist:string):Promise<void> {
     if(this.disposed)return Promise.resolve();
     this.generation++;clearTimeout(this.timer);
-    this.publish({artist,rows:[],sourceSnapshot:null,nextOffset:null,focusSlug:undefined,phase:'loading',message:undefined,loadingMore:false});
+    this.publish({artist,artistSearch:false,rows:[],sourceSnapshot:null,nextOffset:null,focusSlug:undefined,phase:'loading',message:undefined,loadingMore:false});
     return this.load(false);
   }
   clearArtist():void {this.search(this.state.text);}
@@ -108,14 +116,22 @@ export class LibraryController {
     if(this.disposed)return [];
     return reader.songBrowseGroupSongs(sortMode,groupKey,filterText);
   };
+  artistSuggestions=async(query:string,limit=20,offset=0):Promise<ArtistSuggestionsPage>=>{
+    const empty={sourceSnapshot:'',names:[],hasMore:false,nextOffset:null};
+    if(this.disposed)return empty;
+    const reader=await this.reader();
+    if(this.disposed)return empty;
+    return reader.artistSuggestions({query,limit,offset});
+  };
   private async load(append:boolean,restore?:LibraryView):Promise<void> {
-    const generation=this.generation,{text,artist,nextOffset}=this.state;
+    const generation=this.generation,{text,artist,artistSearch,nextOffset}=this.state;
     if(this.disposed)return;
     this.publish({phase:append?'ready':'loading',loadingMore:append,message:undefined});
     try {
       const reader=await this.reader();
       if(this.disposed||generation!==this.generation)return;
-      const page=await reader.songPage({mode:artist===null?'search':'artist',text:artist??text,limit:20,offset:append?nextOffset!:0});
+      const mode:SongPageRequest['mode']=artist!==null?'artist':artistSearch?'artistSearch':'search';
+      const page=await reader.songPage({mode,text:artist??text,limit:20,offset:append?nextOffset!:0});
       if(this.disposed||generation!==this.generation)return;
       if(append&&this.state.sourceSnapshot!==page.sourceSnapshot){
         this.publish({rows:[],sourceSnapshot:null,nextOffset:null,loadingMore:false});

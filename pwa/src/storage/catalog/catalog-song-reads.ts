@@ -1,6 +1,7 @@
 /** Song browse RPCs against one readonly withSongs handle. Worker stays dispatch-only. */
 import type {SongBrowseRow} from '../../features/library/grouping';
 import {
+  artistSuggestionsQuery,
   browseGroupCountsQuery,
   browseGroupSongsQuery,
   mapBrowseEntryRows,
@@ -8,6 +9,8 @@ import {
   mapSongBrowseRows,
   songBrowseBySlugsQuery,
   songPageQuery,
+  type ArtistSuggestionsPage,
+  type ArtistSuggestionsRequest,
   type SongBrowseGroupCount,
   type SongBrowseSortMode,
   type SongPage,
@@ -42,4 +45,14 @@ export function songBrowseGroupCounts(withSongs:WithSongs,sortMode:SongBrowseSor
 export function songBrowseGroupSongs(withSongs:WithSongs,sortMode:SongBrowseSortMode,groupKey:string,filterText:string):Promise<SongBrowseRow[]> {
   const plan=browseGroupSongsQuery(sortMode,groupKey,filterText);
   return withSongs(db=>mapBrowseEntryRows(db.selectObjects(plan.sql,plan.bind)));
+}
+
+export function artistSuggestions(withSongs:WithSongs,request:ArtistSuggestionsRequest):Promise<ArtistSuggestionsPage> {
+  const plan=artistSuggestionsQuery(request);
+  return withSongs((db,source)=>{
+    const records=db.selectObjects(plan.sql,plan.bind);
+    const hasMore=records.length>plan.limit;
+    const names=records.slice(0,plan.limit).map(row=>String(row.artistName));
+    return {sourceSnapshot:source.sourceSnapshot,names,hasMore,nextOffset:hasMore?plan.offset+names.length:null};
+  });
 }

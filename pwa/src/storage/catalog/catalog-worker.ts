@@ -7,7 +7,7 @@ import {captureAuralTargetQuery,readAuralTargetRow} from './aural-target-query';
 import {decodeAuralCatalogRun,createAuralCatalogTarget} from './aural-target-codec';
 import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
 import {readAuralHeader} from './aural-header';
-import {songBrowseBySlugs,songBrowseGroupCounts,songBrowseGroupSongs,songPage} from './catalog-song-reads';
+import {artistSuggestions,songBrowseBySlugs,songBrowseGroupCounts,songBrowseGroupSongs,songPage} from './catalog-song-reads';
 import {songDetailQuery,songPayloadRecord,readSongComplexity,type SongPayload} from './detail-query';
 import sqlite3InitModule, { type SAHPoolUtil, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { sha256 as incrementalSha256 } from '@noble/hashes/sha2.js';
@@ -276,6 +276,7 @@ async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'songBrowseBySlugs') return songBrowseBySlugs(withSongs, command.slugs);
   if (command.kind === 'songBrowseGroupCounts') return songBrowseGroupCounts(withSongs, command.sortMode, command.filterText);
   if (command.kind === 'songBrowseGroupSongs') return songBrowseGroupSongs(withSongs, command.sortMode, command.groupKey, command.filterText);
+  if (command.kind === 'artistSuggestions') return artistSuggestions(withSongs, command.query);
   if (command.kind === 'songPayload') return songPayload(command.slug);
   if (command.kind === 'prepare') return prepare(id, command.attemptId, validateManifest(command.manifest), command.baseUrl);
   if (command.kind === 'activate') return activate(command.attemptId);

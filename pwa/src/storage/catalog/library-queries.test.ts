@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {browseGroupCountsQuery,browseGroupSongsQuery,MAX_BROWSE_SLUGS,songBrowseBySlugsQuery,songPageQuery,type SongPageRequest} from './library-queries';
+import {artistSuggestionsQuery,browseGroupCountsQuery,browseGroupSongsQuery,MAX_BROWSE_SLUGS,songBrowseBySlugsQuery,songPageQuery,type SongPageRequest} from './library-queries';
 it('bounds every untrusted page before query execution',()=>{
   for(const request of [null,{},[],{mode:'sql',text:'x'},{mode:'search',text:3},{mode:'search',text:'x'.repeat(513)},{mode:'search',text:'a\0b'},
     ...[0,-1,101,1.5,NaN,Infinity,null].map(limit=>({mode:'search',text:'x',limit})),
@@ -14,6 +14,20 @@ it('keeps user text bound,including native wildcard/separator semantics,with one
   expect(query.bind).toEqual([text,text,101,20]);
   expect(query.limit).toBe(100);
   expect(songPageQuery({mode:'artist',text:'Artist-A'}).bind).toEqual(['Artist-A',21,0]);
+  const artistSearch=songPageQuery({mode:'artistSearch',text:'Artist A',limit:20,offset:0});
+  expect(artistSearch.sql).toContain("REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(TRIM(?), '-', ' ') || '%'");
+  expect(artistSearch.sql).not.toContain('OR REPLACE(title');
+  expect(artistSearch.bind).toEqual(['Artist A',21,0]);
+  expect(()=>songPageQuery({mode:'artistSearch',text:'   '})).toThrow(/Invalid song/);
+});
+it('binds getArtistSuggestions DISTINCT REPLACE LIKE; empty query is refused',()=>{
+  const query=artistSuggestionsQuery({query:'Artist A',limit:20,offset:0});
+  expect(query.sql).toContain("SELECT DISTINCT REPLACE(artist, '-', ' ') AS artistName");
+  expect(query.sql).toContain("ORDER BY artistName COLLATE NOCASE");
+  expect(query.sql).not.toContain('Artist A');
+  expect(query.bind).toEqual(['Artist A',21,0]);
+  expect(()=>artistSuggestionsQuery({query:'   '})).toThrow(/Invalid artist suggestions/);
+  expect(()=>artistSuggestionsQuery({query:'a\0b'})).toThrow(/Invalid artist suggestions/);
 });
 it('binds slug IN lists and refuses oversized or untrusted values',()=>{
   expect(songBrowseBySlugsQuery([]).sql).toContain('WHERE 0');

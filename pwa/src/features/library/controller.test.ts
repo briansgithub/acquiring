@@ -7,7 +7,8 @@ const page=(slug:string,sourceSnapshot='one',nextOffset:number|null=null):SongPa
 function fixture(){
   const client={songPage:vi.fn<LibraryClient['songPage']>(),songBrowseBySlugs:vi.fn<LibraryClient['songBrowseBySlugs']>(),
     songBrowseGroupCounts:vi.fn<LibraryClient['songBrowseGroupCounts']>(),
-    songBrowseGroupSongs:vi.fn<LibraryClient['songBrowseGroupSongs']>(),terminate:vi.fn()};
+    songBrowseGroupSongs:vi.fn<LibraryClient['songBrowseGroupSongs']>(),
+    artistSuggestions:vi.fn<LibraryClient['artistSuggestions']>(),terminate:vi.fn()};
   return {client,open:vi.fn(async()=>client)};
 }
 afterEach(()=>vi.useRealTimers());
@@ -79,6 +80,21 @@ it('hydrates playlist slugs through the exclusive reader and stops after dispose
   expect(client.songBrowseBySlugs).toHaveBeenCalledWith(['gone','a']);
   library.dispose();
   await expect(library.browseBySlugs(['a'])).resolves.toEqual([]);
+});
+
+it('Artists Search uses artistSearch LIKE mode and suggestions stay on the exclusive reader',async()=>{
+  const {client,open}=fixture();client.songPage.mockResolvedValue(page('a-alpha'));
+  client.artistSuggestions.mockResolvedValue({sourceSnapshot:'one',names:['Artist A'],hasMore:false,nextOffset:null});
+  const library=new LibraryController(undefined,open);await library.start();
+  await library.searchArtistSongs('Artist A');
+  expect(client.songPage).toHaveBeenLastCalledWith({mode:'artistSearch',text:'Artist A',limit:20,offset:0});
+  expect(library.capture().artistSearch).toBe(true);
+  await expect(library.artistSuggestions('Artist A')).resolves.toEqual({sourceSnapshot:'one',names:['Artist A'],hasMore:false,nextOffset:null});
+  expect(client.artistSuggestions).toHaveBeenCalledWith({query:'Artist A',limit:20,offset:0});
+  library.searchArtistSongs('   ');
+  expect(client.songPage).toHaveBeenCalledTimes(2);
+  library.dispose();
+  await expect(library.artistSuggestions('Artist A')).resolves.toEqual({sourceSnapshot:'',names:[],hasMore:false,nextOffset:null});
 });
 
 it('hydrates All Songs groups through the exclusive reader and stops after dispose',async()=>{

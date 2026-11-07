@@ -1,7 +1,7 @@
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {navigate,subscribeRoute} from '../../app/routes';
 import {LibraryController,type LibraryView} from './controller';
-import {recordOpenedSong} from './history-store';
+import {recordOpenedArtist,recordOpenedSong} from './history-store';
 import {LibraryContent} from './LibraryContent';
 import {SongQueueScreen} from './SongQueueScreen';
 import {mutateSongQueue,songQueueSession,songQueueVersion,subscribeSongQueue} from './song-queue-host';
@@ -82,7 +82,11 @@ export function LibraryScreen(){
       if(state.artist!==null){remember(controller);history.replaceState({libraryArtist:null},'',location.href);}
       lastArtist=null;pendingRestore.current=undefined;controller.search(text);window.scrollTo(0,0);
     }}
-    onArtist={artist=>{remember(controller);navigate('/',{libraryArtist:artist});}}
+    onSearchArtistSongs={text=>{
+      if(state.artist!==null){remember(controller);history.replaceState({libraryArtist:null},'',location.href);}
+      lastArtist=null;pendingRestore.current=undefined;controller.searchArtistSongs(text);window.scrollTo(0,0);
+    }}
+    onArtist={artist=>{void recordOpenedArtist(artist);remember(controller);navigate('/',{libraryArtist:artist});}}
     onClearArtist={()=>{if(artistFromHistory()!==null)history.back();else controller.clearArtist();}}
     onLoadMore={()=>{void controller.loadMore();}}
     onRetry={()=>{void controller.retry();}}
@@ -91,5 +95,6 @@ export function LibraryScreen(){
     browseBySlugs={controller.browseBySlugs}
     browseGroupCounts={controller.browseGroupCounts}
     browseGroupSongs={controller.browseGroupSongs}
+    artistSuggestions={controller.artistSuggestions}
   />;
 }

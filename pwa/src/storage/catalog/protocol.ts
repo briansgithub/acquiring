@@ -1,6 +1,6 @@
 import type {AuralStatisticsRequest} from './aural-statistics-runtime-contracts';
 import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
-import type { SongBrowseSortMode, SongPageRequest } from './library-queries';
+import type { ArtistSuggestionsRequest, SongBrowseSortMode, SongPageRequest } from './library-queries';
 export type { AuralCatalogHeader } from './aural-read-contracts';
 import type { CatalogManifest } from './manifest';
 import type { CatalogInstall, CatalogPointer } from './journal';
@@ -19,6 +19,7 @@ export type CatalogCommand =
   | { kind: 'songBrowseBySlugs'; slugs: string[] }
   | { kind: 'songBrowseGroupCounts'; sortMode: SongBrowseSortMode; filterText: string }
   | { kind: 'songBrowseGroupSongs'; sortMode: SongBrowseSortMode; groupKey: string; filterText: string }
+  | { kind: 'artistSuggestions'; query: ArtistSuggestionsRequest }
   | { kind: 'songPayload'; slug: string }
   | { kind: 'auralHeader' }
   | { kind: 'auralTarget'; query: AuralCatalogTargetQuery }

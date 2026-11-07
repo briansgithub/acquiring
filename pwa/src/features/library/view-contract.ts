@@ -1,10 +1,11 @@
 import type {LibraryState} from './controller';
 import type {SongBrowseRow} from './grouping';
-import type {SongBrowseGroupCount,SongBrowseSortMode} from '../../storage/catalog/library-queries';
+import type {ArtistSuggestionsPage,SongBrowseGroupCount,SongBrowseSortMode} from '../../storage/catalog/library-queries';
 /** Frozen local presentation contract; lifecycle and navigation belong to the coordinator. */
 export interface LibraryContentProps {
   state:LibraryState;
   onSearch(text:string):void;
+  onSearchArtistSongs(text:string):void;
   onArtist(artist:string):void;
   onClearArtist():void;
   onLoadMore():void;
@@ -14,4 +15,5 @@ export interface LibraryContentProps {
   browseBySlugs(slugs:string[]):Promise<SongBrowseRow[]>;
   browseGroupCounts(sortMode:SongBrowseSortMode,filterText?:string):Promise<SongBrowseGroupCount[]>;
   browseGroupSongs(sortMode:SongBrowseSortMode,groupKey:string,filterText?:string):Promise<SongBrowseRow[]>;
+  artistSuggestions(query:string,limit?:number,offset?:number):Promise<ArtistSuggestionsPage>;
 }
