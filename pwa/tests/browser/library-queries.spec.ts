@@ -71,6 +71,9 @@ test('native scalar song paging/search/artist parity,reopen and catalog switch',
   expect((await call<{slug:string}[]>(page,'songBrowseGroupSongs',['reader','complexity','unrated',''])).map(row=>row.slug)).toEqual([]);
   const ionian=await call<{slug:string}[]>(page,'songBrowseGroupSongs',['reader','mode','ionian','']);
   expect(ionian.map(row=>row.slug)).toEqual(['a-alpha']);
+  const filteredA=await call<{slug:string}[]>(page,'songBrowseGroupSongs',['reader','alphabetical','A','ALPHA']);
+  expect(filteredA.map(row=>row.slug)).toContain('a-alpha');
+  expect(await call<{groupKey:string}[]>(page,'songBrowseGroupCounts',['reader','alphabetical','NoSuchSong 938475'])).toEqual([]);
   await expect(call(page,'songBrowseGroupSongs',['reader','alphabetical','AA',''])).rejects.toThrow('Invalid alphabetical group');
   await call(page,'close',['reader']);
   await call(page,'open',['reader']);

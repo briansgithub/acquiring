@@ -16,9 +16,13 @@ const SORT_OPTIONS:readonly {mode:SongBrowseSortMode;label:string}[]=Object.free
   {mode:'mode',label:'Mode'},
 ]);
 
-/** Frozen AllSongsView.kt: one expansion, counts, alphabetical/complexity/mode. Filter/scrubber later. */
+const FILTER_DEBOUNCE_MS=250;
+
+/** Frozen AllSongsView.kt: one expansion, counts, 250ms title/artist filter. Prefix scrubber later. */
 export function AllSongsView({browseGroupCounts,browseGroupSongs,onBack,onOpenSong}:AllSongsViewProps){
   const [sortMode,setSortMode]=useState<SongBrowseSortMode>('alphabetical');
+  const [filterText,setFilterText]=useState('');
+  const [appliedFilter,setAppliedFilter]=useState('');
   const [counts,setCounts]=useState<ReadonlyMap<string,number>>(new Map());
   const [expanded,setExpanded]=useState<string|null>(null);
   const [songs,setSongs]=useState<SongBrowseRow[]>([]);
@@ -27,24 +31,29 @@ export function AllSongsView({browseGroupCounts,browseGroupSongs,onBack,onOpenSo
   const groups=groupsFor(sortMode);
 
   useEffect(()=>{
+    const timer=window.setTimeout(()=>setAppliedFilter(filterText.trim()),FILTER_DEBOUNCE_MS);
+    return ()=>window.clearTimeout(timer);
+  },[filterText]);
+
+  useEffect(()=>{
     let cancelled=false;
-    void browseGroupCounts(sortMode,'').then(rows=>{
+    void browseGroupCounts(sortMode,appliedFilter).then(rows=>{
       if(!cancelled)setCounts(new Map(rows.map(row=>[row.groupKey,row.songCount])));
     }).catch(()=>{if(!cancelled)setCounts(new Map());});
     return ()=>{cancelled=true;};
-  },[browseGroupCounts,sortMode]);
+  },[browseGroupCounts,sortMode,appliedFilter]);
 
   useEffect(()=>{
     if(expanded===null){setSongs([]);setLoading(false);setError(null);return;}
     let cancelled=false;
     setLoading(true);setError(null);
-    void browseGroupSongs(sortMode,expanded,'').then(rows=>{
+    void browseGroupSongs(sortMode,expanded,appliedFilter).then(rows=>{
       if(!cancelled){setSongs(rows);setError(null);}
     }).catch(caught=>{
       if(!cancelled){setSongs([]);setError(caught instanceof Error?caught.message:'Unable to load this group');}
     }).finally(()=>{if(!cancelled)setLoading(false);});
     return ()=>{cancelled=true;};
-  },[browseGroupSongs,expanded,sortMode]);
+  },[browseGroupSongs,expanded,sortMode,appliedFilter]);
 
   return <div className="library-all-songs" data-all-songs="">
     <header className="library-all-songs-header">
@@ -56,6 +65,14 @@ export function AllSongsView({browseGroupCounts,browseGroupSongs,onBack,onOpenSo
       onChange={event=>{setExpanded(null);setSortMode(event.currentTarget.value as SongBrowseSortMode);}}>
       {SORT_OPTIONS.map(option=><option key={option.mode} value={option.mode}>{option.label}</option>)}
     </select>
+    <label className="library-all-songs-sort-label" htmlFor="library-all-songs-filter">Filter songs</label>
+    <div className="library-all-songs-filter-row">
+      <input id="library-all-songs-filter" className="library-all-songs-filter" type="search" maxLength={512}
+        data-all-songs-filter="" placeholder="Title or artist" value={filterText} autoComplete="off"
+        onChange={event=>setFilterText(event.currentTarget.value)}/>
+      {filterText.length>0&&<button className="library-clear-search" type="button"
+        onMouseDown={event=>event.preventDefault()} onClick={()=>setFilterText('')}>Clear song filter</button>}
+    </div>
     {groups.map(group=>{
       const isExpanded=expanded===group.key;
       const count=counts.get(group.key);
@@ -73,7 +90,7 @@ export function AllSongsView({browseGroupCounts,browseGroupSongs,onBack,onOpenSo
           {error&&<p className="library-playlist-error" role="alert">{error}</p>}
           {loading&&<p className="library-status" role="status" aria-live="polite">Loading songs...</p>}
           {!loading&&!error&&songs.length===0&&
-            <p className="library-playlist-empty">No songs in this group</p>}
+            <p className="library-playlist-empty">{appliedFilter?'No songs match this filter':'No songs in this group'}</p>}
           {!loading&&!error&&songs.length>0&&
             <ul className="library-song-list" aria-label={group.label}>
               {songs.map(row=>{

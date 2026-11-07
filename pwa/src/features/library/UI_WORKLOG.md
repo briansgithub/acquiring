@@ -16,3 +16,5 @@ Final targeted strict type check passed using primary installed dependencies and
 2026-11-07T11:29Z All Songs chrome button below paging (native LibraryView). Overlay replaces Library with A–Z/0–9/# headings, one expansion, counts, empty copy. Sort locked to Alphabetical; complexity/mode dropdown, filter, and prefix scrubber omitted. Back control is aria-label Back to Library so exact `Back` song/settings locators stay unique.
 
 2026-11-07T11:34Z All Songs Sort by Alphabetical/Complexity/Mode. Changing sort collapses the open heading. Unrated empty copy; do not expand the 70-80 fixture bucket (40k rows). Filter and prefix scrubber still omitted.
+
+2026-11-07T11:41Z All Songs Filter songs field (native placeholder Title or artist) + Clear song filter. 250ms debounce; filter does not collapse the open group. Unmatched empty copy is "No songs match this filter". Prefix scrubber omitted.

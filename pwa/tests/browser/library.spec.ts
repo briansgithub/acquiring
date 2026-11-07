@@ -116,7 +116,7 @@ test('focused empty search shows Recent Selections in HistoryManager order and n
   await page.getByRole('searchbox',{name:'Search songs',exact:true}).click();
   await expect.poll(async()=>page.locator('[data-recent-selections] [data-song-slug]').evaluateAll(els=>els.map(el=>el.getAttribute('data-song-slug')))).toEqual(['b-alpha','a-alpha']);
 });
-test('All Songs alphabetical groups expand one heading and hide while search is focused',async({page})=>{
+test('All Songs groups expand one heading, filter in place, and hide while search is focused',async({page})=>{
   await install(page);
   await expect(page.getByRole('button',{name:'All Songs',exact:true})).toBeVisible();
   await page.getByRole('searchbox',{name:'Search songs',exact:true}).click();
@@ -134,6 +134,14 @@ test('All Songs alphabetical groups expand one heading and hide while search is 
   await expect(page.locator('[data-all-songs-group="7"] .library-playlist-count')).not.toHaveText('0');
   await page.getByLabel('Sort by').selectOption('mode');
   await page.getByRole('button',{name:'Expand Ionian (Major)',exact:true}).click();
+  await expect(page.locator('[data-all-songs] [data-song-slug="a-alpha"]')).toBeVisible();
+  await page.getByLabel('Sort by').selectOption('alphabetical');
+  await page.getByRole('button',{name:'Expand A',exact:true}).click();
+  await expect(page.locator('[data-all-songs] [data-song-slug="a-alpha"]')).toBeVisible();
+  await page.getByLabel('Filter songs').fill('NoSuchSong 938475');
+  await expect(page.getByText('No songs match this filter',{exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Expand A',exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'Clear song filter',exact:true}).click();
   await expect(page.locator('[data-all-songs] [data-song-slug="a-alpha"]')).toBeVisible();
   await page.getByRole('button',{name:'Back to Library',exact:true}).click();
   await expect(rows(page)).toHaveCount(20);
