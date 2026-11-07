@@ -1,6 +1,6 @@
 # Android-to-PWA port
 
-Completed 2026-10-14. Runtime model: unknown. Android reference: `801cf7984171d772afc4406ddb5c79c0cb7fd20a`.
+Initial history audit completed 2026-10-14; full port unfinished. Runtime model: unknown. Android reference: `801cf7984171d772afc4406ddb5c79c0cb7fd20a`.
 
 The first pass classified every entry in the frozen full-history traversal of `android/` and `contracts/`: **262 commits** (108 foundation,103 revision,51 Aural). The earlier213 count was Git's path-simplified view, which hides integration history. This is not262 independent features. Each JSON row records the actual change, kind, final disposition and evidence. Review included changed-path metadata, bounded substantive diffs, tests/comments and current source/handoffs. Large patches were searched; binary artwork was inspected as metadata. No claim of exhaustive line-by-line history or fresh app/device validation is made.
 
@@ -8,6 +8,7 @@ The second pass groups surviving behavior into **29 dependency-ordered work pack
 
 ## Read next
 
+- [FEATURE_LEDGER.md](FEATURE_LEDGER.md): 2026-11-07 bounded source/history-to-current-PWA audit; NEW vs known gaps, retired experiments, acceptance and explicit blind spots. Machine data and coverage linked there.
 - [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md): current feature targets, architecture/contracts, ordered packages, parallel lanes and acceptance gates.
 - [RUNBOOK.md](RUNBOOK.md): five-hour/weekly budget policy, prewritten intent, task claims, lost-response recovery and automatic resumption.
 - [tasks.json](tasks.json): machine-readable dependency, ownership and validation queue.

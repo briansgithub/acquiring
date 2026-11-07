@@ -1,3 +1,5 @@
+> 2026-11-07 docs-only reconciliation: [FEATURE_LEDGER.md](FEATURE_LEDGER.md) maps current code at `7b889f1c` to native/history and known/NEW gaps. Brian explicitly requested this bounded audit; older do-not-repeat language did not block it. The table below is a chronological snapshot: query overlays/atomic harvest and 300ms exit have since landed (remaining gaps stay open). No priority/acceptance decision changes. Next implementation remains collapsed-monitoring Stop, then root-only monitoring; Aural/T15/family trees LAST.
+
 # Lineage sequencing inside current owner priority
 
 Updated 2026-11-07. Reuses the completed 262-entry ledger in [HISTORY.md](HISTORY.md); do not repeat that audit. Frozen Android authority remains `801cf7984171d772afc4406ddb5c79c0cb7fd20a`. Final pinned behavior and accepted PWA contracts win over any historical intermediate.

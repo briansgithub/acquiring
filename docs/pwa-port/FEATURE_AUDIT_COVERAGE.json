@@ -1,0 +1,543 @@
+{
+  "nativeAuthority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "pwaInspectionHead": "7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5",
+  "branch": "codex/pwa-continuation",
+  "owner": "Codex exclusive, docs-only",
+  "scope": "User explicitly requests fresh feature discovery; supersedes earlier do-not-repeat-audit sequencing only for this docs pass. No implementation/owner acceptance decisions.",
+  "priorVerification": {
+    "commits": 262,
+    "matchesFullHistory": true,
+    "evidenceRefs": 575,
+    "directlyPresent": 572,
+    "deletedRefsVerifiedInParent": 3
+  },
+  "freshPatches": [
+    {
+      "sha": "eb9e7fdf51d9f3ed7db74875ca540d615d94dc4b",
+      "bytes": 61359,
+      "sha256": "e54280919a4e40a064ae009585848083da944e31518c790d73bbdcee88a8ccef",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/eb9e7fdf.patch",
+      "inspectedScope": "stopAllPlayback/cancelled synthesis and root-mode additions"
+    },
+    {
+      "sha": "0886615a0c3651dfe38781850632d6455dea76d9",
+      "bytes": 48787,
+      "sha256": "875f95936fe3de1e752c9a24424224ce4f75f9b5c8dea31b36bf760f7739b839",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/0886615a.patch",
+      "inspectedScope": "seek-only scrub removes preview playback"
+    },
+    {
+      "sha": "c551d100c5eac460ebaf44e894e6527856e26f69",
+      "bytes": 8631,
+      "sha256": "8c465b8e12fc61bd746f1a5a643d179a6ee5aa161d0311638a1e048b0547850d",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/c551d100.patch",
+      "inspectedScope": "section-end scheduling/loop sounding-note boundaries"
+    },
+    {
+      "sha": "1e22a1322db5c395f3d5336197a7bc956dd0b669",
+      "bytes": 55212,
+      "sha256": "78154c51787d96d8ff1940878cd924ed593c97cb2bc534dd4f4f9b149595c2cf",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/1e22a132.patch",
+      "inspectedScope": "per-layer generation/snapshot invalidation"
+    },
+    {
+      "sha": "199b406112e2eef32269fe6530e1edb9bf286f71",
+      "bytes": 8563,
+      "sha256": "0f660ce6aec8cf84eaa2690ae1d24639867a47501f5cb0a70fb7c6d426031604",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/199b4061.patch",
+      "inspectedScope": "captured slot replay/double-click preview paths"
+    },
+    {
+      "sha": "9aa9fe6e7d9f6e3481b6145e78bdd9014efb9e40",
+      "bytes": 4040,
+      "sha256": "3164e4b3f108192bfeefede5fc7e0e99e225fe3e4ad562148d8f31870d000c5f",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/9aa9fe6e.patch",
+      "inspectedScope": "full small double-tap patch, clear on recording start"
+    },
+    {
+      "sha": "4aff98b9245fd164566d5e157cb2010aeaaaca2b",
+      "bytes": 117255,
+      "sha256": "b23468c2387e88ac6213f051d68120c1c41eb1605fd5c8be9b20e4a0330c053a",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/4aff98b9.patch",
+      "inspectedScope": "All Songs browse schema/modes test and regeneration contract excerpts"
+    },
+    {
+      "sha": "9973e748fbecaf09db02575ff2f2339d4c7d7fc0",
+      "bytes": 68906,
+      "sha256": "e182590fb6af87ad32b78e524abd44a4433602af2854b1955497d3746b741f74",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/9973e748.patch",
+      "inspectedScope": "tripleClickable intro/selection types/callers"
+    },
+    {
+      "sha": "2c7b8ae019b6eab8dab59b2074bcf0231f554721",
+      "bytes": 65659,
+      "sha256": "3f7a1e04648330ea59a6c8f478a4f53f2ef299116a2fd9c034ad5d54cd9a43c5",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/2c7b8ae0.patch",
+      "inspectedScope": "audit risks and literal-frequency transpose bypass"
+    },
+    {
+      "sha": "bc142c082e1782def9f7bf7da608ddf6f61b2829",
+      "bytes": 108025,
+      "sha256": "754aad305b85ee1ca07102963bbf7e774ad0c421c2cfe1b69617ccc8d978b931",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/bc142c08.patch",
+      "inspectedScope": "capture/calibration removal and slot lifecycle hunks; full median implementation not freshly reread"
+    },
+    {
+      "sha": "86fd395917446b7b7df3200162ea2302fdfbfa29",
+      "bytes": 75814,
+      "sha256": "3cf7aef685ab875b270f2f31f9ada4d3449b1c8f2307673e4282705959f622b0",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/86fd3959.patch",
+      "inspectedScope": "dial angular semantics/gesture introduction and triple-to-long-press removal"
+    },
+    {
+      "sha": "60e853e300f581d67cd738dbbe5de12738c93f92",
+      "bytes": 41834,
+      "sha256": "22616fbc2e739f6c8186685f7e93e799f5d4cb90f84c524575483f45cda3e4b8",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/60e853e3.patch",
+      "inspectedScope": "PREVIEW generation retirement/fade-out comments and body"
+    },
+    {
+      "sha": "6782647188c78dfcadb52c6981ab74af8f4a64bc",
+      "bytes": 4750,
+      "sha256": "4290e4da8f67c604a5f6e2b267ab2327f6e6edf5f0a897d8f0d8d2741da32fcd",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/67826471.patch",
+      "inspectedScope": "ON_STOP collapse/target/slot cleanup"
+    },
+    {
+      "sha": "9ab27ceeeadde93347d97096a9060656b75cdf98",
+      "bytes": 37811,
+      "sha256": "9958eb981c511497ed1ef450a929fe6937f80dcda3ff4290ce4ded26072034f1",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/9ab27cee.patch",
+      "inspectedScope": "userDb caller/playlist cancellation and optimistic rollback"
+    },
+    {
+      "sha": "f89a775cd3b8e14a6998e20a974cbbdd50792544",
+      "bytes": 103832,
+      "sha256": "7e1d4146be08b17bbefebcf8b5ddbb3a80f0c236049c9d687c2a06fb688a3136",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/f89a775c.patch",
+      "inspectedScope": "foreground/instrument selector test excerpts; retirement disposition reused prior source audit"
+    },
+    {
+      "sha": "2c16f571b99cb0b86f732dc796cb36331a8bed62",
+      "bytes": 7038,
+      "sha256": "d780bed2a2edf91891ce3c3f56f39c76640b25b99ef93169de5b82b0ac10b5f0",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/2c16f571.patch",
+      "inspectedScope": "focus-lock pause/play change"
+    },
+    {
+      "sha": "877bb982e61d93e244297a43a631cc768ab18c5b",
+      "bytes": 6192,
+      "sha256": "42a45e814a8991148475a2c63d23d338df6ffdd615416e6f94ad8de5c799da76",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/877bb982.patch",
+      "inspectedScope": "title sheet and contextual help state/dismissal/content"
+    },
+    {
+      "sha": "45e7012ed33d18cded02093780152494461009bd",
+      "bytes": 287811,
+      "sha256": "9d03d3584838d4ea187fa2bbc55406dd367f379470226a48439b6c6ac8075d7a",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/45e7012e.patch",
+      "inspectedScope": "calibration/comfortable-pitch deletion; header SimpleRoot and collapsed Stop verified by blame/current source"
+    },
+    {
+      "sha": "1c6745262f69aaf7996d7e246c8c0834d77c8002",
+      "bytes": 19003,
+      "sha256": "e8f0792486e9afb6a5f2dcaea5d5d2f56cff0a0e7281cb839331eb1f05abe737",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/1c674526.patch",
+      "inspectedScope": "floating-offset removal and destination props; current fixed transport checked"
+    },
+    {
+      "sha": "69096194f907ca7d758de8fde811a25bfb909d61",
+      "bytes": 17424,
+      "sha256": "fdfd4bea5d4275fde90f20c0a13dfd5f858d7410093357ec52b227feb5ee60f5",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/69096194.patch",
+      "inspectedScope": "ChordTransitionRanking and tone/transition UI additions"
+    },
+    {
+      "sha": "734ab3f5d25519363139f58fd771527f60076359",
+      "bytes": 34240,
+      "sha256": "41b1eefb748e581dd0086db3910153d9de747aecc2f5b63efe39d94549a81690",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/734ab3f5.patch",
+      "inspectedScope": "adopt-before/replay-after rationale, ledger transactions"
+    },
+    {
+      "sha": "4b2da5306e2f63ecbd68512211ef7aeba66cd1a0",
+      "bytes": 20479,
+      "sha256": "fda269dc2a4f8580e79e3c9287cda9ead214aeadd9cbf205ebb31160c4d44ae0",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/4b2da530.patch",
+      "inspectedScope": "subgroup prefix algorithm and row replacement"
+    },
+    {
+      "sha": "3b6fee652239a55d2f6191e4231d3e250628e301",
+      "bytes": 19705,
+      "sha256": "73cd441fd287c9de1da33f8860c66c4ce917862fd4544c787f180094f4f05743",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/3b6fee65.patch",
+      "inspectedScope": "displayTitle/artist normalization identity changes"
+    },
+    {
+      "sha": "562a66d27181845f744dbec6716dc32e707227ef",
+      "bytes": 14029,
+      "sha256": "0bbf0050a9a6149b3501d812fa0d770584ee8c3fce960d3829554af0c03ddf18",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/562a66d2.patch",
+      "inspectedScope": "scope/focus/chrome state additions"
+    },
+    {
+      "sha": "c1568dc53d0ba6ac1473e14fb08c2d8886c8aac9",
+      "bytes": 8389,
+      "sha256": "c8dcfb1ff11db68766e789340d1696c8ce0f387adf8b237d52a53f2c163cd891",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/c1568dc5.patch",
+      "inspectedScope": "auto-install zero-count predicate and catalog Settings binding"
+    },
+    {
+      "sha": "c3cd59e21260c5991c0abe68a6e8145391b28c71",
+      "bytes": 5748,
+      "sha256": "5f93a8778247d251d14a92ade754d55d1fc6785adba5bd6c929d7de87b9abfe9",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/c3cd59e2.patch",
+      "inspectedScope": "PrivacyPolicyLink and Library heading layout"
+    },
+    {
+      "sha": "91623c45bd9698c9af62a49c33653b93427ceace",
+      "bytes": 12206,
+      "sha256": "55aadf7c8458b209ac650dafe4e0af1f6c922423778675b52fa992c32285cd5a",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/91623c45.patch",
+      "inspectedScope": "diagnostic callbacks and allowed event list"
+    },
+    {
+      "sha": "4299184ab9bb65bbc8cfe68346f0791c8a176a0b",
+      "bytes": 10962,
+      "sha256": "2b915ade249e214a2cab1cc6d7c2ea499ea26f233dbdb01458da152644fe5076",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/4299184a.patch",
+      "inspectedScope": "visual fps preference controls and maximum computation"
+    },
+    {
+      "sha": "13e0b65c5c67ba5afcaeabfd361ec92d7823f95e",
+      "bytes": 3715,
+      "sha256": "c9968bafa9c22c83ea0c8ad41e1f91f38381eed96d681879a06f940151469093",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/13e0b65c.patch",
+      "inspectedScope": "manifest/orientation policy threshold"
+    },
+    {
+      "sha": "0f6fb28301188034302f49005bae2f79f3861f92",
+      "bytes": 15787,
+      "sha256": "e77eeee6dab4f52262b7c0037e4ac1b228ff08c63754493095ba35d4d00e346f",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/0f6fb283.patch",
+      "inspectedScope": "Play listing external handoff functions; default/session conclusion reused prior audit"
+    },
+    {
+      "sha": "b6b19077041b4ca40705b79b74e710492775d395",
+      "bytes": 296122,
+      "sha256": "7293a4c46ffdb28c62403c5b258cd8cf0470ba8b4950b2df48380489c8ea4687",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/b6b19077.patch",
+      "inspectedScope": "Aural audio plan and curriculum type introduction"
+    },
+    {
+      "sha": "a11f560bdebe4d4a36a3e0f3d4c20c4f2749e9ae",
+      "bytes": 67393,
+      "sha256": "cde6bc82f80bdac37981455483e6370a899993b9e6c2ed74505dacab5b3934fa",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/a11f560b.patch",
+      "inspectedScope": "variant target/provenance and phase-label components"
+    },
+    {
+      "sha": "06e48208072b03523dbacf112e6524f4c0b3b39e",
+      "bytes": 70932,
+      "sha256": "eea031b11fbe3aa71a65c95aca051c4a23d50345945ce31e19f1391f2cb4655b",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/06e48208.patch",
+      "inspectedScope": "corpus settings and provenance extension"
+    },
+    {
+      "sha": "5f706322eba3b1db93c0cd47ec2b6dae5994c32f",
+      "bytes": 6014,
+      "sha256": "79ed684ba5c62f351b012a2e024ba84c4c31d008a03a0383b0d5238b278cb09a",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/5f706322.patch",
+      "inspectedScope": "selector-v2 overlap contract fixture (no native production diff)"
+    },
+    {
+      "sha": "40aa1a3717b79a6c3bf2f26ab6b4947ecab8b7d5",
+      "bytes": 24479,
+      "sha256": "c1bc30ef8baea9db5c3663537461f992ce1558ed0db45e60341c008eeba26141",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/40aa1a37.patch",
+      "inspectedScope": "exposure-start callback and unreliable-history familiarity extension"
+    },
+    {
+      "sha": "c7ad144302453abbcdf482128d055c09929f596a",
+      "bytes": 112669,
+      "sha256": "71d1e7feb20e12494223d5afac1f41adf5e26ff2d4da5caa8793821f0edfc122",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/c7ad1443.patch",
+      "inspectedScope": "streaming audio-plan/catalog imports and new data access structure; detailed feature disposition reused prior audit"
+    },
+    {
+      "sha": "988dfc780b68b0ec5a78bce84e3549d71d9d553a",
+      "bytes": 35190,
+      "sha256": "ea2a34e7b7651fcbea56e63d70bc9e04df973ce474035b98e150f252217645d8",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/988dfc78.patch",
+      "inspectedScope": "full source sections and catalog display hierarchy state"
+    },
+    {
+      "sha": "ca89c5cc93c86b0fd3d427c022bc0e3633575767",
+      "bytes": 27563,
+      "sha256": "dc7b51379942120dd32f8dddaf24d8f43578c3f5e01f3c75a370187bffc49105",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/ca89c5cc.patch",
+      "inspectedScope": "embedded playback route deletion and AuralSourcePlayback file removal"
+    },
+    {
+      "sha": "ee37a31293cd1ea1b9c9c67165c2c9e1279a8d22",
+      "bytes": 139635,
+      "sha256": "99d76abfca5774ecf3ffdc75b5ddcd0c310c56c8100a897b31704547219bb989",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/ee37a312.patch",
+      "inspectedScope": "global count fields and catalog-choice state additions"
+    },
+    {
+      "sha": "e968a210b439137384a82dae7d571973f85555b9",
+      "bytes": 62680,
+      "sha256": "60a3f0d09cc3eea4c46602c0b63aea4428d960056fc37b0bb53c6df6ea043b0c",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/e968a210.patch",
+      "inspectedScope": "distinct song/section queue candidates and ViewModel binding"
+    },
+    {
+      "sha": "8bd551894c10682e42834afa975b1621f00b7bf6",
+      "bytes": 16670,
+      "sha256": "ec0aad7f301018a2144f50043828e245d4d96e6489ddb29b36b8784e6d03fe84",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/8bd55189.patch",
+      "inspectedScope": "Examples UI and shuffled preparation argument"
+    },
+    {
+      "sha": "5e469e56be85f41a25957e84ebacdbf026bf0d46",
+      "bytes": 12338,
+      "sha256": "6d6a5b3906f3ba730d987e3753263d9ecd08fd468a04e2edc33415e698de8e9d",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/5e469e56.patch",
+      "inspectedScope": "key accidental preference signature and tape prop/fromMidi"
+    },
+    {
+      "sha": "de8c2891e6d6cc1db4559277530d0345421bfd24",
+      "bytes": 17624,
+      "sha256": "bb163a9e2d25665025af2c3ce1300f6e9344f9b4b38d38ae6c0bece18ffab728",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/de8c2891.patch",
+      "inspectedScope": "repeat completion key and expanded previous/next controls"
+    },
+    {
+      "sha": "c01d433b3b6b15681c4b5bafb1ffc954cdfbf976",
+      "bytes": 17049,
+      "sha256": "ccd7d8f00ebb01c8b3733d1836928d227332361b9f8dc0e4869098a37d76a50e",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/c01d433b.patch",
+      "inspectedScope": "example download Settings callbacks and v3 mutex installer"
+    },
+    {
+      "sha": "2d36e72f21b59c09c2979ce508cf7177cb04d295",
+      "bytes": 32137,
+      "sha256": "e12162634c9e7e68001fa4b61dc1a6a90cb82731701c9493c3be43d076169eb7",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/2d36e72f.patch",
+      "inspectedScope": "source-mode helper and source_key_json/catalog schema compatibility"
+    },
+    {
+      "sha": "0373d5ddf34d9a95006b3787561fb6559a5b3071",
+      "bytes": 26940,
+      "sha256": "c45c54820068d41f7c5f224ae57f86970b9cda00ab07f20f83ea66efedd41218",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/0373d5dd.patch",
+      "inspectedScope": "chord variant query and constraint types"
+    },
+    {
+      "sha": "8e496feee385b26e49518ae6383e02bbd94d0eb5",
+      "bytes": 26155,
+      "sha256": "bb4e1f03017762d54202190e06d7676f5c9743bebc0e657680631253eb70b213",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/8e496fee.patch",
+      "inspectedScope": "outer stray Humming tool deleted file excerpt"
+    },
+    {
+      "sha": "8cce75cb357f043a4c94326d2953950618581cda",
+      "bytes": 69535,
+      "sha256": "320a20c064415537a45de7109a1ddeb2e8f28860613645797f3b85ffb8249b70",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/8cce75cb.patch",
+      "inspectedScope": "package/theme/path rename excerpts"
+    },
+    {
+      "sha": "007a8eb4310403a65cb2f5347d380650c0da2db1",
+      "bytes": 65555,
+      "sha256": "213616fa879da68f81b54422c1d5d83055418ee72254586a0d42dbcaad881c12",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/007a8eb4.patch",
+      "inspectedScope": "Acquiring manifest/package rename excerpts"
+    },
+    {
+      "sha": "20ec5c7eafda091e6c7fdd59b3f383c9c446c3f3",
+      "bytes": 13807,
+      "sha256": "58adf520350cc1624a4ea32e03351fe7068ba7ee7444ee2a5dae1ccfce6ad6ba",
+      "review": "bounded matching functional excerpt read; not complete patch review",
+      "artifact": ".artifacts/pwa-port/feature-audit/20ec5c7e.patch",
+      "inspectedScope": "monorepo data-download URL changes"
+    }
+  ],
+  "limitations": [
+    "50 first-parent android/contracts patches sampled by bounded matching excerpts; not complete hunk/line review, and some cited details deliberately reuse prior audit.",
+    "Prior inventory includes merge ancestry; no fresh full merge-resolution/second-parent reconstruction. Literal revert subject search alone cannot find behavioral reverts.",
+    "111 production files enumerated, not all freshly read. Resources/themes/platform/build/release internals, all native/PWA test bodies and unselected changes not exhaustively inspected.",
+    "Aural domain inventory covers all prior51 entries by reuse and selected fresh source/diffs; no exhaustive guarantee for every UI variant. Aural implementation remains last.",
+    "No fresh runtime/browser/unit/parity/build/device/HTTP tests; prior implementation evidence remains scoped to its checkpoint.",
+    "Auth/sync/install/release are established PWA roadmap requirements, not inferred shipping native service contracts. No owner decisions or acceptance/status changes."
+  ],
+  "status": "completed_bounded_not_exhaustive",
+  "nativeSourceChecks": {
+    "productionFilesEnumerated": 111,
+    "wholeFilesRead": false,
+    "scopedPaths": [
+      "PlaybackView.kt",
+      "PlaybackDestination.kt",
+      "PlaybackDial.kt",
+      "PlaybackTransportBar.kt",
+      "HummingIntervalPopup.kt",
+      "RelativeIonianContext.kt",
+      "SongDao.kt",
+      "LibrarySearch.kt",
+      "LibrarySearchSuggestions.kt",
+      "LibraryView.kt",
+      "HarvestLedger.kt",
+      "HarvestService.kt",
+      "UserDataDatabase.kt",
+      "AuralAudio.kt",
+      "AuralSession.kt",
+      "AuralCorpus.kt",
+      "AuralCatalogScreen.kt",
+      "AuralCatalogDownloader.kt",
+      "PracticeNavigation.kt",
+      "HistoryManager.kt",
+      "FavoritedConfirmation.kt",
+      "AppSettings.kt",
+      "PlaybackController.kt",
+      "PlayAppUpdate.kt",
+      "PhoneOrientationPolicy.kt"
+    ],
+    "method": "symbol/functional chunks, plus blame for header and collapsed Stop; some other ledger native paths inherit prior evidence, not whole fresh reads"
+  },
+  "pwaChecks": {
+    "method": "actual route/hook/component checks and selected source/test bodies; existence/reference validation is not runtime proof",
+    "keySymbols": [
+      "usePlaybackPitchPractice rootOnly cancellation and melody activation",
+      "SingingDock exit/target/persistent-stop props",
+      "tapeNoteLabel default fromMidi",
+      "AppShell static title",
+      "PlaybackSettingsPanel range/select only",
+      "PlaybackFavoriteStar plus FavoriteSession confirmation rollback",
+      "parseRoute actual destinations",
+      "catalog overlay and atomic harvest current integration evidence from handoff/tests"
+    ],
+    "comparedDocs": [
+      "HISTORY.md",
+      "findings-foundation.md",
+      "findings-revision.md",
+      "findings-aural.md",
+      "HANDOFF.md",
+      "tasks.json",
+      "LINEAGE_PRIORITY.md",
+      "IMPLEMENTATION_PLAN.md",
+      "README.md",
+      "../ios-android-parity-roadmap.md (historical retired pointer, not iOS implementation authority)",
+      "../porting-plan.md historical iOS roadmap headings/scoped feature text only; not PWA authority"
+    ]
+  },
+  "result": {
+    "behaviorGroups": 58,
+    "newCurrentIntegrationGaps": 5,
+    "newUnknownAndroidFeaturesClaimed": 0,
+    "runtimeTestsRun": 0,
+    "productBehaviorChanges": 0
+  },
+  "validation": [
+    {
+      "run": "AUDIT-ledger-validate-008",
+      "command": "python docs/pwa-port/validate_feature_ledger.py --render",
+      "result": "PASS:58 groups/164 frozen refs/5 new current gaps/50 patch records; before final reproducible hash/inventory extension"
+    },
+    {
+      "run": "AUDIT-legacy-validate-009",
+      "command": "python docs/pwa-port/validate_audit.py",
+      "exitCode": 1,
+      "result": "Existing task-graph line70 assertion: T11 complete depends on T08 in_progress; recorded milestone gate exists but validator does not apply it. T22 in-progress enum mismatch noted by inspection, not reached. tasks/legacy assertions untouched."
+    },
+    {
+      "run": "AUDIT-ledger-validate-004/006",
+      "result": "Intermediate new-validator errors: non-object historical evidence string handling; one incorrect PWA audio-sink path. Corrected documentation/validator only; source references now frozen and checked."
+    },
+    {
+      "run": "AUDIT-final-check-011",
+      "command": "python docs/pwa-port/validate_feature_ledger.py --render",
+      "result": "PASS:58 groups;164 frozen source refs;5 current gaps;50 reproducible first-parent patch byte hashes;262 history rows/575 evidence refs; generated ledger matches."
+    },
+    {
+      "run": "AUDIT-whitespace-012",
+      "command": "git diff --check",
+      "exitCode": 0,
+      "result": "PASS for then-tracked changes; final staged check also required to include new files."
+    },
+    {
+      "run": "AUDIT-remote-refresh-013",
+      "command": "git fetch origin codex/pwa-continuation",
+      "exitCode": 0,
+      "result": "FETCH_HEAD and local HEAD equal7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5 before docs checkpoint."
+    },
+    {
+      "run": "AUDIT-staged-check-017",
+      "command": "git diff --cached --check",
+      "exitCode": 0,
+      "result": "PASS including all seven new/updated docs/tooling files."
+    },
+    {
+      "run": "AUDIT-final-validate-018",
+      "command": "python docs/pwa-port/validate_feature_ledger.py",
+      "exitCode": 0,
+      "result": "PASS:58 groups/164 frozen refs/5 newly itemized current gaps/50 reproducible patch hashes/262 history rows/575 historical refs/exact generated document."
+    }
+  ],
+  "range": {
+    "command": "git log --full-history --format=%H 801cf7984171d772afc4406ddb5c79c0cb7fd20a -- android contracts",
+    "earliestScopedCommit": "099cadf943b30f3d6dd57604e6035354754de3a7",
+    "earliestScopedDate": "2026-07-28",
+    "end": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+    "outsideRange": "Unreachable branches, later Android history and deprecated web/ios implementation are not acceptance authority."
+  }
+}

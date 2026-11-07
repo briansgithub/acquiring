@@ -1,0 +1,2445 @@
+{
+  "schemaVersion": 1,
+  "nativeAuthority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "pwaInspectionHead": "7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5",
+  "scope": "Docs-only breadth-first feature discovery. Feature rows are bounded behavior groups, not total feature count. No new acceptance, task completion or production/runtime claims.",
+  "newGapMeaning": "new_current_gap means a concrete current-PWA omission newly itemized here, not an Android feature absent from all prior history inventory. Broad T12/T13/T21 packages already exist.",
+  "method": "Reverified the exact 262-commit android/contracts full-history inventory and 575 prior evidence objects; reviewed scoped functional excerpts from 50 selected first-parent patches plus surviving native/PWA entry points. See FEATURE_AUDIT_COVERAGE.json. Not exhaustive line-by-line review.",
+  "rows": [
+    {
+      "id": "P01",
+      "domain": "playback/audio",
+      "behavior": "Timeline section order, end-beat and silent seek cancel old sounding notes; controls restart only requested transport.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackTiming.kt",
+          "android/app/src/main/java/com/acquiring/android/SectionOrder.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackController.kt"
+        ],
+        "history": [
+          "eb9e7fdf51d9f3ed7db74875ca540d615d94dc4b",
+          "0886615a0c3651dfe38781850632d6455dea76d9",
+          "c551d100c5eac460ebaf44e894e6527856e26f69"
+        ],
+        "priorEvidence": [
+          "0886615a0c3651dfe38781850632d6455dea76d9:android/app/src/main/java/com/sacredring/android/SectionOrder.kt",
+          "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/SectionOrder.kt"
+        ],
+        "historicalDelta": "Uses source section order and page-tab metadata; fixes seek-only scrubbing, local scheduling bounds and end-loop cancellation to avoid duplicate/skipped notes."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/playback/controller.ts",
+          "pwa/src/audio/transport/timeline-builder.ts",
+          "pwa/tests/browser/playback.spec.ts"
+        ],
+        "inspection": "Controller and shared timeline fixtures exist; prior product proof is scoped to Chromium."
+      },
+      "tracking": {
+        "tasks": [
+          "T02",
+          "T08",
+          "T12"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain original seek/end/loop assertions; device latency and focus remain P03/P04.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "P02",
+      "domain": "playback/audio",
+      "behavior": "Per-layer generation invalidation, bounded PCM, PREVIEW retirement/fade; literal measured Hz bypasses transpose.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AudioEngine.kt",
+          "android/app/src/main/java/com/acquiring/android/SynthVoice.kt"
+        ],
+        "history": [
+          "1e22a1322db5c395f3d5336197a7bc956dd0b669",
+          "60e853e300f581d67cd738dbbe5de12738c93f92",
+          "2c7b8ae019b6eab8dab59b2074bcf0231f554721"
+        ],
+        "priorEvidence": [
+          "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+          "1e22a132:android/app/src/main/java/com/sacredring/android/AudioEngine.kt"
+        ],
+        "historicalDelta": "Per-layer playback generations and snapshots allow live control changes without stale tracks."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/audio/synth/playback-pcm.ts",
+          "pwa/src/features/playback/card-preview.ts",
+          "pwa/src/features/playback/interval-preview-audio.test.ts"
+        ],
+        "inspection": "PCM/preview implementations and tests; history 60e853e3 adds click-suppressing preview fade; 2c7b8ae0 literal Hz."
+      },
+      "tracking": {
+        "tasks": [
+          "T07",
+          "T08"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain sample/stream/preview fixtures and real audio-sink assertions; acoustic/device quality unverified.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "P03",
+      "domain": "playback/audio",
+      "behavior": "Foreground owner/focus loss stops sound; explicit activation governs resume after departure. Background notification service is retired.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackController.kt",
+          "android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+        ],
+        "history": [
+          "f89a775cd3b8e14a6998e20a974cbbdd50792544"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "f89a775c:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt"
+        ],
+        "historicalDelta": "Introduce saved-default/session instrument ownership and stable transport selectors; make playback foreground-owned and remove persistent media service."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/features/playback/controller.ts",
+          "pwa/tests/browser/audio-preview.spec.ts"
+        ],
+        "inspection": "pagehide/reload proven previously; real trusted-tab test.fixme remains unchanged. Headless/headed Xorg did not hide tabs."
+      },
+      "tracking": {
+        "tasks": [
+          "T08"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Genuine hidden-tab stop/explicit resume, BFCache and Safari events; no dispatched DOM events as acceptance. Physical Pixel remains open.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "P04",
+      "domain": "playback/audio",
+      "behavior": "Browser interruption/clock reconciliation is a platform adaptation of native focus-locked playback requests.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackController.kt",
+          "android/app/src/main/java/com/acquiring/android/AppAudioOutput.kt"
+        ],
+        "history": [
+          "2c16f571b99cb0b86f732dc796cb36331a8bed62"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "2c16f571:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+        ],
+        "historicalDelta": "Serialize active playback-owner and audio-focus transitions to reject stale ownership."
+      },
+      "pwa": {
+        "status": "unverified",
+        "paths": [
+          "pwa/tests/browser/audio-preview.spec.ts",
+          "pwa/src/audio/transport/pcm-queue-sink.ts"
+        ],
+        "inspection": "Native focus transitions and PWA acknowledgment tests are separate from OS/device proof."
+      },
+      "tracking": {
+        "tasks": [
+          "T08",
+          "T27"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Physical interruption/suspend/resume; no auto-start after cancellation; trusted device evidence.",
+      "priority": "primary",
+      "dependencies": [
+        "T07",
+        "T08",
+        "T27"
+      ]
+    },
+    {
+      "id": "P05",
+      "domain": "playback/cards",
+      "behavior": "Current/previous/Home/interval cards, tap preview and double-click singing, root/melody contexts and Lock in Major.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackView.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackRootOnlyRow.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackMelodyRow.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackIntervalState.kt"
+        ],
+        "history": [
+          "eb9e7fdf51d9f3ed7db74875ca540d615d94dc4b"
+        ],
+        "priorEvidence": [
+          "eb9e7fdf51d9f3ed7db74875ca540d615d94dc4b:android/app/src/main/java/com/sacredring/android/MainActivity.kt",
+          "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/PlaybackEngine.kt"
+        ],
+        "historicalDelta": "Adds cancellation of sounding notes on seek/reset, global transposition, simple/root mode, direct Quiz opening, and a modulation/melody timeline device regression."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/playback/PlaybackCards.tsx",
+          "pwa/src/features/playback/interval-preview.test.ts",
+          "pwa/tests/browser/playback.spec.ts"
+        ],
+        "inspection": "Existing accepted bounded cards/theory contracts are retained, not reopened by this audit."
+      },
+      "tracking": {
+        "tasks": [
+          "T03",
+          "T04",
+          "T12"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Keep existing original source fixtures and card assertions; remaining visual/device gaps stay separate.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "P06",
+      "domain": "playback/cards",
+      "behavior": "Chord inventory, individual tone cards and ranked transitions use interpreted voicings and block previews.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/SongInfoChords.kt",
+          "android/app/src/main/java/com/acquiring/android/ChordTransitions.kt"
+        ],
+        "history": [
+          "69096194f907ca7d758de8fde811a25bfb909d61"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "69096194:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt"
+        ],
+        "historicalDelta": "Block-chord inventory, tone cards and ranked transitions replace old arpeggio-speed UI."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/details/SongScreen.tsx",
+          "pwa/tests/browser/playback.spec.ts"
+        ],
+        "inspection": "Current Song Info surfaces exist; old arpeggio-speed editor is not the current target."
+      },
+      "tracking": {
+        "tasks": [
+          "T11"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain tone/transition/native theory tests; no recapture of already accepted cards.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "N01",
+      "domain": "playback/singing",
+      "behavior": "Root-only mode supports persistent SimpleRoot monitoring from the header, with target updates and a root gauge.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackView.kt",
+          "android/app/src/main/java/com/acquiring/android/PersistentPlaybackPitchPractice.kt"
+        ],
+        "history": [
+          "9973e748fbecaf09db02575ff2f2339d4c7d7fc0",
+          "86fd395917446b7b7df3200162ea2302fdfbfa29",
+          "45e7012ed33d18cded02093780152494461009bd"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "9973e748:android/app/src/androidTest/java/com/sacredring/android/TripleClickableUiTest.kt"
+        ],
+        "historicalDelta": "Persistent root/melody/chord-tone practice and exclusive triple-tap activation."
+      },
+      "pwa": {
+        "status": "missing",
+        "paths": [
+          "pwa/src/features/playback/use-playback-pitch-practice.ts",
+          "pwa/src/features/playback/persistent-pitch.ts"
+        ],
+        "inspection": "Native header selects SimpleRoot when simple; PWA hook enables only !rootOnly and melody, cancels on rootOnly. Pure simple-root type is not product integration."
+      },
+      "tracking": {
+        "tasks": [
+          "T12",
+          "T13"
+        ],
+        "classification": "new_current_gap"
+      },
+      "acceptanceRequired": "NEW root-monitoring gap: actual root-only UI activation/gauge, changing root/transpose/octave, lease handoff, stop/collapse/departure and no implicit restart.",
+      "priority": "primary",
+      "dependencies": [
+        "T08",
+        "T09",
+        "T12",
+        "T13"
+      ]
+    },
+    {
+      "id": "N02",
+      "domain": "playback/navigation",
+      "behavior": "Truncated Playback title opens a selectable full-title bottom sheet.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+        ],
+        "history": [
+          "877bb982e61d93e244297a43a631cc768ab18c5b"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "877bb982:android/app/src/main/java/com/acquiring/android/QuizDestination.kt"
+        ],
+        "historicalDelta": "Selectable expanded title sheet and dismissible contextual help."
+      },
+      "pwa": {
+        "status": "missing",
+        "paths": [
+          "pwa/src/ui/shell/AppShell.tsx",
+          "pwa/src/features/playback/PlaybackScreen.tsx"
+        ],
+        "inspection": "Surviving showTitleSheet/ModalBottomSheet/SelectionContainer; PWA static h1 has no title action. Not absent merely because title text exists."
+      },
+      "tracking": {
+        "tasks": [
+          "T12",
+          "T21"
+        ],
+        "classification": "new_current_gap"
+      },
+      "acceptanceRequired": "NEW full-title gap: long title activation, complete selectable title, dismissal and retained transport/navigation state.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "N03",
+      "domain": "playback/navigation",
+      "behavior": "Contextual Playback help scrim dismisses anywhere without activating covered controls.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+        ],
+        "history": [
+          "877bb982e61d93e244297a43a631cc768ab18c5b"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "877bb982:android/app/src/main/java/com/acquiring/android/QuizDestination.kt"
+        ],
+        "historicalDelta": "Selectable expanded title sheet and dismissible contextual help."
+      },
+      "pwa": {
+        "status": "missing",
+        "paths": [
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/features/help/HelpScreen.tsx"
+        ],
+        "inspection": "Surviving showPlaybackHelp overlay explains cards/mic/octave/expand; global Help route exists but does not supply this overlay."
+      },
+      "tracking": {
+        "tasks": [
+          "T12",
+          "T21"
+        ],
+        "classification": "new_current_gap"
+      },
+      "acceptanceRequired": "NEW contextual-help gap: reachable help action, exact current guidance, dismissal eats activation, keyboard/accessibility contract without unintended mic/play.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "N04",
+      "domain": "playback/gestures",
+      "behavior": "Tempo/arpeggio/mix rotary controls support angular drag and tap reset (100%, DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX, 0.5 mix).",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackDial.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackView.kt"
+        ],
+        "history": [
+          "86fd395917446b7b7df3200162ea2302fdfbfa29"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "86fd3959:android/app/src/androidTest/java/com/inquiring/android/TessituraUiTest.kt"
+        ],
+        "historicalDelta": "Rotary tempo/arpeggio/mix controls and updated streaming/pitch practice behaviors with regressions."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/features/playback/PlaybackSettingsPanel.tsx"
+        ],
+        "inspection": "PWA exposes range/select values, no rotary handlers or tap-reset affordance. Native PlaybackView onTap branches survive; values alone do not close gestures."
+      },
+      "tracking": {
+        "tasks": [
+          "T12"
+        ],
+        "classification": "new_current_gap"
+      },
+      "acceptanceRequired": "NEW reset/rotary gap: source-derived reset branches and angular pointer behavior, accessible value changes, no unrelated transport restart; preserve accepted sound values.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "S01",
+      "domain": "singing",
+      "behavior": "Two captured slots: tap literal-Hz replay, double-click recapture, interval replay and raw-MIDI interval/cents.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt",
+          "android/app/src/main/java/com/acquiring/android/SpelledInterval.kt"
+        ],
+        "history": [
+          "199b406112e2eef32269fe6530e1edb9bf286f71",
+          "9aa9fe6e7d9f6e3481b6145e78bdd9014efb9e40",
+          "2c7b8ae019b6eab8dab59b2074bcf0231f554721"
+        ],
+        "priorEvidence": [
+          "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+          "199b4061:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt"
+        ],
+        "historicalDelta": "Tap captured pitch to replay and double-tap to recapture."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/singing/SingingDock.tsx",
+          "pwa/src/features/singing/singing-microphone.ts",
+          "pwa/tests/browser/playback-synthetic-scores.spec.ts"
+        ],
+        "inspection": "9aa9fe6e changes clear-on-start double-tap behavior; current slots/record/preview integration exists. SYNTHETIC is not physical mic."
+      },
+      "tracking": {
+        "tasks": [
+          "T09",
+          "T13"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain capture freshness/clear/preview tests; first actual permission and physical pitch remain unverified.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "S02",
+      "domain": "singing",
+      "behavior": "Target listening/Flip-Flop, contiguous voiced-run median, no stale held score and two-second quiet rest.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt",
+          "android/app/src/main/java/com/acquiring/android/MicrophonePitchTracker.kt",
+          "android/app/src/main/java/com/acquiring/android/PitchSmoother.kt"
+        ],
+        "history": [
+          "bc142c082e1782def9f7bf7da608ddf6f61b2829"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "bc142c08:android/app/src/androidTest/java/com/sacredring/android/TessituraUiTest.kt"
+        ],
+        "historicalDelta": "Contiguous melody-run median scoring and extracted calibration UI."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/singing/singing-microphone.ts",
+          "pwa/src/features/singing/singing-score.ts",
+          "pwa/src/audio/capture/pitch-publisher.ts"
+        ],
+        "inspection": "Pure/kernel and product synthetic evidence exist; Flip-Flop drops displayed target and stops mic during rest."
+      },
+      "tracking": {
+        "tasks": [
+          "T09",
+          "T13"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Keep raw vs held-display, silence/dropout, median and rest assertions; physical-mic proof remains open.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "S03",
+      "domain": "singing",
+      "behavior": "Per-song octave -2..+3 is durable and affects singing targets, not source transport.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/SingingOctaveSelector.kt",
+          "android/app/src/main/java/com/acquiring/android/SongOctaveOffsetViewModel.kt"
+        ],
+        "history": [
+          "45e7012ed33d18cded02093780152494461009bd"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "45e7012e:android/app/src/androidTest/java/com/acquiring/android/PitchHintDotUiTest.kt"
+        ],
+        "historicalDelta": "Remove tessitura/calibration/hints; add saved song octave owner, displayed-name search, revised cards/help."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/singing/song-octave-session.ts",
+          "pwa/src/features/singing/singing-octave.test.ts"
+        ],
+        "inspection": "Current persistent octave selector replaces comfortable-pitch calibration."
+      },
+      "tracking": {
+        "tasks": [
+          "T06",
+          "T13"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain section-change/new-song/restore/failure fixtures; do not resurrect deleted calibration.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "S04",
+      "domain": "singing",
+      "behavior": "Card auto-listen follows approved policy A800ms including first prompt; expand alone does not start recording.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackView.kt"
+        ],
+        "history": [
+          "6782647188c78dfcadb52c6981ab74af8f4a64bc"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "67826471:android/app/src/androidTest/java/com/acquiring/android/HummingIntervalLifecycleUiTest.kt"
+        ],
+        "historicalDelta": "Collapse singing tool and release microphone when backgrounded."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/singing/SingingDock.tsx",
+          "pwa/src/features/singing/singing-microphone.ts",
+          "pwa/tests/browser/audio-preview.spec.ts"
+        ],
+        "inspection": "Owner accepted 800ms overrides older timing constants; visible Stop/collapse cancellation remains required."
+      },
+      "tracking": {
+        "tasks": [
+          "T09",
+          "T13"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Keep original 800ms first-prompt/cancel assertions; fake/silent permission delivery is not physical prompt proof.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "S05",
+      "domain": "singing/lifecycle",
+      "behavior": "Exit retains inert visual content for native 300ms shrink; immediate operational cleanup, rapid reopen and departure clear.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+        ],
+        "history": [
+          "6782647188c78dfcadb52c6981ab74af8f4a64bc"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "67826471:android/app/src/androidTest/java/com/acquiring/android/HummingIntervalLifecycleUiTest.kt"
+        ],
+        "historicalDelta": "Collapse singing tool and release microphone when backgrounded."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/singing/singing-exit.ts",
+          "pwa/src/features/singing/SingingDock.tsx",
+          "pwa/tests/browser/audio-preview.spec.ts"
+        ],
+        "inspection": "7b889f1c HANDOFF records prior 17 pass/1 trusted-tab skip, not freshly rerun. Owner immediate cleanup overrides native ordinary-icon deferred cleanup; reduced motion is explicit web adaptation."
+      },
+      "tracking": {
+        "tasks": [
+          "T09",
+          "T13"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain actual animation/interrupted exit/pagehide/reduced-motion proofs; native pixel/density and physical lifecycle are not accepted.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "S06",
+      "domain": "singing/lifecycle",
+      "behavior": "Collapsed singing handle exposes Stop while persistent monitoring remains active.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+        ],
+        "history": [
+          "45e7012ed33d18cded02093780152494461009bd"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "9973e748:android/app/src/androidTest/java/com/sacredring/android/TripleClickableUiTest.kt"
+        ],
+        "historicalDelta": "Persistent root/melody/chord-tone practice and exclusive triple-tap activation."
+      },
+      "pwa": {
+        "status": "missing",
+        "paths": [
+          "pwa/src/features/singing/SingingDock.tsx",
+          "pwa/src/features/playback/PlaybackScreen.tsx"
+        ],
+        "inspection": "Native isPersistentMonitoring/onStopPersistent collapsed header at lines565–593; current HANDOFF already names next implementation. This audit does not implement it."
+      },
+      "tracking": {
+        "tasks": [
+          "T13"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Actual collapsed Stop stops current/pending capture/targets without expanding or starting mic; accessible control and rapid handoff/cancellation.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "N05",
+      "domain": "singing/labels",
+      "behavior": "Singing tape note names use section-key relative-major signature preference for sharps/flats.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/RelativeIonianContext.kt",
+          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt",
+          "android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+        ],
+        "history": [
+          "5e469e56be85f41a25957e84ebacdbf026bf0d46"
+        ],
+        "priorEvidence": [
+          "5e469e56be85f41a25957e84ebacdbf026bf0d46:android/app/src/main/java/com/acquiring/android/RelativeIonianContext.kt"
+        ],
+        "historicalDelta": "Spells chromatic singing note labels using the song modal key's relative-major signature, supports sharp/flat preference and updates interval popup context."
+      },
+      "pwa": {
+        "status": "missing",
+        "paths": [
+          "pwa/src/features/singing/singing-tape.ts",
+          "pwa/src/features/singing/SingingDock.tsx"
+        ],
+        "inspection": "Native noteNameAccidentalPreference flows to tape fromMidi; PWA tapeNoteLabel uses default fromMidi with no key preference. Captured-slot spellRelative is a different contract, not claimed missing."
+      },
+      "tracking": {
+        "tasks": [
+          "T03",
+          "T13"
+        ],
+        "classification": "new_current_gap"
+      },
+      "acceptanceRequired": "NEW tape-label gap: sharp/flat/no-signature/modal keys and section changes; preserve measured Hz, captured relative spelling, octave and transpose semantics.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "S07",
+      "domain": "singing/scoring",
+      "behavior": "Persistent melody monitoring banks contiguous-run scores; live halo rest 0 cents, unscored dot and absent score are distinct.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackView.kt",
+          "android/app/src/main/java/com/acquiring/android/PersistentPlaybackPitchPractice.kt"
+        ],
+        "history": [
+          "bc142c082e1782def9f7bf7da608ddf6f61b2829"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "bc142c08:android/app/src/androidTest/java/com/sacredring/android/TessituraUiTest.kt"
+        ],
+        "historicalDelta": "Contiguous melody-run median scoring and extracted calibration UI."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/playback/use-playback-pitch-practice.ts",
+          "pwa/src/features/playback/melody-timeline-score.ts",
+          "pwa/tests/browser/playback-synthetic-scores.spec.ts"
+        ],
+        "inspection": "Product SYNTHETIC oscillator banking exists; fake/silent proof is narrower. N01 root-only integration remains missing."
+      },
+      "tracking": {
+        "tasks": [
+          "T09",
+          "T13"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain original settle/silence/run-entry/held-not-banked assertions and separate live vs banked indicators.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "G01",
+      "domain": "gestures/animations",
+      "behavior": "Timeline centered lanes, silent tap/drag seek and cancellation of prior notes.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackView.kt"
+        ],
+        "history": [
+          "0886615a0c3651dfe38781850632d6455dea76d9"
+        ],
+        "priorEvidence": [
+          "0886615a0c3651dfe38781850632d6455dea76d9:android/app/src/main/java/com/sacredring/android/SectionOrder.kt",
+          "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/SectionOrder.kt"
+        ],
+        "historicalDelta": "Uses source section order and page-tab metadata; fixes seek-only scrubbing, local scheduling bounds and end-loop cancellation to avoid duplicate/skipped notes."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/features/playback/PlaybackTimeline.tsx",
+          "pwa/src/features/playback/timeline-scrub.ts",
+          "pwa/tests/browser/playback.spec.ts"
+        ],
+        "inspection": "Basic real mouse and emulated touch input documented; CSS/dp/density equivalence unaccepted."
+      },
+      "tracking": {
+        "tasks": [
+          "T12",
+          "T27"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Native geometry/font-scale comparisons and physical touch, not synthetic handler math.",
+      "priority": "primary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "G02",
+      "domain": "gestures/animations",
+      "behavior": "Timeline inertia coast, velocity threshold and tap-during-coast cancellation.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackView.kt"
+        ],
+        "history": [
+          "1c6745262f69aaf7996d7e246c8c0834d77c8002"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "1c674526:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt"
+        ],
+        "historicalDelta": "Fixed Play/beat-step/Reset/section row replaces floating transport."
+      },
+      "pwa": {
+        "status": "missing",
+        "paths": [
+          "pwa/src/features/playback/timeline-scrub.ts",
+          "pwa/src/features/playback/PlaybackTimeline.tsx"
+        ],
+        "inspection": "Known LINEAGE gap: native exponential decay1.4 / threshold0.5 beats/sec; no PWA coast. Historical reference anchors fixed layout, exact current source governs inertia."
+      },
+      "tracking": {
+        "tasks": [
+          "T12"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Source-derived motion/tap cancel/no-seek and playback resumption tests; keep below functional primary gaps.",
+      "priority": "polish",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "G03",
+      "domain": "gestures/animations",
+      "behavior": "Pitch marker32ms tween, tape interpolation, density/sp font geometry and other native motion.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackView.kt",
+          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+        ],
+        "history": [
+          "4299184ab9bb65bbc8cfe68346f0791c8a176a0b"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "4299184a:android/app/src/main/java/com/acquiring/android/AppSettings.kt"
+        ],
+        "historicalDelta": "Persist60fps/maximum visual refresh separately from audio clock."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/features/playback/timeline-live-pitch.ts",
+          "pwa/src/features/singing/singing-tape.ts"
+        ],
+        "inspection": "Snap tape and remaining marker/density differences explicitly unaccepted; S05 collapse is now implemented."
+      },
+      "tracking": {
+        "tasks": [
+          "T12",
+          "T13",
+          "T27"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Measured animation and geometry with reduced-motion web contract; do not equate CSSpx to native raw pixels.",
+      "priority": "polish",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "L01",
+      "domain": "library/search/artists",
+      "behavior": "All Songs alphabetic/complexity/unrated/mode groups, membership, counts and stable ordered pages.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AllSongsView.kt",
+          "android/app/src/main/java/com/acquiring/android/SongBrowse.kt",
+          "android/app/src/main/java/com/acquiring/android/SongDao.kt"
+        ],
+        "history": [
+          "4aff98b9245fd164566d5e157cb2010aeaaaca2b"
+        ],
+        "priorEvidence": [
+          "Bounded functional diff/comment/test excerpts inspected; no app execution.",
+          "4aff98b9:android/.gitignore"
+        ],
+        "historicalDelta": "Performance-safe All Songs alphabetical/complexity/mode browsing, scalar queries and restore states."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/storage/catalog/library-queries.ts",
+          "pwa/src/storage/catalog/harvest-query-overlay.ts",
+          "pwa/tests/browser/library-queries.spec.ts"
+        ],
+        "inspection": "Current SQL overlay integration covers harvested membership/counts/modes; do not reuse obsolete songPayload-only gap."
+      },
+      "tracking": {
+        "tasks": [
+          "T10",
+          "T22"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain catalog precedence/ghost/no duplicate/page-boundary SQLite fixtures; Artists gaps separate.",
+      "priority": "secondary",
+      "dependencies": [
+        "T05",
+        "T06",
+        "T10",
+        "T22"
+      ]
+    },
+    {
+      "id": "L02",
+      "domain": "library/search/artists",
+      "behavior": "Title/artist scopes, focus hides chrome, empty artist refusal, exact artist selection and suggestions.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/LibraryView.kt",
+          "android/app/src/main/java/com/acquiring/android/LibrarySearchSuggestions.kt",
+          "android/app/src/main/java/com/acquiring/android/SongDao.kt"
+        ],
+        "history": [
+          "562a66d27181845f744dbec6716dc32e707227ef"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "562a66d2:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt"
+        ],
+        "historicalDelta": "Hide Library playlists/All Songs during focused search and separate search scope."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/features/library/LibraryScreen.tsx",
+          "pwa/src/storage/catalog/library-queries.ts",
+          "pwa/tests/browser/library.spec.ts"
+        ],
+        "inspection": "Artists result pages20 vs native unbounded and suggestion NOCASE extension vs native unordered DISTINCT remain unaccepted."
+      },
+      "tracking": {
+        "tasks": [
+          "T10"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Native result cardinality/order/empty/scope original assertions and pagination decision evidence; no silent relaxation.",
+      "priority": "secondary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "L03",
+      "domain": "library/search/artists",
+      "behavior": "In-memory diacritic/case/alphanumeric folded index and Found N matches rendering.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/LibrarySearch.kt",
+          "android/app/src/main/java/com/acquiring/android/LibraryView.kt"
+        ],
+        "history": [
+          "562a66d27181845f744dbec6716dc32e707227ef"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "562a66d2:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt"
+        ],
+        "historicalDelta": "Hide Library playlists/All Songs during focused search and separate search scope."
+      },
+      "pwa": {
+        "status": "missing",
+        "paths": [
+          "pwa/src/features/library/LibraryScreen.tsx",
+          "pwa/src/storage/catalog/library-queries.ts"
+        ],
+        "inspection": "Already HANDOFF gap; native catalogSearchKey strips diacritics/non-alphanumerics, distinct from SQLite LIKE."
+      },
+      "tracking": {
+        "tasks": [
+          "T10"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Fixture Unicode/punctuation/diacritic/native comparator behavior and actual count UI; do not approximate native with JS matching.",
+      "priority": "secondary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "L04",
+      "domain": "library/search/artists",
+      "behavior": "Prefix subgroup scrubber for sufficiently large All Songs lists.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/BrowseSubgrouping.kt",
+          "android/app/src/main/java/com/acquiring/android/BrowseScrubber.kt",
+          "android/app/src/main/java/com/acquiring/android/AllSongsView.kt"
+        ],
+        "history": [
+          "4b2da5306e2f63ecbd68512211ef7aeba66cd1a0"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "4b2da530:android/app/src/main/java/com/acquiring/android/AllSongsView.kt"
+        ],
+        "historicalDelta": "Prefix navigation for large All Songs groups; row complexity scores."
+      },
+      "pwa": {
+        "status": "missing",
+        "paths": [
+          "pwa/src/features/library/LibraryScreen.tsx"
+        ],
+        "inspection": "Known lineage deferred scrubber, not newly discovered."
+      },
+      "tracking": {
+        "tasks": [
+          "T10"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Native threshold/shared-prefix/run and jump target fixtures plus product navigation.",
+      "priority": "polish",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "L05",
+      "domain": "library/search/artists",
+      "behavior": "Display-only cleanup preserves meaningful hyphens, IDs/URLs and recent title/artist history.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/CatalogDisplayName.kt",
+          "android/app/src/main/java/com/acquiring/android/HistoryManager.kt"
+        ],
+        "history": [
+          "3b6fee652239a55d2f6191e4231d3e250628e301"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "3b6fee65:android/app/src/androidTest/java/com/acquiring/android/SongSearchUiTest.kt"
+        ],
+        "historicalDelta": "Canonicalize displayed song/artist names while preserving meaningful hyphens."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/library/LibraryScreen.tsx",
+          "pwa/src/storage/user/index.ts"
+        ],
+        "inspection": "Catalog identity remains raw; display formatting and native recent limits have existing contracts."
+      },
+      "tracking": {
+        "tasks": [
+          "T02",
+          "T06",
+          "T10"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain normalized-display/source-identity/history-order fixtures; no data rewrite.",
+      "priority": "secondary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "L06",
+      "domain": "library/persistence",
+      "behavior": "Favorites/ordered playlists live separately from catalog; star rolls back on write failure and only successful addition shows brief Favorited.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/UserDataDatabase.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaylistDao.kt",
+          "android/app/src/main/java/com/acquiring/android/FavoritedConfirmation.kt"
+        ],
+        "history": [
+          "9ab27ceeeadde93347d97096a9060656b75cdf98",
+          "d3ca9e2f0dc15676a52bbf8852a611c6a6d8eb3f"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "9ab27cee:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+        ],
+        "historicalDelta": "Store favorites/playlists in separate durable database with DAO/tests and rollback."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/playback/favorites-session.ts",
+          "pwa/src/features/playback/PlaybackFavoriteStar.tsx",
+          "pwa/src/storage/user/user.test.ts"
+        ],
+        "inspection": "PWA confirmation exists; do not count missing merely because caller file lacks literal notice. d3ca9e2f adds native2000ms notice."
+      },
+      "tracking": {
+        "tasks": [
+          "T06",
+          "T10",
+          "T12"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain success/failure/removal/no-false-confirmation and preserved playlist tests.",
+      "priority": "secondary",
+      "dependencies": [
+        "T06",
+        "T10"
+      ]
+    },
+    {
+      "id": "I01",
+      "domain": "import/harvest",
+      "behavior": "Page section tabs retain order/names, repeated API IDs fetch once but retain distinct section keys and full payload.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HarvestService.kt",
+          "android/app/src/main/java/com/acquiring/android/DataExtractor.kt",
+          "android/app/src/main/java/com/acquiring/android/Scraper.kt"
+        ],
+        "history": [
+          "734ab3f5d25519363139f58fd771527f60076359"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "734ab3f5:android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt"
+        ],
+        "historicalDelta": "Persist manually harvested songs in separate user ledger and restore/adopt them across full-catalog replacement."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/domain/harvest/harvest-handler.ts",
+          "pwa/src/domain/harvest/page-sections.ts",
+          "pwa/tests/browser/harvest-worker.spec.ts"
+        ],
+        "inspection": "Repo handler and disposable contract proofs exist, no live Hooktheory HTTP; current Library has no end-to-end harvest UI/service binding."
+      },
+      "tracking": {
+        "tasks": [
+          "T22"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Fixture UI-to-worker progress/error/cancel/retry flow and bounded configured service contract; no live requests this audit.",
+      "priority": "secondary",
+      "dependencies": [
+        "T02",
+        "T05",
+        "T06",
+        "T22"
+      ]
+    },
+    {
+      "id": "I02",
+      "domain": "import/harvest",
+      "behavior": "Native lenient nested JSON/Unicode first-letter titlecasing/wider URL forms.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HarvestService.kt",
+          "android/app/src/main/java/com/acquiring/android/HooktheoryDataCompat.kt"
+        ],
+        "history": [
+          "734ab3f5d25519363139f58fd771527f60076359"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "734ab3f5:android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt"
+        ],
+        "historicalDelta": "Persist manually harvested songs in separate user ledger and restore/adopt them across full-catalog replacement."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/domain/harvest/raw-json.ts",
+          "pwa/src/domain/harvest/harvest-url.ts",
+          "pwa/src/domain/harvest/harvest-handler.test.ts"
+        ],
+        "inspection": "Strict JSON and narrower URL/ASCII assumptions remain explicit HANDOFF gaps, not parity-lowered acceptance."
+      },
+      "tracking": {
+        "tasks": [
+          "T02",
+          "T22"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Pinned native fixtures for malformed-but-native-accepted JSON, Unicode titlecase and URL grammar; surface material ambiguity.",
+      "priority": "secondary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "I03",
+      "domain": "import/harvest",
+      "behavior": "Harvest preservation: bounded one-time outgoing adoption, persist, catalog activate, replay/startup repair nonfatal; existing catalog slug wins including ghost.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HarvestLedger.kt",
+          "android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt"
+        ],
+        "history": [
+          "734ab3f5d25519363139f58fd771527f60076359"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "734ab3f5:android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt"
+        ],
+        "historicalDelta": "Persist manually harvested songs in separate user ledger and restore/adopt them across full-catalog replacement."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/domain/harvest/catalog-swap.ts",
+          "pwa/src/storage/catalog/catalog-harvest.ts",
+          "pwa/tests/browser/harvest-swap.spec.ts"
+        ],
+        "inspection": "PWA readonly overlay substitutes native catalog writes, retaining adopt/replay semantics and immutable catalog. Original browser query/swap/recovery coverage exists."
+      },
+      "tracking": {
+        "tasks": [
+          "T05",
+          "T06",
+          "T22"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Keep native unrated+browse modes/table-equivalence, ghost precedence and startup missing-target repair fixtures.",
+      "priority": "secondary",
+      "dependencies": [
+        "T05",
+        "T06",
+        "T22"
+      ]
+    },
+    {
+      "id": "I04",
+      "domain": "import/persistence",
+      "behavior": "Harvest result plus established T06 mutation receipt/outbox commit atomically, retries duplicate safely and worker loss recovers.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HarvestService.kt",
+          "android/app/src/main/java/com/acquiring/android/UserDataDatabase.kt"
+        ],
+        "history": [
+          "734ab3f5d25519363139f58fd771527f60076359"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "734ab3f5:android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt"
+        ],
+        "historicalDelta": "Persist manually harvested songs in separate user ledger and restore/adopt them across full-catalog replacement."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/domain/harvest/commit-harvest.ts",
+          "pwa/src/storage/catalog/catalog-worker.ts",
+          "pwa/tests/browser/atomic-harvest.spec.ts"
+        ],
+        "inspection": "df6a734 prior disposable proof covers rollback/cancel/lost response/restart/unrelated rows. Outbox is established PWA T06, not invented native network sync payload."
+      },
+      "tracking": {
+        "tasks": [
+          "T06",
+          "T22"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain actual IndexedDB failure/cancel/worker-cut tests; no catalog.db writes or real-data tests.",
+      "priority": "secondary",
+      "dependencies": [
+        "T05",
+        "T06",
+        "T22"
+      ]
+    },
+    {
+      "id": "R01",
+      "domain": "persistence/recovery",
+      "behavior": "User database schema migrations and durable rows survive catalog swap; guest/account namespaces do not imply auth implemented.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/UserDataDatabase.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaylistDao.kt",
+          "android/app/src/main/java/com/acquiring/android/HarvestedSong.kt"
+        ],
+        "history": [
+          "9ab27ceeeadde93347d97096a9060656b75cdf98"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "9ab27cee:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+        ],
+        "historicalDelta": "Store favorites/playlists in separate durable database with DAO/tests and rollback."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/storage/user/index.ts",
+          "pwa/tests/browser/user-storage.spec.ts"
+        ],
+        "inspection": "T06 records/sequence/outbox atomic; tests use disposable fixtures, sync absent."
+      },
+      "tracking": {
+        "tasks": [
+          "T06"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain original namespace/migration/tombstone/receipt isolation; no real user-data wipes.",
+      "priority": "secondary",
+      "dependencies": [
+        "T06"
+      ]
+    },
+    {
+      "id": "R02",
+      "domain": "persistence/recovery",
+      "behavior": "Empty-catalog bootstrap/install freshness, staged verified catalog replacement and interrupted-install reader recovery.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/CatalogAutoInstall.kt",
+          "android/app/src/main/java/com/acquiring/android/DatabaseDownloader.kt"
+        ],
+        "history": [
+          "c1568dc53d0ba6ac1473e14fb08c2d8886c8aac9"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "c1568dc5:android/app/src/main/java/com/acquiring/android/AppSettings.kt"
+        ],
+        "historicalDelta": "Auto-install an empty catalog; show freshness/update state in Settings."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/features/catalog/installer.ts",
+          "pwa/src/storage/catalog/journal.ts",
+          "pwa/tests/browser/catalog-install.spec.ts"
+        ],
+        "inspection": "Desktop full-size immutable catalog/recovery proof recorded; browser eviction/quota/install update remains platform gate."
+      },
+      "tracking": {
+        "tasks": [
+          "T05",
+          "T26"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Disposable failure/cancel/restart and durable pointer tests; physical quota/eviction/full install-update product tests.",
+      "priority": "secondary",
+      "dependencies": [
+        "T05",
+        "T26"
+      ]
+    },
+    {
+      "id": "V01",
+      "domain": "settings/navigation",
+      "behavior": "Origin-preserving Back, Song Info detour and Library Settings overlay scroll continuity.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PracticeNavigation.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt",
+          "android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+        ],
+        "history": [
+          "1c6745262f69aaf7996d7e246c8c0834d77c8002"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "1c674526:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt"
+        ],
+        "historicalDelta": "Fixed Play/beat-step/Reset/section row replaces floating transport."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/app/routes.ts",
+          "pwa/src/features/playback/playback-route-memory.ts",
+          "pwa/tests/browser/library.spec.ts"
+        ],
+        "inspection": "Settings Back original strict<3px got110px in earlier CI; owner DEFERRED. This audit does not alter or rerun it."
+      },
+      "tracking": {
+        "tasks": [
+          "T10",
+          "T12",
+          "T21"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain assertion/decision deferred; other route/back state can be tested independently.",
+      "priority": "secondary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "V02",
+      "domain": "settings/navigation",
+      "behavior": "Saved default instrument independent of session selection; deliberate default selection updates current session.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/InstrumentSession.kt",
+          "android/app/src/main/java/com/acquiring/android/AppSettings.kt"
+        ],
+        "history": [
+          "0f6fb28301188034302f49005bae2f79f3861f92"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "0f6fb283:android/README.md"
+        ],
+        "historicalDelta": "Add Android default-instrument/settings maintenance and external Play listing handoff despite iOS-led subject."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/settings/instrument-session.ts",
+          "pwa/src/features/settings/DefaultInstrumentControl.tsx"
+        ],
+        "inspection": "Settings already groups Synths/Waveforms. Playback flat selector is not evidence all instrument menus missing."
+      },
+      "tracking": {
+        "tasks": [
+          "T21"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain reload/session/default/song-change and fallback tests.",
+      "priority": "secondary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "V03",
+      "domain": "settings/navigation",
+      "behavior": "One-shot Introduction, offline Help/notation/Roman articles and privacy link.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/IntroductionPrefs.kt",
+          "android/app/src/main/java/com/acquiring/android/HelpContent.kt",
+          "android/app/src/main/java/com/acquiring/android/HelpNotationArticles.kt",
+          "android/app/src/main/java/com/acquiring/android/PrivacyPolicyLink.kt"
+        ],
+        "history": [
+          "c3cd59e21260c5991c0abe68a6e8145391b28c71"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "c3cd59e2:android/app/build.gradle"
+        ],
+        "historicalDelta": "Add privacy-policy access and published policy resource with link tests."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/onboarding/IntroductionScreen.tsx",
+          "pwa/src/features/help/HelpScreen.tsx",
+          "pwa/src/features/settings/PrivacyPolicyLink.tsx"
+        ],
+        "inspection": "Existing global routes/content; separate N03 contextual Playback overlay still missing."
+      },
+      "tracking": {
+        "tasks": [
+          "T21"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain article/navigation/one-shot persistence and offline accessibility evidence.",
+      "priority": "secondary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "V04",
+      "domain": "settings/navigation",
+      "behavior": "Allow-listed bounded audio diagnostics export and engine stop/reset, not user-data reset.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AudioDiagnostics.kt",
+          "android/app/src/main/java/com/acquiring/android/AppSettings.kt"
+        ],
+        "history": [
+          "91623c45bd9698c9af62a49c33653b93427ceace"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "91623c45:android/app/src/main/java/com/acquiring/android/AppSettings.kt"
+        ],
+        "historicalDelta": "Engine reset and allow-listed diagnostic export excluding song IDs/audio."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "pwa/src/features/settings/audio-diagnostics.ts",
+          "pwa/src/features/settings/AudioDiagnosticsControl.tsx"
+        ],
+        "inspection": "Current diagnostic/reset code and test claims scoped to prior checkpoints."
+      },
+      "tracking": {
+        "tasks": [
+          "T21"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Allow-list/redaction/bound/stop-preview+transport assertions; no secret extraction or data wipe.",
+      "priority": "secondary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "V05",
+      "domain": "settings/platform",
+      "behavior": "60fps/Maximum affects visual timeline scheduling independent of audio; device maximum refresh is platform-specific.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/TimelineFrameRate.kt",
+          "android/app/src/main/java/com/acquiring/android/AppSettings.kt"
+        ],
+        "history": [
+          "4299184ab9bb65bbc8cfe68346f0791c8a176a0b"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "4299184a:android/app/src/main/java/com/acquiring/android/AppSettings.kt"
+        ],
+        "historicalDelta": "Persist60fps/maximum visual refresh separately from audio clock."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/features/settings/timeline-frame-rate.ts",
+          "pwa/src/features/settings/TimelineFrameRateControl.tsx"
+        ],
+        "inspection": "Browser probe fallback60 is not Android preferredRefreshRate parity."
+      },
+      "tracking": {
+        "tasks": [
+          "T21",
+          "T27"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Refresh-cap/frame stability/device proof while audio stays unchanged.",
+      "priority": "polish",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "V06",
+      "domain": "settings/platform",
+      "behavior": "Updates honestly unavailable; native Play listing/status and native versionCode have no accepted SW/build-number equivalent.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlayAppUpdate.kt",
+          "android/app/src/main/java/com/acquiring/android/AppSettings.kt"
+        ],
+        "history": [
+          "0f6fb28301188034302f49005bae2f79f3861f92"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "0f6fb283:android/README.md"
+        ],
+        "historicalDelta": "Add Android default-instrument/settings maintenance and external Play listing handoff despite iOS-led subject."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/features/settings/AppUpdateControl.tsx",
+          "pwa/src/features/settings/play-app-update.ts"
+        ],
+        "inspection": "No fake Open Play wired to SW; package version only; native (build N) remains gap."
+      },
+      "tracking": {
+        "tasks": [
+          "T21",
+          "T26"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Actual supported update/install/version metadata and truthful status; do not fabricate build code.",
+      "priority": "secondary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "V07",
+      "domain": "settings/platform",
+      "behavior": "Phone portrait vs tablet rotation policy, navigation restoration and responsive accessibility.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PhoneOrientationPolicy.kt",
+          "android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+        ],
+        "history": [
+          "13e0b65c5c67ba5afcaeabfd361ec92d7823f95e"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "13e0b65c:android/app/src/main/AndroidManifest.xml"
+        ],
+        "historicalDelta": "Phones portrait-locked; tablets rotate."
+      },
+      "pwa": {
+        "status": "unverified",
+        "paths": [
+          "pwa/src/app/App.tsx",
+          "pwa/src/ui/shell/AppShell.tsx"
+        ],
+        "inspection": "Native threshold600dp survives; browser adaptation is not proved by responsive CSS alone."
+      },
+      "tracking": {
+        "tasks": [
+          "T26",
+          "T27"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Real orientation/viewport/keyboard/screen-reader/browser restoration and touch; owner platform requirements if constraints differ.",
+      "priority": "secondary",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "X01",
+      "domain": "auth/sync/platform",
+      "behavior": "Auth/account verification/reset/Google, cloud conflicts/RLS/guest merge and feature sync are PWA roadmap requirements, not native shipping behavior inferred from a title.",
+      "native": {
+        "disposition": "uncertain",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/UserDataDatabase.kt"
+        ],
+        "history": [
+          "9ab27ceeeadde93347d97096a9060656b75cdf98"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "9ab27cee:android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+        ],
+        "historicalDelta": "Store favorites/playlists in separate durable database with DAO/tests and rollback."
+      },
+      "pwa": {
+        "status": "missing",
+        "paths": [
+          "docs/pwa-port/tasks.json",
+          "pwa/src/storage/user/index.ts"
+        ],
+        "inspection": "Current namespace/outbox foundation only. Native audited sources do not establish a shipping server auth/sync implementation."
+      },
+      "tracking": {
+        "tasks": [
+          "T23",
+          "T24",
+          "T25"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Approved API/schema/RLS isolation and disposable integration proof before claiming auth/sync; no production writes in audit.",
+      "priority": "secondary",
+      "dependencies": [
+        "T06",
+        "T23",
+        "T24",
+        "T25"
+      ]
+    },
+    {
+      "id": "X02",
+      "domain": "auth/sync/platform",
+      "behavior": "PWA install/service-worker upgrade/cache compatibility/recovery/a11y/release gates.",
+      "native": {
+        "disposition": "uncertain",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+          "android/app/src/main/java/com/acquiring/android/PlayAppUpdate.kt"
+        ],
+        "history": [
+          "13e0b65c5c67ba5afcaeabfd361ec92d7823f95e"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "13e0b65c:android/app/src/main/AndroidManifest.xml"
+        ],
+        "historicalDelta": "Phones portrait-locked; tablets rotate."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "docs/pwa-port/tasks.json",
+          "pwa/src/app/App.tsx"
+        ],
+        "inspection": "Native platform/lifecycle intent exists; PWA delivery requirements require their own evidence. No whole CI queried this audit."
+      },
+      "tracking": {
+        "tasks": [
+          "T26",
+          "T27",
+          "T28"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Safari/BFCache/Pixel/physical mic/a11y/offline/update/release evidence and unchanged original gates.",
+      "priority": "secondary",
+      "dependencies": [
+        "T08",
+        "T26",
+        "T27",
+        "T28"
+      ]
+    },
+    {
+      "id": "A01",
+      "domain": "Aural/curriculum",
+      "behavior": "Seven evidence skills, deterministic generation/assessment/scheduling, supported-independent-transfer gates and four microphone task kinds.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AuralCurriculum.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralPitchAssessment.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralSession.kt"
+        ],
+        "history": [
+          "b6b19077041b4ca40705b79b74e710492775d395"
+        ],
+        "priorEvidence": [
+          "b6b19077041b4ca40705b79b74e710492775d395:docs/aural-curriculum.md",
+          "b6b19077041b4ca40705b79b74e710492775d395:android/app/src/main/java/com/acquiring/android/AuralCurriculum.kt"
+        ],
+        "historicalDelta": "Adds pure deterministic aural curriculum, seven distinct evidence skills, adaptive scheduling, supported/independent/transfer gates, four microphone tasks, durable provenance and one-shot audio; renames song Quiz UI to Playback."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/domain/learning/aural-generator.ts",
+          "pwa/src/domain/learning/aural-evidence.ts",
+          "pwa/src/domain/learning/aural-scheduler.ts"
+        ],
+        "inspection": "Substantial pure native fixtures exist; routes currently only Library/Song/Playback/Settings/Help. Not a shipping Aural quiz UI."
+      },
+      "tracking": {
+        "tasks": [
+          "T14",
+          "T18"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Preserve pure contracts; integrate actual Recognize/Recall/Sing inputs, playback/capture/assistance and durable evidence last.",
+      "priority": "last",
+      "dependencies": [
+        "T03",
+        "T06",
+        "T07",
+        "T09",
+        "T14",
+        "T18"
+      ]
+    },
+    {
+      "id": "A02",
+      "domain": "Aural/curriculum",
+      "behavior": "Recognize/Recall/Sing mode labels, explicit named target makes supported practice; family prerequisite/progress model survives old landing removal.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AuralPracticeModes.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralCurriculum.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralQuizScreen.kt"
+        ],
+        "history": [
+          "a11f560bdebe4d4a36a3e0f3d4c20c4f2749e9ae"
+        ],
+        "priorEvidence": [
+          "a11f560bdebe4d4a36a3e0f3d4c20c4f2749e9ae:android/app/src/main/java/com/acquiring/android/AuralSession.kt",
+          "a11f560bdebe4d4a36a3e0f3d4c20c4f2749e9ae:android/app/src/test/java/com/acquiring/android/AuralQuizUiTest.kt"
+        ],
+        "historicalDelta": "Adds family/progression hierarchy and Recognize/Recall/Sing tabs, named variant targets and persistence; selecting an answer-bearing progression always makes evidence supported practice."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/domain/learning/builtin-current.ts",
+          "pwa/src/app/routes.ts"
+        ],
+        "inspection": "Pure learning contracts do not render mode tabs/family navigation. Six-family landing itself is superseded."
+      },
+      "tracking": {
+        "tasks": [
+          "T14",
+          "T17",
+          "T18"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Current catalog-first routes/modes/progress/family tree and supported evidence tests last.",
+      "priority": "last",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "A03",
+      "domain": "Aural/corpus",
+      "behavior": "Corpus settings/popularity/variety/favorites/inversions, deterministic selector cache, provenance and honest synthetic fallback.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AuralCorpus.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralExampleSettingsPanel.kt"
+        ],
+        "history": [
+          "06e48208072b03523dbacf112e6524f4c0b3b39e"
+        ],
+        "priorEvidence": [
+          "06e48208072b03523dbacf112e6524f4c0b3b39e:android/docs/aural-corpus.md",
+          "06e48208072b03523dbacf112e6524f4c0b3b39e:android/app/src/main/java/com/acquiring/android/AuralCorpus.kt"
+        ],
+        "historicalDelta": "Integrates read-only corpus provider, bounded target cache and selected-payload loading; popularity/variety/favorites/inversion settings, source provenance, synthetic fallback and separate inversion evidence."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/domain/learning/aural-generator.ts",
+          "pwa/src/domain/learning/generator-contracts.ts"
+        ],
+        "inspection": "Existing pure provenance/generation layers are not full UI/provider integration; no fake production examples."
+      },
+      "tracking": {
+        "tasks": [
+          "T16",
+          "T18"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Source-backed provider/cache/settings/cancel/fallback tests, actual catalog/sample access and UI disclosure.",
+      "priority": "last",
+      "dependencies": [
+        "T05",
+        "T06",
+        "T14",
+        "T16"
+      ]
+    },
+    {
+      "id": "A04",
+      "domain": "Aural/corpus",
+      "behavior": "Familiarity uses positive physical-transition overlap, shared endpoint stays fresh; actual audible exposure begins beyond sourceStart. Corrupt exposure history is conservative.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AuralSession.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralAudio.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralCorpus.kt"
+        ],
+        "history": [
+          "5f706322eba3b1db93c0cd47ec2b6dae5994c32f",
+          "40aa1a3717b79a6c3bf2f26ab6b4947ecab8b7d5"
+        ],
+        "priorEvidence": [
+          "40aa1a3717b79a6c3bf2f26ab6b4947ecab8b7d5:android/app/src/main/java/com/acquiring/android/AuralAudio.kt"
+        ],
+        "historicalDelta": "Records exposure only after output playback head passes the source start beat, cancels stale callbacks and recovers valid learning fields from partial corruption; damaged exposure history forces supported practice."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/domain/learning/evidence-contracts.ts",
+          "pwa/src/audio/transport/pcm-worker-session.ts"
+        ],
+        "inspection": "5f706322 contract fixtures selector-v2 verified; actual native playback-head/onStarted source read. Full product exposure bank/roundtrip remains unverified."
+      },
+      "tracking": {
+        "tasks": [
+          "T16",
+          "T20"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Actual audible-start/stop/failure/overlap fixtures; preload must not mark heard, corrupt history cannot grant independent credit.",
+      "priority": "last",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "A05",
+      "domain": "Aural/catalog",
+      "behavior": "Catalog-first ranking/search, counts independent of display filters, global frequency defaults and min length2..9999.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AuralCatalog.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralCatalogScreen.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralRankEligibility.kt"
+        ],
+        "history": [
+          "c7ad144302453abbcdf482128d055c09929f596a",
+          "ee37a31293cd1ea1b9c9c67165c2c9e1279a8d22"
+        ],
+        "priorEvidence": [
+          "c7ad144302453abbcdf482128d055c09929f596a:docs/aural-catalog.md"
+        ],
+        "historicalDelta": "Adds exhaustive compact offline progression catalog, exact paged ranking/tree/search, arbitrary pattern exercises, evidence/diagnostics, streaming bounded PCM and durable assisted Playback round-trip preserving answer draft."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/storage/catalog/aural-statistics-query.ts",
+          "pwa/src/domain/catalog/song-rank-eligibility.ts",
+          "pwa/tests/browser/aural-statistics.spec.ts"
+        ],
+        "inspection": "SQL/statistics and rank eligibility kernels exist; remaining song-rank/reachable browser UI is last. ee37a312 adds global counts and chooser defaults."
+      },
+      "tracking": {
+        "tasks": [
+          "T15",
+          "T17"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Original native ranking/order/count/filter fixtures plus full product results and deterministic page boundaries.",
+      "priority": "last",
+      "dependencies": [
+        "T05",
+        "T14",
+        "T15",
+        "T17"
+      ]
+    },
+    {
+      "id": "A06",
+      "domain": "Aural/catalog",
+      "behavior": "Mode/relative-major source provenance, chord-query accidental/type variants, reorder and Apply, start-group trees.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AuralProgressionQuery.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralCatalogScreen.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralProgressionSearch.kt"
+        ],
+        "history": [
+          "2d36e72f21b59c09c2979ce508cf7177cb04d295",
+          "0373d5ddf34d9a95006b3787561fb6559a5b3071"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+          "0373d5dd:android/app/src/main/java/com/acquiring/android/AuralCatalog.kt"
+        ],
+        "historicalDelta": "Button/chip progression query with chord degree/accidental/quality variants and reorder controls."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/domain/catalog/aural-progression-query.ts",
+          "pwa/src/storage/catalog/aural-target-query.ts",
+          "pwa/src/app/routes.ts"
+        ],
+        "inspection": "Pure query/worker targets do not establish current native search-chip/tree UI. 2d36e72f adds mode-aware analysis."
+      },
+      "tracking": {
+        "tasks": [
+          "T15",
+          "T17"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Source-key/mode/token/variant/reorder roundtrip fixtures and current tree/chip browser navigation last.",
+      "priority": "last",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "A07",
+      "domain": "Aural/catalog",
+      "behavior": "Songs tab hierarchy, recursive drill/return state, complete distinct song/section examples and robust identity lookup.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AuralCatalogScreen.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralPatternSongs.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralCatalog.kt"
+        ],
+        "history": [
+          "988dfc780b68b0ec5a78bce84e3549d71d9d553a"
+        ],
+        "priorEvidence": [
+          "988dfc780b68b0ec5a78bce84e3549d71d9d553a:android/app/src/main/java/com/acquiring/android/AuralPatternSongs.kt"
+        ],
+        "historicalDelta": "Adds sequence Songs tab, lazy distinct supporting-song browser, numbered recursive hierarchy and saved return tab/scroll/draft."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/storage/catalog/aural-target-query.ts",
+          "pwa/src/features/library/song-queue.ts",
+          "pwa/src/app/routes.ts"
+        ],
+        "inspection": "Read/query and queue parts exist; not a complete native catalog/Songs browser."
+      },
+      "tracking": {
+        "tasks": [
+          "T15",
+          "T17",
+          "T19",
+          "T20"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Recursive state/back/selection/source-section identity/missing-section and complete-example fixtures.",
+      "priority": "last",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "A08",
+      "domain": "Aural/queue",
+      "behavior": "Examples use complete queue, reversible whole-list shuffle, ordered saved playlist snapshot; repeat with previous/next even expanded.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/SongQueueViewModel.kt",
+          "android/app/src/main/java/com/acquiring/android/SongQueueControls.kt"
+        ],
+        "history": [
+          "e968a210b439137384a82dae7d571973f85555b9",
+          "8bd551894c10682e42834afa975b1621f00b7bf6",
+          "de8c2891e6d6cc1db4559277530d0345421bfd24"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+          "8bd55189:android/app/src/main/java/com/acquiring/android/AuralCatalogScreen.kt"
+        ],
+        "historicalDelta": "Examples opens full queue preview; reversible whole-order shuffle and selection/save before play."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/features/library/song-queue.ts",
+          "pwa/src/features/library/SongQueueScreen.tsx",
+          "pwa/src/features/playback/queue-playback.ts"
+        ],
+        "inspection": "Generic Library queue/play/shuffle/save integrated; Aural Examples entry/origin begin/identity unresolved. e968a210 and de8c2891 confirm current native changes."
+      },
+      "tracking": {
+        "tasks": [
+          "T19",
+          "T20"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Retain native shuffle/order/repeat/completion/cancel proofs; full Aural origin plus actual roundtrip last.",
+      "priority": "last",
+      "dependencies": [
+        "T06",
+        "T08",
+        "T19",
+        "T20"
+      ]
+    },
+    {
+      "id": "A09",
+      "domain": "Aural/roundtrip",
+      "behavior": "Open source passage in full Playback, preserve draft/evidence/return destination and header passage jump; compact embedded player deleted.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AuralQuizScreen.kt",
+          "android/app/src/main/java/com/acquiring/android/PracticeNavigation.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+        ],
+        "history": [
+          "ca89c5cc93c86b0fd3d427c022bc0e3633575767"
+        ],
+        "priorEvidence": [
+          "ca89c5cc93c86b0fd3d427c022bc0e3633575767:android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+        ],
+        "historicalDelta": "Removes compact embedded source player, requires normal full-song Playback, restores full controls and moves passage-jump into header."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/domain/learning/session-envelope.ts",
+          "pwa/src/app/routes.ts"
+        ],
+        "inspection": "Full Playback exists, session envelope kernel exists; no full Aural route/return wiring."
+      },
+      "tracking": {
+        "tasks": [
+          "T18",
+          "T20"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Actual question draft/heard/plays/attempts/support state before and after song navigation; no accidental independent credit.",
+      "priority": "last",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "A10",
+      "domain": "Aural/install",
+      "behavior": "Automatic full-v3 example catalog, serial install/reader release, progress and supported v1-v3 mode compatibility.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AuralCatalogDownloader.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralCatalogStore.kt"
+        ],
+        "history": [
+          "c01d433b3b6b15681c4b5bafb1ffc954cdfbf976"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diff excerpts and current catalog/publishing handoff reviewed; no fresh device/runtime tests.",
+          "c01d433b:android/app/src/main/java/com/acquiring/android/AppSettings.kt"
+        ],
+        "historicalDelta": "Automatically deliver full-v3 example bundle and Settings update with byte progress, serialized install, validation and reader release."
+      },
+      "pwa": {
+        "status": "partial",
+        "paths": [
+          "pwa/src/storage/catalog/sources.ts",
+          "pwa/src/features/catalog/installer.ts",
+          "pwa/tests/browser/catalog-install.spec.ts"
+        ],
+        "inspection": "Catalog infrastructure does not by itself prove complete current Aural bootstrap/product flow."
+      },
+      "tracking": {
+        "tasks": [
+          "T05",
+          "T15",
+          "T26"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Version-bundle/progress/failure/restart/readers and full-size disposable install tests; no deployment.",
+      "priority": "last",
+      "dependencies": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "D01",
+      "domain": "removed experiments",
+      "behavior": "Outer-repo stray interval tool was deleted; real native tool has separate introduction/lineage.",
+      "native": {
+        "disposition": "removed",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+        ],
+        "history": [
+          "8e496feee385b26e49518ae6383e02bbd94d0eb5"
+        ],
+        "priorEvidence": [
+          "22217c64635b9b5a93507af3b19862350fdcf3db:android/app/src/main/java/com/sacredring/android/HummingIntervalPopup.kt",
+          "801cf7984171d772afc4406ddb5c79c0cb7fd20a:android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt"
+        ],
+        "historicalDelta": "Deletes the exact stray HummingIntervalPopup file from the outer repository."
+      },
+      "pwa": {
+        "status": "unverified",
+        "paths": [
+          "docs/pwa-port/LINEAGE_PRIORITY.md"
+        ],
+        "inspection": "Removed-source diff verified; do not count two tools or port deleted outer experiment."
+      },
+      "tracking": {
+        "tasks": [
+          "T13"
+        ],
+        "classification": "removed"
+      },
+      "acceptanceRequired": "No implementation target; surviving current HummingIntervalPopup only.",
+      "priority": "excluded",
+      "dependencies": []
+    },
+    {
+      "id": "D02",
+      "domain": "removed experiments",
+      "behavior": "Triple-tap persistent monitoring was replaced; old chord-tone selection type alone does not prove reachable current activation.",
+      "native": {
+        "disposition": "removed",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackView.kt",
+          "android/app/src/main/java/com/acquiring/android/PersistentPlaybackPitchPractice.kt",
+          "android/app/src/main/java/com/acquiring/android/TripleClickable.kt"
+        ],
+        "history": [
+          "9973e748fbecaf09db02575ff2f2339d4c7d7fc0",
+          "86fd395917446b7b7df3200162ea2302fdfbfa29",
+          "45e7012ed33d18cded02093780152494461009bd"
+        ],
+        "priorEvidence": [
+          "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
+          "86fd3959:android/app/src/androidTest/java/com/inquiring/android/TessituraUiTest.kt"
+        ],
+        "historicalDelta": "Rotary tempo/arpeggio/mix controls and updated streaming/pitch practice behaviors with regressions."
+      },
+      "pwa": {
+        "status": "unverified",
+        "paths": [
+          "pwa/src/features/playback/persistent-pitch.ts"
+        ],
+        "inspection": "9973e748 adds tripleClickable;86fd3959 removes card triples; current header chooses SimpleRoot/Melody and chord cards combinedClickable only. ChordTone resolver/type remains."
+      },
+      "tracking": {
+        "tasks": [
+          "T12",
+          "T13"
+        ],
+        "classification": "removed"
+      },
+      "acceptanceRequired": "Do not invent triple/chord-tone entry point. If future scope proposes one, establish reachable pinned caller first. N01 root header independently survives.",
+      "priority": "excluded",
+      "dependencies": []
+    },
+    {
+      "id": "D03",
+      "domain": "removed experiments",
+      "behavior": "Puck/draggable target/calibration/comfortable-pitch capture removed; octave selector is replacement.",
+      "native": {
+        "disposition": "removed",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/HummingIntervalPopup.kt",
+          "android/app/src/main/java/com/acquiring/android/SongOctaveOffset.kt"
+        ],
+        "history": [
+          "45e7012ed33d18cded02093780152494461009bd"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "45e7012e:android/app/src/androidTest/java/com/acquiring/android/PitchHintDotUiTest.kt"
+        ],
+        "historicalDelta": "Remove tessitura/calibration/hints; add saved song octave owner, displayed-name search, revised cards/help."
+      },
+      "pwa": {
+        "status": "unverified",
+        "paths": [
+          "docs/pwa-port/LINEAGE_PRIORITY.md"
+        ],
+        "inspection": "Calibration deletion patch and current octave selector inspected; retain only current source behavior."
+      },
+      "tracking": {
+        "tasks": [
+          "T13"
+        ],
+        "classification": "removed"
+      },
+      "acceptanceRequired": "No calibration implementation target.",
+      "priority": "excluded",
+      "dependencies": []
+    },
+    {
+      "id": "D04",
+      "domain": "removed experiments",
+      "behavior": "Floating movable transport and background media notification service retired; fixed foreground transport survives.",
+      "native": {
+        "disposition": "removed",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/PlaybackTransportBar.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackController.kt"
+        ],
+        "history": [
+          "1c6745262f69aaf7996d7e246c8c0834d77c8002",
+          "f89a775cd3b8e14a6998e20a974cbbdd50792544"
+        ],
+        "priorEvidence": [
+          "Bounded source/test diffs reviewed in prior coordinator turn; no runtime execution.",
+          "1c674526:android/app/src/androidTest/java/com/acquiring/android/QuizTransportSelectorsUiTest.kt"
+        ],
+        "historicalDelta": "Fixed Play/beat-step/Reset/section row replaces floating transport."
+      },
+      "pwa": {
+        "status": "unverified",
+        "paths": [
+          "pwa/src/features/playback/PlaybackScreen.tsx"
+        ],
+        "inspection": "1c674526 removes floating offsets; f89a775c retires service. Current transport exposes reset/play and queue previous/next, not proof old beat-step buttons survive."
+      },
+      "tracking": {
+        "tasks": [
+          "T08",
+          "T12"
+        ],
+        "classification": "removed"
+      },
+      "acceptanceRequired": "Do not port historical movable/beat-step assumption from plan without current caller evidence.",
+      "priority": "excluded",
+      "dependencies": []
+    },
+    {
+      "id": "D05",
+      "domain": "removed experiments",
+      "behavior": "Old Quiz naming, six-family landing, length-first ranks and compact source player superseded; family curriculum data still survives.",
+      "native": {
+        "disposition": "removed",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/AuralCatalogScreen.kt",
+          "android/app/src/main/java/com/acquiring/android/AuralCurriculum.kt"
+        ],
+        "history": [
+          "b6b19077041b4ca40705b79b74e710492775d395",
+          "10b2dee3f27917da4191f887cd047c890cc42564",
+          "ee37a31293cd1ea1b9c9c67165c2c9e1279a8d22",
+          "ca89c5cc93c86b0fd3d427c022bc0e3633575767"
+        ],
+        "priorEvidence": [
+          "b6b19077041b4ca40705b79b74e710492775d395:docs/aural-curriculum.md",
+          "b6b19077041b4ca40705b79b74e710492775d395:android/app/src/main/java/com/acquiring/android/AuralCurriculum.kt"
+        ],
+        "historicalDelta": "Adds pure deterministic aural curriculum, seven distinct evidence skills, adaptive scheduling, supported/independent/transfer gates, four microphone tasks, durable provenance and one-shot audio; renames song Quiz UI to Playback."
+      },
+      "pwa": {
+        "status": "unverified",
+        "paths": [
+          "docs/pwa-port/LINEAGE_PRIORITY.md",
+          "pwa/src/app/routes.ts"
+        ],
+        "inspection": "b6b rename, catalog history and ca89c5cc player deletion distinguish data from discarded landing."
+      },
+      "tracking": {
+        "tasks": [
+          "T14",
+          "T15",
+          "T17"
+        ],
+        "classification": "removed"
+      },
+      "acceptanceRequired": "No resurrection of obsolete presentation; current catalog-first/family prerequisites inventory remains A02/A05/A06.",
+      "priority": "excluded",
+      "dependencies": []
+    },
+    {
+      "id": "D06",
+      "domain": "lineage/rename",
+      "behavior": "SacredRing -> Inquiring -> Acquiring and monorepo moves are identity/path ancestry, not three copies of features.",
+      "native": {
+        "disposition": "surviving",
+        "paths": [
+          "android/app/src/main/java/com/acquiring/android/MainActivity.kt",
+          "android/app/src/main/java/com/acquiring/android/UserDataDatabase.kt"
+        ],
+        "history": [
+          "8cce75cb357f043a4c94326d2953950618581cda",
+          "007a8eb4310403a65cb2f5347d380650c0da2db1",
+          "20ec5c7eafda091e6c7fdd59b3f383c9c446c3f3"
+        ],
+        "priorEvidence": [
+          "Changed-path index and bounded source/test diff excerpts reviewed; no runtime tests run.",
+          "20ec5c7e:android/app/src/androidTest/java/com/acquiring/android/HardwareStoreTimelineTest.kt"
+        ],
+        "historicalDelta": "Rebrand/reorganize monorepo paths and source references; retire earlier conversion artifact."
+      },
+      "pwa": {
+        "status": "implemented",
+        "paths": [
+          "docs/pwa-port/HISTORY.md"
+        ],
+        "inspection": "8cce75cb/007a8eb4 rename diffs and20ec5c7e move/URL changes reviewed; old evidence paths remain historical."
+      },
+      "tracking": {
+        "tasks": [
+          "T00",
+          "T02"
+        ],
+        "classification": "known"
+      },
+      "acceptanceRequired": "Preserve data identity/migration contracts if affected; do not duplicate port work from rename subjects.",
+      "priority": "secondary",
+      "dependencies": [
+        "T00",
+        "T02",
+        "T06"
+      ]
+    }
+  ]
+}
