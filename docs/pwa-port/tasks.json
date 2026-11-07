@@ -1349,9 +1349,26 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position memory, Favorites star, T21 session-vs-default, and timeline tap-to-seek landed. Inertia/drag-coast/Roman/scores remain.",
-      "nextAction": "T12 live timeline drag/scrub without inertia decay next. Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, and live drag/scrub landed. Inertia coast/Roman/scores remain.",
+      "nextAction": "Rotate off timeline polish: T10 Library Favorites accordion next (star has no browse UI). Do not polish inertia/Roman. T09 still required for scores. Do not redo accepted cards. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
+        {
+          "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-drag/browser-fix2",
+          "revision": "2d8651ee plus named timeline-drag tree",
+          "guards": [
+            "T12-timeline-drag-unit-001",
+            "T12-timeline-drag-typecheck-001",
+            "T12-timeline-drag-check-001",
+            "T12-timeline-drag-browser-001",
+            "T12-timeline-drag-typecheck-002",
+            "T12-timeline-drag-check-002",
+            "T12-timeline-drag-browser-002",
+            "T12-timeline-drag-typecheck-003",
+            "T12-timeline-drag-check-003",
+            "T12-timeline-drag-browser-003"
+          ],
+          "result": "PASS 9 focused; typecheck/check 1007 unit/78 files + 1 parity + types + shell de9ddb56c61b; browser-001/002 FAIL Playwright mouse vs canvas (beat stayed 1); browser-003 FIRST PASS 18/18 2.2m dispatched pointer drag live to beat 2, tap still works, no inertia. No inertia-coast/Roman/scores/device/whole-CI-green claim. Preexisting app test:browser audio-sink/Library 64px remains."
+        },
         {
           "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-tap/browser-fix1",
           "revision": "eb7b0d21 plus named timeline-tap tree",

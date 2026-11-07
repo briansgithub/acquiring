@@ -8,21 +8,29 @@ import {
   buildChordTimelineVisuals,
   buildMelodyTimelineVisuals,
   layoutPlaybackTimeline,
+  timelineDragBeat,
   timelineTapBeat,
 } from './timeline-layout';
 
-/** Product timeline: Canvas 2D matching PlaybackView lanes/playhead plus tap-to-seek. No inertia/scores/Roman. */
-export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onTapBeat}:{
-  section:ExtractedSection;beat:number;rootOnly:boolean;majorLocked?:boolean;onTapBeat?:(beat:number)=>void;
+export interface TimelineScrub {
+  tap(beat:number):void;
+  dragTo(beat:number):void;
+  end():void;
+}
+
+/** Product timeline: Canvas lanes/playhead, tap-to-seek, live drag scrub. No inertia/scores/Roman. */
+export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onScrub}:{
+  section:ExtractedSection;beat:number;rootOnly:boolean;majorLocked?:boolean;onScrub?:TimelineScrub;
 }){
   const canvasRef=useRef<HTMLCanvasElement>(null);
   const hostRef=useRef<HTMLDivElement>(null);
-  const pointerOrigin=useRef<{x:number;y:number}|null>(null);
+  const pointer=useRef<{x:number;y:number;beat:number;dragging:boolean}|null>(null);
   const [width,setWidth]=useState(0);
   const model=useMemo(()=>preparePlaybackSection(section),[section]);
   const melody=useMemo(()=>buildMelodyTimelineVisuals(model.melody,section,majorLocked),[model,section,majorLocked]);
   const chords=useMemo(()=>buildChordTimelineVisuals(section),[section]);
   const layout=width>0?layoutPlaybackTimeline({width,currentBeat:beat,rootOnly,melody,chords}):null;
+  const endBeat=model.timeline.endBeat;
 
   useEffect(()=>{
     const host=hostRef.current;if(!host)return;
@@ -64,12 +72,32 @@ export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onTapB
   if(rootOnly||layout&&!layout.visible){
     return <div ref={hostRef} className="playback-timeline-host" data-playback-timeline="hidden" hidden/>;
   }
-  function tap(event:PointerEvent<HTMLCanvasElement>){
-    const origin=pointerOrigin.current;pointerOrigin.current=null;
-    if(!onTapBeat||!origin||event.button!==0)return;
-    if(Math.hypot(event.clientX-origin.x,event.clientY-origin.y)>TIMELINE_TAP_SLOP_PX)return;
+
+  function down(event:PointerEvent<HTMLCanvasElement>){
+    if(event.button!==0)return;
+    event.preventDefault();
+    try{event.currentTarget.setPointerCapture(event.pointerId);}catch{/* inactive synthetic pointers */}
+    pointer.current={x:event.clientX,y:event.clientY,beat,dragging:false};
+  }
+  function move(event:PointerEvent<HTMLCanvasElement>){
+    const origin=pointer.current;if(!origin||!onScrub)return;
+    const dx=event.clientX-origin.x;
+    if(!origin.dragging){
+      if(Math.hypot(dx,event.clientY-origin.y)<=TIMELINE_TAP_SLOP_PX)return;
+      origin.dragging=true;
+    }
+    onScrub.dragTo(timelineDragBeat(origin.beat,dx,endBeat));
+  }
+  function up(event:PointerEvent<HTMLCanvasElement>){
+    const origin=pointer.current;pointer.current=null;
+    if(!origin||!onScrub||event.button!==0)return;
+    if(origin.dragging){onScrub.end();return;}
     const rect=event.currentTarget.getBoundingClientRect();
-    onTapBeat(timelineTapBeat(beat,event.clientX-rect.left,rect.width,model.timeline.endBeat));
+    onScrub.tap(timelineTapBeat(origin.beat,event.clientX-rect.left,rect.width,endBeat));
+  }
+  function cancel(){
+    const origin=pointer.current;pointer.current=null;
+    if(origin?.dragging)onScrub?.end();
   }
 
   return <div ref={hostRef} className="playback-timeline-host">
@@ -80,9 +108,8 @@ export function PlaybackTimeline({section,beat,rootOnly,majorLocked=false,onTapB
       data-timeline-major={majorLocked?'true':'false'}
       data-timeline-staff={melody.map(note=>note.staffDegree).join(',')}
       data-timeline-playhead={layout?String(layout.playheadX):''}
-      height={TIMELINE_HEIGHT_PX}
-      onPointerDown={event=>{if(event.button===0)pointerOrigin.current={x:event.clientX,y:event.clientY};}}
-      onPointerUp={tap}
-      onPointerCancel={()=>{pointerOrigin.current=null;}}/>
+      height={TIMELINE_HEIGHT_PX} draggable={false}
+      onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={cancel}
+      onDragStart={event=>event.preventDefault()}/>
   </div>;
 }

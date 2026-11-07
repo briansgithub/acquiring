@@ -10,6 +10,7 @@ import {
   layoutPlaybackTimeline,
   melodyTimelineStaffDegree,
   timelineNoteHeightPx,
+  timelineDragBeat,
   timelineTapBeat,
 } from './timeline-layout';
 
@@ -72,6 +73,13 @@ describe('native PlaybackView timeline geometry, CSS px = dp', () => {
     expect(timelineTapBeat(3,160,200,16)).toBe(4);
     expect(timelineTapBeat(1,0,200,8)).toBe(1);
     expect(timelineTapBeat(7,200,200,8)).toBe(8);
+  });
+
+  it('drag scrubs opposite the finger and clamps to 1..endBeat',()=>{
+    expect(timelineDragBeat(5,60,16)).toBe(4);
+    expect(timelineDragBeat(5,-60,16)).toBe(6);
+    expect(timelineDragBeat(1,120,16)).toBe(1);
+    expect(timelineDragBeat(8,-120,8)).toBe(8);
   });
 });
 

@@ -3,7 +3,8 @@
  * playhead stroke (2). Native noteHeight clamp is in raw px after dp.toPx, so a density-3
  * device yields ~9.4px staff vs 5 CSS px here; that mapping is explicit, not physical-mm
  * identity or T27 proof. Hidden in root-only/simple. Tap seeks currentBeat+(tapX-centerX)/60.
- * No inertia/coast, Roman painter, pitch-score overlay, or spacer-alignment hacks.
+ * Drag scrubs startBeat-deltaX/60 (finger right → earlier beat). No inertia/coast,
+ * Roman painter, pitch-score overlay, or spacer-alignment hacks.
  */
 import type {ExtractedSection,MelodyNote} from '../../contracts';
 import {getKeys,keyAtBeat} from '../../domain/data';
@@ -170,5 +171,13 @@ export function timelineTapBeat(currentBeat:number,tapX:number,width:number,endB
   const span=finite(width,'width'),rate=finite(pixelsPerBeat,'pixelsPerBeat');
   if(span<=0||rate<=0)throw new RangeError('width and pixelsPerBeat must be > 0.');
   const beat=finite(currentBeat,'currentBeat')+(finite(tapX,'tapX')-span/2)/rate;
+  return Math.min(finite(endBeat,'endBeat'),Math.max(1,beat));
+}
+
+/** Frozen PlaybackView drag: startBeat - deltaX / pixelsPerBeat, clamped 1..endBeat. */
+export function timelineDragBeat(startBeat:number,deltaX:number,endBeat:number,pixelsPerBeat=TIMELINE_PIXELS_PER_BEAT):number {
+  const rate=finite(pixelsPerBeat,'pixelsPerBeat');
+  if(rate<=0)throw new RangeError('pixelsPerBeat must be > 0.');
+  const beat=finite(startBeat,'startBeat')-finite(deltaX,'deltaX')/rate;
   return Math.min(finite(endBeat,'endBeat'),Math.max(1,beat));
 }

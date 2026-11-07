@@ -18,7 +18,7 @@
  * rootOnly andmelody taps staysource register (normalizedtarget is futureT13 singing),
  * fullchord/Home/sourcekey/transport remain sourcebased. Localstate is not globalpersistence.
  * Remaining slices: timeline inertia/Roman/scores, singing mic scoring (T09).
- * Route-position memory, Favorites star, T21 selectAsDefault, and timeline tap-to-seek are in.
+ * Route-position memory, Favorites star, T21 selectAsDefault, tap-to-seek, and live drag scrub are in.
  * wholeT12 remains in_progress,
  * device/Safari acceptance remains unrun. Lock-in-Major restaffs timeline melody staff
  * (native useRelativeIonianContext). Chord-lane Roman painter still absent. CSS=dp

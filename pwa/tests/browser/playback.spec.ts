@@ -504,3 +504,31 @@ test('timeline tap seeks from the centered playhead without starting playback',a
   await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','playing');
   const image=testInfo.outputPath('timeline-tap-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
+
+test('timeline drag scrubs live opposite the finger without inertia or autoplay',async({page},testInfo)=>{
+  await instrument(page);await installAndOpen(page);
+  const timeline=page.locator('[data-playback-timeline="visible"]');
+  const position=page.getByRole('slider',{name:'Position',exact:true});
+  await expect(timeline).toBeVisible();
+  await expect.poll(async()=>Number(await timeline.getAttribute('data-timeline-playhead'))).toBeGreaterThan(0);
+  const playhead=Number(await timeline.getAttribute('data-timeline-playhead'));
+  await timeline.scrollIntoViewIfNeeded();
+  await timeline.evaluate((el,x)=>{
+    const fire=(type:string,clientX:number,buttons:number)=>{
+      const r=el.getBoundingClientRect();
+      el.dispatchEvent(new PointerEvent(type,{bubbles:true,cancelable:true,composed:true,pointerId:1,pointerType:'mouse',isPrimary:true,button:0,buttons,clientX,clientY:r.top+20}));
+    };
+    const r=el.getBoundingClientRect();
+    fire('pointerdown',r.left+x,1);
+    fire('pointermove',r.left+x-60,1);
+  },playhead);
+  await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(2,1);
+  await timeline.evaluate((el,x)=>{
+    const r=el.getBoundingClientRect();
+    el.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,cancelable:true,composed:true,pointerId:1,pointerType:'mouse',isPrimary:true,button:0,buttons:0,clientX:r.left+x-60,clientY:r.top+20}));
+  },playhead);
+  await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(2,1);
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
+  await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','playing');
+  const image=testInfo.outputPath('timeline-drag-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
+});
