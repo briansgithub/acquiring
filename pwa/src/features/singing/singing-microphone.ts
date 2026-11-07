@@ -1,5 +1,6 @@
 import {
-  BrowserMicrophoneCapture, MicrophonePitchCoordinator, MicrophonePitchOwner, type PitchResultEstimate,
+  BrowserMicrophoneCapture, MicrophonePitchCoordinator, MicrophonePitchOwner,
+  type ExclusivePitchSource, type PitchResultEstimate,
 } from '../../audio/capture';
 import { calculateMeasuredInterval, type MeasuredInterval, SpelledPitch } from '../../domain/music';
 
@@ -38,8 +39,8 @@ export function formatSungIntervalCents(cents: number): string {
 
 export class SingingMicrophoneSession {
   readonly capture: BrowserMicrophoneCapture;
-  private readonly coordinator: MicrophonePitchCoordinator;
-  private readonly lease;
+  private readonly ownedCoordinator: MicrophonePitchCoordinator | null;
+  private readonly lease: ExclusivePitchSource;
   private readonly now: () => number;
   private startedAt = 0;
   action: SingingMicAction = { kind: 'idle' };
@@ -51,12 +52,18 @@ export class SingingMicrophoneSession {
   version = 0;
   private readonly listeners = new Set<() => void>();
 
-  constructor(options: { capture?: BrowserMicrophoneCapture; now?: () => number } = {}) {
+  constructor(options: {
+    capture?: BrowserMicrophoneCapture;
+    source?: ExclusivePitchSource;
+    now?: () => number;
+  } = {}) {
     this.now = options.now ?? (() => Date.now());
     this.capture = options.capture ?? new BrowserMicrophoneCapture();
-    this.coordinator = new MicrophonePitchCoordinator(this.capture);
-    this.lease = this.coordinator.sourceFor(MicrophonePitchOwner.SINGING_TOOL);
+    this.ownedCoordinator = options.source ? null : new MicrophonePitchCoordinator(this.capture);
+    this.lease = options.source ?? this.ownedCoordinator!.sourceFor(MicrophonePitchOwner.SINGING_TOOL);
   }
+
+  get ownsMicrophone(): boolean { return this.lease.ownsMicrophone; }
 
   subscribe = (listener: () => void): () => void => {
     this.listeners.add(listener);
@@ -113,13 +120,20 @@ export class SingingMicrophoneSession {
   release(): void {
     this.stop();
     this.optedIn = false;
-    this.coordinator.release();
+    this.ownedCoordinator?.release();
   }
 
   tick(now = this.now()): void {
+    // Native HummingIntervalPopup: ownership loss idles without stopping the new owner.
+    // Flip-Flop rest is our own stop (owner=null), not a steal — keep the rest timer.
+    if (this.action.kind !== 'idle' && this.action.kind !== 'flipflop-rest' && !this.lease.ownsMicrophone) {
+      this.action = { kind: 'idle' };
+      this.emit();
+      return;
+    }
     const result = this.capture.current;
-    if (result.kind === 'error') {
-      this.lease.stop();
+    if (result.kind === 'error' && (this.lease.ownsMicrophone || this.action.kind !== 'idle')) {
+      if (this.lease.ownsMicrophone) this.lease.stop();
       this.error = result.message;
       this.action = { kind: 'idle' };
       this.emit();
@@ -161,6 +175,7 @@ export class SingingMicrophoneSession {
   }
 
   private writeSlot(slot: 1 | 2, live: PitchResultEstimate, cents: number): void {
+    if (!this.lease.ownsMicrophone) return;
     const midi = Math.round(live.midi);
     const pitch = slot === 2 && this.slot1
       ? SpelledPitch.spellRelative(SpelledPitch.fromMidi(Math.round(this.slot1.midi)), midi)

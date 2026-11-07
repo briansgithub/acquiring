@@ -2,6 +2,7 @@ import {PlaybackCards} from './PlaybackCards';
 import {PlaybackFavoriteStar} from './PlaybackFavoriteStar';
 import {PlaybackSettingsPanel} from './PlaybackSettingsPanel';
 import {PlaybackTimeline} from './PlaybackTimeline';
+import {usePlaybackMicrophone} from './playback-microphone';
 import {usePlaybackPitchPractice} from './use-playback-pitch-practice';
 import {FavoriteSession} from './favorites-session';
 import {openGuestPlaylistStore} from './playlist-store';
@@ -210,7 +211,9 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   const beat=Math.max(1,Math.min(playbackState.endBeat,transport.beat));
   const active=transport.playbackRequested;
   const {phase,status}=playbackStatusCopy(playbackError,transport.phase,active);
+  const mic=usePlaybackMicrophone();
   const pitch=usePlaybackPitchPractice({
+    source:mic.persistent,
     section:playback&&!playbackError&&selected?selected[1]:null,beat,rootOnly:settings.rootOnly,
     majorLocked,transpose:settings.transpose,octaveOffset,
   });
@@ -265,7 +268,8 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
           scores={pitch.scores} monitoring={pitch.monitoring}
           onScrub={{tap:t=>{cardPreviewStop.current?.();playback.scrubTo(t);playback.finishScrub();},dragTo:t=>{cardPreviewStop.current?.();playback.scrubTo(t);},end:()=>playback.finishScrub()}}/>}
         <SingingDock octaveOffset={octaveOffset} onOctaveOffsetChange={offset=>octaveSession.updateOctaveOffset(offset)}
-          target={singingTarget} expanded={dockExpanded} onExpandedChange={setDockExpanded} transpose={settings.transpose}/>
+          target={singingTarget} expanded={dockExpanded} onExpandedChange={setDockExpanded} transpose={settings.transpose}
+          capture={mic.capture} source={mic.singing}/>
         <PlaybackSettingsPanel settings={settings} disabled={!playback} onChange={updateSettings}/>
       </>}
     </>}

@@ -1,8 +1,6 @@
 /** Opt-in persistent melody monitoring. Native header "Pitch monitoring". Policy A is singing-dock auto-listen, not this button. */
-import {useEffect,useMemo,useRef,useState} from 'react';
-import {
-  BrowserMicrophoneCapture, MicrophonePitchCoordinator, MicrophonePitchOwner,
-} from '../../audio/capture';
+import {useEffect, useMemo, useRef, useState} from 'react';
+import type {ExclusivePitchSource} from '../../audio/capture';
 import type {ExtractedSection} from '../../contracts';
 import {preparePlaybackSection} from './section-model';
 import {buildMelodyTimelineVisuals} from './timeline-layout';
@@ -17,6 +15,7 @@ import {
 } from './persistent-pitch';
 
 export function usePlaybackPitchPractice(input:{
+  source: ExclusivePitchSource;
   section: ExtractedSection | null;
   beat: number;
   rootOnly: boolean;
@@ -24,9 +23,7 @@ export function usePlaybackPitchPractice(input:{
   transpose: number;
   octaveOffset: number;
 }) {
-  const capture = useMemo(() => new BrowserMicrophoneCapture(), []);
-  const coordinator = useMemo(() => new MicrophonePitchCoordinator(capture), [capture]);
-  const source = useMemo(() => coordinator.sourceFor(MicrophonePitchOwner.PLAYBACK_PERSISTENT), [coordinator]);
+  const source = input.source;
   const controller = useMemo(() => new PersistentPlaybackPitchController(source), [source]);
   const accumulator = useMemo(() => new MelodyTimelinePitchScoreAccumulator(), []);
   const [scores, setScores] = useState<ReadonlyMap<number, MelodyRunScoreOutcome>>(() => new Map());
@@ -35,7 +32,7 @@ export function usePlaybackPitchPractice(input:{
   const elapsed = useRef(0);
   const runId = useRef<number | null>(null);
 
-  useEffect(() => () => { controller.cancel(); coordinator.release(); }, [controller, coordinator]);
+  useEffect(() => () => { controller.cancel(); }, [controller]);
 
   const melody = useMemo(
     () => input.section ? buildMelodyTimelineVisuals(preparePlaybackSection(input.section).melody, input.section, input.majorLocked) : [],
@@ -44,7 +41,7 @@ export function usePlaybackPitchPractice(input:{
   const runs = useMemo(() => buildMelodyTimelinePitchRuns(melody), [melody]);
   const active = melodyTimelinePitchRunAtBeat(runs, input.beat);
   const enabled = monitoring && !input.rootOnly && controller.selection?.kind === 'melody'
-    && controller.phase === PersistentPitchPhase.LISTENING && source.ownsMicrophone;
+    && controller.phase === PersistentPitchPhase.LISTENING;
 
   useEffect(() => {
     if (input.rootOnly) { controller.cancel(); setMonitoring(false); setScores(new Map()); }
@@ -56,11 +53,9 @@ export function usePlaybackPitchPractice(input:{
   }, [accumulator, input.section]);
 
   useEffect(() => {
-    if (!enabled || !active) {
-      finishCurrent();
-      return;
-    }
-    if (runId.current !== active.id) {
+    if (!enabled || !active) finishCurrent();
+    if (!monitoring) return;
+    if (enabled && active && runId.current !== active.id) {
       finishCurrent();
       accumulator.begin(active.id);
       settle.current = new MelodyRunSettleDetector();
@@ -68,18 +63,30 @@ export function usePlaybackPitchPractice(input:{
       runId.current = active.id;
       setScores((map) => { const next = new Map(map); next.delete(active.id); return next; });
     }
-    const targetMidi = active.sourceMidi == null ? 60 : effectiveTargetMidi({
-      sourceMidi: active.sourceMidi, label: '', position: {kind: 'melody-current'},
-    }, input.transpose, input.octaveOffset);
-    controller.updateTarget(targetMidi);
+    if (enabled && active) {
+      const targetMidi = active.sourceMidi == null ? 60 : effectiveTargetMidi({
+        sourceMidi: active.sourceMidi, label: '', position: {kind: 'melody-current'},
+      }, input.transpose, input.octaveOffset);
+      controller.updateTarget(targetMidi);
+    }
     const id = window.setInterval(() => {
+      if (!source.ownsMicrophone) {
+        controller.onOwnershipChanged(false);
+        setMonitoring(false);
+        discardCurrent();
+        return;
+      }
       const live = source.current;
       if (live.kind === 'error') {
         controller.fail(live.message);
         setMonitoring(false);
-        finishCurrent();
+        discardCurrent();
         return;
       }
+      if (!enabled || !active) return;
+      const targetMidi = active.sourceMidi == null ? 60 : effectiveTargetMidi({
+        sourceMidi: active.sourceMidi, label: '', position: {kind: 'melody-current'},
+      }, input.transpose, input.octaveOffset);
       const estimate = melodyTimelinePitchEstimate(
         controller.selection,
         resolvePersistentPitchTarget(controller.selection, null, [], {sourceMidi: active.sourceMidi ?? 60, label: ''}),
@@ -98,7 +105,11 @@ export function usePlaybackPitchPractice(input:{
       if (outcome) setScores((map) => new Map(map).set(outcome.runId, outcome));
       else accumulator.clear();
     }
-  }, [accumulator, active, controller, enabled, input.octaveOffset, input.transpose, source]);
+    function discardCurrent() {
+      accumulator.clear();
+      runId.current = null;
+    }
+  }, [accumulator, active, controller, enabled, input.octaveOffset, input.transpose, monitoring, source]);
 
   function toggle(): void {
     if (monitoring) { cancel(); return; }

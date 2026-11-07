@@ -1,4 +1,5 @@
 import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
+import type {BrowserMicrophoneCapture, ExclusivePitchSource} from '../../audio/capture';
 import {OCTAVE_OFFSET_MAX,OCTAVE_OFFSET_MIN,clampSingingOctaveOffset,effectiveTargetMidi,singingOctaveOffsetLabel,type SingingTargetRequest} from './singing-octave';
 import {AUTO_LISTEN_MS,SingingMicrophoneSession,formatSungIntervalCents,sungInterval} from './singing-microphone';
 import './singing.css';
@@ -9,15 +10,17 @@ import './singing.css';
  * Collapse/release/navigation cancel; capture generation serializes in-flight getUserMedia.
  * Visible listening + Stop. No fabricated cents. AudioWorklet + linear resample; not Pixel.
  */
-export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0}:{
+export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,onExpandedChange,transpose=0,capture,source}:{
   octaveOffset:number;
   onOctaveOffsetChange:(offset:number)=>void;
   target:SingingTargetRequest|null;
   expanded:boolean;
   onExpandedChange:(expanded:boolean)=>void;
   transpose?:number;
+  capture?:BrowserMicrophoneCapture;
+  source?:ExclusivePitchSource;
 }){
-  const session=useMemo(()=>new SingingMicrophoneSession(),[]);
+  const session=useMemo(()=>new SingingMicrophoneSession({capture,source}),[capture,source]);
   const micVersion=useSyncExternalStore(session.subscribe,()=>session.version,()=>session.version);
   const mic=session;
   const [nowTick,setNowTick]=useState(0);
@@ -29,6 +32,9 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   midiRef.current={transpose,octaveOffset};
   useEffect(()=>()=>session.release(),[session]);
   useEffect(()=>{if(!expanded)session.stop();},[expanded,session]);
+  useEffect(()=>{
+    if(mic.action.kind!=='idle'&&mic.action.kind!=='flipflop-rest'&&!session.ownsMicrophone) session.tick();
+  });
   useEffect(()=>{
     if(session.action.kind!=='listening')return;
     const note=session.action.slot===1?target?.first:target?.second;
@@ -67,6 +73,7 @@ export function SingingDock({octaveOffset,onOctaveOffsetChange,target,expanded,o
   }
   return <section className="panel singing-dock" data-singing-dock={expanded?'expanded':'collapsed'}
     data-mic-state={mic.action.kind} data-mic-opted-in={mic.optedIn?'true':'false'}
+    data-mic-owns={mic.ownsMicrophone?'true':'false'}
     aria-label="Interval Singing Tool">
     <button type="button" className="singing-dock__handle action" aria-expanded={expanded}
       aria-label={expanded?'Collapse humming tool':'Expand Humming Tool'}

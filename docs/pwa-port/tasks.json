@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
-  "updated": "2026-11-07T09:45:00+00:00",
+  "updated": "2026-11-07T13:00:00+00:00",
   "implementationAuthorized": true,
   "currentStage": "playback_singing_priority",
   "ownerPriority": {
@@ -520,7 +520,7 @@
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "5f8a1cbf6178e87aed2753d95c70de643ca19f13",
       "slice": "Composed streaming and first App section-playback accepted; trusted-tab/device acceptance open",
-      "nextAction": "Accepted first App section-playback de8b8c49 through T12 actualChrome4cases/final0a8e796d. Do not reimplement accepted components or repeat proofs. FullT08 trustedtab/physical/Safari/BFCache and remaining App exercise/microphone integration stay explicit open; existingT12composed-stream-runtime development gate and T26/T27release gates unchanged.",
+      "nextAction": "Accepted first App section-playback de8b8c49 through T12 actualChrome4cases/final0a8e796d. Do not reimplement accepted components or repeat proofs. CI app interval-audio 44100 ended.contextTime miss (run 42372685610 / cf9eb52a: expected >= 1.3819274376417234 received 1.3815873015873017, 15 samples early, 128-quantum); local 44100 pass ended 113 samples late on the next quantum. Assertion unchanged; no epsilon. FullT08 trustedtab/physical/Safari/BFCache remain open.",
       "validation": [
         {
           "command": "node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/typescript/bin/tsc --project ../.artifacts/pwa-port/t08-tsconfig.json; node H:/Desktop/Acquiring/Acquiring/pwa/node_modules/vitest/vitest.mjs run --config ../.artifacts/pwa-port/t08-vitest.config.mjs (from worker pwa)",
@@ -974,8 +974,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "906c9243480709f056a9541247e75266f8cacd41",
-      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop plus Brian 2026-11-07 policy A first-load 800ms auto-listen including first permission prompt. AudioWorklet same-origin hashed module. Device mic/median Aural scores remain open",
-      "nextAction": "Policy A accepted. AudioWorklet hashed module landed. Next remaining playback inertia polish, or coordinated device mic when a specific ADB test exists. SYNTHETIC fixture is not Pixel acceptance. No fabricated cents. Library prefix polish is not next.",
+      "slice": "Pure pitch plus PitchPublisher plus exclusive lease plus hop-to-YIN plus browser capture adapter (SYNTHETIC oscillator). Dock listen/Flip-Flop plus Brian 2026-11-07 policy A first-load 800ms auto-listen including first permission prompt. AudioWorklet same-origin hashed module. Shared PLAYBACK_PERSISTENT/SINGING_TOOL capture across monitoring+dock. Device mic/median Aural scores remain open",
+      "nextAction": "Shared exclusive lease landed. Policy A accepted. Next: mouse/canvas drag input gap before inertia polish. SYNTHETIC fixture is not Pixel acceptance. Playwright fake/silent getUserMedia labeled separately. No fabricated cents. Library prefix polish is not next.",
       "validation": [
         {
           "command": "node node_modules/vitest/vitest.mjs run src/audio/capture; node node_modules/typescript/lib/tsc.js --noEmit (from worker pwa)",
@@ -1059,7 +1059,8 @@
         "2026-11-07T11:55Z MicrophonePitchTracker hop-to-YIN on continuation. Injected PCM hops; getUserMedia adapter remains. Partial T09.",
         "2026-11-07T12:00Z BrowserMicrophoneCapture + dock listen/Flip-Flop. SYNTHETIC oscillator fixture. Auto-listen skipped. Partial T09.",
         "2026-11-07T12:05Z Flip-Flop 2s rest after slot 2, measured interval readout, opt-in-only 800ms auto-listen. First-load auto-listen is a Brian decision; getUserMedia is not transient-gated. AudioWorklet deferred. Partial T09/T13.",
-        "2026-11-07T12:25Z AudioWorklet same-origin hashed module replaces ScriptProcessor. Hop/resample/lease/permission fail-closed preserved. SYNTHETIC labeled. Playlist-save Chrome proof included. Device mic/Pixel remain. Partial T09."
+        "2026-11-07T12:25Z AudioWorklet same-origin hashed module replaces ScriptProcessor. Hop/resample/lease/permission fail-closed preserved. SYNTHETIC labeled. Playlist-save Chrome proof included. Device mic/Pixel remain. Partial T09.",
+        "2026-11-07T13:00Z One BrowserMicrophoneCapture + MicrophonePitchCoordinator for PLAYBACK_PERSISTENT and SINGING_TOOL. Ownership-loss idles without stopping the new owner; stolen estimates are not written to slots or banked as melody scores. Partial T09/T13."
       ],
       "blocker": null
     },
@@ -1522,8 +1523,8 @@
       "branch": "codex/pwa-foundation",
       "worktree": "H:/Desktop/Acquiring/Acquiring",
       "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, live drag/scrub, chord-lane Roman, queued changeSection, and opt-in Pitch monitoring overlay landed. Real mouse/canvas drag still failing; synthetic PointerEvent is handler-only. Inertia coast remains polish.",
-      "nextAction": "Do not polish inertia this pass. Mouse/canvas drag stays test.fixme with original assertions. Policy A singing first-listen landed. Aural/T15 last. Library Settings Back excluded.",
+      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, live drag/scrub, chord-lane Roman, queued changeSection, opt-in Pitch monitoring overlay, and shared PLAYBACK_PERSISTENT/SINGING_TOOL capture landed. Real mouse/canvas drag still failing; synthetic PointerEvent is handler-only. Inertia coast remains polish.",
+      "nextAction": "Do not polish inertia this pass. Mouse/canvas drag stays test.fixme with original assertions. Shared exclusive mic lease landed. Interval-audio 44100 ended.contextTime flake tracked, assertion unchanged. Aural/T15 last. Library Settings Back excluded.",
       "validation": [
         {
           "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-drag/browser-fix2",
@@ -2230,8 +2231,8 @@
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace",
       "baseCommit": "e5ed284cb96f938335f2c77f9bda54185e3ff5bf",
-      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt. Median Aural scores remain.",
-      "nextAction": "Policy A accepted; no further mic-policy question. Do not fake scores. Do not start Aural/T15 remainder. Shared PLAYBACK_PERSISTENT/SINGING_TOOL coordinator across two BrowserMicrophoneCapture instances remains later.",
+      "slice": "Octave kernel + T06 songOctaveOffsets + dock chrome + listen/Flip-Flop via T09 capture + Flip-Flop 2s rest + measured interval + Brian 2026-11-07 policy A native-equivalent 800ms first-listen including first permission prompt + shared PLAYBACK_PERSISTENT/SINGING_TOOL capture. Median Aural scores remain.",
+      "nextAction": "Shared exclusive lease landed. Policy A accepted; no further mic-policy question. Do not fake scores. Do not start Aural/T15 remainder. Mouse/canvas drag remains test.fixme before inertia polish.",
       "validation": [
         {
           "command": "npm exec -- vitest run src/features/singing/singing-octave.test.ts; npm run typecheck; npm run check",
@@ -2266,12 +2267,25 @@
             "T13-policy-a-check-002"
           ],
           "result": "PASS 36 focused then 1087 unit/92 files + 1 parity + types + shell b22fe6f9ed3b. Policy A Chrome FIRST PASS: first-load listening after 800ms including first permission prompt; collapse cancels; prior slot listen after Stop; stubbed Permission denied Error idle no cents. Expand-without-target stays idle. Playwright fake/silent getUserMedia labeled, not SYNTHETIC oscillator, not Pixel. Pitch monitoring Mic control count 11. Unsupported first-section render gate: only model section after playback accepts it. Real mouse/canvas drag still beat 1; test.fixme original assertions. Codex gpt-6.1-sol read-only review EXIT 0 thread 01a1b605-42f0-79d3-844a-0c579f69e30b. No fabricated cents. Partial T13. Not device/whole-CI-green."
+        },
+        {
+          "command": "node node_modules/vitest/vitest.mjs run src/features/playback/exclusive-microphone.test.ts src/features/playback/persistent-pitch.test.ts src/features/singing/singing-microphone.test.ts src/audio/capture/pitch-coordinator.test.ts src/audio/capture/microphone-capture.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --workers 1 --grep \"policy A|exclusive PLAYBACK_PERSISTENT|singing dock loads|visible timeline hides|playback reloads offline|unsupported sections remain silent\"",
+          "revision": "4657c977 plus named exclusive shared-mic tree",
+          "guards": [
+            "T13-exclusive-mic-unit-001",
+            "T13-exclusive-mic-typecheck-001",
+            "T13-exclusive-mic-check-001",
+            "T13-exclusive-mic-browser-001",
+            "T13-exclusive-mic-browser-002"
+          ],
+          "result": "PASS 26 focused then 1093 unit/93 files + 1 parity + types + shell 639f4a43b742. Chrome FIRST PASS exclusive lease 5/5 (policy A + Mic steal both directions, permission denial). Regression 4/4. Playwright fake/silent getUserMedia, not SYNTHETIC oscillator, not Pixel. Ownership-loss idles without stopping the new owner; stolen estimates not written to slots or banked as melody scores. Flip-Flop rest is self-stop not steal. Interval-audio 44100 flake tracked separately; assertion unchanged. Codex gpt-6.1-sol read-only analysis EXIT 0 thread 01a1b610-bd97-7132-95e3-b208ba06c9ef. No fabricated cents. Partial T13. Not device/whole-CI-green."
         }
       ],
       "progress": [
         "2026-11-07T09:20:00Z Brian playback/singing/cards-first; Aural/song-rank/family trees last. Lineage is tie-breaker inside that order (LINEAGE_PRIORITY.md). T09 not required for pure octave math; development gate is accepted T12 interval cards. Library Settings Back excluded.",
         "2026-11-07T12:05Z Flip-Flop 2s rest, measured interval, opt-in-only auto-listen. First-load auto-listen remains Brian decision. SongQueue next.",
-        "2026-11-07T12:40Z Brian accepted policy A: Match Android, card double-click may start microphone listening after 800ms including first permission prompt. Replaced temporary policy B gating. No further policy question. SYNTHETIC oscillator ≠ Pixel; Playwright fake/silent getUserMedia labeled separately. Cursor remains writer; Codex gpt-6.1-sol read-only review of uncommitted (thread 01a1b605-42f0-79d3-844a-0c579f69e30b) EXIT 0."
+        "2026-11-07T12:40Z Brian accepted policy A: Match Android, card double-click may start microphone listening after 800ms including first permission prompt. Replaced temporary policy B gating. No further policy question. SYNTHETIC oscillator ≠ Pixel; Playwright fake/silent getUserMedia labeled separately. Cursor remains writer; Codex gpt-6.1-sol read-only review of uncommitted (thread 01a1b605-42f0-79d3-844a-0c579f69e30b) EXIT 0.",
+        "2026-11-07T13:00Z Shared PLAYBACK_PERSISTENT/SINGING_TOOL capture+coordinator across Pitch monitoring and singing dock. Native MainActivity one tracker, two leases. Ownership-loss idle without stopping the new owner; no stolen slot writes or banked melody scores. Cursor writer; Codex gpt-6.1-sol read-only interval-audio 44100 analysis thread 01a1b610-bd97-7132-95e3-b208ba06c9ef EXIT 0, no spec change."
       ],
       "blocker": null,
       "dependencyGates": {

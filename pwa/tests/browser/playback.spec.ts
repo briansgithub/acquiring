@@ -672,6 +672,27 @@ test.describe('policy A first-listen (Playwright fake/silent getUserMedia; not S
   });
 });
 
+test('exclusive PLAYBACK_PERSISTENT vs SINGING_TOOL lease (Playwright fake/silent getUserMedia; not SYNTHETIC oscillator; not Pixel)',async({page,context})=>{
+  await context.grantPermissions(['microphone']);
+  await instrument(page);await installAndOpen(page);
+  const mic=page.getByRole('button',{name:'Pitch monitoring',exact:true});
+  const dock=page.locator('[data-singing-dock]');
+  await page.getByRole('group',{name:'Melody cards',exact:true}).locator('[data-card-role="current"]').dblclick();
+  await expect.poll(async()=>dock.getAttribute('data-mic-state'),{timeout:2_000}).toBe('listening');
+  await expect(dock).toHaveAttribute('data-mic-owns','true');
+  await mic.click();
+  await expect.poll(async()=>dock.getAttribute('data-mic-state'),{timeout:2_000}).toBe('idle');
+  await expect(dock).toHaveAttribute('data-mic-owns','false');
+  await expect(mic).toHaveAttribute('aria-pressed','true');
+  await page.locator('[data-singing-slot="1"]').dblclick();
+  await expect.poll(async()=>dock.getAttribute('data-mic-state'),{timeout:2_000}).toBe('listening');
+  await expect(dock).toHaveAttribute('data-mic-owns','true');
+  await expect(mic).toHaveAttribute('aria-pressed','false');
+  await page.getByRole('button',{name:'Stop microphone',exact:true}).click();
+  await expect(dock).toHaveAttribute('data-mic-state','idle');
+  await expect(page.locator('[data-singing-interval="empty"] output')).toHaveText('—');
+});
+
 test('policy A first-load permission denial shows Error and stays idle (stubbed getUserMedia; not Pixel)',async({page})=>{
   await page.addInitScript(()=>{
     Object.defineProperty(navigator.mediaDevices,'getUserMedia',{

@@ -84,6 +84,16 @@ describe('native persistent pitch selection/controller', () => {
     expect(source.claimedModes).toHaveLength(1);
   });
 
+  it('ownership loss idles without a stale reclaim', () => {
+    const source = new FakeExclusive();
+    const controller = new PersistentPlaybackPitchController(source);
+    controller.activate({kind: 'melody'}, 72, true);
+    source.ownsMicrophone = false;
+    controller.onOwnershipChanged(false);
+    expect(controller.phase).toBe(PersistentPitchPhase.IDLE);
+    expect(controller.selection).toBeNull();
+  });
+
   it('effective target includes transpose and octave offset', () => {
     const resolved = {sourceMidi: 60, label: '1̂', position: {kind: 'simple-root' as const}};
     expect(effectiveTargetMidi(resolved, 5, 1)).toBe(77);
