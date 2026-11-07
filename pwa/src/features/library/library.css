@@ -102,6 +102,8 @@
 }
 .library-playlist-empty, .library-playlist-error { margin: .5rem 0; line-height: 1.5; color: #d0cfd6; }
 .library-playlist-unstar { flex: 0 0 auto; color: #d8e6ff !important; }
+.library-recents { margin: .75rem 0 0; }
+.library-recents-heading { margin: 0 0 .5rem; font-size: .95rem; font-weight: 700; color: #9ab9df; }
 
 @media (max-width: 30rem) {
   .library-song { align-items: stretch; flex-direction: column; }

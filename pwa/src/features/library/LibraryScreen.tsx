@@ -1,6 +1,7 @@
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {navigate,subscribeRoute} from '../../app/routes';
 import {LibraryController,type LibraryView} from './controller';
+import {recordOpenedSong} from './history-store';
 import {LibraryContent} from './LibraryContent';
 
 interface Remembered {view:LibraryView;scrollY:number}
@@ -72,7 +73,7 @@ export function LibraryScreen(){
     onLoadMore={()=>{void controller.loadMore();}}
     onRetry={()=>{void controller.retry();}}
     onDownload={()=>{saveLibraryView();navigate('/settings',{fromLibrary:true});}}
-    onOpenSong={row=>{controller.rememberFocused(row.slug);saveLibraryView();navigate('/songs/'+encodeURIComponent(row.slug),{fromLibrary:true});window.scrollTo(0,0);}}
+    onOpenSong={row=>{void recordOpenedSong(row.slug,row.artist);controller.rememberFocused(row.slug);saveLibraryView();navigate('/songs/'+encodeURIComponent(row.slug),{fromLibrary:true});window.scrollTo(0,0);}}
     browseBySlugs={controller.browseBySlugs}
   />;
 }

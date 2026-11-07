@@ -2,6 +2,7 @@ import {useState} from 'react';
 import { displayArtist, displayTitle } from '../../domain/data';
 import { libraryChromeVisible, type SongBrowseRow } from './grouping';
 import {PlaylistsSection} from './PlaylistsSection';
+import {RecentSelections} from './RecentSelections';
 import type { LibraryContentProps } from './view-contract';
 import './library.css';
 
@@ -85,6 +86,9 @@ export function LibraryContent({
         </div>
       </>}
     </header>
+
+    {searchFocused && !hasSearch && !browsingArtist &&
+      <RecentSelections browseBySlugs={browseBySlugs} onOpenSong={onOpenSong} />}
 
     {loading && <p className="library-status" role="status" aria-live="polite">Loading songs...</p>}
 

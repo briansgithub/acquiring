@@ -94,3 +94,25 @@ test('Playlists Favorites accordion is empty until a song is starred and hides w
   await page.getByRole('button',{name:'Clear search',exact:true}).click();
   await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
 });
+test('focused empty search shows Recent Selections in HistoryManager order and not on launch',async({page})=>{
+  await install(page);
+  await expect(page.getByRole('heading',{name:'Recent Selections',exact:true})).toHaveCount(0);
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('ALPHA');
+  await page.locator('[data-song-slug="a-alpha"]').click();
+  await expect(page).toHaveURL(/\/songs\//);
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await expect(page.getByRole('searchbox',{name:'Search songs',exact:true})).toHaveValue('ALPHA');
+  await expect(page.getByRole('heading',{name:'Recent Selections',exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'Clear search',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Recent Selections',exact:true})).toHaveCount(0);
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).click();
+  await expect(page.locator('[data-recent-selections] [data-song-slug="a-alpha"]')).toBeVisible();
+  await page.getByRole('button',{name:'Clear search',exact:true}).click();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('ALPHA');
+  await page.locator('[data-song-slug="b-alpha"]').click();
+  await expect(page).toHaveURL(/\/songs\//);
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button',{name:'Clear search',exact:true}).click();
+  await page.getByRole('searchbox',{name:'Search songs',exact:true}).click();
+  await expect.poll(async()=>page.locator('[data-recent-selections] [data-song-slug]').evaluateAll(els=>els.map(el=>el.getAttribute('data-song-slug')))).toEqual(['b-alpha','a-alpha']);
+});
