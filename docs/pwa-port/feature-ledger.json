@@ -271,7 +271,10 @@
         "disposition": "surviving",
         "paths": [
           "android/app/src/main/java/com/acquiring/android/PlaybackView.kt",
-          "android/app/src/main/java/com/acquiring/android/PersistentPlaybackPitchPractice.kt"
+          "android/app/src/main/java/com/acquiring/android/PersistentPlaybackPitchPractice.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackRootOnlyRow.kt",
+          "android/app/src/main/java/com/acquiring/android/AudiationPitchPractice.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
         ],
         "history": [
           "9973e748fbecaf09db02575ff2f2339d4c7d7fc0",
@@ -282,15 +285,25 @@
           "Changed paths and bounded source/test/comment diff excerpts inspected; current source and archived pitch audit cross-checked. No fresh runtime tests.",
           "9973e748:android/app/src/androidTest/java/com/sacredring/android/TripleClickableUiTest.kt"
         ],
-        "historicalDelta": "Persistent root/melody/chord-tone practice and exclusive triple-tap activation."
+        "historicalDelta": "Introduces persistent selection/gauge; subsequent86fd3959/45e7012e retire card triples and establish surviving SimpleRoot/Melody header control. Current pinned source, not removed triple gestures, governs this implementation."
       },
       "pwa": {
-        "status": "missing",
+        "status": "implemented",
         "paths": [
           "pwa/src/features/playback/use-playback-pitch-practice.ts",
-          "pwa/src/features/playback/persistent-pitch.ts"
+          "pwa/src/features/playback/persistent-pitch.ts",
+          "pwa/src/features/playback/persistent-root-target.ts",
+          "pwa/src/features/playback/persistent-root-target.test.ts",
+          "pwa/src/features/playback/RootPitchGauge.tsx",
+          "pwa/src/features/playback/root-pitch-gauge.css",
+          "pwa/src/features/playback/PlaybackCards.tsx",
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/audio/capture/microphone-capture.ts",
+          "pwa/src/audio/capture/microphone-capture.test.ts",
+          "pwa/tests/browser/playback.spec.ts"
         ],
-        "inspection": "Native header selects SimpleRoot when simple; PWA hook enables only !rootOnly and melody, cancels on rootOnly. Pure simple-root type is not product integration."
+        "inspection": "Actual product header SimpleRoot activation with STANDARD capture; normalized root/context MIDI plus transpose/octave once, unresolved target untransposed60 latch, target/lease retarget, root-card gauge (no-signal prompt, held display, cents/colors/bar/pin bounds) and both-direction mode/direct session/section cancellation. Queue remount already keyed by loadToken. Read-only capture readiness hides gauge during incomplete/obsolete startup. S06/N05, ordinary immediate cleanup, policyA800ms and existing melody scoring preserved. FIRST PASS36focused then1222unit/111files+1parity+strict types/production build;19browser PASS/1original trusted-tab SKIP with all5new N01 cases. SYNTHETIC440Hz real product target/gauge proof and fake/silent delayed capture/reset/Back/genuine reload are separate from physical-device acceptance. Source checkpoint b1d3e6375e13a23852cd247c110049fa0064345f.",
+        "inspectionHead": "b1d3e6375e13a23852cd247c110049fa0064345f"
       },
       "tracking": {
         "tasks": [
@@ -299,7 +312,7 @@
         ],
         "classification": "new_current_gap"
       },
-      "acceptanceRequired": "NEW root-monitoring gap: actual root-only UI activation/gauge, changing root/transpose/octave, lease handoff, stop/collapse/departure and no implicit restart.",
+      "acceptanceRequired": "Keep original native target/register/context/transpose/octave/mode/session/no-target/permission/ownership and gauge math assertions; current bounded desktop unit/product cases pass. Not whole T13/device or native pixel/font/density acceptance. Trusted-tab/BFCache/Safari/Pixel/physical microphone and other existing platform gates remain explicitly open; do not weaken assertions or infer real prompt proof from controlled delivery.",
       "priority": "primary",
       "dependencies": [
         "T08",
