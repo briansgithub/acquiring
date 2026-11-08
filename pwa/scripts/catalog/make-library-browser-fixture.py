@@ -2,7 +2,7 @@
 import argparse,gzip,hashlib,importlib.util,json,sqlite3,uuid
 from contextlib import closing
 from pathlib import Path
-parser=argparse.ArgumentParser();parser.add_argument('--variant',choices=['old','new'],default='old');parser.add_argument('--details',action='store_true');parser.add_argument('--song-screen',action='store_true');parser.add_argument('--playback-errors',action='store_true');parser.add_argument('--playback-major',action='store_true');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--variant',choices=['old','new'],default='old');parser.add_argument('--details',action='store_true');parser.add_argument('--song-screen',action='store_true');parser.add_argument('--playback-errors',action='store_true');parser.add_argument('--playback-major',action='store_true');parser.add_argument('--playback-title',action='store_true');args=parser.parse_args()
 root=Path.cwd()/'.artifacts/pwa-port/browser-library'/str(uuid.uuid4());source=root/'source';source.mkdir(parents=True);path=source/'catalog.db'
 with closing(sqlite3.connect(path)) as db:
     db.executescript("""
@@ -38,6 +38,10 @@ with closing(sqlite3.connect(path)) as db:
         context['2']['notes']={'melody1':[{'sd':'1','beat':1,'duration':1},{'sd':'1','beat':2,'duration':1},{'sd':'5','beat':3,'duration':1},{'sd':'5','beat':4,'duration':1},{'rest':True,'beat':5,'duration':1},{'sd':'3','beat':6,'duration':1},{'sd':'1','beat':7,'duration':1}]}
         context['2']['chords'].extend([{'root':1,'type':5,'beat':3,'duration':1},{'isRest':True,'beat':4,'duration':1},{'root':5,'type':5,'beat':5,'duration':1}])
         rows.append(('playback-context','Playback fixture','Playback_Context',json.dumps(context).encode('utf-8')))
+    if args.playback_title:
+        title='A very long Playback title — café & melody, with a complete selectable ending. ' * 3
+        payload=json.dumps({'verse':{'sectionName':'Verse','sectionIndex':0,'chords':[{'root':1,'type':5,'beat':1,'duration':16}],'notes':{'melody1':[{'sd':'1','beat':1,'duration':16}]},'metadata':{'endBeat':17,'tempos':[{'bpm':60,'beat':1}]}},'chorus':{'sectionName':'Chorus','sectionIndex':1,'chords':[{'root':5,'type':5,'beat':1,'duration':16}]}}).encode('utf-8')
+        rows.append(('playback-title','Title Fixture Artist',title.strip(),payload))
     for slug,artist,title,blob in rows:
         db.execute('INSERT INTO songs VALUES(?,?,?,?,?,?)',(slug,artist,'Updated Search' if args.variant=='new' and slug=='a-alpha' else title,'https://example.test','complete',blob))
     for slug,artist,title in db.execute('SELECT slug,artist,title FROM songs WHERE dataBlob IS NOT NULL').fetchall():

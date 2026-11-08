@@ -1576,12 +1576,12 @@
       ],
       "acceptance": "Current layout/gesture/transport contracts; source/display keys and zero-tempo semantics",
       "status": "in_progress",
-      "owner": "coordinator runtime unknown",
-      "branch": "codex/pwa-foundation",
-      "worktree": "H:/Desktop/Acquiring/Acquiring",
-      "baseCommit": "74de4cd5ff8b266d226b78d553f3d6f6244fce0c",
-      "slice": "Cards accepted. Canvas restaffs on Lock in Major. Route-position, Favorites, T21 default, tap-to-seek, live drag/scrub, chord-lane Roman, queued changeSection, opt-in Pitch monitoring overlay, shared exclusive mic, real page.mouse drag, live halo/marker, emulated browser touch, and SYNTHETIC product banked-score Chrome landed. Synthetic PointerEvent is handler-only. Inertia coast remains polish.",
-      "nextAction": "Do not polish inertia/tween this pass. Artists chip + Flip-Flop target-drop landed. Actual CI ba24c4d1 101/1/2 Settings Back 110 only. This commit unseen. Aural/T15 last. Library Settings Back excluded.",
+      "owner": "codex",
+      "branch": "codex/pwa-continuation",
+      "worktree": "/workspace/acquiring",
+      "baseCommit": "301864178e25dc6d5419a864b8003a0fa707c322",
+      "slice": "N02-selectable-playback-title-sheet",
+      "nextAction": "N02 full selectable Playback title sheet bounded desktop-tested; no parent/device acceptance. Next independent primary N03 contextual Playback help (separate slice, not implemented here), then N04 reset/rotary leaves. Preserve N01/S06/N05/policyA800ms. Settings Back deferred and all platform/device/audio-stress gates open; Aural/T15/family trees LAST.",
       "validation": [
         {
           "command": "npx vitest run src/features/playback/timeline-layout.test.ts; npm run typecheck; npm run check; npx playwright test tests/browser/playback.spec.ts --project chrome --output .artifacts/pwa-port/playback-timeline-drag/browser-fix2",
@@ -1705,6 +1705,34 @@
             "T12-synth-scores-browser-002"
           ],
           "result": "PASS 1103 unit/96 files + 1 parity + types + shell 4cb9d38f5123. Chrome FIRST PASS 5/5: SYNTHETIC product Mic banks scored ¢ and Unscored · while monitoring; fake/silent rest 0¢ still empty scores; one-shot intro; Help still works. Steal/error clears banked scores. Codex gpt-6.1-sol 01a1b62d-40ef-7183-a5a6-6c3265d0fa5b. Actual CI 7e85c96b 42376258073 94/3 failed/2 skipped. Partial T12. Not Pixel/whole-CI-green."
+        },
+        {
+          "revision": "30186417 plus named N02 tree; sliceSourceHashes freeze final tested files",
+          "guards": [
+            "T12-title-focused-005",
+            "T12-title-check-final-014",
+            "T12-title-browser-final-015",
+            "T12-title-dev-smoke-016",
+            "T12-title-legacy-017",
+            "T12-title-scope-018"
+          ],
+          "commands": [
+            "npm exec -- vitest run src/features/playback/playback-title.test.ts src/domain/data/display-names.test.ts",
+            "npm run check",
+            "npm run test:browser -- --config .artifacts/pwa-port/system-chromium.config.ts tests/browser/playback.spec.ts tests/browser/audio-preview.spec.ts --grep <exact N02+regression pattern retained in command.json> --reporter=json --output .artifacts/pwa-port/t12-title-browser-final-015/results",
+            "isolated ignored dev StrictMode repeated-title smoke via title-diagnostic.config.ts",
+            "python docs/pwa-port/validate_audit.py"
+          ],
+          "result": "Focused5/2files PASS; final1224unit/112files+1parity+strict types+production build PASS,shell97be10473738/12files. Final production browser9PASS/1original trusted-tab SKIP,162.350s; all3 N02 cases passed (12.322s/15.187s/10.383s). Dev StrictMode sheet-only smoke1PASS/14.8s,not dev audio parity. Complete actual native mouse text selection, clipped header, short/null artist, Escape/scrim/Close/focus trap/restore,320px200percent wrapping/scroll,unchanged history+playing transport,one preopted-in fake capture retained then stopped; N01/S06/N05/800ms/exit regressions unchanged. Earlier focus failure fixed; stale close under StrictMode guarded; retained-playing failure with PCM-analysis instrumentation not reproduced by production observer-only control nor final passive-context-count test. All playback/selection/state assertions preserved; no audio source or old PCM-helper/assertion changes. Cause of transient instrumented audio error unconfirmed; traces retained, no broad audio-stress/CI/device acceptance. Legacy audit FAIL exit1 unchanged line70 milestone dependency issue.",
+          "evidence": [
+            "pwa/.artifacts/pwa-port/t12-title-browser-final-015/command.json",
+            "pwa/.artifacts/pwa-port/t12-title-browser-final-015/report.json",
+            "pwa/.artifacts/pwa-port/t12-title-browser-007",
+            "pwa/.artifacts/pwa-port/t12-title-browser-fix-010",
+            "pwa/.artifacts/pwa-port/t12-title-diagnostic-011",
+            "pwa/.artifacts/pwa-port/t12-title-prod-diagnostic-012",
+            "pwa/.artifacts/pwa-port/t12-title-dev-smoke-016"
+          ]
         }
       ],
       "progress": [
@@ -2293,6 +2321,33 @@
           "pwa/tests/browser/playback.spec.ts": "a97f69f7979177d61197f2cfa8b080ca36c9617265a648551ab92e92f549c959",
           "pwa/src/features/playback/WORKLOG.md": "00ab764e37e00f21ca31d9eac0ce50fd9608443af2b68fd8ad6242eca3a444d6"
         }
+      },
+      "ownedPaths": [
+        "pwa/src/ui/shell/AppShell.tsx",
+        "pwa/src/ui/shell/shell.css",
+        "pwa/src/features/playback/PlaybackScreen.tsx",
+        "pwa/src/features/playback/playback-title.ts",
+        "pwa/src/features/playback/playback-title.test.ts",
+        "pwa/src/features/playback/PlaybackTitleSheet.tsx",
+        "pwa/src/features/playback/playback-title-sheet.css",
+        "pwa/scripts/catalog/make-library-browser-fixture.py",
+        "pwa/tests/browser/playback.spec.ts",
+        "docs/pwa-port/tasks.json",
+        "docs/pwa-port/HANDOFF.md",
+        "docs/pwa-port/feature-ledger.json",
+        "docs/pwa-port/FEATURE_LEDGER.md",
+        "docs/pwa-port/LINEAGE_PRIORITY.md"
+      ],
+      "sliceSourceHashes": {
+        "pwa/src/ui/shell/AppShell.tsx": "edff014d3578239a7a4342f2b8c651d12198238c37a0f04b05908b6f87b4e2e3",
+        "pwa/src/ui/shell/shell.css": "cfd5683cd242bcf617be1394325b56a44c2e777cb2329532a859e8d86557a58d",
+        "pwa/src/features/playback/PlaybackScreen.tsx": "29aed365b98012cdf766338edc6ca0bf39913d6306a9774f04a40b09c7cac801",
+        "pwa/src/features/playback/playback-title.ts": "b46bae8a8e7db9363beb7c4d02f79ee4aba845b163b29b922a0749f3c997878e",
+        "pwa/src/features/playback/playback-title.test.ts": "d5c6f32e3f10b2dbca53617fe21390770b8a9222f0a6fc8052c57c3f3a695046",
+        "pwa/src/features/playback/PlaybackTitleSheet.tsx": "2d0cad3420b938f939ceb524313bb86acfff1cfc6d3ea2389cf24ef72b73fa3e",
+        "pwa/src/features/playback/playback-title-sheet.css": "2c6eaf6274601ce288b28b47e545584153de0b4576d4147248cf199034a9ccfc",
+        "pwa/scripts/catalog/make-library-browser-fixture.py": "6408a0a587e4a52d52a13554b13c55f71d56796ce04182445033e30cb3fbba52",
+        "pwa/tests/browser/playback.spec.ts": "d869a7fed22f1cb6a37416428da67debdd3c693851439af6651f808069ab48f1"
       }
     },
     {

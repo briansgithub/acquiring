@@ -6,10 +6,12 @@ export type AppShellProps = {
   onSettings?: () => void;
   settingsUpdateAvailable?: boolean;
   onBack?: () => void;
+  onTitleClick?: () => void;
+  titleActionLabel?: string;
   children: ReactNode;
 };
 
-export function AppShell({ title, onSettings, settingsUpdateAvailable = false, onBack, children }: AppShellProps) {
+export function AppShell({ title, onSettings, settingsUpdateAvailable = false, onBack, onTitleClick, titleActionLabel = 'Open full title', children }: AppShellProps) {
   return (
     <div className="app-shell">
       <header className="app-shell__header">
@@ -21,7 +23,7 @@ export function AppShell({ title, onSettings, settingsUpdateAvailable = false, o
               </svg>
             </button>
           ) : <span className="app-shell__action-spacer" aria-hidden="true" />}
-          <h1 className="app-shell__title">{title}</h1>
+          <h1 className="app-shell__title">{onTitleClick?<button type="button" className="app-shell__title-action" aria-label={titleActionLabel} aria-haspopup="dialog" onClick={onTitleClick}>{title}</button>:title}</h1>
           {onSettings ? (
             <button className="app-shell__action" type="button" aria-label="Settings"
               aria-description={settingsUpdateAvailable ? 'Update available' : 'No update'}

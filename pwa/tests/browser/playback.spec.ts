@@ -6,7 +6,7 @@ import {expect,test,type Page} from '@playwright/test';
 import type {CatalogManifest} from '../../src/storage/catalog/manifest';
 let fixture:{directory:string;manifest:CatalogManifest;hash:string};
 test.setTimeout(60_000);
-test.beforeAll(async()=>{fixture=JSON.parse(execFileSync('python',['scripts/catalog/make-library-browser-fixture.py','--song-screen','--playback-errors','--playback-major'],{encoding:'utf8'}));fixture.hash=createHash('sha256').update(await readFile(resolve(fixture.directory,'manifest.json'))).digest('hex');});
+test.beforeAll(async()=>{fixture=JSON.parse(execFileSync('python',['scripts/catalog/make-library-browser-fixture.py','--song-screen','--playback-errors','--playback-major','--playback-title'],{encoding:'utf8'}));fixture.hash=createHash('sha256').update(await readFile(resolve(fixture.directory,'manifest.json'))).digest('hex');});
 test.beforeEach(async({context})=>{
   await context.route('**/catalog-sources.json',route=>route.fulfill({status:200,json:{schemaVersion:'acquiring-pwa-catalog-sources-1',catalogs:[{kind:'songs',manifestUrl:new URL('/playback-product/manifest.json',route.request().url()).href,manifestSha256:fixture.hash}]}}));
   await context.route('**/playback-product/**',async route=>{
@@ -1139,4 +1139,62 @@ for(const departure of ['Back','reload'] as const)test('N01 root pending worklet
   await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(0);await expect(mic).toHaveAttribute('aria-pressed','false');await expect(page.locator('[data-root-pitch-gauge]')).toHaveCount(0);
   await info.attach('N01-pagehide.json',{body:JSON.stringify(receipt),contentType:'application/json'});
  }
+});
+
+
+const longPlaybackTitle=('A very long Playback title — café & melody, with a complete selectable ending. '.repeat(3)).trim()+' by Title Fixture Artist';
+/** Retention proof needs only context identity/count; leave native BufferSource.start unwrapped. */
+async function observeTitleAudioContexts(page:Page){
+ await page.addInitScript(()=>{
+  const contexts:AudioContext[]=[],Native=window.AudioContext;
+  (window as unknown as {playbackProof:unknown}).playbackProof={contexts,items:[]};
+  window.AudioContext=class extends Native{constructor(options?:AudioContextOptions){super(options);contexts.push(this);}};
+ });
+}
+test('N02 long Playback title opens selectable bottom sheet; dismissal retains playing transport and navigation',async({page},info)=>{
+ await page.setViewportSize({width:360,height:800});await observeTitleAudioContexts(page);await instrumentCaptureDeparture(page);await installAndOpen(page,'playback-title','A very long Playback title');
+ const title=page.getByRole('button',{name:'Playback title',exact:true}),dialog=page.getByRole('dialog',{name:'Full Playback title',exact:true});
+ await expect(title).toHaveText('Playback · '+longPlaybackTitle);await expect(title).toHaveCSS('text-overflow','ellipsis');expect(await title.evaluate(el=>el.scrollWidth>el.clientWidth)).toBe(true);
+ const before=await page.evaluate(()=>({url:location.href,state:history.state,length:history.length}));
+ await page.getByRole('button',{name:'Play',exact:true}).click();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','true');
+ const position=page.getByRole('slider',{name:'Position',exact:true}),beat=Number(await position.inputValue());
+ await title.click();await expect(dialog).toBeVisible();await expect(dialog.locator('[data-full-playback-title]')).toHaveText(longPlaybackTitle);
+ await expect(page.getByRole('button',{name:'Close full title',exact:true})).toBeFocused();
+ await page.keyboard.press('Shift+Tab');await expect(dialog.locator('[aria-label="Selectable title"]')).toBeFocused();await page.keyboard.press('Tab');await expect(page.getByRole('button',{name:'Close full title',exact:true})).toBeFocused();
+ await page.waitForTimeout(600);expect(Number(await position.inputValue())).toBeGreaterThan(beat);await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','true');
+ // Actual browser selection, not a scripted Range/selectAll proof.
+ const text=dialog.locator('[data-full-playback-title]'),box=(await text.boundingBox())!;
+ await page.mouse.click(box.x+8,box.y+10,{clickCount:3});await expect.poll(()=>page.evaluate(()=>getSelection()?.toString().trim())).toBe(longPlaybackTitle);
+ await page.waitForTimeout(100);expect(await page.evaluate(()=>getSelection()?.toString().trim())).toBe(longPlaybackTitle);
+ await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(title).toBeFocused();
+ await title.press('Enter');await expect(dialog).toBeVisible();const bounds=(await dialog.boundingBox())!;await page.mouse.click(5,bounds.y-12);await expect(dialog).toHaveCount(0);await expect(title).toBeFocused();
+ await title.press('Space');await expect(dialog).toBeVisible();await page.getByRole('button',{name:'Close full title',exact:true}).press('Enter');await expect(dialog).toHaveCount(0);await expect(title).toBeFocused();
+ expect(await page.evaluate(()=>({url:location.href,state:history.state,length:history.length}))).toEqual(before);await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','true');await expect(page.getByRole('combobox',{name:'Section',exact:true})).toHaveValue('verse');
+ expect((await captureDeparture(page)).calls).toBe(0);expect((await audio(page)).contexts).toHaveLength(1);
+ await page.getByRole('button',{name:'Pause',exact:true}).click();await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();await expect(dialog).toHaveCount(0);
+ await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('heading',{name:'Library',exact:true})).toBeVisible();await expect(title).toHaveCount(0);
+ await info.attach('N02-title-transport-navigation.json',{body:JSON.stringify({fullTitle:longPlaybackTitle,before,selection:'native triple-click verified complete text',capture:await captureDeparture(page)}),contentType:'application/json'});
+});
+
+test('N02 title sheet wraps at narrow200percent; short/missing-artist title works and root header stays non-actionable',async({page},info)=>{
+ await page.setViewportSize({width:320,height:640});await instrumentCaptureDeparture(page);await installAndOpen(page,'playback-title','A very long Playback title');
+ await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+ await page.getByRole('button',{name:'Playback title',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Full Playback title',exact:true});await expect(dialog).toBeVisible();await expect(dialog.locator('[data-full-playback-title]')).toHaveText(longPlaybackTitle);
+ const layout=await dialog.evaluate(el=>{const r=el.getBoundingClientRect(),content=el.querySelector('.playback-title-sheet__content')!;return {x:r.x,right:r.right,bottom:r.bottom,width:innerWidth,height:innerHeight,overflow:content.scrollWidth-content.clientWidth,scrollable:content.scrollHeight>content.clientHeight};});
+ expect(layout.x).toBeGreaterThanOrEqual(-1);expect(layout.right).toBeLessThanOrEqual(layout.width+1);expect(layout.bottom).toBeLessThanOrEqual(layout.height+1);expect(layout.overflow).toBeLessThan(2);expect(layout.scrollable).toBe(true);
+ await dialog.locator('[aria-label="Selectable title"]').focus();await page.keyboard.press('End');await expect.poll(()=>dialog.locator('[aria-label="Selectable title"]').evaluate(el=>el.scrollTop)).toBeGreaterThan(0);
+ await page.keyboard.press('Escape');await page.getByRole('checkbox',{name:'Root only',exact:true}).check();await expect(page.getByRole('button',{name:'Playback title',exact:true})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Playback',exact:true,level:1})).toBeVisible();expect((await captureDeparture(page)).calls).toBe(0);
+ await page.getByRole('checkbox',{name:'Root only',exact:true}).uncheck();await page.getByRole('button',{name:'Back',exact:true}).click();await page.getByRole('button',{name:'Back',exact:true}).click();await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Detail Raw');await page.locator('[data-song-slug="detail-raw"]').click();await page.getByRole('button',{name:'Play song',exact:true}).click();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+ await page.getByRole('button',{name:'Playback title',exact:true}).click();await expect(dialog.locator('[data-full-playback-title]')).toHaveText('Detail Raw');await page.getByRole('button',{name:'Close full title',exact:true}).click();await expect(dialog).toHaveCount(0);expect((await captureDeparture(page)).calls).toBe(0);
+ await info.attach('N02-title-narrow.json',{body:JSON.stringify(layout),contentType:'application/json'});
+});
+
+test('N02 opening/closing title neither starts capture nor cancels an explicitly enabled monitoring owner',async({page,context},info)=>{
+ await context.grantPermissions(['microphone']);await instrumentCaptureDeparture(page);await installAndOpen(page,'playback-title','A very long Playback title');
+ const title=page.getByRole('button',{name:'Playback title',exact:true}),dialog=page.getByRole('dialog',{name:'Full Playback title',exact:true}),mic=page.locator('button[aria-label="Pitch monitoring"]');
+ await title.click();await page.keyboard.press('Escape');expect((await captureDeparture(page)).calls).toBe(0);
+ await mic.click();await expect.poll(async()=>(await captureDeparture(page)).graphs).toBe(1);await title.click();await expect(dialog).toBeVisible();await page.waitForTimeout(900);await expect(mic).toHaveAttribute('aria-pressed','true');expect((await captureDeparture(page)).calls).toBe(1);expect((await captureDeparture(page)).tracks).toContain('live');
+ await page.keyboard.press('Escape');await expect(title).toBeFocused();await expect(mic).toHaveAttribute('aria-pressed','true');await page.getByRole('button',{name:'Stop persistent pitch practice',exact:true}).click();
+ await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);await expect.poll(async()=>(await captureDeparture(page)).contexts.every(state=>state==='closed')).toBe(true);expect((await captureDeparture(page)).calls).toBe(1);
+ await info.attach('N02-title-monitor-owner.json',{body:JSON.stringify(await captureDeparture(page)),contentType:'application/json'});
 });

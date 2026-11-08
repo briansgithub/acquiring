@@ -1,3 +1,5 @@
+import {PlaybackTitleSheet} from './PlaybackTitleSheet';
+import {playbackFullTitle} from './playback-title';
 import {noteNameAccidentalPreference} from '../../domain/music';
 import {PlaybackCards} from './PlaybackCards';
 import {PlaybackFavoriteStar} from './PlaybackFavoriteStar';
@@ -177,6 +179,9 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   const settings=playbackState.settings as PlaybackSettings;
   const transport=playbackState.transport;
   const title=details?displayTitle(details.song.title):'Playback';
+  const fullTitle=details?playbackFullTitle(details.song):null;
+  const [titleSheetOpen,setTitleSheetOpen]=useState(false);
+  const headerTitle=fullTitle&&!settings.rootOnly?`Playback · ${fullTitle}`:'Playback';
 
   function updateSettings(patch:Partial<PlaybackSettings>){
     try{
@@ -221,7 +226,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
     majorLocked,transpose:settings.transpose,octaveOffset,
   });
 
-  return <AppShell title={title} onBack={onBack}><div className="playback-screen" aria-busy={detailState.phase==='loading'} data-playback-phase={phase} data-playback-requested={String(active)} data-queue-section={queueSectionId??''}>
+  return <AppShell title={headerTitle} onBack={onBack} titleActionLabel="Playback title" onTitleClick={fullTitle&&!settings.rootOnly?()=>setTitleSheetOpen(true):undefined}><div className="playback-screen" aria-busy={detailState.phase==='loading'} data-playback-phase={phase} data-playback-requested={String(active)} data-queue-section={queueSectionId??''}>
     {queueNav&&<div className="playback-queue-bar panel" data-song-queue-bar="">
       <span>{queueNav.label}</span>
       <button className="action" type="button" aria-label="Previous song" disabled={!queueNav.previousEnabled} onClick={queueNav.onPrevious}>Previous</button>
@@ -278,5 +283,6 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
         <PlaybackSettingsPanel settings={settings} disabled={!playback} onChange={updateSettings}/>
       </>}
     </>}
+    {titleSheetOpen&&fullTitle&&<PlaybackTitleSheet title={fullTitle} onDismiss={()=>setTitleSheetOpen(false)}/>}
   </div></AppShell>;
 }
