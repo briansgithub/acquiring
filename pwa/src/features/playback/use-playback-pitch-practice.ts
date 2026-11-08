@@ -1,5 +1,7 @@
-/** Opt-in persistent melody monitoring. Native header "Pitch monitoring". Policy A is singing-dock auto-listen, not this button. */
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {PersistentRootTargets} from './persistent-root-target';
+import type {RootGaugeState} from './RootPitchGauge';
+/** Opt-in persistent root/melody monitoring. Native header "Pitch monitoring". Policy A is singing-dock auto-listen, not this button. */
+import {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import type {ExclusivePitchSource} from '../../audio/capture';
 import type {ExtractedSection} from '../../contracts';
 import {preparePlaybackSection} from './section-model';
@@ -19,7 +21,9 @@ import {
 
 export function usePlaybackPitchPractice(input:{
   source: ExclusivePitchSource;
+  capture: {readonly isReady:boolean};
   section: ExtractedSection | null;
+  sessionKey: string;
   beat: number;
   rootOnly: boolean;
   majorLocked: boolean;
@@ -31,6 +35,11 @@ export function usePlaybackPitchPractice(input:{
   const accumulator = useMemo(() => new MelodyTimelinePitchScoreAccumulator(), []);
   const [scores, setScores] = useState<ReadonlyMap<number, MelodyRunScoreOutcome>>(() => new Map());
   const [monitoring, setMonitoring] = useState(false);
+  const [rootGauge,setRootGauge]=useState<RootGaugeState|null>(null);
+  const rootModel=useMemo(()=>input.section?new PersistentRootTargets(input.section):null,[input.section]);
+  const rootAtBeat=input.rootOnly?rootModel?.atBeat(input.beat,input.majorLocked)??null:null;
+  // Keep the polling clock stable while the beat advances within the same root.
+  const rootTarget=useMemo(()=>rootAtBeat,[rootAtBeat?.sourceMidi,rootAtBeat?.label]);
   const [live, setLive] = useState<LiveMelodyPitch | null>(null);
   const settle = useRef(new MelodyRunSettleDetector());
   const elapsed = useRef(0);
@@ -49,9 +58,11 @@ export function usePlaybackPitchPractice(input:{
   const enabled = monitoring && !input.rootOnly && controller.selection?.kind === 'melody'
     && controller.phase === PersistentPitchPhase.LISTENING;
 
-  useEffect(() => {
-    if (input.rootOnly) { controller.cancel(); setMonitoring(false); setScores(new Map()); setLive(null); }
-  }, [controller, input.rootOnly]);
+  useLayoutEffect(()=>{
+    // Native remember(sessionKey) + LaunchedEffect(isSimpleMode): neither direction auto-resumes.
+    controller.cancel();controller.clearError();setMonitoring(false);clear();setLive(null);setRootGauge(null);
+    sampledCents.current=null;lastSampleAt.current=null;
+  },[controller,input.sessionKey,input.rootOnly]);
   useEffect(() => {
     if (monitoring) return;
     sampledCents.current = null;
@@ -81,6 +92,7 @@ export function usePlaybackPitchPractice(input:{
       }, input.transpose, input.octaveOffset);
       controller.updateTarget(targetMidi);
     }
+    if(input.rootOnly&&rootTarget)controller.updateTarget(effectiveTargetMidi(rootTarget,input.transpose,input.octaveOffset));
     const id = window.setInterval(() => {
       if (!source.ownsMicrophone) {
         controller.onOwnershipChanged(false);
@@ -96,6 +108,16 @@ export function usePlaybackPitchPractice(input:{
         discardCurrent();
         setLive(null);
         return;
+      }
+      if(input.rootOnly){
+        if(controller.selection?.kind!=='simple-root'||!rootTarget){setRootGauge(null);sampledCents.current=null;lastSampleAt.current=null;return;}
+        if(!input.capture.isReady){setRootGauge(null);return;}
+        const targetMidi=effectiveTargetMidi(rootTarget,input.transpose,input.octaveOffset);
+        const result=retargetPitchResult(captured,targetMidi);
+        const sampled=advanceSampledMelodyCents({sampledCents:sampledCents.current,lastSampleAtMs:lastSampleAt.current,nowMs:Date.now(),estimateCents:result.kind==='estimate'?result.centsError:null});
+        sampledCents.current=sampled.sampledCents;lastSampleAt.current=sampled.lastSampleAtMs;
+        setRootGauge({label:rootTarget.label,targetMidi,result,sampledCents:sampled.sampledCents});
+        return; // Root display never feeds melody run scores.
       }
       const midi = active?.sourceMidi ?? 60;
       const targetMidi = effectiveTargetMidi({
@@ -134,7 +156,7 @@ export function usePlaybackPitchPractice(input:{
       runId.current = null;
       setScores(new Map());
     }
-  }, [accumulator, active, controller, enabled, input.octaveOffset, input.transpose, monitoring, source]);
+  }, [accumulator, active, controller, enabled, input.octaveOffset, input.transpose, monitoring, source,input.rootOnly,rootTarget]);
 
   useEffect(()=>{
     // Retire the UI/controller latch synchronously on true departure as well as
@@ -146,6 +168,10 @@ export function usePlaybackPitchPractice(input:{
 
   function toggle(): void {
     if (monitoring) { cancel(); return; }
+    if(input.rootOnly){
+      controller.activate({kind:'simple-root'},rootTarget?effectiveTargetMidi(rootTarget,input.transpose,input.octaveOffset):null,true);
+      setRootGauge(null);setMonitoring(true);return;
+    }
     const midi = active?.sourceMidi ?? 60;
     controller.activate({kind: 'melody'}, effectiveTargetMidi({
       sourceMidi: midi, label: '', position: {kind: 'melody-current'},
@@ -162,9 +188,9 @@ export function usePlaybackPitchPractice(input:{
 
   function cancel(): void {
     controller.cancel();
-    setMonitoring(false);
+    setMonitoring(false);setRootGauge(null);setLive(null);
     clear();
   }
 
-  return {scores, live, monitoring: monitoring && controller.phase !== PersistentPitchPhase.IDLE, toggle, clear, cancel};
+  return {scores, live, rootGauge:monitoring&&source.ownsMicrophone&&input.capture.isReady&&rootTarget&&rootGauge?.targetMidi===effectiveTargetMidi(rootTarget,input.transpose,input.octaveOffset)?rootGauge:null, monitoring: monitoring && controller.phase !== PersistentPitchPhase.IDLE, toggle, clear, cancel};
 }

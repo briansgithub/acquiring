@@ -97,3 +97,12 @@ it('Stop calls transport teardown synchronously while an open is pending',async(
  const before=transport.stops;capture.stop();expect(transport.stops).toBeGreaterThan(before);expect(capture.isRunning).toBe(false);
  done();await flush();expect(transport.listener).toBeNull();capture.release();
 });
+
+it('readiness waits for current startup and cannot be revived by delayed cancelled completion',async()=>{
+ const transport=new FakeTransport();let finish!:()=>void;transport.gate=new Promise(resolve=>{finish=resolve;});
+ const capture=new BrowserMicrophoneCapture(undefined,{transport,onPageHide:false});
+ expect(capture.isReady).toBe(false);capture.start(60);await flush();expect(capture.isReady).toBe(false);
+ capture.stop();finish();await flush();expect(capture.isReady).toBe(false);
+ transport.gate=Promise.resolve();capture.start(62);for(let i=0;i<5;i++)await flush();expect(capture.isReady).toBe(true);
+ capture.retarget(64);expect(capture.isReady).toBe(true);capture.stop();expect(capture.isReady).toBe(false);capture.release();
+});

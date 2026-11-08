@@ -216,7 +216,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   const {phase,status}=playbackStatusCopy(playbackError,transport.phase,active);
   const mic=usePlaybackMicrophone();
   const pitch=usePlaybackPitchPractice({
-    source:mic.persistent,
+    source:mic.persistent,capture:mic.capture,sessionKey:`${slug}:${sectionKey}`,
     section:playback&&!playbackError&&selected?selected[1]:null,beat,rootOnly:settings.rootOnly,
     majorLocked,transpose:settings.transpose,octaveOffset,
   });
@@ -265,7 +265,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
         </section>
         {playbackError&&<section className="panel"><p role="alert">{playbackError}</p></section>}
         {playback&&!playbackError&&<PlaybackCards section={selected[1]} beat={beat} baseBpm={playbackState.baseBpm} settings={settings} stopPreview={cardPreviewStop}
-          previewOwner={cardPreviewOwner} majorLocked={majorLocked} onMajorLockedChange={setMajorLocked}
+          previewOwner={cardPreviewOwner} rootGauge={pitch.rootGauge} majorLocked={majorLocked} onMajorLockedChange={setMajorLocked}
           onSing={request=>{cardPreviewStop.current?.();pitch.cancel();playback.pause();singingRequestId.current+=1;setSingingTarget(singingTargetRequest(request.first,request.second,singingRequestId.current));setDockExpanded(true);}}/>}
         {playback&&!playbackError&&<PlaybackTimeline section={selected[1]} beat={beat} rootOnly={settings.rootOnly} majorLocked={majorLocked}
           scores={pitch.scores} monitoring={pitch.monitoring} live={pitch.live}

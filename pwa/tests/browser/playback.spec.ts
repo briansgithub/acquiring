@@ -1073,3 +1073,70 @@ test('singing tape uses first section signature, not modulation/display/transpos
  expect((await captureDeparture(page)).calls).toBe(3);await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);await expect.poll(async()=>(await captureDeparture(page)).contexts.every(state=>state==='closed')).toBe(true);
  await info.attach('singing-tape-section-signature.json',{body:JSON.stringify({label:'SYNTHETIC A#4/Bb4; not physical microphone',firstSectionLabels:'A♯',secondSectionLabel:await slot1.locator('[data-tape-center] .singing-dock__tape-label').textContent(),captured,capture:await captureDeparture(page)}),contentType:'application/json'});
 });
+
+
+async function rootSeek(page:Page,beat:number){
+ const position=page.getByRole('slider',{name:'Position',exact:true});await position.focus();await position.press('Home');
+ for(let i=0;i<Math.round((beat-1)*100);i++)await position.press('ArrowRight');
+ await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(beat,2);
+}
+
+test('N01 SYNTHETIC root monitoring integrates source/context targets, once-only transpose/octave, gauge and resets (not Pixel)',async({page},info)=>{
+ test.setTimeout(90_000);
+ await instrument(page);await instrumentCaptureDeparture(page,false,true);await installAndOpen(page,'playback-context','Playback_Context');
+ const rootOnly=page.getByRole('checkbox',{name:'Root only',exact:true}),mic=page.getByRole('button',{name:'Pitch monitoring',exact:true});
+ const gauge=page.locator('[data-root-pitch-gauge]'),stop=page.getByRole('button',{name:'Stop persistent pitch practice',exact:true});
+ await rootOnly.check();await expect(gauge).toHaveCount(0);expect((await captureDeparture(page)).calls).toBe(0);
+ // Native expanded dock cancels persistent, so configure the target octave before explicit Mic.
+ await page.getByRole('button',{name:'Expand Humming Tool',exact:true}).click();await page.getByRole('button',{name:'Raise singing octave',exact:true}).click();await page.getByRole('button',{name:'Collapse humming tool',exact:true}).click();
+ const transpose=page.getByRole('slider',{name:'Transpose',exact:true});await transpose.focus();await transpose.press('Home');for(let i=0;i<19;i++)await transpose.press('ArrowRight');await expect(transpose).toHaveValue('7');
+ await mic.click();await expect(stop).toBeVisible();await expect(gauge).toHaveAttribute('data-target-midi','69');await expect(gauge).toHaveAttribute('data-root-estimate','true');
+ await expect.poll(async()=>Math.abs(Number(await gauge.getAttribute('data-root-cents'))),{timeout:8_000}).toBeLessThan(15);
+ await expect(gauge.locator('[data-root-bar]')).toHaveCSS('background-color','rgb(76, 175, 80)');expect((await captureDeparture(page)).calls).toBe(1);
+ await rootSeek(page,2);await expect(gauge).toHaveAttribute('data-target-midi','67');await expect.poll(async()=>Math.abs(Number(await gauge.getAttribute('data-root-cents'))-200)).toBeLessThan(20);
+ await transpose.focus();await transpose.press('ArrowLeft');await expect(gauge).toHaveAttribute('data-target-midi','66');await expect(gauge.locator('[data-root-pinned="sharp"]')).toBeVisible();
+ await page.getByRole('checkbox',{name:'Lock in Major',exact:true}).check();await expect(gauge).toHaveAttribute('data-target-midi','78');await expect(gauge.locator('[data-root-pinned="flat"]')).toBeVisible();expect((await captureDeparture(page)).calls).toBe(1);
+ await rootSeek(page,4);await expect(gauge).toHaveCount(0);await expect(mic).toHaveAttribute('aria-pressed','true');await expect(stop).toBeVisible();
+ await stop.click();await mic.click();await expect(stop).toBeVisible();await expect(gauge).toHaveCount(0);await expect.poll(async()=>(await captureDeparture(page)).calls).toBe(2); // explicit no-target latch
+ await rootSeek(page,5);await expect(gauge).toHaveAttribute('data-target-midi','73');expect((await captureDeparture(page)).calls).toBe(2);
+ await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');await expect(mic).toHaveAttribute('aria-pressed','false');await expect(gauge).toHaveCount(0);await expect(stop).toHaveCount(0);
+ await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(2);
+ await mic.click();await expect(gauge).toHaveAttribute('data-target-midi','74');await expect.poll(async()=>(await captureDeparture(page)).calls).toBe(3);
+ await rootOnly.uncheck();await expect(mic).toHaveAttribute('aria-pressed','false');await expect(gauge).toHaveCount(0);await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);
+ await mic.click();await expect(mic).toHaveAttribute('aria-pressed','true');await expect.poll(async()=>(await captureDeparture(page)).calls).toBe(4);
+ await rootOnly.check();await expect(mic).toHaveAttribute('aria-pressed','false');await expect(gauge).toHaveCount(0);await expect(stop).toHaveCount(0);await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(4);
+ await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);await expect.poll(async()=>(await captureDeparture(page)).contexts.every(state=>state==='closed')).toBe(true);
+ await info.attach('N01-root-target-gauge.json',{body:JSON.stringify({label:'SYNTHETIC440Hz, not hardware',targets:[69,67,66,78,73,74],capture:await captureDeparture(page)}),contentType:'application/json'});
+});
+
+for(const reset of ['mode','section'] as const)test('N01 root pending permission '+reset+' reset discards late capture and requires fresh opt-in',async({page,context},info)=>{
+ await context.grantPermissions(['microphone']);await instrument(page);await gatePersistentPermission(page);await installAndOpen(page);
+ const mode=page.getByRole('checkbox',{name:'Root only',exact:true}),mic=page.getByRole('button',{name:'Pitch monitoring',exact:true}),gauge=page.locator('[data-root-pitch-gauge]');
+ await mode.check();await mic.click();await expect.poll(async()=>(await pendingPersistent(page)).pending).toBe(true);await expect(gauge).toHaveCount(0);
+ if(reset==='mode')await mode.uncheck();else await page.getByRole('combobox',{name:'Section',exact:true}).selectOption('10');
+ await expect(mic).toHaveAttribute('aria-pressed','false');await expect(page.getByRole('button',{name:'Stop persistent pitch practice',exact:true})).toHaveCount(0);
+ await page.evaluate(()=>(window as unknown as {persistentPermission:{release:()=>void}}).persistentPermission.release());
+ await expect.poll(async()=>(await pendingPersistent(page)).tracks[0]?.every(state=>state==='ended')).toBe(true);await page.waitForTimeout(900);expect((await pendingPersistent(page)).graphs).toBe(0);expect((await pendingPersistent(page)).calls).toBe(1);
+ await mic.click();await expect.poll(async()=>(await pendingPersistent(page)).graphs).toBe(1);
+ if(reset==='section'){await expect(gauge).toHaveAttribute('data-root-estimate','false');await expect(gauge).toContainText('Hum a steady note...');await expect(gauge.locator('[data-root-bar]')).toHaveCount(0);}
+ await page.getByRole('button',{name:'Stop persistent pitch practice',exact:true}).click();
+ await expect.poll(async()=>(await pendingPersistent(page)).tracks.flat().every(state=>state==='ended')).toBe(true);await expect.poll(async()=>(await pendingPersistent(page)).contexts.every(state=>state==='closed')).toBe(true);
+ await info.attach('N01-pending-'+reset+'.json',{body:JSON.stringify(await pendingPersistent(page)),contentType:'application/json'});
+});
+
+for(const departure of ['Back','reload'] as const)test('N01 root pending worklet '+departure+' retires monitoring without implicit resume',async({page,context},info)=>{
+ await context.grantPermissions(['microphone']);await instrument(page);await instrumentCaptureDeparture(page,true);await installAndOpen(page);
+ const mic=page.getByRole('button',{name:'Pitch monitoring',exact:true});await page.getByRole('checkbox',{name:'Root only',exact:true}).check();await mic.click();await expect.poll(async()=>(await captureDeparture(page)).modulePending).toBe(true);await expect(page.locator('[data-root-pitch-gauge]')).toHaveCount(0);
+ if(departure==='Back'){
+  await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.getByRole('button',{name:'Play song',exact:true})).toBeVisible();
+  await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);await expect.poll(async()=>(await captureDeparture(page)).contexts.every(state=>state==='closed')).toBe(true);
+  await page.evaluate(()=>(window as unknown as {captureDeparture:{release:()=>void}}).captureDeparture.release());await page.waitForTimeout(900);expect((await captureDeparture(page)).graphs).toBe(0);
+  await page.getByRole('button',{name:'Play song',exact:true}).click();await expect(mic).toHaveAttribute('aria-pressed','false');await expect(page.locator('[data-root-pitch-gauge]')).toHaveCount(0);
+  await info.attach('N01-Back.json',{body:JSON.stringify(await captureDeparture(page)),contentType:'application/json'});
+ }else{
+  await page.evaluate(()=>(window as unknown as {captureDeparture:{observe:()=>void}}).captureDeparture.observe());await page.reload();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  const receipt=await page.evaluate(()=>JSON.parse(sessionStorage.getItem('capture-departure-proof')!));expect(receipt.trusted).toBe(true);expect(receipt.persisted).toBe(false);expect(receipt.capture.graphs).toBe(0);expect(receipt.capture.tracks.every((s:string)=>s==='ended')).toBe(true);expect(receipt.capture.contexts.every((s:string)=>s==='closed')).toBe(true);
+  await page.waitForTimeout(900);expect((await captureDeparture(page)).calls).toBe(0);await expect(mic).toHaveAttribute('aria-pressed','false');await expect(page.locator('[data-root-pitch-gauge]')).toHaveCount(0);
+  await info.attach('N01-pagehide.json',{body:JSON.stringify(receipt),contentType:'application/json'});
+ }
+});

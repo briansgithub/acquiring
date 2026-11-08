@@ -1,3 +1,4 @@
+import {RootPitchGauge,type RootGaugeState} from './RootPitchGauge';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {ExtractedSection} from '../../contracts';
 import type {SpelledPitch} from '../../domain/music';
@@ -22,7 +23,8 @@ function cardDuration(duration:number,bpm:number):number|null {
 /** First current-card band. Native source pitches stay independent of manual audio transpose.
  * Full interval/relative-context/singing/timeline controls remain separate slices.
  */
-export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,previewOwner,majorLocked,onMajorLockedChange,onSing}:{
+export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,previewOwner,majorLocked,onMajorLockedChange,onSing,rootGauge=null}:{
+  rootGauge?:RootGaugeState|null;
   section:ExtractedSection;beat:number;baseBpm:number;settings:PlaybackSettings;stopPreview:{current:(()=>void)|null};
   previewOwner?:{current:PreviewOwner|null};
   majorLocked:boolean;onMajorLockedChange:(locked:boolean)=>void;onSing:(request:SingingTargetRequest)=>void;
@@ -102,8 +104,9 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,preview
         {showsRootOnlyPrevious(root.previousIntervalPitch)&&<button className="playback-card" aria-label={'Play previous root '+(majorLocked?ionianContextDegreeLabel(root.previousIntervalPitch!,ionianKey):root.previousDegreeLabel)} onClick={()=>play('previous-root',[root.previousIntervalPitch!.toAudioNoteNumber()])}>
           <ScaleDegree label={majorLocked?ionianContextDegreeLabel(root.previousIntervalPitch!,ionianKey):root.previousDegreeLabel!} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/><span>Previous</span>
         </button>}
-        <button className="playback-card" aria-label={'Play current root '+rootLabel} onClick={()=>play('root',[rootMidi!])}
+        <button className="playback-card playback-root-current" aria-label={'Play current root '+rootLabel} onClick={()=>play('root',[rootMidi!])}
           onDoubleClick={()=>{if(rootMidi!=null)onSing(singingTargetRequest(singingTargetNote(rootMidi,rootLabel),null,0));}}>
+          {rootGauge&&<RootPitchGauge gauge={rootGauge}/>}
           <ScaleDegree label={rootLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>{showsRootOnlyPrevious(root.previousIntervalPitch)&&<span>Current</span>}
         </button>
         {root.previousIntervalPitch&&root.interval&&showsRootOnlyInterval(root.previousIntervalPitch,root.currentIntervalPitch,root.interval)&&<button className="playback-card playback-interval-card" aria-label={'Play root interval '+root.interval.spokenName} onClick={()=>playInterval('root-interval',root.previousIntervalPitch!,root.currentIntervalPitch)}

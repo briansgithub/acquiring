@@ -20,6 +20,7 @@ export interface BrowserMicrophoneCaptureOptions {
 export class BrowserMicrophoneCapture implements PitchSource {
   private generation = 0;
   private live = false;
+  private ready = false;
   private activeMode: PitchTrackingMode | null = null;
   private queue: Promise<void> = Promise.resolve();
   private readonly resampler = new LinearPcmResampler();
@@ -42,6 +43,9 @@ export class BrowserMicrophoneCapture implements PitchSource {
   }
 
   get current(): PitchResult { return this.tracker.current; }
+  /** True only after the current transport startup completes; never restored by an obsolete open. */
+  get isReady(): boolean { return this.ready; }
+
   get isRunning(): boolean { return this.tracker.isRunning; }
 
   start(targetMidi: number, trackingMode?: PitchTrackingMode): void {
@@ -51,6 +55,7 @@ export class BrowserMicrophoneCapture implements PitchSource {
     this.tracker.start(targetMidi, mode);
     this.activeMode = mode;
     if (retargetOnly) return;
+    this.ready = false;
     this.hops = new PcmHopEmitter(this.tracker.analysisSizes().hopSize);
     this.resampler.reset();
     const generation = ++this.generation;
@@ -70,6 +75,7 @@ export class BrowserMicrophoneCapture implements PitchSource {
   stop(): void {
     const generation = ++this.generation;
     this.live = false;
+    this.ready = false;
     this.activeMode = null;
     this.resampler.reset();
     this.hops.reset();
@@ -98,9 +104,11 @@ export class BrowserMicrophoneCapture implements PitchSource {
         this.pushAudio(frame, sampleRate);
       });
       if (generation !== this.generation) this.transport.stop();
+      else this.ready = true;
     } catch (error) {
       if (generation !== this.generation) return;
       this.live = false;
+      this.ready = false;
       const message = error instanceof Error && error.message ? error.message : 'Microphone capture failed';
       this.tracker.fail(message);
     }
