@@ -8,21 +8,23 @@ new_current_gap records a concrete PWA omission newly itemized by the initial au
 
 ## Findings and use
 
-**58 behavior groups; 5 integration gaps discovered in the initial audit, 3 still open in the latest pinned rows.** This is not a count of all app features. Existing task IDs are broad packages; NEW rows do not create acceptance decisions or change their statuses.
+**58 behavior groups; 5 integration gaps discovered in the initial audit, 2 still open in the latest pinned rows.** This is not a count of all app features. Existing task IDs are broad packages; NEW rows do not create acceptance decisions or change their statuses.
 
 | Initial new gap | Surviving behavior | Existing package | Latest PWA status |
 |---|---|---|---|
 | [N01](#n01) | Root-only mode supports persistent SimpleRoot monitoring from the header, with target updates and a root gauge. | T12, T13 | implemented |
-| [N02](#n02) | Truncated Playback title opens a selectable full-title bottom sheet. | T12, T21 | missing |
+| [N02](#n02) | Truncated Playback title opens a selectable full-title bottom sheet. | T12, T21 | implemented |
 | [N03](#n03) | Contextual Playback help scrim dismisses anywhere without activating covered controls. | T12, T21 | missing |
 | [N04](#n04) | Tempo/arpeggio/mix rotary controls support angular drag and tap reset (100%, DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX, 0.5 mix). | T12 | partial |
 | [N05](#n05) | Singing tape note names use section-key relative-major signature preference for sharps/flats. | T03, T13 | implemented |
 
-**Bounded implementation follow-up:** N01 is **implemented** at [b1d3e637](https://github.com/briansgithub/acquiring/commit/b1d3e6375e13a23852cd247c110049fa0064345f). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete T13 or the port.
+**Bounded implementation follow-up:** N01 is **implemented** at [b1d3e637](https://github.com/briansgithub/acquiring/commit/b1d3e6375e13a23852cd247c110049fa0064345f). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete its parent packages or the port.
 
-**Bounded implementation follow-up:** S06 is **implemented** at [d30df565](https://github.com/briansgithub/acquiring/commit/d30df5659016dee6068f92dbdb83d44e069f8cbc). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete T13 or the port.
+**Bounded implementation follow-up:** N02 is **implemented** at [46c7452d](https://github.com/briansgithub/acquiring/commit/46c7452dab7f45bec471fe3aac02d35b163052cd). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete its parent packages or the port.
 
-**Bounded implementation follow-up:** N05 is **implemented** at [503cfd2d](https://github.com/briansgithub/acquiring/commit/503cfd2dda5a22fd9d8d7988727acb36d64c8a23). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete T13 or the port.
+**Bounded implementation follow-up:** S06 is **implemented** at [d30df565](https://github.com/briansgithub/acquiring/commit/d30df5659016dee6068f92dbdb83d44e069f8cbc). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete its parent packages or the port.
+
+**Bounded implementation follow-up:** N05 is **implemented** at [503cfd2d](https://github.com/briansgithub/acquiring/commit/503cfd2dda5a22fd9d8d7988727acb36d64c8a23). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete its parent packages or the port.
 
 ## Method, range, coverage and limits
 
@@ -44,7 +46,7 @@ Settings Back strict <3px versus earlier 110px remains DEFERRED, unchanged. The 
 
 The five NEW rows are current integration omissions, despite their introductions already appearing in the old history ledger. Root-only Mic is source-backed; triple-tap and merely surviving ChordTone types are not new requirements. Full-title sheet and local help are separate from displaying a title/global Help. Tape key spelling is separate from captured-slot relative spelling. Rotary/reset behavior is separate from exposing numerical settings. Favorited confirmation already exists and is not a new gap. Current fixed transport does not establish old beat-step buttons as a requirement merely because an earlier plan mentioned them.
 
-**Next independent ready primary slice:** N02 selectable full Playback title sheet. N01 root-only monitoring, S06 Stop/owner handoff and N05 tape labels have separately pinned bounded implementation follow-ups. The original audit made no owner tradeoff decision; contextual Help/reset leaves remain open. Aural stays last.
+**Next independent ready primary slice:** N03 contextual Playback help, separately from the now-pinned N02 title sheet. N04 reset/rotary leaves remain open. N01/S06/N05 keep their own frozen checkpoints. The original audit made no owner tradeoff decision; Aural stays last.
 
 ## Behavior ledger
 
@@ -145,12 +147,12 @@ Root-only mode supports persistent SimpleRoot monitoring from the header, with t
 
 Truncated Playback title opens a selectable full-title bottom sheet.
 
-- Native: **surviving**. [PlaybackDestination.kt](https://github.com/briansgithub/acquiring/blob/801cf7984171d772afc4406ddb5c79c0cb7fd20a/android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt)
+- Native: **surviving**. [PlaybackDestination.kt](https://github.com/briansgithub/acquiring/blob/801cf7984171d772afc4406ddb5c79c0cb7fd20a/android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt); [PlaybackHeaderChrome.kt](https://github.com/briansgithub/acquiring/blob/801cf7984171d772afc4406ddb5c79c0cb7fd20a/android/app/src/main/java/com/acquiring/android/PlaybackHeaderChrome.kt)
 - History: [877bb982](https://github.com/briansgithub/acquiring/commit/877bb982e61d93e244297a43a631cc768ab18c5b). Selectable expanded title sheet and dismissible contextual help.
-- PWA: **missing**. Surviving showTitleSheet/ModalBottomSheet/SelectionContainer; PWA static h1 has no title action. Not absent merely because title text exists.
-- Current code/tests: [AppShell.tsx](https://github.com/briansgithub/acquiring/blob/7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5/pwa/src/ui/shell/AppShell.tsx); [PlaybackScreen.tsx](https://github.com/briansgithub/acquiring/blob/7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5/pwa/src/features/playback/PlaybackScreen.tsx)
+- PWA: **implemented**. Actual full-mode Playback title action with single-line visual clipping and complete displayed title-by-artist in selectable modal bottom sheet; native root-only header remains non-actionable Playback. Escape/scrim/Close, focus loop/restore, StrictMode stale-close guard, narrow200percent wrap/scroll. No route/history/audio/mic command from sheet. Final1224unit/112files+1parity+strict types/build PASS; production9browser PASS/1original skip and dev StrictMode sheet-only1PASS. Actual native mouse selection, all dismissals, retained playing transport and URL/history state/length, short/null artist and opted-in monitoring retention verified. Initial focus failure fixed. Earlier retained-playing failure under heavy PCM-analysis instrumentation has unconfirmed cause; trace retained. Observer-only production control and final passive-context-counter case pass unchanged assertions, with no audio-source/old-PCM-helper changes; no broad audio-stress acceptance. N01/S06/N05/policyA800ms regressions pass. Source checkpoint 46c7452dab7f45bec471fe3aac02d35b163052cd.
+- Current code/tests: [AppShell.tsx](https://github.com/briansgithub/acquiring/blob/46c7452dab7f45bec471fe3aac02d35b163052cd/pwa/src/ui/shell/AppShell.tsx); [shell.css](https://github.com/briansgithub/acquiring/blob/46c7452dab7f45bec471fe3aac02d35b163052cd/pwa/src/ui/shell/shell.css); [PlaybackScreen.tsx](https://github.com/briansgithub/acquiring/blob/46c7452dab7f45bec471fe3aac02d35b163052cd/pwa/src/features/playback/PlaybackScreen.tsx); [PlaybackTitleSheet.tsx](https://github.com/briansgithub/acquiring/blob/46c7452dab7f45bec471fe3aac02d35b163052cd/pwa/src/features/playback/PlaybackTitleSheet.tsx); [playback-title-sheet.css](https://github.com/briansgithub/acquiring/blob/46c7452dab7f45bec471fe3aac02d35b163052cd/pwa/src/features/playback/playback-title-sheet.css); [playback-title.ts](https://github.com/briansgithub/acquiring/blob/46c7452dab7f45bec471fe3aac02d35b163052cd/pwa/src/features/playback/playback-title.ts); [playback-title.test.ts](https://github.com/briansgithub/acquiring/blob/46c7452dab7f45bec471fe3aac02d35b163052cd/pwa/src/features/playback/playback-title.test.ts); [make-library-browser-fixture.py](https://github.com/briansgithub/acquiring/blob/46c7452dab7f45bec471fe3aac02d35b163052cd/pwa/scripts/catalog/make-library-browser-fixture.py); [playback.spec.ts](https://github.com/briansgithub/acquiring/blob/46c7452dab7f45bec471fe3aac02d35b163052cd/pwa/tests/browser/playback.spec.ts)
 - Tracking: **new_current_gap**; T12, T21. Priority **primary**; dependencies T03, T08.
-- Acceptance still required / boundary: NEW full-title gap: long title activation, complete selectable title, dismissal and retained transport/navigation state.
+- Acceptance still required / boundary: Keep original long/truncated-title activation, complete selectable title, dismissal and retained transport/navigation assertions. Current bounded production Chromium cases pass; no parent-package/native animation/pixel/font/density or device acceptance. Native browser/device Back/swipe/Safari/touch-selection remain platform proof, not fabricated from Escape/mouse. Retain earlier instrumented audio-stress failure as unaccepted T08 concern; do not infer whole CI or whole-port parity.
 
 <a id="n03"></a>
 

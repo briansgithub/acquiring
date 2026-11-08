@@ -328,7 +328,8 @@
       "native": {
         "disposition": "surviving",
         "paths": [
-          "android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+          "android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt",
+          "android/app/src/main/java/com/acquiring/android/PlaybackHeaderChrome.kt"
         ],
         "history": [
           "877bb982e61d93e244297a43a631cc768ab18c5b"
@@ -340,12 +341,20 @@
         "historicalDelta": "Selectable expanded title sheet and dismissible contextual help."
       },
       "pwa": {
-        "status": "missing",
+        "status": "implemented",
         "paths": [
           "pwa/src/ui/shell/AppShell.tsx",
-          "pwa/src/features/playback/PlaybackScreen.tsx"
+          "pwa/src/ui/shell/shell.css",
+          "pwa/src/features/playback/PlaybackScreen.tsx",
+          "pwa/src/features/playback/PlaybackTitleSheet.tsx",
+          "pwa/src/features/playback/playback-title-sheet.css",
+          "pwa/src/features/playback/playback-title.ts",
+          "pwa/src/features/playback/playback-title.test.ts",
+          "pwa/scripts/catalog/make-library-browser-fixture.py",
+          "pwa/tests/browser/playback.spec.ts"
         ],
-        "inspection": "Surviving showTitleSheet/ModalBottomSheet/SelectionContainer; PWA static h1 has no title action. Not absent merely because title text exists."
+        "inspection": "Actual full-mode Playback title action with single-line visual clipping and complete displayed title-by-artist in selectable modal bottom sheet; native root-only header remains non-actionable Playback. Escape/scrim/Close, focus loop/restore, StrictMode stale-close guard, narrow200percent wrap/scroll. No route/history/audio/mic command from sheet. Final1224unit/112files+1parity+strict types/build PASS; production9browser PASS/1original skip and dev StrictMode sheet-only1PASS. Actual native mouse selection, all dismissals, retained playing transport and URL/history state/length, short/null artist and opted-in monitoring retention verified. Initial focus failure fixed. Earlier retained-playing failure under heavy PCM-analysis instrumentation has unconfirmed cause; trace retained. Observer-only production control and final passive-context-counter case pass unchanged assertions, with no audio-source/old-PCM-helper changes; no broad audio-stress acceptance. N01/S06/N05/policyA800ms regressions pass. Source checkpoint 46c7452dab7f45bec471fe3aac02d35b163052cd.",
+        "inspectionHead": "46c7452dab7f45bec471fe3aac02d35b163052cd"
       },
       "tracking": {
         "tasks": [
@@ -354,7 +363,7 @@
         ],
         "classification": "new_current_gap"
       },
-      "acceptanceRequired": "NEW full-title gap: long title activation, complete selectable title, dismissal and retained transport/navigation state.",
+      "acceptanceRequired": "Keep original long/truncated-title activation, complete selectable title, dismissal and retained transport/navigation assertions. Current bounded production Chromium cases pass; no parent-package/native animation/pixel/font/density or device acceptance. Native browser/device Back/swipe/Safari/touch-selection remain platform proof, not fabricated from Escape/mouse. Retain earlier instrumented audio-stress failure as unaccepted T08 concern; do not infer whole CI or whole-port parity.",
       "priority": "primary",
       "dependencies": [
         "T03",
