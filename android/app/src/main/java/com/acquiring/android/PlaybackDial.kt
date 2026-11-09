@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -26,6 +27,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
@@ -68,9 +70,10 @@ internal fun PlaybackDial(
     steps: Int = 0,
     ringLabels: List<String> = emptyList(),
     onTap: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
-    val primary = MaterialTheme.colorScheme.primary
+    val primary = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
     val track = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.18f)
     val knob = MaterialTheme.colorScheme.surfaceVariant
     val knobHighlight = MaterialTheme.colorScheme.surface
@@ -88,7 +91,10 @@ internal fun PlaybackDial(
         return valueRange.start + snapped / intervals * rangeSize
     }
 
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier.alpha(if (enabled) 1f else 0.38f),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = label,
             modifier = Modifier.fillMaxWidth().height(36.dp),
@@ -114,13 +120,17 @@ internal fun PlaybackDial(
                         range = valueRange,
                         steps = (semanticsSteps - 1).coerceAtLeast(0)
                     )
-                    setProgress { requested ->
-                        onValueChange(snap(requested))
-                        true
+                    if (enabled) {
+                        setProgress { requested ->
+                            onValueChange(snap(requested))
+                            true
+                        }
+                    } else {
+                        disabled()
                     }
                 }
                 .then(
-                    if (onTap != null) {
+                    if (enabled && onTap != null) {
                         Modifier.clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -132,7 +142,8 @@ internal fun PlaybackDial(
                         Modifier
                     }
                 )
-                .pointerInput(valueRange, semanticsSteps) {
+                .pointerInput(enabled, valueRange, semanticsSteps) {
+                    if (!enabled) return@pointerInput
                     detectDragGestures(
                         onDragStart = { position ->
                             val dialCenter = Offset(size.width / 2f, size.height / 2f)

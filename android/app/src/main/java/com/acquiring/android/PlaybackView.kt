@@ -202,7 +202,8 @@ fun PlaybackTab(
     playOnceKey: String? = null,
     autoStart: Boolean = false,
     onSectionComplete: (String) -> Unit = {},
-    onHomeReferenceActions: (() -> Unit, () -> Unit) -> Unit = { _, _ -> }
+    onHomeReferenceActions: (() -> Unit, () -> Unit) -> Unit = { _, _ -> },
+    audibleRootDegree: Boolean = false
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("PlaybackTab requires an exclusive persistent pitch source")
@@ -217,7 +218,12 @@ fun PlaybackTab(
     // the same singing-octave shift.
     fun tessituraIntervalShiftSemitones(previousAudioNote: Int, currentAudioNote: Int): Int =
         singingOctaveSemitones(octaveOffset)
-    val arpeggiateCycles = PLAYBACK_ARPEGGIO_OPTIONS[arpeggioOptionIndex].cyclesPerBeat
+    val effectiveArpeggioIndex = if (audibleRootDegree) {
+        DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX
+    } else {
+        arpeggioOptionIndex
+    }
+    val arpeggiateCycles = PLAYBACK_ARPEGGIO_OPTIONS[effectiveArpeggioIndex].cyclesPerBeat
     val bpm = (baseBpm * tempoPercent / 100f).toDouble()
 
     val notesJson = when (val rawNotes = section.notes) {
@@ -284,7 +290,8 @@ fun PlaybackTab(
         chordMode = if (isSimpleMode) PlaybackChordMode.ROOT_ONLY else PlaybackChordMode.FULL,
         melodyGain = melodyVolume,
         chordGain = chordVolume,
-        arpeggiateCycles = arpeggiateCycles
+        arpeggiateCycles = arpeggiateCycles,
+        audibleRootDegree = audibleRootDegree
     )
     // Configuring here keeps the engine built before the timeline effect loads it.
     LaunchedEffect(playbackConfig) {
@@ -1617,8 +1624,8 @@ fun PlaybackTab(
                             if (!isSimpleMode) {
                                 PlaybackDial(
                                     label = "Arpeggiate",
-                                    valueLabel = "cycles per beat",
-                                    value = arpeggioOptionIndex.toFloat(),
+                                    valueLabel = if (audibleRootDegree) "Off" else "cycles per beat",
+                                    value = effectiveArpeggioIndex.toFloat(),
                                     onValueChange = {
                                         onArpeggioOptionIndexChange(
                                             it.roundToInt().coerceIn(PLAYBACK_ARPEGGIO_OPTIONS.indices)
@@ -1630,7 +1637,8 @@ fun PlaybackTab(
                                     onTap = {
                                         onArpeggioOptionIndexChange(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX)
                                     },
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
+                                    enabled = !audibleRootDegree
                                 )
                             }
                             val melodyPercent = (melodyChordBalance * 100f).roundToInt()

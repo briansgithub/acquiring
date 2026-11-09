@@ -12,6 +12,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -78,6 +79,8 @@ class PlaybackTransportSelectorsUiTest {
                         onPlaybackTempoPercentChange = {},
                         playbackArpeggioOptionIndex = DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,
                         onPlaybackArpeggioOptionIndexChange = {},
+                        audibleRootDegree = false,
+                        onAudibleRootDegreeChange = {},
                         onTransposeChange = {},
                         onArtistClick = {},
                         onShowSongInfo = {},
@@ -156,6 +159,82 @@ class PlaybackTransportSelectorsUiTest {
     }
 
     @Test
+    fun audibleRootDegreeSharesStateAcrossModesAndDisablesTheArpeggioDial() {
+        val sections = linkedMapOf("verse" to section("Verse", 5), "chorus" to section("Chorus", 7))
+        val pitchSource = FakeExclusivePitchSource()
+        val testSong = song("root-cue", "Root Cue")
+        var selectedSectionId by mutableStateOf("verse")
+        var arpeggioOption by mutableStateOf(PLAYBACK_ARPEGGIO_OPTIONS.indexOfFirst { it.cyclesPerBeat == 2.0 })
+        var audibleRootDegree by mutableStateOf(false)
+        val originalArpeggioOption = arpeggioOption
+
+        composeTestRule.setContent {
+            MaterialTheme {
+                PlaybackDestination(
+                    song = testSong,
+                    sections = sections,
+                    selectedSectionId = selectedSectionId,
+                    onSectionChange = { selectedSectionId = it },
+                    currentWaveform = AudioEngine.Waveform.SINE,
+                    onWaveformChange = {},
+                    globalTranspose = 0,
+                    playbackTempoPercent = 100f,
+                    onPlaybackTempoPercentChange = {},
+                    playbackArpeggioOptionIndex = arpeggioOption,
+                    onPlaybackArpeggioOptionIndexChange = { arpeggioOption = it },
+                    audibleRootDegree = audibleRootDegree,
+                    onAudibleRootDegreeChange = { audibleRootDegree = it },
+                    onTransposeChange = {},
+                    onArtistClick = {},
+                    onShowSongInfo = {},
+                    onSingingTargetsRequested = {},
+                    octaveOffset = 0,
+                    persistentPitchSource = pitchSource,
+                    isFavorite = false,
+                    onToggleFavorite = {},
+                    onBack = {}
+                )
+            }
+        }
+        waitForPlayback()
+
+        fun cueState() = composeTestRule.onAllNodesWithText("Audible Root Degree")
+            .fetchSemanticsNodes().single().config[SemanticsProperties.ToggleableState]
+        fun arpeggioDial(description: String) = composeTestRule.onAllNodesWithContentDescription(
+            description,
+            useUnmergedTree = true
+        ).fetchSemanticsNodes().single().config
+
+        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        assertEquals(ToggleableState.Off, cueState())
+        clickText("Audible Root Degree")
+        assertEquals(ToggleableState.On, cueState())
+        clickText("Root Only")
+
+        clickTag(PLAYBACK_SECTION_BUTTON_TEST_TAG)
+        clickTag("PlaybackSection-chorus")
+        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        assertEquals(ToggleableState.On, cueState())
+        clickText("Full Chords")
+        val disabledDial = arpeggioDial("Arpeggiate: Off")
+        assertEquals(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX.toFloat(),
+            disabledDial[SemanticsProperties.ProgressBarRangeInfo].current)
+        assertTrue(SemanticsProperties.Disabled in disabledDial)
+        assertFalse(SemanticsActions.SetProgress in disabledDial)
+        assertFalse(SemanticsActions.OnClick in disabledDial)
+        assertEquals(originalArpeggioOption, arpeggioOption)
+
+        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        clickText("Audible Root Degree")
+        assertEquals(ToggleableState.Off, cueState())
+        clickText("Full Chords")
+        val enabledDial = arpeggioDial("Arpeggiate: cycles per beat")
+        assertEquals(originalArpeggioOption.toFloat(),
+            enabledDial[SemanticsProperties.ProgressBarRangeInfo].current)
+        assertTrue(SemanticsActions.SetProgress in enabledDial)
+    }
+
+    @Test
     fun productionPlaybackSelectorsCommitRepeatedlyDuringNormalAndFastPlayback() {
         val sections = linkedMapOf(
             "verse" to section("Verse", 1),
@@ -185,6 +264,8 @@ class PlaybackTransportSelectorsUiTest {
                         onPlaybackTempoPercentChange = { tempoPercent = it },
                         playbackArpeggioOptionIndex = arpeggioOptionIndex,
                         onPlaybackArpeggioOptionIndexChange = { arpeggioOptionIndex = it },
+                        audibleRootDegree = false,
+                        onAudibleRootDegreeChange = {},
                         onTransposeChange = {
                             transpose = it
                             AudioEngine.globalTranspose = it

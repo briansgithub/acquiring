@@ -31,7 +31,8 @@ internal data class PlaybackTimelineEvent(
     val endBeat: Double,
     val layer: PlaybackAudioLayer,
     val fullMidiNotes: IntArray,
-    val rootMidiNote: Int? = null
+    val rootMidiNote: Int? = null,
+    val rootDegree: Int? = null
 )
 
 internal data class PlaybackTimeline(
@@ -52,7 +53,8 @@ internal data class PlaybackConfig(
     val chordMode: PlaybackChordMode,
     val melodyGain: Float,
     val chordGain: Float,
-    val arpeggiateCycles: Double = 0.0
+    val arpeggiateCycles: Double = 0.0,
+    val audibleRootDegree: Boolean = false
 )
 
 internal fun arpeggioToneIndex(
@@ -103,6 +105,8 @@ internal class PlaybackPcmRenderer(
     private data class ActiveEvent(
         val event: PlaybackTimelineEvent,
         val oscillators: List<SynthVoice>,
+        val rootPulses: List<List<SynthVoice>>,
+        val arpeggiateCycles: Double,
         var ageFrames: Long = 0,
         var transitionGain: Double = 1.0,
         var transitionFramesRemaining: Int = 0,
@@ -141,9 +145,10 @@ internal class PlaybackPcmRenderer(
             sanitized.transpose != config.transpose
         val chordModeChanged = sanitized.chordMode != config.chordMode
         val arpeggioChanged = sanitized.arpeggiateCycles != config.arpeggiateCycles
+        val rootCueChanged = sanitized.audibleRootDegree != config.audibleRootDegree
         config = sanitized
 
-        if (waveformOrPitchChanged || chordModeChanged || arpeggioChanged) {
+        if (waveformOrPitchChanged || chordModeChanged || arpeggioChanged || rootCueChanged) {
             val affectedLayers = if (waveformOrPitchChanged) {
                 PlaybackAudioLayer.entries.toSet()
             } else {
@@ -218,14 +223,12 @@ internal class PlaybackPcmRenderer(
                 } else {
                     currentChordGain
                 }
-                val isArpeggiatedChord = active.event.layer == PlaybackAudioLayer.CHORD &&
-                    config.arpeggiateCycles > 0.0 && active.oscillators.size > 1
-                val oscillatorSum = if (isArpeggiatedChord) {
+                val oscillatorSum = if (active.arpeggiateCycles > 0.0) {
                     val elapsedBeats = (beat - active.event.startBeat).coerceAtLeast(0.0)
                     val slotProgress = arpeggioSlotProgress(
                         elapsedBeats,
                         active.oscillators.size,
-                        config.arpeggiateCycles
+                        active.arpeggiateCycles
                     )
                     val slotEnvelope = minOf(
                         (slotProgress / 0.08).coerceIn(0.0, 1.0),
@@ -234,7 +237,7 @@ internal class PlaybackPcmRenderer(
                     val toneIndex = arpeggioToneIndex(
                         elapsedBeats,
                         active.oscillators.size,
-                        config.arpeggiateCycles
+                        active.arpeggiateCycles
                     )
                     active.oscillators[toneIndex]
                         .nextSample(envelope * slotEnvelope, elapsedSeconds, arpeggiated = true) *
@@ -247,7 +250,7 @@ internal class PlaybackPcmRenderer(
                             .nextSample(envelope, elapsedSeconds) * NOTE_GAIN
                         oscillatorIndex++
                     }
-                    sum
+                    if (active.rootPulses.isEmpty()) sum else sum + renderRootPulse(active, envelope)
                 }
                 mixed += oscillatorSum * envelope * active.transitionGain * layerGain
                 active.ageFrames++
@@ -275,6 +278,28 @@ internal class PlaybackPcmRenderer(
         currentMelodyGain = targetMelodyGain
         currentChordGain = targetChordGain
         return beatsPerFrame
+    }
+
+    private fun renderRootPulse(active: ActiveEvent, envelope: Double): Double {
+        val event = active.event
+        val duration = event.endBeat - event.startBeat
+        val pulseCount = active.rootPulses.size
+        // Roundoff near the exclusive end must never wrap back to pulse one.
+        val slot = ((beat - event.startBeat) / duration * pulseCount)
+            .coerceIn(0.0, Math.nextDown(pulseCount.toDouble()))
+        val index = slot.toInt()
+        val progress = slot - index
+        if (progress >= 0.8) return 0.0
+
+        val pulseEnvelope = minOf(progress / 0.08, (0.8 - progress) / 0.12, 1.0)
+        val elapsedSeconds = if (config.bpm > 0.0) {
+            progress * duration * 60.0 / (pulseCount * config.bpm)
+        } else {
+            0.0
+        }
+        return active.rootPulses[index].sumOf { voice ->
+            voice.nextSample(envelope * pulseEnvelope, elapsedSeconds) * NOTE_GAIN * pulseEnvelope
+        }
     }
 
     private fun advanceBeat(beatsPerFrame: Double) {
@@ -320,25 +345,39 @@ internal class PlaybackPcmRenderer(
     }
 
     private fun createActiveEvent(event: PlaybackTimelineEvent, fadeIn: Boolean): ActiveEvent? {
-        val midiNotes = if (
-            event.layer == PlaybackAudioLayer.CHORD && config.chordMode == PlaybackChordMode.ROOT_ONLY
-        ) {
-            event.rootMidiNote?.let { intArrayOf(it) } ?: intArrayOf()
+        val isChord = event.layer == PlaybackAudioLayer.CHORD
+        val root = event.rootMidiNote?.takeIf { it > 0 }
+        val midiNotes = if (isChord && config.chordMode == PlaybackChordMode.ROOT_ONLY) {
+            listOfNotNull(root)
         } else {
-            event.fullMidiNotes
+            event.fullMidiNotes.filter { it > 0 }
         }
         if (midiNotes.isEmpty()) return null
-        val oscillators = midiNotes
-            .filter { it > 0 }
-            .map { midi ->
-                val transposed = midi + config.transpose
-                val frequency = 440.0 * Math.pow(2.0, (transposed - 69) / 12.0)
-                SynthVoice(frequency, config.waveform, sampleRate)
+
+        fun voices(notes: List<Int>): List<SynthVoice> = notes.map { midi ->
+            val transposed = midi + config.transpose
+            val frequency = 440.0 * Math.pow(2.0, (transposed - 69) / 12.0)
+            SynthVoice(frequency, config.waveform, sampleRate)
+        }
+
+        val pulseCount = event.rootDegree?.takeIf { it in 1..7 } ?: 0
+        val (oscillators, rootPulses) = if (config.audibleRootDegree && isChord && root != null && pulseCount > 0) {
+            val (voicedRoots, otherNotes) = midiNotes.partition { (it - root) % 12 == 0 }
+            val roots = voicedRoots.ifEmpty { listOf(root) }
+            if (pulseCount == 1) {
+                voices(if (voicedRoots.isEmpty()) midiNotes + root else midiNotes) to emptyList()
+            } else {
+                // Separate voices retrigger decaying instruments on every pulse.
+                voices(otherNotes) to List(pulseCount) { voices(roots) }
             }
-        if (oscillators.isEmpty()) return null
+        } else {
+            voices(midiNotes) to emptyList()
+        }
         return ActiveEvent(
             event = event,
             oscillators = oscillators,
+            rootPulses = rootPulses,
+            arpeggiateCycles = if (isChord && oscillators.size > 1) config.arpeggiateCycles else 0.0,
             transitionGain = if (fadeIn) 0.0 else 1.0,
             transitionFramesRemaining = if (fadeIn) crossfadeFrames else 0,
             transitionStep = if (fadeIn) 1.0 / crossfadeFrames else 0.0
@@ -349,7 +388,7 @@ internal class PlaybackPcmRenderer(
         bpm = bpm.coerceAtLeast(0.0),
         melodyGain = melodyGain.coerceIn(0f, 1f),
         chordGain = chordGain.coerceIn(0f, 1f),
-        arpeggiateCycles = arpeggiateCycles.coerceIn(0.0, 4.0)
+        arpeggiateCycles = if (audibleRootDegree) 0.0 else arpeggiateCycles.coerceIn(0.0, 4.0)
     )
 
     companion object {
@@ -933,9 +972,8 @@ internal fun buildPlaybackTimeline(
             if (!isRest && duration > 0.0 && chordEnd > 1.0) {
                 val key = section.getKeyAtBeat(beat)
                 val fullNotes = ChordInterpreter.getChordNotes(chord, key).filter { it > 0 }.toIntArray()
-                val root = ChordInterpreter.resolveChordRoot(chord, key)
-                    ?.simpleModePitch
-                    ?.toAudioNoteNumber()
+                val resolvedRoot = ChordInterpreter.resolveChordRoot(chord, key)
+                val root = resolvedRoot?.simpleModePitch?.toAudioNoteNumber()
                 if (fullNotes.isNotEmpty() || root != null) {
                     add(
                         PlaybackTimelineEvent(
@@ -944,7 +982,8 @@ internal fun buildPlaybackTimeline(
                             endBeat = chordEnd.coerceAtMost(endBeat),
                             layer = PlaybackAudioLayer.CHORD,
                             fullMidiNotes = fullNotes,
-                            rootMidiNote = root
+                            rootMidiNote = root,
+                            rootDegree = resolvedRoot?.let { degreeInKey(it.pitch, key)?.degree }
                         )
                     )
                 }

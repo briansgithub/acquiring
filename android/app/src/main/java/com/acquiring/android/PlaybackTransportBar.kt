@@ -23,6 +23,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +41,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -165,6 +168,8 @@ internal fun PlaybackTransportBar(
     onShowSongInfo: () -> Unit,
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit,
+    audibleRootDegree: Boolean,
+    onAudibleRootDegreeChange: (Boolean) -> Unit,
     sectionOptions: List<Pair<String, String>>,
     selectedSectionId: String,
     selectedSectionLabel: String,
@@ -271,7 +276,9 @@ internal fun PlaybackTransportBar(
                     }
                     PlaybackModeSelector(
                         isSimpleMode = isSimpleMode,
-                        onSimpleModeChange = onSimpleModeChange
+                        onSimpleModeChange = onSimpleModeChange,
+                        audibleRootDegree = audibleRootDegree,
+                        onAudibleRootDegreeChange = onAudibleRootDegreeChange
                     )
                     if (sectionOptions.size > 1) {
                         PlaybackSectionSelector(
@@ -311,7 +318,9 @@ internal fun PlaybackTransportBar(
 @Composable
 private fun PlaybackModeSelector(
     isSimpleMode: Boolean,
-    onSimpleModeChange: (Boolean) -> Unit
+    onSimpleModeChange: (Boolean) -> Unit,
+    audibleRootDegree: Boolean,
+    onAudibleRootDegreeChange: (Boolean) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val label = if (isSimpleMode) "Root" else "Full"
@@ -336,6 +345,15 @@ private fun PlaybackModeSelector(
                 onClick = {
                     onSimpleModeChange(true)
                     expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Audible Root Degree") },
+                onClick = { onAudibleRootDegreeChange(!audibleRootDegree) },
+                trailingIcon = { Switch(checked = audibleRootDegree, onCheckedChange = null) },
+                modifier = Modifier.semantics {
+                    role = Role.Switch
+                    toggleableState = ToggleableState(audibleRootDegree)
                 }
             )
         }
