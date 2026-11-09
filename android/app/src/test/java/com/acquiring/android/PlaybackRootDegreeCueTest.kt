@@ -44,12 +44,7 @@ class PlaybackRootDegreeCueTest {
             for (degree in listOf(1, 5, 7)) {
                 val chord = chord(1.0, 1.0 + duration, degree)
                 val samples = render(listOf(chord), mode, bpm = 120.0)
-                val backing = if (mode == PlaybackChordMode.FULL) {
-                    render(listOf(chord.copy(fullMidiNotes = intArrayOf(52, 55), rootDegree = null)), mode, bpm = 120.0)
-                } else {
-                    ShortArray(samples.size)
-                }
-                val attacks = attackStarts(samples, backing)
+                val attacks = attackStarts(samples)
                 assertEquals("$mode degree $degree", degree, attacks.size)
                 attacks.forEachIndexed { slot, actual ->
                     val expected = (slot * duration / degree * SAMPLE_RATE / 2).roundToInt()
@@ -60,17 +55,46 @@ class PlaybackRootDegreeCueTest {
     }
 
     @Test
-    fun omittedRootPulsesWhileOtherChordTonesSustainAndArpeggioIsSuppressed() {
-        val mode = PlaybackChordMode.FULL
+    fun rootPulsesReplaceTheChordAndSuppressArpeggiationButKeepMelody() {
         val chord = chord(1.0, 2.0, 5).copy(fullMidiNotes = intArrayOf(52, 55))
-        val backing = render(listOf(chord.copy(rootDegree = null)), mode)
-        val pulsed = render(listOf(chord), mode, arpeggiateCycles = 3.0)
-        assertArrayEquals(render(listOf(chord), mode), pulsed)
-        assertEquals(5, attackStarts(pulsed, backing).size)
-        assertTrue("backing sustains during the first pulse gap", (1_450..1_550).any { pulsed[it].toInt() != 0 })
+        val melody = chord.copy(id = 2L, layer = PlaybackAudioLayer.MELODY, fullMidiNotes = intArrayOf(69))
+        val events = listOf(chord, melody)
+        val melodyOnly = render(listOf(melody), PlaybackChordMode.FULL)
+        val pulsed = render(events, PlaybackChordMode.FULL, arpeggiateCycles = 3.0)
+        assertArrayEquals(render(events, PlaybackChordMode.ROOT_ONLY), pulsed)
+        assertEquals(5, attackStarts(pulsed, melodyOnly).size)
+        val gap = 1_450..1_550
+        assertTrue("melody remains audible in the pulse gap", gap.any { pulsed[it].toInt() != 0 })
+        assertArrayEquals(melodyOnly.sliceArray(gap), pulsed.sliceArray(gap))
+        assertArrayEquals(melodyOnly, render(listOf(chord.copy(rootMidiNote = null), melody), PlaybackChordMode.FULL))
+    }
 
-        assertArrayEquals(backing, render(listOf(chord), mode, enabled = false))
-        assertArrayEquals(backing, render(listOf(chord.copy(rootMidiNote = null)), mode))
+    @Test
+    fun spokenNumberUsesTheResolvedDegreeAndPreservesPlaybackAndArpeggiation() {
+        val events = listOf(chord(1.0, 2.0, 5))
+        val clips = List(7) { index -> ShortArray(2_205) { if (index == 4) 12_000 else -12_000 } }
+        for (mode in PlaybackChordMode.entries) {
+            val backing = render(events, mode, arpeggiateCycles = 3.0, cue = PlaybackRootDegreeCue.OFF)
+            val spoken = render(events, mode, arpeggiateCycles = 3.0,
+                cue = PlaybackRootDegreeCue.SPOKEN_NUMBER, spokenRootDegrees = clips)
+            assertTrue("speaks degree five over $mode", spoken[200] - backing[200] > 4_000)
+            assertArrayEquals(backing.copyOfRange(800, backing.size), spoken.copyOfRange(800, spoken.size))
+        }
+    }
+
+    @Test
+    fun spokenNumberStopsAtTheChordBoundary() {
+        val events = listOf(chord(1.0, 1.03, 1), chord(1.03, 2.0, 5).copy(rootDegree = null))
+        val mode = PlaybackChordMode.FULL
+        val backing = render(events, mode, cue = PlaybackRootDegreeCue.OFF)
+        val spoken = render(events, mode, cue = PlaybackRootDegreeCue.SPOKEN_NUMBER,
+            spokenRootDegrees = listOf(ShortArray(2_205) { 12_000 }))
+        assertTrue(spoken[80] - backing[80] > 4_000)
+        val nextChordFrame = (0.03 * SAMPLE_RATE).roundToInt()
+        assertArrayEquals(
+            backing.copyOfRange(nextChordFrame, backing.size),
+            spoken.copyOfRange(nextChordFrame, spoken.size)
+        )
     }
 
     @Test
@@ -122,17 +146,17 @@ class PlaybackRootDegreeCueTest {
     private fun config(
         mode: PlaybackChordMode,
         bpm: Double = 60.0,
-        enabled: Boolean = true,
+        cue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.ROOT_PULSES,
         arpeggiateCycles: Double = 0.0
     ) = PlaybackConfig(
         bpm = bpm,
         transpose = 0,
         waveform = AudioEngine.Waveform.SQUARE,
         chordMode = mode,
-        melodyGain = 0f,
+        melodyGain = 1f,
         chordGain = 1f,
         arpeggiateCycles = arpeggiateCycles,
-        audibleRootDegree = enabled
+        rootDegreeCue = cue
     )
 
     private fun renderer(timeline: PlaybackTimeline, mode: PlaybackChordMode) =
@@ -142,12 +166,15 @@ class PlaybackRootDegreeCueTest {
         events: List<PlaybackTimelineEvent>,
         mode: PlaybackChordMode,
         bpm: Double = 60.0,
-        enabled: Boolean = true,
-        arpeggiateCycles: Double = 0.0
+        arpeggiateCycles: Double = 0.0,
+        cue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.ROOT_PULSES,
+        spokenRootDegrees: List<ShortArray> = emptyList()
     ): ShortArray {
         val endBeat = events.last().endBeat + 0.1
         val timeline = PlaybackTimeline(endBeat = endBeat, events = events, completionKey = "test")
-        val renderer = PlaybackPcmRenderer(timeline, config(mode, bpm, enabled, arpeggiateCycles), SAMPLE_RATE)
+        val renderer = PlaybackPcmRenderer(
+            timeline, config(mode, bpm, cue, arpeggiateCycles), SAMPLE_RATE, spokenRootDegrees
+        )
         return ShortArray(((endBeat - 1.0) * 60 * SAMPLE_RATE / bpm).roundToInt())
             .also { renderer.renderAudioInto(it) }
     }

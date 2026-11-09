@@ -203,7 +203,7 @@ fun PlaybackTab(
     autoStart: Boolean = false,
     onSectionComplete: (String) -> Unit = {},
     onHomeReferenceActions: (() -> Unit, () -> Unit) -> Unit = { _, _ -> },
-    audibleRootDegree: Boolean = false
+    rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("PlaybackTab requires an exclusive persistent pitch source")
@@ -218,7 +218,8 @@ fun PlaybackTab(
     // the same singing-octave shift.
     fun tessituraIntervalShiftSemitones(previousAudioNote: Int, currentAudioNote: Int): Int =
         singingOctaveSemitones(octaveOffset)
-    val effectiveArpeggioIndex = if (audibleRootDegree) {
+    val rootPulsesEnabled = rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES
+    val effectiveArpeggioIndex = if (rootPulsesEnabled) {
         DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX
     } else {
         arpeggioOptionIndex
@@ -291,7 +292,7 @@ fun PlaybackTab(
         melodyGain = melodyVolume,
         chordGain = chordVolume,
         arpeggiateCycles = arpeggiateCycles,
-        audibleRootDegree = audibleRootDegree
+        rootDegreeCue = rootDegreeCue
     )
     // Configuring here keeps the engine built before the timeline effect loads it.
     LaunchedEffect(playbackConfig) {
@@ -1624,7 +1625,7 @@ fun PlaybackTab(
                             if (!isSimpleMode) {
                                 PlaybackDial(
                                     label = "Arpeggiate",
-                                    valueLabel = if (audibleRootDegree) "Off" else "cycles per beat",
+                                    valueLabel = if (rootPulsesEnabled) "Off" else "cycles per beat",
                                     value = effectiveArpeggioIndex.toFloat(),
                                     onValueChange = {
                                         onArpeggioOptionIndexChange(
@@ -1638,7 +1639,7 @@ fun PlaybackTab(
                                         onArpeggioOptionIndexChange(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX)
                                     },
                                     modifier = Modifier.weight(1f),
-                                    enabled = !audibleRootDegree
+                                    enabled = !rootPulsesEnabled
                                 )
                             }
                             val melodyPercent = (melodyChordBalance * 100f).roundToInt()

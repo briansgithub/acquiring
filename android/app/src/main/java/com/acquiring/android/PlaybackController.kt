@@ -36,6 +36,7 @@ internal object PlaybackController {
     private var activePlaybackOwner: Any? = null
     private var loadedTimelineIdentity: String? = null
     private var initialized = false
+    private var spokenRootDegrees = emptyList<ShortArray>()
 
     private val mutableState = MutableStateFlow(PlaybackState())
     val state: StateFlow<PlaybackState> = mutableState.asStateFlow()
@@ -87,6 +88,7 @@ internal object PlaybackController {
         synchronized(lock) {
             if (initialized) return
             val applicationContext = context.applicationContext
+            spokenRootDegrees = loadSpokenRootDegrees(applicationContext.resources)
             audioManager = applicationContext.getSystemService(AudioManager::class.java)
             focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
                 .setAudioAttributes(
@@ -134,7 +136,7 @@ internal object PlaybackController {
             if (existing != null) {
                 existing
             } else {
-                val created = PlaybackEngine(newConfig)
+                val created = PlaybackEngine(newConfig, spokenRootDegrees = spokenRootDegrees)
                 engine = created
                 mirror = scope.launch {
                     created.state.collect { mutableState.value = it }

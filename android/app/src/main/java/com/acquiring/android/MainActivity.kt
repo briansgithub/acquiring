@@ -258,8 +258,8 @@ internal fun MainScreen(
         mutableStateOf(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX)
     }
     // Queue section changes reload the player, but keep the same open song.
-    var audibleRootDegree by remember(selectedSong?.slug, isShowingPlayback, songQueue.active) {
-        mutableStateOf(false)
+    var rootDegreeCue by remember(selectedSong?.slug, isShowingPlayback, songQueue.active) {
+        mutableStateOf(PlaybackRootDegreeCue.OFF)
     }
     var isShowingRecent by remember { mutableStateOf(false) }
     var isShowingRecentArtists by remember { mutableStateOf(false) }
@@ -873,8 +873,8 @@ internal fun MainScreen(
                             onPlaybackTempoPercentChange={playbackTempoPercent=it},
                             playbackArpeggioOptionIndex=playbackArpeggioOptionIndex,
                             onPlaybackArpeggioOptionIndexChange={playbackArpeggioOptionIndex=it},
-                            audibleRootDegree=audibleRootDegree,
-                            onAudibleRootDegreeChange={audibleRootDegree=it},
+                            rootDegreeCue=rootDegreeCue,
+                            onRootDegreeCueChange={rootDegreeCue=it},
                             onTransposeChange={globalTranspose=it;AudioEngine.globalTranspose=it},
                             onArtistClick={ artistName ->
                                 queuePreparationJob?.cancel();queuePreparationJob=null
@@ -1150,8 +1150,8 @@ internal fun MainScreen(
                     onPlaybackTempoPercentChange = { playbackTempoPercent = it },
                     playbackArpeggioOptionIndex = playbackArpeggioOptionIndex,
                     onPlaybackArpeggioOptionIndexChange = { playbackArpeggioOptionIndex = it },
-                    audibleRootDegree = audibleRootDegree,
-                    onAudibleRootDegreeChange = { audibleRootDegree = it },
+                    rootDegreeCue = rootDegreeCue,
+                    onRootDegreeCueChange = { rootDegreeCue = it },
                     onTransposeChange = {
                         globalTranspose = it
                         AudioEngine.globalTranspose = it

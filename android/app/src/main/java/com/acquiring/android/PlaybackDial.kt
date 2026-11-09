@@ -211,7 +211,8 @@ internal fun PlaybackDial(
                 )
 
                 if (ringLabels.size > 1) {
-                    ringLabels.forEachIndexed { index, text ->
+                    for (index in ringLabels.indices) {
+                        val text = ringLabels.getOrNull(index) ?: continue
                         val labelFraction = index.toFloat() / (ringLabels.size - 1)
                         val labelAngle = Math.toRadians(
                             (PLAYBACK_DIAL_START_ANGLE + PLAYBACK_DIAL_SWEEP_ANGLE * labelFraction).toDouble()

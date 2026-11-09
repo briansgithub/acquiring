@@ -23,7 +23,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,10 +39,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.semantics.toggleableState
-import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -168,8 +167,8 @@ internal fun PlaybackTransportBar(
     onShowSongInfo: () -> Unit,
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit,
-    audibleRootDegree: Boolean,
-    onAudibleRootDegreeChange: (Boolean) -> Unit,
+    rootDegreeCue: PlaybackRootDegreeCue,
+    onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit,
     sectionOptions: List<Pair<String, String>>,
     selectedSectionId: String,
     selectedSectionLabel: String,
@@ -277,8 +276,8 @@ internal fun PlaybackTransportBar(
                     PlaybackModeSelector(
                         isSimpleMode = isSimpleMode,
                         onSimpleModeChange = onSimpleModeChange,
-                        audibleRootDegree = audibleRootDegree,
-                        onAudibleRootDegreeChange = onAudibleRootDegreeChange
+                        rootDegreeCue = rootDegreeCue,
+                        onRootDegreeCueChange = onRootDegreeCueChange
                     )
                     if (sectionOptions.size > 1) {
                         PlaybackSectionSelector(
@@ -319,8 +318,8 @@ internal fun PlaybackTransportBar(
 private fun PlaybackModeSelector(
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit,
-    audibleRootDegree: Boolean,
-    onAudibleRootDegreeChange: (Boolean) -> Unit
+    rootDegreeCue: PlaybackRootDegreeCue,
+    onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val label = if (isSimpleMode) "Root" else "Full"
@@ -347,15 +346,31 @@ private fun PlaybackModeSelector(
                     expanded = false
                 }
             )
-            DropdownMenuItem(
-                text = { Text("Audible Root Degree") },
-                onClick = { onAudibleRootDegreeChange(!audibleRootDegree) },
-                trailingIcon = { Switch(checked = audibleRootDegree, onCheckedChange = null) },
-                modifier = Modifier.semantics {
-                    role = Role.Switch
-                    toggleableState = ToggleableState(audibleRootDegree)
-                }
+            Text(
+                "Audible Root Degree",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
             )
+            PlaybackRootDegreeCue.entries.forEach { cue ->
+                val label = when (cue) {
+                    PlaybackRootDegreeCue.OFF -> "Off"
+                    PlaybackRootDegreeCue.ROOT_PULSES -> "Root Pulses"
+                    PlaybackRootDegreeCue.SPOKEN_NUMBER -> "Spoken Number"
+                }
+                val isSelected = rootDegreeCue == cue
+                DropdownMenuItem(
+                    text = { Text(label) },
+                    onClick = {
+                        onRootDegreeCueChange(cue)
+                        expanded = false
+                    },
+                    trailingIcon = { RadioButton(selected = isSelected, onClick = null) },
+                    modifier = Modifier.testTag("PlaybackRootDegree-${cue.name}").semantics {
+                        role = Role.RadioButton
+                        selected = isSelected
+                    }
+                )
+            }
         }
     }
 }
