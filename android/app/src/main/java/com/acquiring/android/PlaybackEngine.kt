@@ -25,7 +25,12 @@ internal enum class PlaybackAudioLayer { MELODY, CHORD }
 
 internal enum class PlaybackChordMode { FULL, ROOT_ONLY }
 
-enum class PlaybackRootDegreeCue { OFF, ROOT_PULSES, SPOKEN_NUMBER }
+enum class PlaybackRootDegreeCue {
+    OFF, ROOT_PULSES, SPOKEN_NUMBER, SUNG_NUMBER_WITH_DETAILS;
+
+    internal val usesVoice: Boolean
+        get() = this == SPOKEN_NUMBER || this == SUNG_NUMBER_WITH_DETAILS
+}
 
 internal data class PlaybackTimelineEvent(
     val id: Long,
@@ -175,7 +180,7 @@ internal class PlaybackPcmRenderer(
 
         if (cueChanged || pitchChanged || chordModeChanged) {
             spokenNumber = null
-            if (config.rootDegreeCue == PlaybackRootDegreeCue.SPOKEN_NUMBER) {
+            if (config.rootDegreeCue.usesVoice) {
                 timeline.events.lastOrNull {
                     it.layer == PlaybackAudioLayer.CHORD && beat >= it.startBeat && beat < it.endBeat
                 }?.let(::startSpokenNumber)
@@ -336,24 +341,27 @@ internal class PlaybackPcmRenderer(
     }
 
     private fun startSpokenNumber(event: PlaybackTimelineEvent) {
-        if (event.layer != PlaybackAudioLayer.CHORD ||
-            config.rootDegreeCue != PlaybackRootDegreeCue.SPOKEN_NUMBER
-        ) return
+        if (event.layer != PlaybackAudioLayer.CHORD || !config.rootDegreeCue.usesVoice) return
         spokenNumber = null
         val degree = event.rootDegree ?: return
         val root = when (config.chordMode) {
             PlaybackChordMode.FULL -> event.fullChordRootMidiNote ?: event.rootMidiNote
             PlaybackChordMode.ROOT_ONLY -> event.rootMidiNote
         } ?: return
-        val number = spokenRootDegrees.number(degree, root + config.transpose) ?: return
+        val voicePitch = root + config.transpose - 12
+        val number = spokenRootDegrees.number(degree, voicePitch) ?: return
         val beatsPerFrame = currentBeatsPerFrame
         val elapsedBeats = (beat - event.startBeat).coerceAtLeast(0.0)
         if (beatsPerFrame <= 0.0 && elapsedBeats > BEAT_EPSILON) return
 
         val step = SPOKEN_ROOT_DEGREE_SAMPLE_RATE.toDouble() / sampleRate
         val available = (event.endBeat - event.startBeat) / beatsPerFrame * step
-        val suffix = spokenRootDegrees.suffix(event.spokenChordSuffix)
-            ?.takeIf { number.size + it.size <= available }
+        val suffix = if (config.rootDegreeCue == PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS) {
+            spokenRootDegrees.suffix(event.spokenChordSuffix, voicePitch)
+                ?.takeIf { number.size + it.size <= available }
+        } else {
+            null
+        }
         val position = if (beatsPerFrame > 0.0) elapsedBeats / beatsPerFrame * step else 0.0
         val voice = SpokenNumber(number, suffix, event.endBeat, position)
         if (position < voice.frames) spokenNumber = voice
@@ -1066,7 +1074,7 @@ internal fun buildPlaybackTimeline(
                             rootMidiNote = root,
                             rootDegree = resolvedRoot?.let { degreeInKey(it.pitch, key)?.degree },
                             fullChordRootMidiNote = voicing?.tones?.firstOrNull { it.degree == 1 }?.midi,
-                            spokenChordSuffix = voicing?.spokenSuffix()
+                            spokenChordSuffix = spokenSuffixForRoman(ChordInterpreter.getRomanSymbol(chord, key))
                         )
                     )
                 }

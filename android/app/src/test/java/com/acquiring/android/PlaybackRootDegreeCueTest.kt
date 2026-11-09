@@ -35,10 +35,12 @@ class PlaybackRootDegreeCueTest {
         assertEquals(listOf(1.0, 2.0, 3.0, 5.0), events.map { it.startBeat })
         assertEquals(listOf(2, 6, 6, 5), events.map { it.rootDegree })
         assertEquals(listOf(50, 56, 57, 50), events.map { it.rootMidiNote })
+        assertEquals(SpokenChordSuffix.SEVEN, events.first().spokenChordSuffix)
+        assertEquals(null, events.last().spokenChordSuffix)
     }
 
     @Test
-    fun timelineUsesTheAgreedSuffixesForTheSoundingChord() {
+    fun timelineUsesTheAgreedSuffixesFromRomanNotation() {
         val section = Json.decodeFromString<ExtractedSection>(
             """
             {
@@ -49,8 +51,8 @@ class PlaybackRootDegreeCueTest {
                 {"beat": 4, "root": 1, "type": 7},
                 {"beat": 5, "root": 2, "type": 7},
                 {"beat": 6, "root": 7},
-                {"beat": 7, "root": 7, "type": 7},
-                {"beat": 8, "_letterRootName": "B", "halfDim": true, "type": 7},
+                {"beat": 7, "root": 7, "type": 7, "borrowed": "harmonicMinor"},
+                {"beat": 8, "root": 7, "type": 7},
                 {"beat": 9, "root": 1, "alterations": ["#5"]},
                 {"beat": 10, "root": 5, "suspensions": [4], "type": 7}
               ]
@@ -68,6 +70,16 @@ class PlaybackRootDegreeCueTest {
         )
         assertEquals(55, events[2].rootMidiNote)
         assertEquals(67, events[2].fullChordRootMidiNote)
+    }
+
+    @Test
+    fun romanSuffixIgnoresBorrowingTagsAndRecognizesInvertedSevenths() {
+        assertEquals(SpokenChordSuffix.SEVEN, spokenSuffixForRoman("V6(b9)5/ii(min)"))
+        assertEquals(SpokenChordSuffix.SEV_MAJ, spokenSuffixForRoman("I△⁴₃"))
+        assertEquals(SpokenChordSuffix.SEV_MIN, spokenSuffixForRoman("ii⁴₂"))
+        assertEquals(SpokenChordSuffix.MIN, spokenSuffixForRoman("♭vi64(maj)"))
+        assertEquals(null, spokenSuffixForRoman("♭VI64(min)"))
+        assertEquals(null, spokenSuffixForRoman("I(add9)"))
     }
 
     @Test
@@ -109,8 +121,8 @@ class PlaybackRootDegreeCueTest {
             SPOKEN_ROOT_DEGREE_PITCHES.map { pitch ->
                 ShortArray(2_400) {
                     when {
-                        degreeIndex == 4 && pitch == 62 -> 16_000
-                        degreeIndex == 4 && pitch == 50 -> 12_000
+                        degreeIndex == 4 && pitch == 50 -> 16_000
+                        degreeIndex == 4 && pitch == 38 -> 12_000
                         else -> -12_000
                     }
                 }
@@ -122,28 +134,34 @@ class PlaybackRootDegreeCueTest {
             val spoken = render(events, mode, arpeggiateCycles = 3.0,
                 cue = PlaybackRootDegreeCue.SPOKEN_NUMBER, spokenRootDegrees = clips, transpose = 2)
             val expectedLevel = if (mode == PlaybackChordMode.FULL) 6_400 else 4_800
-            assertTrue("speaks degree five at the transposed root in $mode",
+            assertTrue("speaks degree five an octave below the transposed root in $mode",
                 abs(spoken[200] - backing[200] - expectedLevel) <= 2)
             assertArrayEquals(backing.copyOfRange(800, backing.size), spoken.copyOfRange(800, spoken.size))
         }
     }
 
     @Test
-    fun spokenSuffixPlaysOnlyWhenTheCompleteLabelFits() {
+    fun sungSuffixRequiresTheDetailedModeAndEnoughTimeForTheCompleteLabel() {
         val mode = PlaybackChordMode.FULL
         val clips = SpokenRootDegreeClips(
             listOf(List(SPOKEN_ROOT_DEGREE_PITCHES.count()) { ShortArray(2_400) { 12_000 } }),
-            mapOf(SpokenChordSuffix.SEV_MAJ to ShortArray(2_400) { -12_000 })
+            mapOf(SpokenChordSuffix.SEV_MAJ to SPOKEN_ROOT_DEGREE_PITCHES.map { pitch ->
+                ShortArray(2_400) { if (pitch == 36) -12_000 else 12_000 }
+            })
         )
         for (duration in listOf(0.15, 0.4)) {
             val events = listOf(chord(1.0, 1.0 + duration, 1).copy(spokenChordSuffix = SpokenChordSuffix.SEV_MAJ))
             val backing = render(events, mode, cue = PlaybackRootDegreeCue.OFF)
             val spoken = render(events, mode, cue = PlaybackRootDegreeCue.SPOKEN_NUMBER, spokenRootDegrees = clips)
+            val sung = render(events, mode, cue = PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS,
+                spokenRootDegrees = clips)
             assertTrue(spoken[200] - backing[200] > 4_000)
+            assertEquals(spoken[200], sung[200])
+            assertEquals(backing[1_000], spoken[1_000])
             if (duration < 0.2) {
-                assertEquals(backing[1_000], spoken[1_000])
+                assertEquals(backing[1_000], sung[1_000])
             } else {
-                assertTrue(spoken[1_000] - backing[1_000] < -4_000)
+                assertTrue(sung[1_000] - backing[1_000] < -4_000)
             }
         }
     }

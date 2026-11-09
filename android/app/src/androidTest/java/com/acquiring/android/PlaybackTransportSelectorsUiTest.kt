@@ -231,6 +231,11 @@ class PlaybackTransportSelectorsUiTest {
             enabledDial[SemanticsProperties.ProgressBarRangeInfo].current)
         assertTrue(SemanticsActions.SetProgress in enabledDial)
 
+        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        assertTrue(cueSelected(PlaybackRootDegreeCue.SPOKEN_NUMBER))
+        clickTag(cueTag(PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS))
+        assertTrue(SemanticsActions.SetProgress in arpeggioDial("Arpeggiate: cycles per beat"))
+
         val idlingResources = IdlingRegistry.getInstance().resources.toList()
         idlingResources.forEach { IdlingRegistry.getInstance().unregister(it) }
         try {
@@ -243,7 +248,7 @@ class PlaybackTransportSelectorsUiTest {
         }
 
         clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
-        assertTrue(cueSelected(PlaybackRootDegreeCue.SPOKEN_NUMBER))
+        assertTrue(cueSelected(PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS))
         clickTag(cueTag(PlaybackRootDegreeCue.OFF))
         assertEquals(PlaybackRootDegreeCue.OFF, rootDegreeCue)
     }

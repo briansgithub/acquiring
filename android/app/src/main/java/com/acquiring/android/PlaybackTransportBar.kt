@@ -356,6 +356,7 @@ private fun PlaybackModeSelector(
                     PlaybackRootDegreeCue.OFF -> "Off"
                     PlaybackRootDegreeCue.ROOT_PULSES -> "Root Pulses"
                     PlaybackRootDegreeCue.SPOKEN_NUMBER -> "Spoken Number"
+                    PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS -> "Sung Number + Details"
                 }
                 val isSelected = rootDegreeCue == cue
                 DropdownMenuItem(

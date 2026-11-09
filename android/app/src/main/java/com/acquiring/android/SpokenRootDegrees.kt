@@ -3,10 +3,9 @@ package com.acquiring.android
 import android.content.res.Resources
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.nio.ShortBuffer
 
 internal const val SPOKEN_ROOT_DEGREE_SAMPLE_RATE = 24_000
-internal val SPOKEN_ROOT_DEGREE_PITCHES = 48..71
+internal val SPOKEN_ROOT_DEGREE_PITCHES = 36..59
 
 internal enum class SpokenChordSuffix(val resourceId: Int) {
     MIN(R.raw.root_suffix_min),
@@ -20,49 +19,52 @@ internal enum class SpokenChordSuffix(val resourceId: Int) {
     SUS(R.raw.root_suffix_sus)
 }
 
-internal fun VoicedChord.spokenSuffix(): SpokenChordSuffix? {
-    if (tones.any { it.slot == 7 && it.degree == 2 || it.slot == 8 && it.degree == 4 }) {
-        return SpokenChordSuffix.SUS
-    }
-    fun interval(degree: Int) = tones.firstOrNull { it.degree == degree }
-        ?.let { Math.floorMod(it.midi - rootMidi, 12) }
+private val romanBase = Regex("^[♭♯]*([IViv]+)")
+private val romanAnnotations = Regex("\\([^)]*\\)")
+private val seventhFigures = setOf("7", "9", "11", "13", "65", "43", "42")
 
-    val third = interval(3)
-    val fifth = interval(5)
-    val seventh = interval(7)
+internal fun spokenSuffixForRoman(symbol: String): SpokenChordSuffix? {
+    val numerator = RomanNumeralTokenizer.normalizeDigits(symbol.substringBefore('/'))
+    val base = romanBase.find(numerator) ?: return null
+    // Strip borrowed-key tags and alterations, including those between inversion digits.
+    val suffix = numerator.substring(base.value.length).replace(romanAnnotations, "")
+    val minor = base.groupValues[1].first().isLowerCase()
+    val hasSeventh = suffix.trimStart('+', '°', 'ø', '△') in seventhFigures
     return when {
-        third == 3 && fifth == 6 -> when (seventh) {
-            9 -> SpokenChordSuffix.DIM_SEV
-            10 -> SpokenChordSuffix.HALF_DIM
-            else -> SpokenChordSuffix.DIM
-        }
-        third == 4 && fifth == 8 -> SpokenChordSuffix.AUG
-        seventh == 11 && third != 3 -> SpokenChordSuffix.SEV_MAJ
-        seventh == 10 && third == 3 -> SpokenChordSuffix.SEV_MIN
-        seventh == 10 -> SpokenChordSuffix.SEVEN
-        third == 3 -> SpokenChordSuffix.MIN
+        "sus" in suffix -> SpokenChordSuffix.SUS
+        'ø' in suffix -> SpokenChordSuffix.HALF_DIM
+        '°' in suffix -> if (hasSeventh) SpokenChordSuffix.DIM_SEV else SpokenChordSuffix.DIM
+        '+' in suffix -> SpokenChordSuffix.AUG
+        hasSeventh && '△' in suffix && !minor -> SpokenChordSuffix.SEV_MAJ
+        hasSeventh && minor && '△' !in suffix -> SpokenChordSuffix.SEV_MIN
+        minor -> SpokenChordSuffix.MIN
+        hasSeventh -> SpokenChordSuffix.SEVEN
         else -> null
     }
 }
 
 internal class SpokenRootDegreeClips(
     private val numbers: List<List<ShortArray>> = emptyList(),
-    private val suffixes: Map<SpokenChordSuffix, ShortArray> = emptyMap()
+    private val suffixes: Map<SpokenChordSuffix, List<ShortArray>> = emptyMap()
 ) {
-    fun number(degree: Int, midi: Int): ShortArray? {
+    fun number(degree: Int, midi: Int): ShortArray? =
+        numbers.getOrNull(degree - 1)?.getOrNull(pitchIndex(midi))
+
+    fun suffix(suffix: SpokenChordSuffix?, midi: Int): ShortArray? =
+        suffix?.let(suffixes::get)?.getOrNull(pitchIndex(midi))
+
+    private fun pitchIndex(midi: Int): Int {
         val pitches = SPOKEN_ROOT_DEGREE_PITCHES
         val pitch = when {
             midi < pitches.first -> pitches.first + Math.floorMod(midi - pitches.first, 12)
             midi > pitches.last -> pitches.last - Math.floorMod(pitches.last - midi, 12)
             else -> midi
         }
-        return numbers.getOrNull(degree - 1)?.getOrNull(pitch - pitches.first)
+        return pitch - pitches.first
     }
-
-    fun suffix(suffix: SpokenChordSuffix?): ShortArray? = suffix?.let(suffixes::get)
 }
 
-// Each degree contains equal-length, consecutive PCM clips in ascending MIDI order.
+// Each resource contains equal-length, consecutive PCM clips in ascending MIDI order.
 // Generate these resources with android/scripts/generate_spoken_degree_cues.py.
 internal fun loadSpokenRootDegrees(resources: Resources): SpokenRootDegreeClips {
     val numbers = listOf(
@@ -73,21 +75,16 @@ internal fun loadSpokenRootDegrees(resources: Resources): SpokenRootDegreeClips 
         R.raw.root_degree_five,
         R.raw.root_degree_six,
         R.raw.root_degree_seven
-    ).map { id ->
-        val pcm = resources.openVoicePcm(id)
-        val count = SPOKEN_ROOT_DEGREE_PITCHES.count()
-        require(pcm.remaining() > 0 && pcm.remaining() % count == 0)
-        val frames = pcm.remaining() / count
-        List(count) { ShortArray(frames).also { pcm.get(it) } }
-    }
-    val suffixes = SpokenChordSuffix.entries.associateWith {
-        val pcm = resources.openVoicePcm(it.resourceId)
-        ShortArray(pcm.remaining()).also { samples -> pcm.get(samples) }
-    }
+    ).map(resources::openPitchedVoiceClips)
+    val suffixes = SpokenChordSuffix.entries.associateWith { resources.openPitchedVoiceClips(it.resourceId) }
     return SpokenRootDegreeClips(numbers, suffixes)
 }
 
-private fun Resources.openVoicePcm(id: Int): ShortBuffer {
+private fun Resources.openPitchedVoiceClips(id: Int): List<ShortArray> {
     val bytes = openRawResource(id).use { it.readBytes() }
-    return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer()
+    val pcm = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer()
+    val count = SPOKEN_ROOT_DEGREE_PITCHES.count()
+    require(pcm.remaining() > 0 && pcm.remaining() % count == 0)
+    val frames = pcm.remaining() / count
+    return List(count) { ShortArray(frames).also { pcm.get(it) } }
 }

@@ -16,7 +16,7 @@ from parselmouth.praat import call
 
 RATE = 24_000
 DEGREES = ("one", "two", "three", "four", "five", "six", "seven")
-ROOT_PITCHES = range(48, 72)
+ROOT_PITCHES = range(36, 60)
 SUFFIXES = {
     "min": "mɪn",
     "seven": "sˈɛvən",
@@ -51,8 +51,8 @@ def time_limited_manipulation(samples, limit):
     return sound, manipulation, round(duration * RATE)
 
 
-def pitched_variants(samples):
-    sound, manipulation, frames = time_limited_manipulation(samples, 0.235)
+def pitched_variants(samples, limit):
+    sound, manipulation, frames = time_limited_manipulation(samples, limit)
     for midi in ROOT_PITCHES:
         target_hz = 440 * 2 ** ((midi - 69) / 12)
         tier = call(manipulation, "Extract pitch tier")
@@ -80,14 +80,12 @@ def main():
     model = Kokoro(str(args.model), str(args.voices))
     output = Path(__file__).resolve().parents[1] / "app/src/main/res/raw"
     for word in DEGREES:
-        variants = pitched_variants(synthesize(model, word))
+        variants = pitched_variants(synthesize(model, word), 0.235)
         (output / f"root_degree_{word}.pcm").write_bytes(b"".join(map(pcm, variants)))
     for key, phonemes in SUFFIXES.items():
         samples = synthesize(model, phonemes, phonemes=True)
         limit = 0.255 if " " in phonemes or key == "seven" else 0.205
-        _, manipulation, frames = time_limited_manipulation(samples, limit)
-        concise = call(manipulation, "Get resynthesis (overlap-add)").values[0][:frames]
-        (output / f"root_suffix_{key}.pcm").write_bytes(pcm(concise))
+        (output / f"root_suffix_{key}.pcm").write_bytes(b"".join(map(pcm, pitched_variants(samples, limit))))
 
 
 if __name__ == "__main__":
