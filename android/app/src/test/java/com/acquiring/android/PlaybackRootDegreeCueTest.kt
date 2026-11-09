@@ -38,6 +38,39 @@ class PlaybackRootDegreeCueTest {
     }
 
     @Test
+    fun timelineUsesTheAgreedSuffixesForTheSoundingChord() {
+        val section = Json.decodeFromString<ExtractedSection>(
+            """
+            {
+              "chords": [
+                {"beat": 1, "root": 1},
+                {"beat": 2, "root": 2},
+                {"beat": 3, "root": 5, "type": 7, "inversion": 1},
+                {"beat": 4, "root": 1, "type": 7},
+                {"beat": 5, "root": 2, "type": 7},
+                {"beat": 6, "root": 7},
+                {"beat": 7, "root": 7, "type": 7},
+                {"beat": 8, "_letterRootName": "B", "halfDim": true, "type": 7},
+                {"beat": 9, "root": 1, "alterations": ["#5"]},
+                {"beat": 10, "root": 5, "suspensions": [4], "type": 7}
+              ]
+            }
+            """.trimIndent()
+        )
+        val events = buildPlaybackTimeline(section, emptyList(), endBeat = 11.0).events
+        assertEquals(
+            listOf(
+                null, SpokenChordSuffix.MIN, SpokenChordSuffix.SEVEN, SpokenChordSuffix.SEV_MAJ,
+                SpokenChordSuffix.SEV_MIN, SpokenChordSuffix.DIM, SpokenChordSuffix.DIM_SEV,
+                SpokenChordSuffix.HALF_DIM, SpokenChordSuffix.AUG, SpokenChordSuffix.SUS
+            ),
+            events.map { it.spokenChordSuffix }
+        )
+        assertEquals(55, events[2].rootMidiNote)
+        assertEquals(67, events[2].fullChordRootMidiNote)
+    }
+
+    @Test
     fun bothModesRenderExactlyTheDegreeNumberOfAttacksOnFractionalChords() {
         val duration = 0.525
         for (mode in PlaybackChordMode.entries) {
@@ -71,14 +104,47 @@ class PlaybackRootDegreeCueTest {
 
     @Test
     fun spokenNumberUsesTheResolvedDegreeAndPreservesPlaybackAndArpeggiation() {
-        val events = listOf(chord(1.0, 2.0, 5))
-        val clips = List(7) { index -> ShortArray(2_205) { if (index == 4) 12_000 else -12_000 } }
+        val events = listOf(chord(1.0, 2.0, 5).copy(fullChordRootMidiNote = 60))
+        val clips = SpokenRootDegreeClips(List(7) { degreeIndex ->
+            SPOKEN_ROOT_DEGREE_PITCHES.map { pitch ->
+                ShortArray(2_400) {
+                    when {
+                        degreeIndex == 4 && pitch == 62 -> 16_000
+                        degreeIndex == 4 && pitch == 50 -> 12_000
+                        else -> -12_000
+                    }
+                }
+            }
+        })
         for (mode in PlaybackChordMode.entries) {
-            val backing = render(events, mode, arpeggiateCycles = 3.0, cue = PlaybackRootDegreeCue.OFF)
+            val backing = render(events, mode, arpeggiateCycles = 3.0,
+                cue = PlaybackRootDegreeCue.OFF, transpose = 2)
             val spoken = render(events, mode, arpeggiateCycles = 3.0,
-                cue = PlaybackRootDegreeCue.SPOKEN_NUMBER, spokenRootDegrees = clips)
-            assertTrue("speaks degree five over $mode", spoken[200] - backing[200] > 4_000)
+                cue = PlaybackRootDegreeCue.SPOKEN_NUMBER, spokenRootDegrees = clips, transpose = 2)
+            val expectedLevel = if (mode == PlaybackChordMode.FULL) 6_400 else 4_800
+            assertTrue("speaks degree five at the transposed root in $mode",
+                abs(spoken[200] - backing[200] - expectedLevel) <= 2)
             assertArrayEquals(backing.copyOfRange(800, backing.size), spoken.copyOfRange(800, spoken.size))
+        }
+    }
+
+    @Test
+    fun spokenSuffixPlaysOnlyWhenTheCompleteLabelFits() {
+        val mode = PlaybackChordMode.FULL
+        val clips = SpokenRootDegreeClips(
+            listOf(List(SPOKEN_ROOT_DEGREE_PITCHES.count()) { ShortArray(2_400) { 12_000 } }),
+            mapOf(SpokenChordSuffix.SEV_MAJ to ShortArray(2_400) { -12_000 })
+        )
+        for (duration in listOf(0.15, 0.4)) {
+            val events = listOf(chord(1.0, 1.0 + duration, 1).copy(spokenChordSuffix = SpokenChordSuffix.SEV_MAJ))
+            val backing = render(events, mode, cue = PlaybackRootDegreeCue.OFF)
+            val spoken = render(events, mode, cue = PlaybackRootDegreeCue.SPOKEN_NUMBER, spokenRootDegrees = clips)
+            assertTrue(spoken[200] - backing[200] > 4_000)
+            if (duration < 0.2) {
+                assertEquals(backing[1_000], spoken[1_000])
+            } else {
+                assertTrue(spoken[1_000] - backing[1_000] < -4_000)
+            }
         }
     }
 
@@ -88,7 +154,9 @@ class PlaybackRootDegreeCueTest {
         val mode = PlaybackChordMode.FULL
         val backing = render(events, mode, cue = PlaybackRootDegreeCue.OFF)
         val spoken = render(events, mode, cue = PlaybackRootDegreeCue.SPOKEN_NUMBER,
-            spokenRootDegrees = listOf(ShortArray(2_205) { 12_000 }))
+            spokenRootDegrees = SpokenRootDegreeClips(
+                listOf(List(SPOKEN_ROOT_DEGREE_PITCHES.count()) { ShortArray(2_400) { 12_000 } })
+            ))
         assertTrue(spoken[80] - backing[80] > 4_000)
         val nextChordFrame = (0.03 * SAMPLE_RATE).roundToInt()
         assertArrayEquals(
@@ -147,10 +215,11 @@ class PlaybackRootDegreeCueTest {
         mode: PlaybackChordMode,
         bpm: Double = 60.0,
         cue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.ROOT_PULSES,
-        arpeggiateCycles: Double = 0.0
+        arpeggiateCycles: Double = 0.0,
+        transpose: Int = 0
     ) = PlaybackConfig(
         bpm = bpm,
-        transpose = 0,
+        transpose = transpose,
         waveform = AudioEngine.Waveform.SQUARE,
         chordMode = mode,
         melodyGain = 1f,
@@ -168,12 +237,13 @@ class PlaybackRootDegreeCueTest {
         bpm: Double = 60.0,
         arpeggiateCycles: Double = 0.0,
         cue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.ROOT_PULSES,
-        spokenRootDegrees: List<ShortArray> = emptyList()
+        spokenRootDegrees: SpokenRootDegreeClips = SpokenRootDegreeClips(),
+        transpose: Int = 0
     ): ShortArray {
         val endBeat = events.last().endBeat + 0.1
         val timeline = PlaybackTimeline(endBeat = endBeat, events = events, completionKey = "test")
         val renderer = PlaybackPcmRenderer(
-            timeline, config(mode, bpm, cue, arpeggiateCycles), SAMPLE_RATE, spokenRootDegrees
+            timeline, config(mode, bpm, cue, arpeggiateCycles, transpose), SAMPLE_RATE, spokenRootDegrees
         )
         return ShortArray(((endBeat - 1.0) * 60 * SAMPLE_RATE / bpm).roundToInt())
             .also { renderer.renderAudioInto(it) }

@@ -34,7 +34,9 @@ internal data class PlaybackTimelineEvent(
     val layer: PlaybackAudioLayer,
     val fullMidiNotes: IntArray,
     val rootMidiNote: Int? = null,
-    val rootDegree: Int? = null
+    val rootDegree: Int? = null,
+    val fullChordRootMidiNote: Int? = null,
+    val spokenChordSuffix: SpokenChordSuffix? = null
 )
 
 internal data class PlaybackTimeline(
@@ -103,7 +105,7 @@ internal class PlaybackPcmRenderer(
     private var timeline: PlaybackTimeline,
     initialConfig: PlaybackConfig,
     private val sampleRate: Int = AppAudioOutput.sampleRate,
-    private val spokenRootDegrees: List<ShortArray> = emptyList()
+    private val spokenRootDegrees: SpokenRootDegreeClips = SpokenRootDegreeClips()
 ) {
     private data class ActiveEvent(
         val event: PlaybackTimelineEvent,
@@ -118,11 +120,20 @@ internal class PlaybackPcmRenderer(
     )
 
     private data class SpokenNumber(
-        val samples: ShortArray,
+        val number: ShortArray,
+        val suffix: ShortArray?,
         val endBeat: Double,
         var position: Double,
         var renderedFrames: Int = 0
-    )
+    ) {
+        val frames = number.size + (suffix?.size ?: 0)
+
+        fun sample(index: Int): Int = if (index < number.size) {
+            number[index].toInt()
+        } else {
+            suffix?.getOrNull(index - number.size)?.toInt() ?: 0
+        }
+    }
 
     private var config = initialConfig.sanitized()
     private var beat = timeline.startBeat
@@ -153,8 +164,8 @@ internal class PlaybackPcmRenderer(
 
     fun updateConfig(newConfig: PlaybackConfig) {
         val sanitized = newConfig.sanitized()
-        val waveformOrPitchChanged = sanitized.waveform != config.waveform ||
-            sanitized.transpose != config.transpose
+        val pitchChanged = sanitized.transpose != config.transpose
+        val waveformOrPitchChanged = sanitized.waveform != config.waveform || pitchChanged
         val chordModeChanged = sanitized.chordMode != config.chordMode
         val arpeggioChanged = sanitized.arpeggiateCycles != config.arpeggiateCycles
         val cueChanged = sanitized.rootDegreeCue != config.rootDegreeCue
@@ -162,7 +173,7 @@ internal class PlaybackPcmRenderer(
             (config.rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES)
         config = sanitized
 
-        if (cueChanged) {
+        if (cueChanged || pitchChanged || chordModeChanged) {
             spokenNumber = null
             if (config.rootDegreeCue == PlaybackRootDegreeCue.SPOKEN_NUMBER) {
                 timeline.events.lastOrNull {
@@ -328,25 +339,24 @@ internal class PlaybackPcmRenderer(
         if (event.layer != PlaybackAudioLayer.CHORD ||
             config.rootDegreeCue != PlaybackRootDegreeCue.SPOKEN_NUMBER
         ) return
-        val clip = event.rootDegree?.let { spokenRootDegrees.getOrNull(it - 1) }
-        spokenNumber = clip?.let { samples ->
-            val beatsPerFrame = currentBeatsPerFrame
-            val elapsedBeats = (beat - event.startBeat).coerceAtLeast(0.0)
-            val position = when {
-                elapsedBeats <= BEAT_EPSILON -> 0.0
-                beatsPerFrame <= 0.0 -> samples.size.toDouble()
-                else -> {
-                    val durationFrames = (event.endBeat - event.startBeat) / beatsPerFrame
-                    elapsedBeats / beatsPerFrame * spokenSampleStep(samples.size.toDouble(), durationFrames)
-                }
-            }
-            if (position < samples.size) SpokenNumber(samples, event.endBeat, position) else null
-        }
-    }
+        spokenNumber = null
+        val degree = event.rootDegree ?: return
+        val root = when (config.chordMode) {
+            PlaybackChordMode.FULL -> event.fullChordRootMidiNote ?: event.rootMidiNote
+            PlaybackChordMode.ROOT_ONLY -> event.rootMidiNote
+        } ?: return
+        val number = spokenRootDegrees.number(degree, root + config.transpose) ?: return
+        val beatsPerFrame = currentBeatsPerFrame
+        val elapsedBeats = (beat - event.startBeat).coerceAtLeast(0.0)
+        if (beatsPerFrame <= 0.0 && elapsedBeats > BEAT_EPSILON) return
 
-    private fun spokenSampleStep(samplesLeft: Double, framesLeft: Double): Double {
-        val normalStep = SPOKEN_ROOT_DEGREE_SAMPLE_RATE.toDouble() / sampleRate
-        return (samplesLeft / framesLeft).coerceIn(normalStep, normalStep * 1.5)
+        val step = SPOKEN_ROOT_DEGREE_SAMPLE_RATE.toDouble() / sampleRate
+        val available = (event.endBeat - event.startBeat) / beatsPerFrame * step
+        val suffix = spokenRootDegrees.suffix(event.spokenChordSuffix)
+            ?.takeIf { number.size + it.size <= available }
+        val position = if (beatsPerFrame > 0.0) elapsedBeats / beatsPerFrame * step else 0.0
+        val voice = SpokenNumber(number, suffix, event.endBeat, position)
+        if (position < voice.frames) spokenNumber = voice
     }
 
     private fun renderSpokenNumber(beatsPerFrame: Double): Double {
@@ -354,15 +364,15 @@ internal class PlaybackPcmRenderer(
         if (beatsPerFrame <= 0.0) return 0.0
         val framesLeft = (voice.endBeat - beat) / beatsPerFrame
         val index = voice.position.toInt()
-        if (framesLeft <= 0.0 || index >= voice.samples.size) {
+        if (framesLeft <= 0.0 || index >= voice.frames) {
             spokenNumber = null
             return 0.0
         }
-        val next = voice.samples.getOrElse(index + 1) { 0 }
-        val sample = voice.samples[index] + (next - voice.samples[index]) * (voice.position - index)
+        val first = voice.sample(index)
+        val sample = first + (voice.sample(index + 1) - first) * (voice.position - index)
         val fadeFrames = sampleRate * 0.005
         val envelope = minOf(voice.renderedFrames / fadeFrames, framesLeft / fadeFrames, 1.0)
-        voice.position += spokenSampleStep(voice.samples.size - voice.position, framesLeft)
+        voice.position += SPOKEN_ROOT_DEGREE_SAMPLE_RATE.toDouble() / sampleRate
         voice.renderedFrames++
         return sample / Short.MAX_VALUE * 0.4 * envelope
     }
@@ -496,7 +506,7 @@ private class AndroidPlaybackAudioSink(private val track: AudioTrack) : Playback
 internal class PlaybackEngine(
     initialConfig: PlaybackConfig,
     private val sampleRate: Int = AppAudioOutput.sampleRate,
-    private val spokenRootDegrees: List<ShortArray> = emptyList(),
+    private val spokenRootDegrees: SpokenRootDegreeClips = SpokenRootDegreeClips(),
     private val sinkFactory: (capacityFrames: Int) -> PlaybackAudioSink = { capacityFrames ->
         createAndroidSink(capacityFrames, sampleRate)
     }
@@ -1041,7 +1051,8 @@ internal fun buildPlaybackTimeline(
                 (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
             if (!isRest && duration > 0.0 && chordEnd > 1.0) {
                 val key = section.getKeyAtBeat(beat)
-                val fullNotes = ChordInterpreter.getChordNotes(chord, key).filter { it > 0 }.toIntArray()
+                val voicing = ChordVoicing.build(chord, key)
+                val fullNotes = voicing?.tones.orEmpty().map { it.midi }.filter { it > 0 }.toIntArray()
                 val resolvedRoot = ChordInterpreter.resolveChordRoot(chord, key)
                 val root = resolvedRoot?.simpleModePitch?.toAudioNoteNumber()
                 if (fullNotes.isNotEmpty() || root != null) {
@@ -1053,7 +1064,9 @@ internal fun buildPlaybackTimeline(
                             layer = PlaybackAudioLayer.CHORD,
                             fullMidiNotes = fullNotes,
                             rootMidiNote = root,
-                            rootDegree = resolvedRoot?.let { degreeInKey(it.pitch, key)?.degree }
+                            rootDegree = resolvedRoot?.let { degreeInKey(it.pitch, key)?.degree },
+                            fullChordRootMidiNote = voicing?.tones?.firstOrNull { it.degree == 1 }?.midi,
+                            spokenChordSuffix = voicing?.spokenSuffix()
                         )
                     )
                 }

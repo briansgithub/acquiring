@@ -36,7 +36,7 @@ internal object PlaybackController {
     private var activePlaybackOwner: Any? = null
     private var loadedTimelineIdentity: String? = null
     private var initialized = false
-    private var spokenRootDegrees = emptyList<ShortArray>()
+    private var spokenRootDegrees = SpokenRootDegreeClips()
 
     private val mutableState = MutableStateFlow(PlaybackState())
     val state: StateFlow<PlaybackState> = mutableState.asStateFlow()
