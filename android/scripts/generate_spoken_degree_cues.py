@@ -20,9 +20,10 @@ from parselmouth.praat import call
 RATE = 24_000
 DEGREES = ("one", "two", "three", "four", "five", "six", "seven")
 ROOT_PITCHES = range(36, 60)
+SEVEN = "sˈɛvən"
 SUFFIXES = {
     "min": "mˈɪn",
-    "seven": "sˈɛvən",
+    "seven": SEVEN,
     "sev_maj": "sˈɛv mˈædʒ",
     "sev_min": "sˈɛv mˈɪn",
     "min_sev_maj": "mˈɪn sˈɛv mˈædʒ",
@@ -33,6 +34,28 @@ SUFFIXES = {
     "sus": "sˈʌs",
 }
 ACCIDENTALS = {"flat": "flˈæt", "sharp": "ʃˈɑɹp"}
+
+
+def clarify_seven(samples, timings, first_frame):
+    # This take has a prominent /s/ and a much quieter second syllable.
+    # Lift the /ən/ without boosting the sibilant or adding a syllable break.
+    token_frames = {
+        t.phoneme: round(t.start * RATE) - first_frame for t in timings
+    }
+    gain = np.interp(
+        np.arange(len(samples)),
+        [0, token_frames["ɛ"], token_frames["v"], token_frames["ə"]],
+        [0.6, 0.6, 1.0, 3.2],
+    )
+    samples = samples * gain
+    # Keep low-energy consonants and a short release. Discard the near-silent
+    # remainder so time compression can spend its budget on the word.
+    window = RATE // 100
+    levels = np.sqrt(np.mean(samples[:len(samples) // window * window].reshape(-1, window) ** 2, axis=1))
+    last = np.flatnonzero(levels > levels.max() * 0.007)[-1]
+    return samples[:(last + 3) * window]
+
+
 def synthesize(model, word):
     # Run a single inference with context on both sides of the cue, then
     # use the model's token boundaries rather than gating quiet consonants.
@@ -46,9 +69,10 @@ def synthesize(model, word):
     stop = start + len(model.tokenizer.known(word))
     if rate != RATE or "".join(t.phoneme for t in timings[start:stop]) != model.tokenizer.known(word):
         raise ValueError(f"Unexpected synthesis timing for {word!r}")
-    first = round(timings[start].start * RATE)
+    first = max(0, round(timings[start].start * RATE) - 240)
     last = round(timings[stop - 1].end * RATE)
-    return samples[max(0, first - 240):last + 480]
+    cue = samples[first:last + 480]
+    return clarify_seven(cue, timings[start:stop], first) if word == SEVEN else cue
 
 
 def pitched_variants(samples):
@@ -89,16 +113,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("model", type=Path)
     parser.add_argument("voices", type=Path)
-    args = parser.parse_args()
     output = Path(__file__).resolve().parents[1] / "app/src/main/res/raw"
-    parser_output = {
+    cues = {
         **{f"root_degree_{word}": word for word in DEGREES},
         **{f"root_suffix_{key}": phonemes for key, phonemes in SUFFIXES.items()},
         **{f"root_accidental_{key}": phonemes for key, phonemes in ACCIDENTALS.items()},
     }
+    parser.add_argument("--only", nargs="+", choices=cues, help="Regenerate only the named PCM resources.")
+    args = parser.parse_args()
     with tempfile.TemporaryDirectory() as temp:
         model = load_model(args.model, args.voices, Path(temp) / "timed.onnx")
-        for name, word in parser_output.items():
+        for name in args.only or cues:
+            word = cues[name]
             phonemes = model.tokenizer.phonemize(word, "en-us") if name.startswith("root_degree_") else word
             samples = synthesize(model, phonemes)
             (output / f"{name}.pcm").write_bytes(b"".join(map(pcm, pitched_variants(samples))))
