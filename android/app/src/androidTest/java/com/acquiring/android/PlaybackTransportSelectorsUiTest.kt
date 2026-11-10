@@ -16,6 +16,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.IdlingRegistry
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -206,15 +208,23 @@ class PlaybackTransportSelectorsUiTest {
         ).fetchSemanticsNodes().single().config
 
         clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        assertTrue(composeTestRule.onAllNodesWithTag(cueTag(PlaybackRootDegreeCue.OFF)).fetchSemanticsNodes().isEmpty())
+        clickText("Full Chords")
+        clickTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
         assertTrue(cueSelected(PlaybackRootDegreeCue.OFF))
+        val slider = composeTestRule.onNodeWithTag(PLAYBACK_VOICE_VOLUME_TEST_TAG, useUnmergedTree = true)
+        slider.performSemanticsAction(SemanticsActions.SetProgress) { setProgress -> setProgress(0.25f) }
         clickTag(cueTag(PlaybackRootDegreeCue.ROOT_PULSES))
         clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
         clickText("Root Only")
 
         clickTag(PLAYBACK_SECTION_BUTTON_TEST_TAG)
         clickTag("PlaybackSection-chorus")
-        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        clickTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
         assertTrue(cueSelected(PlaybackRootDegreeCue.ROOT_PULSES))
+        assertEquals(0.25f, slider.fetchSemanticsNode().config[SemanticsProperties.ProgressBarRangeInfo].current)
+        clickTag(cueTag(PlaybackRootDegreeCue.ROOT_PULSES))
+        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
         clickText("Full Chords")
         val disabledDial = arpeggioDial("Arpeggiate: Off")
         assertEquals(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX.toFloat(),
@@ -224,14 +234,14 @@ class PlaybackTransportSelectorsUiTest {
         assertFalse(SemanticsActions.OnClick in disabledDial)
         assertEquals(originalArpeggioOption, arpeggioOption)
 
-        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        clickTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
         clickTag(cueTag(PlaybackRootDegreeCue.SPOKEN_NUMBER))
         val enabledDial = arpeggioDial("Arpeggiate: cycles per beat")
         assertEquals(originalArpeggioOption.toFloat(),
             enabledDial[SemanticsProperties.ProgressBarRangeInfo].current)
         assertTrue(SemanticsActions.SetProgress in enabledDial)
 
-        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        clickTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
         assertTrue(cueSelected(PlaybackRootDegreeCue.SPOKEN_NUMBER))
         clickTag(cueTag(PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS))
         assertTrue(SemanticsActions.SetProgress in arpeggioDial("Arpeggiate: cycles per beat"))
@@ -247,7 +257,7 @@ class PlaybackTransportSelectorsUiTest {
             idlingResources.forEach { IdlingRegistry.getInstance().register(it) }
         }
 
-        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        clickTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
         assertTrue(cueSelected(PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS))
         clickTag(cueTag(PlaybackRootDegreeCue.OFF))
         assertEquals(PlaybackRootDegreeCue.OFF, rootDegreeCue)

@@ -203,7 +203,8 @@ fun PlaybackTab(
     autoStart: Boolean = false,
     onSectionComplete: (String) -> Unit = {},
     onHomeReferenceActions: (() -> Unit, () -> Unit) -> Unit = { _, _ -> },
-    rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF
+    rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF,
+    onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit = {}
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("PlaybackTab requires an exclusive persistent pitch source")
@@ -255,6 +256,7 @@ fun PlaybackTab(
     }
 
     var melodyChordBalance by remember { mutableStateOf(0.5f) }
+    var voiceVolume by rememberSaveable { mutableStateOf(DEFAULT_PLAYBACK_VOICE_VOLUME) }
     val melodyVolume = melodyChordBalance
     val chordVolume = 1f - melodyChordBalance
     var inertiaJob by remember { mutableStateOf<Job?>(null) }
@@ -293,7 +295,8 @@ fun PlaybackTab(
         chordGain = chordVolume,
         arpeggiateCycles = arpeggiateCycles,
         rootDegreeCue = rootDegreeCue,
-        useRelativeIonianContext = useRelativeIonianContext
+        useRelativeIonianContext = useRelativeIonianContext,
+        voiceVolume = voiceVolume
     )
     // Configuring here keeps the engine built before the timeline effect loads it.
     LaunchedEffect(playbackConfig) {
@@ -1655,6 +1658,13 @@ fun PlaybackTab(
                                 ringLabels = listOf("Chord", "Equal", "Melody"),
                                 onTap = { melodyChordBalance = 0.5f },
                                 modifier = Modifier.weight(1f)
+                            )
+                            PlaybackVoiceControls(
+                                cue = rootDegreeCue,
+                                onCueChange = onRootDegreeCueChange,
+                                volume = voiceVolume,
+                                onVolumeChange = { voiceVolume = it },
+                                modifier = Modifier.align(Alignment.CenterVertically)
                             )
                         }
 

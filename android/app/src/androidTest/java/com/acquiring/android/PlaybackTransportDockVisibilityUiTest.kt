@@ -180,7 +180,6 @@ class PlaybackTransportDockVisibilityUiTest {
                     transpose = 0, onTransposeChange = {}, onReset = {}, resetEnabled = true,
                     isPlaying = false, playEnabled = true, onPlay = {}, onShowSongInfo = {},
                     isSimpleMode = false, onSimpleModeChange = {},
-                    rootDegreeCue = PlaybackRootDegreeCue.OFF, onRootDegreeCueChange = {},
                     sectionOptions = listOf("verse" to "Verse", "chorus" to "Chorus"),
                     selectedSectionId = "verse", selectedSectionLabel = "Verse", onSectionChange = {},
                     onPreviousSong = { position-- }, onNextSong = { position++ },

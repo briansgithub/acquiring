@@ -24,7 +24,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +49,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import kotlin.math.roundToInt
 
 internal val PLAYBACK_TRANSPORT_CONTROL = 44.dp
 internal val PLAYBACK_TRANSPORT_SELECTOR = 72.dp
@@ -54,6 +58,8 @@ internal val PLAYBACK_TRANSPORT_PLAY = 88.dp
 internal val PLAYBACK_TRANSPORT_GAP = 8.dp
 internal val PLAYBACK_TRANSPORT_WIDTH = 324.dp
 internal val PLAYBACK_TRANSPORT_CORNER = 8.dp
+internal const val PLAYBACK_VOICE_BUTTON_TEST_TAG = "PlaybackVoiceControls"
+internal const val PLAYBACK_VOICE_VOLUME_TEST_TAG = "PlaybackVoiceVolume"
 
 @Composable
 internal fun playbackTransportOutline(): BorderStroke =
@@ -167,8 +173,6 @@ internal fun PlaybackTransportBar(
     onShowSongInfo: () -> Unit,
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit,
-    rootDegreeCue: PlaybackRootDegreeCue,
-    onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit,
     sectionOptions: List<Pair<String, String>>,
     selectedSectionId: String,
     selectedSectionLabel: String,
@@ -275,9 +279,7 @@ internal fun PlaybackTransportBar(
                     }
                     PlaybackModeSelector(
                         isSimpleMode = isSimpleMode,
-                        onSimpleModeChange = onSimpleModeChange,
-                        rootDegreeCue = rootDegreeCue,
-                        onRootDegreeCueChange = onRootDegreeCueChange
+                        onSimpleModeChange = onSimpleModeChange
                     )
                     if (sectionOptions.size > 1) {
                         PlaybackSectionSelector(
@@ -317,9 +319,7 @@ internal fun PlaybackTransportBar(
 @Composable
 private fun PlaybackModeSelector(
     isSimpleMode: Boolean,
-    onSimpleModeChange: (Boolean) -> Unit,
-    rootDegreeCue: PlaybackRootDegreeCue,
-    onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit
+    onSimpleModeChange: (Boolean) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val label = if (isSimpleMode) "Root" else "Full"
@@ -346,31 +346,79 @@ private fun PlaybackModeSelector(
                     expanded = false
                 }
             )
-            Text(
-                "Audible Root Degree",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
-            )
-            PlaybackRootDegreeCue.entries.forEach { cue ->
-                val label = when (cue) {
-                    PlaybackRootDegreeCue.OFF -> "Off"
-                    PlaybackRootDegreeCue.ROOT_PULSES -> "Root Pulses"
-                    PlaybackRootDegreeCue.SPOKEN_NUMBER -> "Spoken Number"
-                    PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS -> "Sung Number + Details"
-                }
-                val isSelected = rootDegreeCue == cue
-                DropdownMenuItem(
-                    text = { Text(label) },
-                    onClick = {
-                        onRootDegreeCueChange(cue)
-                        expanded = false
-                    },
-                    trailingIcon = { RadioButton(selected = isSelected, onClick = null) },
-                    modifier = Modifier.testTag("PlaybackRootDegree-${cue.name}").semantics {
-                        role = Role.RadioButton
-                        selected = isSelected
+        }
+    }
+}
+
+private val PlaybackRootDegreeCue.controlLabel: String
+    get() = when (this) {
+        PlaybackRootDegreeCue.OFF -> "Off"
+        PlaybackRootDegreeCue.ROOT_PULSES -> "Root Pulses"
+        PlaybackRootDegreeCue.SPOKEN_NUMBER -> "Spoken Number"
+        PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS -> "Sung Number + Details"
+    }
+
+@Composable
+internal fun PlaybackVoiceControls(
+    cue: PlaybackRootDegreeCue,
+    onCueChange: (PlaybackRootDegreeCue) -> Unit,
+    volume: Float,
+    onVolumeChange: (Float) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    PlaybackOutlinedSelector(
+        label = "Voice",
+        modifier = modifier,
+        width = 56.dp,
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        testTag = PLAYBACK_VOICE_BUTTON_TEST_TAG,
+        stateDescription = cue.controlLabel
+    ) {}
+    if (expanded) {
+        Dialog(onDismissRequest = { expanded = false }) {
+            Surface(
+                modifier = Modifier.width(300.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Column(modifier = Modifier.padding(vertical = 12.dp)) {
+                    Text(
+                        "Audible Root Degree",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    PlaybackRootDegreeCue.entries.forEach { option ->
+                        val isSelected = cue == option
+                        DropdownMenuItem(
+                            text = { Text(option.controlLabel) },
+                            onClick = {
+                                onCueChange(option)
+                                expanded = false
+                            },
+                            trailingIcon = { RadioButton(selected = isSelected, onClick = null) },
+                            modifier = Modifier.testTag("PlaybackRootDegree-${option.name}").semantics {
+                                role = Role.RadioButton
+                                selected = isSelected
+                            }
+                        )
                     }
-                )
+                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                        Text("Voice volume ${(volume * 100).roundToInt()}%", style = MaterialTheme.typography.labelMedium)
+                        Slider(
+                            value = volume,
+                            onValueChange = onVolumeChange,
+                            modifier = Modifier
+                                .testTag(PLAYBACK_VOICE_VOLUME_TEST_TAG)
+                                .semantics { contentDescription = "Voice volume" }
+                        )
+                    }
+                    TextButton(
+                        onClick = { expanded = false },
+                        modifier = Modifier.align(Alignment.End).padding(end = 12.dp)
+                    ) { Text("Done") }
+                }
             }
         }
     }

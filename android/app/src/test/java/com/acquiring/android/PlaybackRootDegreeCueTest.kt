@@ -254,6 +254,35 @@ class PlaybackRootDegreeCueTest {
     }
 
     @Test
+    fun voiceVolumeScalesOnlySpeechWithoutRestartingTheCue() {
+        val events = listOf(
+            chord(1.0, 3.0, 1),
+            PlaybackTimelineEvent(2, 1.0, 3.0, PlaybackAudioLayer.MELODY, intArrayOf(60))
+        )
+        val timeline = PlaybackTimeline(endBeat = 3.0, events = events)
+        val bank = List(SPOKEN_ROOT_DEGREE_PITCHES.count()) { ShortArray(2_400) { 8_000 } }
+        val clips = SpokenRootDegreeClips(listOf(bank))
+        val settings = config(PlaybackChordMode.FULL, cue = PlaybackRootDegreeCue.SPOKEN_NUMBER)
+        val voice = PlaybackPcmRenderer(timeline, settings, SAMPLE_RATE, clips)
+        val backing = PlaybackPcmRenderer(timeline, settings.copy(voiceVolume = 0f), SAMPLE_RATE, clips)
+        fun PlaybackPcmRenderer.renderBlock(frames: Int) = ShortArray(frames).also { renderAudioInto(it) }
+        assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() - 3_200) <= 1)
+        voice.updateConfig(settings.copy(voiceVolume = 1f))
+        assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() - 6_400) <= 20)
+        voice.updateConfig(settings.copy(voiceVolume = 0f))
+        voice.renderBlock(200)
+        backing.renderBlock(200)
+        assertArrayEquals(backing.renderBlock(200), voice.renderBlock(200))
+
+        // A muted cue still advances and finishes, so turning volume up
+        // later in the same chord cannot make the label repeat.
+        voice.renderBlock(5_000)
+        backing.renderBlock(5_000)
+        voice.updateConfig(settings)
+        assertArrayEquals(backing.renderBlock(200), voice.renderBlock(200))
+    }
+
+    @Test
     fun detailedModeFitsTheCompletePhraseToShortChords() {
         val mode = PlaybackChordMode.FULL
         val clips = SpokenRootDegreeClips(

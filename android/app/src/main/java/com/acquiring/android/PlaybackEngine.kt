@@ -25,6 +25,8 @@ internal enum class PlaybackAudioLayer { MELODY, CHORD }
 
 internal enum class PlaybackChordMode { FULL, ROOT_ONLY }
 
+internal const val DEFAULT_PLAYBACK_VOICE_VOLUME = 0.5f
+
 enum class PlaybackRootDegreeCue {
     OFF, ROOT_PULSES, SPOKEN_NUMBER, SUNG_NUMBER_WITH_DETAILS;
 
@@ -66,7 +68,8 @@ internal data class PlaybackConfig(
     val chordGain: Float,
     val arpeggiateCycles: Double = 0.0,
     val rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF,
-    val useRelativeIonianContext: Boolean = false
+    val useRelativeIonianContext: Boolean = false,
+    val voiceVolume: Float = DEFAULT_PLAYBACK_VOICE_VOLUME
 )
 
 internal fun arpeggioToneIndex(
@@ -148,6 +151,7 @@ internal class PlaybackPcmRenderer(
     private var spokenNumber: SpokenNumber? = null
     private var currentMelodyGain = config.melodyGain.toDouble()
     private var currentChordGain = config.chordGain.toDouble()
+    private var currentVoiceGain = config.voiceVolume * 0.8
     private val crossfadeFrames = (sampleRate * 24 / 1_000.0).roundToInt().coerceAtLeast(1)
 
     val currentBeat: Double get() = beat
@@ -251,13 +255,15 @@ internal class PlaybackPcmRenderer(
         prepareVoicesForBlock(frameCount * beatsPerFrame)
         val targetMelodyGain = config.melodyGain.toDouble()
         val targetChordGain = config.chordGain.toDouble()
+        val targetVoiceGain = config.voiceVolume * 0.8
         val melodyStep = (targetMelodyGain - currentMelodyGain) / frameCount.coerceAtLeast(1)
         val chordStep = (targetChordGain - currentChordGain) / frameCount.coerceAtLeast(1)
+        val voiceStep = (targetVoiceGain - currentVoiceGain) / frameCount.coerceAtLeast(1)
 
         repeat(frameCount) { frame ->
             activateDueEvents(frame, startedEvents)
 
-            var mixed = renderSpokenNumber(beatsPerFrame)
+            var mixed = renderSpokenNumber(beatsPerFrame) * currentVoiceGain
             var activeIndex = 0
             while (activeIndex < activeEvents.size) {
                 val active = activeEvents[activeIndex]
@@ -329,11 +335,13 @@ internal class PlaybackPcmRenderer(
                 .toShort()
             currentMelodyGain += melodyStep
             currentChordGain += chordStep
+            currentVoiceGain += voiceStep
             advanceBeat(beatsPerFrame)
         }
 
         currentMelodyGain = targetMelodyGain
         currentChordGain = targetChordGain
+        currentVoiceGain = targetVoiceGain
         return beatsPerFrame
     }
 
@@ -422,7 +430,7 @@ internal class PlaybackPcmRenderer(
         val phraseFramesLeft = (voice.samples.size - position) * sampleRate / SPOKEN_ROOT_DEGREE_SAMPLE_RATE
         val envelope = minOf(voice.renderedFrames / fadeFrames, framesLeft / fadeFrames, phraseFramesLeft / fadeFrames, 1.0)
         voice.renderedFrames++
-        return sample / Short.MAX_VALUE * 0.4 * envelope
+        return sample / Short.MAX_VALUE * envelope
     }
 
     private fun advanceBeat(beatsPerFrame: Double) {
@@ -511,6 +519,7 @@ internal class PlaybackPcmRenderer(
         bpm = bpm.coerceAtLeast(0.0),
         melodyGain = melodyGain.coerceIn(0f, 1f),
         chordGain = chordGain.coerceIn(0f, 1f),
+        voiceVolume = voiceVolume.coerceIn(0f, 1f),
         arpeggiateCycles = if (rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES) {
             0.0
         } else {
