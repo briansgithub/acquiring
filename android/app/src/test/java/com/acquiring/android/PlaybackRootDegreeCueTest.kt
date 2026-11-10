@@ -86,7 +86,7 @@ class PlaybackRootDegreeCueTest {
             listOf(
                 null, SpokenChordSuffix.MIN, SpokenChordSuffix.SEVEN, SpokenChordSuffix.SEV_MAJ,
                 SpokenChordSuffix.SEV_MIN, SpokenChordSuffix.DIM, SpokenChordSuffix.DIM_SEV,
-                SpokenChordSuffix.HALF_DIM, SpokenChordSuffix.AUG, SpokenChordSuffix.SUS
+                SpokenChordSuffix.HALF_DIM, SpokenChordSuffix.AUG, SpokenChordSuffix.SEVENTH_SUS_FOUR
             ),
             events.map { it.spokenChordSuffix }
         )
@@ -116,6 +116,35 @@ class PlaybackRootDegreeCueTest {
         assertEquals(SpokenChordSuffix.MIN, suffix("♭vi64(maj)"))
         assertEquals(null, suffix("♭VI64(min)"))
         assertEquals(null, suffix("V7(no7)", "\"type\":7,\"omits\":[7]"))
+    }
+
+    @Test
+    fun suspendedChordsNameTheSuspensionAndOnlyTrueSeventhChordsSaySeventh() {
+        val section = Json.decodeFromString<ExtractedSection>(
+            """
+            {"chords":[
+                {"beat":1,"root":5,"suspensions":[2]},
+                {"beat":2,"root":5,"suspensions":[4],"inversion":2},
+                {"beat":3,"root":5,"suspensions":[2],"type":7,"inversion":1},
+                {"beat":4,"root":5,"suspensions":[4],"type":7},
+                {"beat":5,"root":5,"suspensions":[4],"type":9},
+                {"beat":6,"root":5,"suspensions":[2],"type":7,"omits":[7]},
+                {"beat":7,"root":5,"suspensions":[4,2]},
+                {"beat":8,"root":5,"suspensions":[4,2],"type":7}
+            ]}
+            """.trimIndent()
+        )
+        val events = buildPlaybackTimeline(section, emptyList(), 9.0).events
+        assertEquals(List(8) { 5 }, events.map { it.rootDegree })
+        assertEquals(
+            listOf(
+                SpokenChordSuffix.SUS_TWO, SpokenChordSuffix.SUS_FOUR,
+                SpokenChordSuffix.SEVENTH_SUS_TWO, SpokenChordSuffix.SEVENTH_SUS_FOUR,
+                SpokenChordSuffix.SUS_FOUR, SpokenChordSuffix.SUS_TWO,
+                SpokenChordSuffix.SUS_TWO_FOUR, SpokenChordSuffix.SEVENTH_SUS_TWO_FOUR
+            ),
+            events.map { it.spokenChordSuffix }
+        )
     }
 
     @Test

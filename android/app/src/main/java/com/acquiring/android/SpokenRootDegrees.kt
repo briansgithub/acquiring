@@ -26,11 +26,17 @@ internal enum class SpokenChordSuffix(val resourceId: Int) {
     DIM_SEV(R.raw.root_suffix_dim_sev),
     HALF_DIM(R.raw.root_suffix_half_dim),
     AUG(R.raw.root_suffix_aug),
-    SUS(R.raw.root_suffix_sus)
+    SUS_TWO(R.raw.root_suffix_sus_two),
+    SUS_FOUR(R.raw.root_suffix_sus_four),
+    SUS_TWO_FOUR(R.raw.root_suffix_sus_two_four),
+    SEVENTH_SUS_TWO(R.raw.root_suffix_seventh_sus_two),
+    SEVENTH_SUS_FOUR(R.raw.root_suffix_seventh_sus_four),
+    SEVENTH_SUS_TWO_FOUR(R.raw.root_suffix_seventh_sus_two_four)
 }
 
 private val romanBase = Regex("^[♭♯]*([IViv]+)")
 private val romanAnnotations = Regex("\\([^)]*\\)")
+private val romanSuspension = Regex("sus([24])")
 
 internal fun spokenSuffixForChord(chord: JsonObject, symbol: String, voicing: VoicedChord?): SpokenChordSuffix? {
     val numerator = symbol.substringBefore('/')
@@ -40,12 +46,22 @@ internal fun spokenSuffixForChord(chord: JsonObject, symbol: String, voicing: Vo
     val minor = base?.groupValues?.get(1)?.first()?.isLowerCase() ?: (letterQuality == "minor")
     val omittedSeventh = (chord["omits"] as? JsonArray).orEmpty().any { (it as? JsonPrimitive)?.intOrNull == 7 }
     val hasSeventh = (chord["type"] as? JsonPrimitive)?.intOrNull == 7 && !omittedSeventh
+    val suspensions = (chord["suspensions"] as? JsonArray).orEmpty()
+        .mapNotNull { (it as? JsonPrimitive)?.intOrNull?.takeIf { degree -> degree == 2 || degree == 4 } }
+        .ifEmpty { romanSuspension.findAll(suffix).map { it.groupValues[1].toInt() }.toList() }
+    if (suspensions.isNotEmpty()) {
+        return when {
+            2 in suspensions && 4 in suspensions ->
+                if (hasSeventh) SpokenChordSuffix.SEVENTH_SUS_TWO_FOUR else SpokenChordSuffix.SUS_TWO_FOUR
+            2 in suspensions -> if (hasSeventh) SpokenChordSuffix.SEVENTH_SUS_TWO else SpokenChordSuffix.SUS_TWO
+            else -> if (hasSeventh) SpokenChordSuffix.SEVENTH_SUS_FOUR else SpokenChordSuffix.SUS_FOUR
+        }
+    }
     val seventhInterval = voicing?.let { voiced ->
         voiced.tones.firstOrNull { it.degree == 7 }?.let { Math.floorMod(it.midi - voiced.rootMidi, 12) }
     }
     val majorSeventh = seventhInterval?.let { it == 11 } ?: ('△' in suffix)
     return when {
-        "sus" in suffix || !(chord["suspensions"] as? JsonArray).isNullOrEmpty() -> SpokenChordSuffix.SUS
         'ø' in suffix -> if (hasSeventh) SpokenChordSuffix.HALF_DIM else SpokenChordSuffix.DIM
         '°' in suffix || letterQuality == "diminished" -> when {
             !hasSeventh -> SpokenChordSuffix.DIM

@@ -20,7 +20,9 @@ from parselmouth.praat import call
 RATE = 24_000
 DEGREES = ("one", "two", "three", "four", "five", "six", "seven")
 ROOT_PITCHES = range(36, 60)
+VOICE = "af_heart"
 SEVEN = "sˈɛvən"
+SEVENTH_SUS = "sˈɛvənθ sˈʌs"
 SUFFIXES = {
     "min": "mˈɪn",
     "seven": SEVEN,
@@ -31,7 +33,12 @@ SUFFIXES = {
     "dim_sev": "dˈɪm sˈɛv",
     "half_dim": "hˈæf dˈɪm",
     "aug": "ˈɔɡ",
-    "sus": "sˈʌs",
+    "sus_two": "sˈʌs tˈu",
+    "sus_four": "sˈʌs fˈɔɹ",
+    "sus_two_four": "sˈʌs tˈu fˈɔɹ",
+    "seventh_sus_two": f"{SEVENTH_SUS} tˈu",
+    "seventh_sus_four": f"{SEVENTH_SUS} fˈɔɹ",
+    "seventh_sus_two_four": f"{SEVENTH_SUS} tˈu fˈɔɹ",
 }
 ACCIDENTALS = {"flat": "flˈæt", "sharp": "ʃˈɑɹp"}
 
@@ -62,7 +69,7 @@ def synthesize(model, word):
     lead = "hˈiɹ ɪz ðə kjˈu. "
     samples, rate, timings = model.create_timed(
         lead + word + ". nˈaʊ lˈɪsən əɡˈɛn.",
-        voice="am_michael", is_phonemes=True, trim=False,
+        voice=VOICE, is_phonemes=True, trim=False,
         sentence_pause=0, clause_pause=0,
     )
     start = len(model.tokenizer.known(lead))
