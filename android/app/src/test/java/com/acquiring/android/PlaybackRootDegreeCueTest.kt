@@ -34,9 +34,31 @@ class PlaybackRootDegreeCueTest {
         val events = buildPlaybackTimeline(section, emptyList(), endBeat = 6.0).events
         assertEquals(listOf(1.0, 2.0, 3.0, 5.0), events.map { it.startBeat })
         assertEquals(listOf(2, 6, 6, 5), events.map { it.rootDegree })
+        assertEquals(listOf(0, -1, 0, 0), events.map { it.rootDegreeAlteration })
         assertEquals(listOf(50, 56, 57, 50), events.map { it.rootMidiNote })
         assertEquals(SpokenChordSuffix.SEVEN, events.first().spokenChordSuffix)
         assertEquals(null, events.last().spokenChordSuffix)
+    }
+
+    @Test
+    fun accidentalPrecedesTheNumberInBothVoiceModes() {
+        val pitches = SPOKEN_ROOT_DEGREE_PITCHES.count()
+        fun bank(size: Int, value: Short) = List(pitches) { ShortArray(size) { value } }
+        val clips = SpokenRootDegreeClips(
+            numbers = listOf(bank(4800, 12000)),
+            accidentals = listOf(bank(480, -12000), bank(480, 6000))
+        )
+        for (cue in listOf(PlaybackRootDegreeCue.SPOKEN_NUMBER, PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS)) {
+            for (alteration in listOf(-1, 1)) {
+                val event = chord(1.0, 1.3, 1).copy(rootDegreeAlteration = alteration)
+                val spoken = render(listOf(event), PlaybackChordMode.ROOT_ONLY, cue = cue, spokenRootDegrees = clips)
+                val backing = render(listOf(event), PlaybackChordMode.ROOT_ONLY, cue = PlaybackRootDegreeCue.OFF)
+                val direction = if (alteration < 0) -1 else 1
+                assertTrue((spoken[100] - backing[100]) * direction > 1_000)
+                assertTrue(spoken[400] - backing[400] > 4_000)
+                assertEquals(backing[2_000], spoken[2_000])
+            }
+        }
     }
 
     @Test
@@ -73,13 +95,75 @@ class PlaybackRootDegreeCueTest {
     }
 
     @Test
-    fun romanSuffixIgnoresBorrowingTagsAndRecognizesInvertedSevenths() {
-        assertEquals(SpokenChordSuffix.SEVEN, spokenSuffixForRoman("V6(b9)5/ii(min)"))
-        assertEquals(SpokenChordSuffix.SEV_MAJ, spokenSuffixForRoman("I△⁴₃"))
-        assertEquals(SpokenChordSuffix.SEV_MIN, spokenSuffixForRoman("ii⁴₂"))
-        assertEquals(SpokenChordSuffix.MIN, spokenSuffixForRoman("♭vi64(maj)"))
-        assertEquals(null, spokenSuffixForRoman("♭VI64(min)"))
-        assertEquals(null, spokenSuffixForRoman("I(add9)"))
+    fun seventhDescriptorsRequireSeventhChordIdentity() {
+        fun suffix(symbol: String, fields: String = "") = spokenSuffixForChord(
+            Json.decodeFromString("{$fields}"), symbol, null
+        )
+        for (symbol in listOf("I", "I6", "I64", "I46", "I42", "I(add6)", "I(add9)")) {
+            assertEquals(symbol, null, suffix(symbol))
+        }
+        for (symbol in listOf("V7", "V6(b9)5/ii(min)", "V⁴₃", "V⁴₂")) {
+            assertEquals(symbol, SpokenChordSuffix.SEVEN, suffix(symbol, "\"type\":7"))
+        }
+        for (type in listOf(9, 11, 13)) {
+            assertEquals(null, suffix("V65", "\"type\":$type"))
+            assertEquals(SpokenChordSuffix.MIN, suffix("ii43", "\"type\":$type"))
+            assertEquals(SpokenChordSuffix.DIM, suffix("viiø$type", "\"type\":$type"))
+        }
+        assertEquals(SpokenChordSuffix.SEV_MAJ, suffix("I△⁴₃", "\"type\":7"))
+        assertEquals(SpokenChordSuffix.SEV_MIN, suffix("ii⁴₂", "\"type\":7"))
+        assertEquals(SpokenChordSuffix.MIN_SEV_MAJ, suffix("i△7", "\"type\":7"))
+        assertEquals(SpokenChordSuffix.MIN, suffix("♭vi64(maj)"))
+        assertEquals(null, suffix("♭VI64(min)"))
+        assertEquals(null, suffix("V7(no7)", "\"type\":7,\"omits\":[7]"))
+    }
+
+    @Test
+    fun tonicTriadInversionsDoNotAnnounceASeventh() {
+        val section = Json.decodeFromString<ExtractedSection>(
+            """
+            {"chords":[
+                {"beat":1,"root":1,"type":5,"inversion":1},
+                {"beat":2,"root":1,"type":5,"inversion":2},
+                {"beat":3,"root":1,"type":5,"inversion":3},
+                {"beat":4,"root":1,"type":7,"inversion":3},
+                {"beat":5,"root":1,"type":7,"inversion":1,"omits":[7]}
+            ]}
+            """.trimIndent()
+        )
+        val events = buildPlaybackTimeline(section, emptyList(), 6.0).events
+        assertEquals(listOf(null, null, null, SpokenChordSuffix.SEV_MAJ, null), events.map { it.spokenChordSuffix })
+    }
+
+    @Test
+    fun relativeMajorVoiceUsesTheSectionContextThroughLocalKeyChanges() {
+        val section = Json.decodeFromString<ExtractedSection>(
+            """
+            {
+              "chords": [{"beat":1,"root":1,"duration":1},{"beat":2,"root":1,"duration":1}],
+              "metadata":{"keys":[{"beat":1,"tonic":"A","scale":"minor"},{"beat":2,"tonic":"G","scale":"major"}]}
+            }
+            """.trimIndent()
+        )
+        val timeline = buildPlaybackTimeline(section, emptyList(), 3.0)
+        val (tonic, localTonic) = timeline.events
+        assertEquals(1, tonic.rootDegree)
+        assertEquals(SpokenChordSuffix.MIN, tonic.spokenChordSuffix)
+        assertEquals(RelativeIonianDegree(6, 0), tonic.relativeMajorRootDegree)
+        assertEquals(1, localTonic.rootDegree)
+        assertEquals(RelativeIonianDegree(5, 0), localTonic.relativeMajorRootDegree)
+        val clips = SpokenRootDegreeClips(List(7) { degreeIndex ->
+            List(SPOKEN_ROOT_DEGREE_PITCHES.count()) {
+                ShortArray(2400) { if (degreeIndex == 0) 12_000 else -12_000 }
+            }
+        })
+        val settings = config(PlaybackChordMode.ROOT_ONLY, cue = PlaybackRootDegreeCue.SPOKEN_NUMBER).copy(chordGain = 0f)
+        val renderer = PlaybackPcmRenderer(timeline, settings, SAMPLE_RATE, clips)
+        assertTrue(ShortArray(200).also { renderer.renderAudioInto(it) }.last() > 4000)
+        val beat = renderer.currentBeat
+        renderer.updateConfig(settings.copy(useRelativeIonianContext = true))
+        assertEquals(beat, renderer.currentBeat, 0.0)
+        assertTrue(ShortArray(200).also { renderer.renderAudioInto(it) }.last() < -4000)
     }
 
     @Test
@@ -136,12 +220,12 @@ class PlaybackRootDegreeCueTest {
             val expectedLevel = if (mode == PlaybackChordMode.FULL) 6_400 else 4_800
             assertTrue("speaks degree five an octave below the transposed root in $mode",
                 abs(spoken[200] - backing[200] - expectedLevel) <= 2)
-            assertArrayEquals(backing.copyOfRange(800, backing.size), spoken.copyOfRange(800, spoken.size))
+            assertArrayEquals(backing.copyOfRange(2_667, backing.size), spoken.copyOfRange(2_667, spoken.size))
         }
     }
 
     @Test
-    fun sungSuffixRequiresTheDetailedModeAndEnoughTimeForTheCompleteLabel() {
+    fun detailedModeFitsTheCompletePhraseToShortChords() {
         val mode = PlaybackChordMode.FULL
         val clips = SpokenRootDegreeClips(
             listOf(List(SPOKEN_ROOT_DEGREE_PITCHES.count()) { ShortArray(2_400) { 12_000 } }),
@@ -157,13 +241,56 @@ class PlaybackRootDegreeCueTest {
                 spokenRootDegrees = clips)
             assertTrue(spoken[200] - backing[200] > 4_000)
             assertEquals(spoken[200], sung[200])
-            assertEquals(backing[1_000], spoken[1_000])
-            if (duration < 0.2) {
-                assertEquals(backing[1_000], sung[1_000])
-            } else {
-                assertTrue(sung[1_000] - backing[1_000] < -4_000)
-            }
+            val numberEnd = (maxOf(0.1, duration / 3) * SAMPLE_RATE).roundToInt() + 1
+            assertArrayEquals(backing.copyOfRange(numberEnd, backing.size), spoken.copyOfRange(numberEnd, spoken.size))
+            assertTrue((850 until 1_150).any { sung[it] - backing[it] < -4_000 })
+            val end = (duration * SAMPLE_RATE).roundToInt()
+            assertArrayEquals(backing.copyOfRange(end, backing.size), sung.copyOfRange(end, sung.size))
         }
+    }
+
+    @Test
+    fun durationTracksFractionalChordLengthAndTempoWithoutChangingPitch() {
+        val pitch = 200.0
+        val source = ShortArray(2400) { index ->
+            (12000 * kotlin.math.sin(2 * Math.PI * pitch * index / SPOKEN_ROOT_DEGREE_SAMPLE_RATE)).roundToInt().toShort()
+        }
+        val bank = List(SPOKEN_ROOT_DEGREE_PITCHES.count()) { source }
+        val clips = SpokenRootDegreeClips(listOf(bank), mapOf(SpokenChordSuffix.MIN to bank), listOf(bank, bank))
+        val cache = SpokenPhraseCache(clips)
+        val phrase = SpokenPhrase(RelativeIonianDegree(1, -1), 36, SpokenChordSuffix.MIN)
+        for ((beats, bpm) in listOf(3.75 to 60.0, 2.25 to 120.0, 2.25 to 135.0, 0.8 to 120.0, 0.3 to 120.0)) {
+            val chordSeconds = beats * 60 / bpm
+            val expected = ((chordSeconds / 3).coerceIn(0.3, 1.2).coerceAtMost(chordSeconds) * SPOKEN_ROOT_DEGREE_SAMPLE_RATE).roundToInt()
+            val samples = requireNotNull(cache.prepare(phrase, beats, bpm))
+            assertTrue(abs(expected - samples.size) <= 1)
+            val rises = samples.indices.filter { it > 0 && samples[it - 1] <= 0 && samples[it] > 0 }
+            val periods = rises.zipWithNext { a, b -> b - a }.sorted()
+            assertEquals(pitch, SPOKEN_ROOT_DEGREE_SAMPLE_RATE.toDouble() / periods[periods.size / 2], 5.0)
+        }
+        val lower = requireNotNull(cache.prepare(phrase.copy(midi = 24), 3.75, 60.0))
+        val rises = lower.indices.filter { it > 0 && lower[it - 1] <= 0 && lower[it] > 0 }
+        val periods = rises.zipWithNext { a, b -> b - a }.sorted()
+        assertEquals(pitch / 2, SPOKEN_ROOT_DEGREE_SAMPLE_RATE.toDouble() / periods[periods.size / 2], 5.0)
+        assertEquals(28_800, cache.prepare(phrase, 4.0, 0.4)?.size)
+    }
+
+    @Test
+    fun tempoChangesDoNotRestartFinishedPhrasesAndSeeksRespectTheCueWindow() {
+        val event = chord(1.0, 3.0, 1)
+        val timeline = PlaybackTimeline(endBeat = 3.0, events = listOf(event))
+        val settings = config(PlaybackChordMode.ROOT_ONLY, cue = PlaybackRootDegreeCue.SPOKEN_NUMBER).copy(chordGain = 0f)
+        val clips = SpokenRootDegreeClips(listOf(List(SPOKEN_ROOT_DEGREE_PITCHES.count()) { ShortArray(2400) { 12_000 } }))
+        val renderer = PlaybackPcmRenderer(timeline, settings, SAMPLE_RATE, clips)
+        renderer.seek(1.2)
+        assertTrue(ShortArray(200).also { renderer.renderAudioInto(it) }.any { it > 4_000 })
+        renderer.updateConfig(settings.copy(bpm = 135.0))
+        assertTrue(ShortArray(200).also { renderer.renderAudioInto(it) }.any { it > 4_000 })
+        renderer.renderAudioInto(ShortArray(3_000))
+        renderer.updateConfig(settings.copy(bpm = 200.0))
+        assertTrue(ShortArray(200).also { renderer.renderAudioInto(it) }.all { it.toInt() == 0 })
+        renderer.seek(2.0)
+        assertTrue(ShortArray(200).also { renderer.renderAudioInto(it) }.all { it.toInt() == 0 })
     }
 
     @Test

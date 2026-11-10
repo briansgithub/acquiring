@@ -292,7 +292,8 @@ fun PlaybackTab(
         melodyGain = melodyVolume,
         chordGain = chordVolume,
         arpeggiateCycles = arpeggiateCycles,
-        rootDegreeCue = rootDegreeCue
+        rootDegreeCue = rootDegreeCue,
+        useRelativeIonianContext = useRelativeIonianContext
     )
     // Configuring here keeps the engine built before the timeline effect loads it.
     LaunchedEffect(playbackConfig) {

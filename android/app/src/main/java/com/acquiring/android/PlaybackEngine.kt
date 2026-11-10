@@ -40,8 +40,10 @@ internal data class PlaybackTimelineEvent(
     val fullMidiNotes: IntArray,
     val rootMidiNote: Int? = null,
     val rootDegree: Int? = null,
+    val rootDegreeAlteration: Int = 0,
     val fullChordRootMidiNote: Int? = null,
-    val spokenChordSuffix: SpokenChordSuffix? = null
+    val spokenChordSuffix: SpokenChordSuffix? = null,
+    val relativeMajorRootDegree: RelativeIonianDegree? = null
 )
 
 internal data class PlaybackTimeline(
@@ -63,7 +65,8 @@ internal data class PlaybackConfig(
     val melodyGain: Float,
     val chordGain: Float,
     val arpeggiateCycles: Double = 0.0,
-    val rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF
+    val rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF,
+    val useRelativeIonianContext: Boolean = false
 )
 
 internal fun arpeggioToneIndex(
@@ -110,7 +113,7 @@ internal class PlaybackPcmRenderer(
     private var timeline: PlaybackTimeline,
     initialConfig: PlaybackConfig,
     private val sampleRate: Int = AppAudioOutput.sampleRate,
-    private val spokenRootDegrees: SpokenRootDegreeClips = SpokenRootDegreeClips()
+    spokenRootDegrees: SpokenRootDegreeClips = SpokenRootDegreeClips()
 ) {
     private data class ActiveEvent(
         val event: PlaybackTimelineEvent,
@@ -125,21 +128,19 @@ internal class PlaybackPcmRenderer(
     )
 
     private data class SpokenNumber(
-        val number: ShortArray,
-        val suffix: ShortArray?,
-        val endBeat: Double,
-        var position: Double,
+        val event: PlaybackTimelineEvent,
+        val samples: ShortArray,
+        val anchorBeat: Double,
+        val anchorPosition: Double,
+        val samplesPerBeat: Double,
         var renderedFrames: Int = 0
     ) {
-        val frames = number.size + (suffix?.size ?: 0)
-
-        fun sample(index: Int): Int = if (index < number.size) {
-            number[index].toInt()
-        } else {
-            suffix?.getOrNull(index - number.size)?.toInt() ?: 0
-        }
+        fun positionAt(beat: Double): Double =
+            (anchorPosition + (beat - anchorBeat) * samplesPerBeat).coerceAtLeast(0.0)
     }
 
+    private val phraseCache = SpokenPhraseCache(spokenRootDegrees)
+    private val preparedVoices = mutableMapOf<Long, ShortArray>()
     private var config = initialConfig.sanitized()
     private var beat = timeline.startBeat
     private var nextEventIndex = 0
@@ -158,11 +159,15 @@ internal class PlaybackPcmRenderer(
         seek(startBeat)
     }
 
-    fun seek(requestedBeat: Double) {
+    fun seek(requestedBeat: Double, preserveVoiceProgress: Boolean = false) {
+        val previousVoice = spokenNumber.takeIf { preserveVoiceProgress }
         beat = requestedBeat.coerceIn(timeline.startBeat, timeline.endBeat)
         activeEvents.clear()
         spokenNumber = null
         activateEventsAtPosition(fadeIn = false)
+        if (previousVoice != null && spokenNumber?.event?.id == previousVoice.event.id) {
+            spokenNumber = previousVoice.copy(renderedFrames = 0)
+        }
         nextEventIndex = timeline.events.indexOfFirst { it.startBeat > beat }
             .let { if (it < 0) timeline.events.size else it }
     }
@@ -176,14 +181,27 @@ internal class PlaybackPcmRenderer(
         val cueChanged = sanitized.rootDegreeCue != config.rootDegreeCue
         val rootPulsesChanged = (sanitized.rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES) !=
             (config.rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES)
+        val voiceChanged = cueChanged || pitchChanged || chordModeChanged ||
+            sanitized.useRelativeIonianContext != config.useRelativeIonianContext
+        val tempoChanged = sanitized.bpm != config.bpm
+        val previousVoice = spokenNumber
         config = sanitized
 
-        if (cueChanged || pitchChanged || chordModeChanged) {
-            spokenNumber = null
-            if (config.rootDegreeCue.usesVoice) {
-                timeline.events.lastOrNull {
+        if (voiceChanged || tempoChanged) {
+            preparedVoices.clear()
+            if (!config.rootDegreeCue.usesVoice) {
+                spokenNumber = null
+            } else if (config.bpm > 0.0) {
+                val chord = timeline.events.lastOrNull {
                     it.layer == PlaybackAudioLayer.CHORD && beat >= it.startBeat && beat < it.endBeat
-                }?.let(::startSpokenNumber)
+                }
+                spokenNumber = null
+                if (chord != null) {
+                    val samples = prepareVoice(chord)
+                    val previous = previousVoice?.takeIf { it.event.id == chord.id }
+                    val phase = previous?.let { it.positionAt(beat) / it.samples.size }
+                    startSpokenNumber(chord, samples, phase)
+                }
             }
         }
         if (waveformOrPitchChanged || chordModeChanged || arpeggioChanged || rootPulsesChanged) {
@@ -218,7 +236,7 @@ internal class PlaybackPcmRenderer(
         return RenderedPlaybackBlock(blockStartBeat, beatsPerFrame, startedEvents)
     }
 
-    /** Allocation-free render path used by the real-time audio worker. */
+    /** Render path without event reporting, used by the audio worker. */
     fun renderAudioInto(buffer: ShortArray, frameCount: Int = buffer.size) {
         renderSamples(buffer, frameCount, startedEvents = null)
     }
@@ -230,6 +248,7 @@ internal class PlaybackPcmRenderer(
     ): Double {
         require(frameCount in 0..buffer.size)
         val beatsPerFrame = currentBeatsPerFrame
+        prepareVoicesForBlock(frameCount * beatsPerFrame)
         val targetMelodyGain = config.melodyGain.toDouble()
         val targetChordGain = config.chordGain.toDouble()
         val melodyStep = (targetMelodyGain - currentMelodyGain) / frameCount.coerceAtLeast(1)
@@ -340,47 +359,68 @@ internal class PlaybackPcmRenderer(
         }
     }
 
-    private fun startSpokenNumber(event: PlaybackTimelineEvent) {
-        if (event.layer != PlaybackAudioLayer.CHORD || !config.rootDegreeCue.usesVoice) return
-        spokenNumber = null
-        val degree = event.rootDegree ?: return
+    private fun prepareVoice(event: PlaybackTimelineEvent): ShortArray? {
+        if (event.layer != PlaybackAudioLayer.CHORD || !config.rootDegreeCue.usesVoice) return null
+        val degree = if (config.useRelativeIonianContext) {
+            event.relativeMajorRootDegree
+        } else {
+            event.rootDegree?.let { RelativeIonianDegree(it, event.rootDegreeAlteration) }
+        } ?: return null
         val root = when (config.chordMode) {
             PlaybackChordMode.FULL -> event.fullChordRootMidiNote ?: event.rootMidiNote
             PlaybackChordMode.ROOT_ONLY -> event.rootMidiNote
-        } ?: return
-        val voicePitch = root + config.transpose - 12
-        val number = spokenRootDegrees.number(degree, voicePitch) ?: return
-        val beatsPerFrame = currentBeatsPerFrame
-        val elapsedBeats = (beat - event.startBeat).coerceAtLeast(0.0)
-        if (beatsPerFrame <= 0.0 && elapsedBeats > BEAT_EPSILON) return
-
-        val step = SPOKEN_ROOT_DEGREE_SAMPLE_RATE.toDouble() / sampleRate
-        val available = (event.endBeat - event.startBeat) / beatsPerFrame * step
-        val suffix = if (config.rootDegreeCue == PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS) {
-            spokenRootDegrees.suffix(event.spokenChordSuffix, voicePitch)
-                ?.takeIf { number.size + it.size <= available }
-        } else {
-            null
+        } ?: return null
+        val suffix = event.spokenChordSuffix.takeIf {
+            config.rootDegreeCue == PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS
         }
-        val position = if (beatsPerFrame > 0.0) elapsedBeats / beatsPerFrame * step else 0.0
-        val voice = SpokenNumber(number, suffix, event.endBeat, position)
-        if (position < voice.frames) spokenNumber = voice
+        val phrase = SpokenPhrase(degree, root + config.transpose - 12, suffix)
+        return phraseCache.prepare(phrase, event.endBeat - event.startBeat, config.bpm)
+    }
+
+    // Prepare PCM before entering the sample loop, including events after a
+    // wrap when a block crosses the loop boundary.
+    private fun prepareVoicesForBlock(span: Double) {
+        preparedVoices.clear()
+        if (!config.rootDegreeCue.usesVoice || span <= 0.0) return
+        fun prepareFrom(startIndex: Int, throughBeat: Double) {
+            for (index in startIndex until timeline.events.size) {
+                val event = timeline.events[index]
+                if (event.startBeat > throughBeat + BEAT_EPSILON) break
+                if (event.id !in preparedVoices) {
+                    prepareVoice(event)?.let { preparedVoices[event.id] = it }
+                }
+            }
+        }
+        val end = beat + span
+        prepareFrom(nextEventIndex, end)
+        if (end >= timeline.endBeat && timeline.completionKey == null) {
+            val wrappedEnd = timeline.startBeat + end - timeline.endBeat
+            prepareFrom(0, wrappedEnd)
+        }
+    }
+
+    private fun startSpokenNumber(event: PlaybackTimelineEvent, samples: ShortArray?, phase: Double? = null) {
+        if (event.layer != PlaybackAudioLayer.CHORD) return
+        spokenNumber = null
+        if (samples == null || config.bpm <= 0.0) return
+        val samplesPerBeat = SPOKEN_ROOT_DEGREE_SAMPLE_RATE * 60.0 / config.bpm
+        val position = phase?.let { it * samples.size }
+            ?: (beat - event.startBeat).coerceAtLeast(0.0) * samplesPerBeat
+        spokenNumber = SpokenNumber(event, samples, beat, position, samplesPerBeat)
     }
 
     private fun renderSpokenNumber(beatsPerFrame: Double): Double {
         val voice = spokenNumber ?: return 0.0
         if (beatsPerFrame <= 0.0) return 0.0
-        val framesLeft = (voice.endBeat - beat) / beatsPerFrame
-        val index = voice.position.toInt()
-        if (framesLeft <= 0.0 || index >= voice.frames) {
-            spokenNumber = null
-            return 0.0
-        }
-        val first = voice.sample(index)
-        val sample = first + (voice.sample(index + 1) - first) * (voice.position - index)
+        val framesLeft = (voice.event.endBeat - beat) / beatsPerFrame
+        val position = voice.positionAt(beat)
+        val index = position.toInt()
+        if (framesLeft <= 0.0 || index >= voice.samples.size) return 0.0
+        val first = voice.samples[index].toInt()
+        val sample = first + ((voice.samples.getOrNull(index + 1)?.toInt() ?: 0) - first) * (position - index)
         val fadeFrames = sampleRate * 0.005
-        val envelope = minOf(voice.renderedFrames / fadeFrames, framesLeft / fadeFrames, 1.0)
-        voice.position += SPOKEN_ROOT_DEGREE_SAMPLE_RATE.toDouble() / sampleRate
+        val phraseFramesLeft = (voice.samples.size - position) * sampleRate / SPOKEN_ROOT_DEGREE_SAMPLE_RATE
+        val envelope = minOf(voice.renderedFrames / fadeFrames, framesLeft / fadeFrames, phraseFramesLeft / fadeFrames, 1.0)
         voice.renderedFrames++
         return sample / Short.MAX_VALUE * 0.4 * envelope
     }
@@ -414,7 +454,7 @@ internal class PlaybackPcmRenderer(
             if (event.startBeat > beat + BEAT_EPSILON) break
             nextEventIndex++
             if (beat < event.endBeat) {
-                startSpokenNumber(event)
+                startSpokenNumber(event, preparedVoices[event.id])
                 createActiveEvent(event, fadeIn = false)?.let { active ->
                     activeEvents.add(active)
                     startedEvents?.add(RenderedPlaybackEvent(event.id, frameOffset))
@@ -427,7 +467,7 @@ internal class PlaybackPcmRenderer(
         timeline.events
             .filter { event -> event.startBeat <= beat && beat < event.endBeat }
             .forEach { event ->
-                startSpokenNumber(event)
+                startSpokenNumber(event, prepareVoice(event))
                 createActiveEvent(event, fadeIn)?.let(activeEvents::add)
             }
     }
@@ -749,7 +789,7 @@ internal class PlaybackEngine(
             } catch (_: Exception) {
             }
             sinkStarted = false
-            renderer?.seek(anchoredBeat)
+            renderer?.seek(anchoredBeat, preserveVoiceProgress = true)
             resetClock()
             return anchoredBeat
         }
@@ -809,7 +849,7 @@ internal class PlaybackEngine(
                     sink?.flush()
                 } catch (_: Exception) {
                 }
-                activeRenderer.seek(primeStartBeat)
+                activeRenderer.seek(primeStartBeat, preserveVoiceProgress = true)
                 resetClock()
                 return false
             }
@@ -1030,6 +1070,7 @@ internal fun buildPlaybackTimeline(
     endBeat: Double
 ): PlaybackTimeline {
     var nextId = 1L
+    val relativeMajorKey = relativeIonianKey(section.getKeys().keyAtBeat(1.0))
     val events = buildList {
         melody.forEach { note ->
             val noteEnd = note.beat + note.duration
@@ -1063,6 +1104,7 @@ internal fun buildPlaybackTimeline(
                 val fullNotes = voicing?.tones.orEmpty().map { it.midi }.filter { it > 0 }.toIntArray()
                 val resolvedRoot = ChordInterpreter.resolveChordRoot(chord, key)
                 val root = resolvedRoot?.simpleModePitch?.toAudioNoteNumber()
+                val rootDegree = resolvedRoot?.let { degreeInKey(it.pitch, key) }
                 if (fullNotes.isNotEmpty() || root != null) {
                     add(
                         PlaybackTimelineEvent(
@@ -1072,9 +1114,11 @@ internal fun buildPlaybackTimeline(
                             layer = PlaybackAudioLayer.CHORD,
                             fullMidiNotes = fullNotes,
                             rootMidiNote = root,
-                            rootDegree = resolvedRoot?.let { degreeInKey(it.pitch, key)?.degree },
+                            rootDegree = rootDegree?.degree,
+                            rootDegreeAlteration = rootDegree?.alteration ?: 0,
                             fullChordRootMidiNote = voicing?.tones?.firstOrNull { it.degree == 1 }?.midi,
-                            spokenChordSuffix = spokenSuffixForRoman(ChordInterpreter.getRomanSymbol(chord, key))
+                            spokenChordSuffix = spokenSuffixForChord(chord, ChordInterpreter.getRomanSymbol(chord, key), voicing),
+                            relativeMajorRootDegree = resolvedRoot?.let { degreeInKey(it.pitch, relativeMajorKey) }
                         )
                     )
                 }
