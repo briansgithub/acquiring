@@ -28,7 +28,10 @@ internal enum class PlaybackChordMode { FULL, ROOT_ONLY }
 internal const val DEFAULT_PLAYBACK_VOICE_VOLUME = 0.5f
 
 enum class PlaybackRootDegreeCue {
-    OFF, ROOT_PULSES, SPOKEN_NUMBER, SUNG_NUMBER_WITH_DETAILS, MELODY_FUNCTION, MELODY_CHORD_TONE;
+    OFF, ROOT_PULSES, HARMONIC_DISTANCE, SPOKEN_NUMBER, SUNG_NUMBER_WITH_DETAILS, MELODY_FUNCTION, MELODY_CHORD_TONE;
+
+    internal val pulsesRoots: Boolean
+        get() = this == ROOT_PULSES || this == HARMONIC_DISTANCE
 
     internal val speaksRootDegree: Boolean
         get() = this == SPOKEN_NUMBER || this == SUNG_NUMBER_WITH_DETAILS
@@ -58,6 +61,9 @@ internal fun modeAnnouncement(
     return spokenModeName(currentScale)
 }
 
+internal fun PlaybackTimelineEvent.harmonicPulseCount(majorLocked: Boolean): Int =
+    if (majorLocked) fifthsFromMajorTonic else fifthsFromKeyTonic
+
 internal data class PlaybackTimelineEvent(
     val id: Long,
     val startBeat: Double,
@@ -70,6 +76,8 @@ internal data class PlaybackTimelineEvent(
     val fullChordRootMidiNote: Int? = null,
     val spokenChordSuffix: SpokenChordSuffix? = null,
     val relativeMajorRootDegree: RelativeIonianDegree? = null,
+    val fifthsFromKeyTonic: Int = 0,
+    val fifthsFromMajorTonic: Int = 0,
     val keyScale: String? = null,
     val spokenMelodyCue: String? = null,
     val melodyCueMidi: Int? = null
@@ -212,8 +220,10 @@ internal class PlaybackPcmRenderer(
         val chordModeChanged = sanitized.chordMode != config.chordMode
         val arpeggioChanged = sanitized.arpeggiateCycles != config.arpeggiateCycles
         val cueChanged = sanitized.rootDegreeCue != config.rootDegreeCue
-        val rootPulsesChanged = (sanitized.rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES) !=
-            (config.rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES)
+        val lockChanged = sanitized.useRelativeIonianContext != config.useRelativeIonianContext
+        val rootPulsesChanged = sanitized.rootDegreeCue.pulsesRoots != config.rootDegreeCue.pulsesRoots ||
+            (sanitized.rootDegreeCue.pulsesRoots && cueChanged) ||
+            (sanitized.rootDegreeCue == PlaybackRootDegreeCue.HARMONIC_DISTANCE && lockChanged)
         val voiceChanged = cueChanged || pitchChanged || chordModeChanged ||
             sanitized.useRelativeIonianContext != config.useRelativeIonianContext
         val tempoChanged = sanitized.bpm != config.bpm
@@ -548,7 +558,7 @@ internal class PlaybackPcmRenderer(
     private fun createActiveEvent(event: PlaybackTimelineEvent, fadeIn: Boolean): ActiveEvent? {
         val isChord = event.layer == PlaybackAudioLayer.CHORD
         val root = event.rootMidiNote?.takeIf { it > 0 }
-        val pulseRoot = isChord && config.rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES
+        val pulseRoot = isChord && config.rootDegreeCue.pulsesRoots
         val midiNotes = if (isChord && (pulseRoot || config.chordMode == PlaybackChordMode.ROOT_ONLY)) {
             listOfNotNull(root)
         } else {
@@ -562,8 +572,18 @@ internal class PlaybackPcmRenderer(
             SynthVoice(frequency, config.waveform, sampleRate)
         }
 
-        val pulseCount = event.rootDegree?.takeIf { it in 1..7 } ?: 0
-        val (oscillators, rootPulses) = if (pulseRoot && pulseCount > 1) {
+        val pulseCount = when (config.rootDegreeCue) {
+            PlaybackRootDegreeCue.ROOT_PULSES -> event.rootDegree?.takeIf { it in 1..7 } ?: 0
+            PlaybackRootDegreeCue.HARMONIC_DISTANCE ->
+                event.harmonicPulseCount(config.useRelativeIonianContext)
+            else -> 0
+        }
+        val pulsing = when (config.rootDegreeCue) {
+            PlaybackRootDegreeCue.ROOT_PULSES -> pulseCount > 1
+            PlaybackRootDegreeCue.HARMONIC_DISTANCE -> pulseCount >= 1
+            else -> false
+        }
+        val (oscillators, rootPulses) = if (pulseRoot && pulsing) {
             // Separate voices retrigger decaying instruments on every pulse.
             emptyList<SynthVoice>() to List(pulseCount) { voices(midiNotes) }
         } else {
@@ -585,7 +605,7 @@ internal class PlaybackPcmRenderer(
         melodyGain = melodyGain.coerceIn(0f, 1f),
         chordGain = chordGain.coerceIn(0f, 1f),
         voiceVolume = voiceVolume.coerceIn(0f, 1f),
-        arpeggiateCycles = if (rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES) {
+        arpeggiateCycles = if (rootDegreeCue.pulsesRoots) {
             0.0
         } else {
             arpeggiateCycles.coerceIn(0.0, 4.0)
@@ -1194,6 +1214,12 @@ internal fun buildPlaybackTimeline(
                             fullChordRootMidiNote = voicing?.tones?.firstOrNull { it.degree == 1 }?.midi,
                             spokenChordSuffix = spokenSuffixForChord(chord, ChordInterpreter.getRomanSymbol(chord, key), voicing),
                             relativeMajorRootDegree = resolvedRoot?.let { degreeInKey(it.pitch, relativeMajorKey) },
+                            fifthsFromKeyTonic = root?.let {
+                                circleOfFifthsDistance(tonicPitchClass(key), Math.floorMod(it, 12))
+                            } ?: 0,
+                            fifthsFromMajorTonic = root?.let {
+                                circleOfFifthsDistance(tonicPitchClass(relativeMajorKey), Math.floorMod(it, 12))
+                            } ?: 0,
                             keyScale = key.scale
                         )
                     )

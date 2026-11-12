@@ -421,6 +421,85 @@ class PlaybackRootDegreeCueTest {
         assertTrue(abs(attacks.last() - 2_480) < 40)
     }
 
+    @Test
+    fun harmonicDistanceCountsCircleOfFifthsStepsFromTheTonic() {
+        assertEquals(0, circleOfFifthsDistance(0, 0))
+        assertEquals(1, circleOfFifthsDistance(0, 7))
+        assertEquals(1, circleOfFifthsDistance(0, 5))
+        assertEquals(2, circleOfFifthsDistance(0, 10))
+        assertEquals(6, circleOfFifthsDistance(0, 6))
+
+        val section = Json.decodeFromString<ExtractedSection>(
+            """
+            {
+              "chords": [
+                {"beat":1,"root":1},
+                {"beat":2,"root":4},
+                {"beat":3,"root":5},
+                {"beat":4,"root":2},
+                {"beat":5,"root":6},
+                {"beat":6,"root":3},
+                {"beat":7,"root":7},
+                {"beat":8,"_letterRootName":"F#"},
+                {"beat":9,"_letterRootName":"Bb"}
+              ],
+              "metadata":{"keys":[{"beat":1,"tonic":"C","scale":"major"}]}
+            }
+            """.trimIndent()
+        )
+        val events = buildPlaybackTimeline(section, emptyList(), 10.0).events
+        assertEquals(listOf(0, 1, 1, 2, 3, 4, 5, 6, 2), events.map { it.fifthsFromKeyTonic })
+    }
+
+    @Test
+    fun harmonicDistanceUsesTheMajorTonicWhenLocked() {
+        val section = Json.decodeFromString<ExtractedSection>(
+            """
+            {
+              "chords":[{"beat":1,"root":1,"duration":1}],
+              "metadata":{"keys":[{"beat":1,"tonic":"D","scale":"dorian"}]}
+            }
+            """.trimIndent()
+        )
+        val tonic = buildPlaybackTimeline(section, emptyList(), 2.0).events.single()
+        assertEquals(0, tonic.fifthsFromKeyTonic)
+        assertEquals(2, tonic.fifthsFromMajorTonic)
+        assertEquals(0, tonic.harmonicPulseCount(majorLocked = false))
+        assertEquals(2, tonic.harmonicPulseCount(majorLocked = true))
+
+        val unlocked = render(
+            listOf(tonic),
+            PlaybackChordMode.ROOT_ONLY,
+            cue = PlaybackRootDegreeCue.HARMONIC_DISTANCE
+        )
+        val locked = render(
+            listOf(tonic),
+            PlaybackChordMode.ROOT_ONLY,
+            cue = PlaybackRootDegreeCue.HARMONIC_DISTANCE,
+            majorLocked = true
+        )
+        assertEquals(1, attackStarts(unlocked).size)
+        assertEquals(2, attackStarts(locked).size)
+    }
+
+    @Test
+    fun harmonicDistanceHoldsHomeAndPulsesEachStep() {
+        val cue = PlaybackRootDegreeCue.HARMONIC_DISTANCE
+        val home = render(listOf(chord(1.0, 2.0, 1)), PlaybackChordMode.FULL, cue = cue)
+        val near = render(
+            listOf(chord(1.0, 2.0, 4).copy(fifthsFromKeyTonic = 1)),
+            PlaybackChordMode.FULL,
+            cue = cue
+        )
+        val far = chord(1.0, 2.0, 7).copy(fifthsFromKeyTonic = 5)
+        val farFull = render(listOf(far), PlaybackChordMode.FULL, cue = cue, arpeggiateCycles = 3.0)
+        val tail = 7_000 until 7_600
+        assertTrue(tail.maxOf { abs(home[it].toInt()) } > 500)
+        assertEquals(1, attackStarts(near).size)
+        assertEquals(5, attackStarts(farFull).size)
+        assertArrayEquals(render(listOf(far), PlaybackChordMode.ROOT_ONLY, cue = cue), farFull)
+    }
+
     private fun chord(start: Double, end: Double, degree: Int) = PlaybackTimelineEvent(
         id = (start * 1_000).roundToInt().toLong(),
         startBeat = start,
@@ -436,7 +515,8 @@ class PlaybackRootDegreeCueTest {
         bpm: Double = 60.0,
         cue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.ROOT_PULSES,
         arpeggiateCycles: Double = 0.0,
-        transpose: Int = 0
+        transpose: Int = 0,
+        majorLocked: Boolean = false
     ) = PlaybackConfig(
         bpm = bpm,
         transpose = transpose,
@@ -445,7 +525,8 @@ class PlaybackRootDegreeCueTest {
         melodyGain = 1f,
         chordGain = 1f,
         arpeggiateCycles = arpeggiateCycles,
-        rootDegreeCue = cue
+        rootDegreeCue = cue,
+        useRelativeIonianContext = majorLocked
     )
 
     private fun renderer(timeline: PlaybackTimeline, mode: PlaybackChordMode) =
@@ -458,12 +539,16 @@ class PlaybackRootDegreeCueTest {
         arpeggiateCycles: Double = 0.0,
         cue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.ROOT_PULSES,
         spokenRootDegrees: SpokenRootDegreeClips = SpokenRootDegreeClips(),
-        transpose: Int = 0
+        transpose: Int = 0,
+        majorLocked: Boolean = false
     ): ShortArray {
         val endBeat = events.last().endBeat + 0.1
         val timeline = PlaybackTimeline(endBeat = endBeat, events = events, completionKey = "test")
         val renderer = PlaybackPcmRenderer(
-            timeline, config(mode, bpm, cue, arpeggiateCycles, transpose), SAMPLE_RATE, spokenRootDegrees
+            timeline,
+            config(mode, bpm, cue, arpeggiateCycles, transpose, majorLocked),
+            SAMPLE_RATE,
+            spokenRootDegrees
         )
         return ShortArray(((endBeat - 1.0) * 60 * SAMPLE_RATE / bpm).roundToInt())
             .also { renderer.renderAudioInto(it) }

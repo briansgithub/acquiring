@@ -356,6 +356,7 @@ private val PlaybackRootDegreeCue.controlLabel: String
     get() = when (this) {
         PlaybackRootDegreeCue.OFF -> "Off"
         PlaybackRootDegreeCue.ROOT_PULSES -> "Root Pulses"
+        PlaybackRootDegreeCue.HARMONIC_DISTANCE -> "Harmonic Distance"
         PlaybackRootDegreeCue.SPOKEN_NUMBER -> "Spoken Number"
         PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS -> "Sung Number + Details"
         PlaybackRootDegreeCue.MELODY_FUNCTION -> "Melody function"

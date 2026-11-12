@@ -219,7 +219,7 @@ fun PlaybackTab(
     // the same singing-octave shift.
     fun tessituraIntervalShiftSemitones(previousAudioNote: Int, currentAudioNote: Int): Int =
         singingOctaveSemitones(octaveOffset)
-    val rootPulsesEnabled = rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES
+    val rootPulsesEnabled = rootDegreeCue.pulsesRoots
     val effectiveArpeggioIndex = if (rootPulsesEnabled) {
         DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX
     } else {
