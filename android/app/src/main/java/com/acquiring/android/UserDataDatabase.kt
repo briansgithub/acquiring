@@ -24,7 +24,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         PlaylistEntry::class,
         HarvestedSong::class,
         HarvestLedgerMeta::class,
-        SongOctaveOffset::class
+        SongOctaveOffset::class,
+        SongPlaybackSettings::class
     ],
     version = UserDataDatabase.SCHEMA_VERSION
 )
@@ -35,14 +36,38 @@ abstract class UserDataDatabase : RoomDatabase() {
 
     abstract fun songOctaveOffsetDao(): SongOctaveOffsetDao
 
-    companion object {
-        const val SCHEMA_VERSION = 4
+    abstract fun songPlaybackSettingsDao(): SongPlaybackSettingsDao
 
-        val MIGRATION_3_4 = object : Migration(3, SCHEMA_VERSION) {
+    companion object {
+        const val SCHEMA_VERSION = 5
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE playlist_entries ADD COLUMN position INTEGER")
                 db.execSQL("ALTER TABLE playlist_entries ADD COLUMN sectionId TEXT")
                 db.execSQL("ALTER TABLE playlist_entries ADD COLUMN sectionName TEXT")
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, SCHEMA_VERSION) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `song_playback_settings` (
+                        `slug` TEXT NOT NULL,
+                        `lockInMajor` INTEGER NOT NULL,
+                        `tempoPercent` REAL NOT NULL,
+                        `arpeggioOptionIndex` INTEGER NOT NULL,
+                        `melodyChordBalance` REAL NOT NULL,
+                        `instrument` TEXT,
+                        `transpose` INTEGER NOT NULL,
+                        `rootDegreeCue` TEXT NOT NULL,
+                        `voiceVolume` REAL NOT NULL,
+                        `loopSection` INTEGER NOT NULL,
+                        PRIMARY KEY(`slug`)
+                    )
+                    """
+                )
             }
         }
 

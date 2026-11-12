@@ -198,7 +198,7 @@ class HarvestLedgerTest {
 
         val migrated = Room.databaseBuilder(context, UserDataDatabase::class.java, databaseName)
             .addMigrations(UserDataDatabase.MIGRATION_1_2, UserDataDatabase.MIGRATION_2_3,
-                UserDataDatabase.MIGRATION_3_4)
+                UserDataDatabase.MIGRATION_3_4, UserDataDatabase.MIGRATION_4_5)
             .allowMainThreadQueries()
             .build()
         try {

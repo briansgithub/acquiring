@@ -207,6 +207,8 @@ fun PlaybackTab(
     onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit = {},
     voiceVolume: Float = DEFAULT_PLAYBACK_VOICE_VOLUME,
     loopSection: Boolean = true,
+    melodyChordBalance: Float = DEFAULT_MELODY_CHORD_BALANCE,
+    onMelodyChordBalanceChange: (Float) -> Unit = {},
     onSectionFinished: () -> Unit = {},
     onAutoStartConsumed: () -> Unit = {}
 ) {
@@ -259,7 +261,6 @@ fun PlaybackTab(
         PlaybackActiveEventIndex(section, melody)
     }
 
-    var melodyChordBalance by remember { mutableStateOf(0.5f) }
     val melodyVolume = melodyChordBalance
     val chordVolume = 1f - melodyChordBalance
     var inertiaJob by remember { mutableStateOf<Job?>(null) }
@@ -1762,11 +1763,11 @@ fun PlaybackTab(
                                 label = "Melody / Chord\nVolume Mix",
                                 valueLabel = "$melodyPercent / $chordPercent",
                                 value = melodyChordBalance,
-                                onValueChange = { melodyChordBalance = it },
+                                onValueChange = onMelodyChordBalanceChange,
                                 valueRange = 0f..1f,
                                 steps = 100,
                                 ringLabels = listOf("Chord", "Melody"),
-                                onTap = { melodyChordBalance = 0.5f },
+                                onTap = { onMelodyChordBalanceChange(DEFAULT_MELODY_CHORD_BALANCE) },
                                 modifier = Modifier.weight(1f)
                             )
                         }

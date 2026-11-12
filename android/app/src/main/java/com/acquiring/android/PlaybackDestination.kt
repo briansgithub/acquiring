@@ -30,7 +30,7 @@ internal const val PLAYBACK_SCREEN_TEST_TAG = "PlaybackScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlaybackDestination(
+internal fun PlaybackDestination(
     song: Song,
     sections: Map<String, ExtractedSection>,
     selectedSectionId: String?,
@@ -65,7 +65,8 @@ fun PlaybackDestination(
     onPreviousSong: (() -> Unit)? = null,
     onNextSong: (() -> Unit)? = null,
     previousSongEnabled: Boolean = true,
-    nextSongEnabled: Boolean = true
+    nextSongEnabled: Boolean = true,
+    playbackSettings: SongPlaybackSettingsViewModel? = null
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
     val selectedSectionKey = selectedSectionId
@@ -75,11 +76,28 @@ fun PlaybackDestination(
     val selectedSection = sections[selectedSectionKey]
         ?: sectionsInSongOrder.firstOrNull()?.value
         ?: sections.values.first()
-    var isSimpleMode by remember { mutableStateOf(false) }
-    var useRelativeIonianContext by remember { mutableStateOf(false) }
+    var isSimpleMode by rememberSaveable(song.slug) { mutableStateOf(false) }
+    var localLockInMajor by rememberSaveable(song.slug) { mutableStateOf(false) }
     var playbackKeyDisplay by remember { mutableStateOf<PlaybackKeyDisplay?>(null) }
-    var voiceVolume by rememberSaveable { mutableStateOf(DEFAULT_PLAYBACK_VOICE_VOLUME) }
-    var loopSection by rememberSaveable { mutableStateOf(true) }
+    var localVoiceVolume by rememberSaveable(song.slug) { mutableStateOf(DEFAULT_PLAYBACK_VOICE_VOLUME) }
+    var localLoopSection by rememberSaveable(song.slug) { mutableStateOf(true) }
+    var localMelodyChordBalance by remember(song.slug) { mutableStateOf(DEFAULT_MELODY_CHORD_BALANCE) }
+    val useRelativeIonianContext = playbackSettings?.lockInMajor ?: localLockInMajor
+    val voiceVolume = playbackSettings?.voiceVolume ?: localVoiceVolume
+    val loopSection = playbackSettings?.loopSection ?: localLoopSection
+    val melodyChordBalance = playbackSettings?.melodyChordBalance ?: localMelodyChordBalance
+    val onLockInMajorChange: (Boolean) -> Unit = { value ->
+        if (playbackSettings != null) playbackSettings.updateLockInMajor(value) else localLockInMajor = value
+    }
+    val onVoiceVolumeChange: (Float) -> Unit = { value ->
+        if (playbackSettings != null) playbackSettings.updateVoiceVolume(value) else localVoiceVolume = value
+    }
+    val onLoopSectionChange: (Boolean) -> Unit = { value ->
+        if (playbackSettings != null) playbackSettings.updateLoopSection(value) else localLoopSection = value
+    }
+    val onMelodyChordBalanceChange: (Float) -> Unit = { value ->
+        if (playbackSettings != null) playbackSettings.updateMelodyChordBalance(value) else localMelodyChordBalance = value
+    }
     var continueIntoNextSection by remember { mutableStateOf(false) }
     val context = LocalContext.current
     LaunchedEffect(context, selectedSectionKey, useRelativeIonianContext) {
@@ -126,7 +144,7 @@ fun PlaybackDestination(
             onBack = onBack,
             onTitleClick = { showTitleSheet = true },
             useRelativeIonianContext = useRelativeIonianContext,
-            onLockInMajorChange = { useRelativeIonianContext = it },
+            onLockInMajorChange = onLockInMajorChange,
             keyDisplay = playbackKeyDisplay,
             onPlayHomeNote = { homeNoteAction[0]() },
             onPlayHomeChord = { homeChordAction[0]() },
@@ -163,6 +181,8 @@ fun PlaybackDestination(
             onRootDegreeCueChange = onRootDegreeCueChange,
             voiceVolume = voiceVolume,
             loopSection = loopSection,
+            melodyChordBalance = melodyChordBalance,
+            onMelodyChordBalanceChange = onMelodyChordBalanceChange,
             onSectionFinished = {
                 val next = nextSectionInSongOrder(
                     sectionsInSongOrder.map { it.key },
@@ -217,9 +237,9 @@ fun PlaybackDestination(
             rootDegreeCue = rootDegreeCue,
             onRootDegreeCueChange = onRootDegreeCueChange,
             voiceVolume = voiceVolume,
-            onVoiceVolumeChange = { voiceVolume = it },
+            onVoiceVolumeChange = onVoiceVolumeChange,
             loopSection = loopSection,
-            onLoopSectionChange = { loopSection = it },
+            onLoopSectionChange = { onLoopSectionChange(it) },
             onPreviousSong = onPreviousSong,
             onNextSong = onNextSong,
             previousSongEnabled = previousSongEnabled,
