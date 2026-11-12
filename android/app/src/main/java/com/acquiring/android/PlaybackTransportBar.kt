@@ -1,15 +1,19 @@
 package com.acquiring.android
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -18,6 +22,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -42,6 +47,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -371,6 +377,73 @@ private fun PlaybackModeSelector(
     }
 }
 
+private val voiceOptionGroups = listOf(
+    "Melody" to listOf(
+        PlaybackRootDegreeCue.MELODY_FUNCTION,
+        PlaybackRootDegreeCue.MELODY_CHORD_TONE
+    ),
+    "Chord" to listOf(
+        PlaybackRootDegreeCue.SPOKEN_NUMBER,
+        PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS
+    ),
+    "Pulses" to listOf(
+        PlaybackRootDegreeCue.ROOT_PULSES,
+        PlaybackRootDegreeCue.HARMONIC_DISTANCE
+    )
+)
+
+@Composable
+private fun VoiceSectionHeading(title: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.semantics { heading() }
+        )
+        Divider(
+            modifier = Modifier.padding(top = 2.dp),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+        )
+    }
+}
+
+@Composable
+private fun VoiceOptionRow(
+    option: PlaybackRootDegreeCue,
+    selectedCue: PlaybackRootDegreeCue,
+    onSelect: (PlaybackRootDegreeCue) -> Unit
+) {
+    val isSelected = option == selectedCue
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 40.dp)
+            .clickable { onSelect(option) }
+            .padding(start = 32.dp, end = 12.dp, top = 2.dp, bottom = 2.dp)
+            .testTag("PlaybackRootDegree-${option.name}")
+            .semantics {
+                role = Role.RadioButton
+                selected = isSelected
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = option.controlLabel,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f)
+        )
+        RadioButton(selected = isSelected, onClick = null)
+    }
+}
+
 private val PlaybackRootDegreeCue.controlLabel: String
     get() = when (this) {
         PlaybackRootDegreeCue.OFF -> "Off"
@@ -468,26 +541,29 @@ internal fun PlaybackVoiceControls(
                 shape = RoundedCornerShape(16.dp),
                 color = MaterialTheme.colorScheme.surface
             ) {
-                Column(modifier = Modifier.padding(vertical = 12.dp)) {
+                Column(
+                    modifier = Modifier
+                        .heightIn(max = 560.dp)
+                        .verticalScroll(rememberScrollState())
+                        .padding(vertical = 12.dp)
+                ) {
                     Text(
                         "Voice",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
-                    PlaybackRootDegreeCue.entries.forEach { option ->
-                        val isSelected = cue == option
-                        DropdownMenuItem(
-                            text = { Text(option.controlLabel) },
-                            onClick = {
-                                onCueChange(option)
+                    VoiceOptionRow(PlaybackRootDegreeCue.OFF, cue) { selected ->
+                        onCueChange(selected)
+                        expanded = false
+                    }
+                    voiceOptionGroups.forEach { (group, options) ->
+                        VoiceSectionHeading(group)
+                        options.forEach { option ->
+                            VoiceOptionRow(option, cue) { selected ->
+                                onCueChange(selected)
                                 expanded = false
-                            },
-                            trailingIcon = { RadioButton(selected = isSelected, onClick = null) },
-                            modifier = Modifier.testTag("PlaybackRootDegree-${option.name}").semantics {
-                                role = Role.RadioButton
-                                selected = isSelected
                             }
-                        )
+                        }
                     }
                     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                         Text("Voice volume ${(volume * 100).roundToInt()}%", style = MaterialTheme.typography.labelMedium)
