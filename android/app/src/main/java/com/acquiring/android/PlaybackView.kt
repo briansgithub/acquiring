@@ -1551,6 +1551,23 @@ fun PlaybackTab(
                                 verticalArrangement = Arrangement.Top
                             ) {
                                 Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(PLAYBACK_MELODY_FUNCTION_CAPTION_HEIGHT),
+                                    verticalAlignment = Alignment.Bottom
+                                ) {
+                                    Spacer(Modifier.width(PLAYBACK_ROW_LABEL_WIDTH))
+                                    Row(Modifier.weight(1f).fillMaxHeight()) {
+                                        Spacer(Modifier.weight(1f))
+                                        PlaybackMelodyFunctionCaption(
+                                            text = if (currentMelodyPitch != null) melodyFunctionText else "",
+                                            color = melodyFunctionToneColor,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        Spacer(Modifier.weight(2f))
+                                    }
+                                }
+                                Row(
                                     modifier = Modifier.fillMaxWidth().height(PLAYBACK_MELODY_ROW_HEIGHT),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -1564,7 +1581,6 @@ fun PlaybackTab(
                                         onPlayPitch = ::playSingleNotePreview,
                                         onSingPitch = ::openSingleMelodySingingTarget,
                                         functionText = melodyFunctionText,
-                                        functionColor = melodyFunctionToneColor,
                                         onPlayInterval = { state ->
                                             playIntervalPreview(state.previous, state.current)
                                         },

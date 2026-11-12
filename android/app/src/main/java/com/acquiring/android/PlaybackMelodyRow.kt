@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.sp
 
 internal val PLAYBACK_MELODY_PAIR_CARD_HEIGHT = 44.dp
 internal val PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT = 88.dp
+internal val PLAYBACK_MELODY_FUNCTION_CAPTION_HEIGHT = 40.dp
 
 @Composable
 internal fun PlaybackCurrentMelodyCard(
@@ -88,7 +90,6 @@ internal fun PlaybackMelodyRow(
     onPlayInterval: (MelodyIntervalState) -> Unit,
     onSingInterval: (MelodyIntervalState) -> Unit,
     functionText: String,
-    functionColor: Color,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -126,9 +127,7 @@ internal fun PlaybackMelodyRow(
                                 description = "Melody. $functionText. Play current melody note $currentLabel. Double tap to sing it back.",
                                 height = PLAYBACK_MELODY_PAIR_CARD_HEIGHT,
                                 onClick = { onPlayPitch(currentPitch) },
-                                onDoubleClick = { onSingPitch(currentPitch, currentLabel) },
-                                functionText = functionText,
-                                functionColor = functionColor
+                                onDoubleClick = { onSingPitch(currentPitch, currentLabel) }
                             )
                         }
                     } else {
@@ -163,8 +162,7 @@ internal fun PlaybackMelodyRow(
                         fallbackAlignment = Alignment.TopCenter,
                         onPlayPitch = onPlayPitch,
                         onSingPitch = onSingPitch,
-                        functionText = functionText,
-                        functionColor = functionColor
+                        functionText = functionText
                     )
                 }
                 if (intervalState != null) {
@@ -211,8 +209,7 @@ private fun RowScope.MelodyPairSlot(
     fallbackAlignment: Alignment,
     onPlayPitch: (SpelledPitch) -> Unit,
     onSingPitch: (SpelledPitch, String) -> Unit,
-    functionText: String? = null,
-    functionColor: Color = Color.Unspecified
+    functionText: String? = null
 ) {
     val alignment = when (card?.verticalPosition) {
         MelodyPitchCardVerticalPosition.TOP -> Alignment.TopCenter
@@ -237,9 +234,7 @@ private fun RowScope.MelodyPairSlot(
                 ).joinToString(" "),
                 height = PLAYBACK_MELODY_PAIR_CARD_HEIGHT,
                 onClick = { onPlayPitch(card.pitch) },
-                onDoubleClick = { onSingPitch(card.pitch, card.scaleDegreeLabel) },
-                functionText = functionText,
-                functionColor = functionColor
+                onDoubleClick = { onSingPitch(card.pitch, card.scaleDegreeLabel) }
             )
         } else {
             PlaybackEmptyCardSlot(fixedHeight = PLAYBACK_MELODY_PAIR_CARD_HEIGHT)
@@ -303,6 +298,26 @@ private fun MelodyDegreeCard(
     }
 }
 
+@Composable
+internal fun PlaybackMelodyFunctionCaption(
+    text: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxHeight(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        if (text.isNotEmpty()) {
+            OutlinedFunctionText(
+                text = text,
+                color = color,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalTextApi::class)
 @Composable
 private fun OutlinedFunctionText(
@@ -313,7 +328,9 @@ private fun OutlinedFunctionText(
     val style = TextStyle(
         fontSize = 15.sp,
         fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
+        lineHeight = 16.sp,
+        platformStyle = PlatformTextStyle(includeFontPadding = false)
     )
     Box(modifier) {
         Text(
