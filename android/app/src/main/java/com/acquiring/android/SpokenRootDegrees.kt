@@ -268,6 +268,65 @@ internal val SPOKEN_MELODY_FUNCTIONS: List<Pair<String, Int>> = listOf(
     "seven" to R.raw.melody_fn_seven
 )
 
+/**
+ * Moves a spoken clip so its pitch center is [targetMidi], keeping the contour.
+ * The source pitch is the clip's own fundamental, so an unpitched mode take lands
+ * on the tonic instead of staying at the recording pitch.
+ */
+internal fun pitchShiftSpokenClip(
+    samples: ShortArray,
+    targetMidi: Int,
+    sampleRate: Int = SPOKEN_ROOT_DEGREE_SAMPLE_RATE
+): ShortArray {
+    if (samples.isEmpty()) return samples
+    val sourceHz = estimateSpeechPitchHz(samples, sampleRate) ?: return samples
+    val targetHz = 440.0 * 2.0.pow((targetMidi - 69) / 12.0)
+    val ratio = (targetHz / sourceHz).toFloat()
+    if (ratio in 0.97f..1.03f) return samples
+    val sonic = Sonic(sampleRate, 1)
+    sonic.speed = 1f
+    sonic.pitch = ratio
+    sonic.writeShortToStream(samples, samples.size)
+    sonic.flushStream()
+    val count = sonic.samplesAvailable()
+    if (count <= 0) return samples
+    return ShortArray(count).also { sonic.readShortFromStream(it, count) }
+}
+
+/** Fundamental frequency of a short spoken clip, in hertz. */
+internal fun estimateSpeechPitchHz(
+    samples: ShortArray,
+    sampleRate: Int = SPOKEN_ROOT_DEGREE_SAMPLE_RATE
+): Double? {
+    val minLag = (sampleRate / 500).coerceAtLeast(1)
+    val maxLag = sampleRate / 70
+    if (samples.size <= maxLag * 2) return null
+    val start = samples.size / 4
+    val length = samples.size / 2
+    val window = DoubleArray(length) { samples[start + it] / 32_768.0 }
+    var energy = 0.0
+    for (sample in window) energy += sample * sample
+    if (energy < 1e-4) return null
+    val scores = DoubleArray(maxLag + 1)
+    var bestLag = -1
+    var best = 0.0
+    for (lag in minLag..maxLag) {
+        var correlation = 0.0
+        val compared = window.size - lag
+        for (index in 0 until compared) correlation += window[index] * window[index + lag]
+        val normalized = correlation / energy
+        scores[lag] = normalized
+        if (normalized > best) {
+            best = normalized
+            bestLag = lag
+        }
+    }
+    if (bestLag < 0 || best < 0.25) return null
+    var lag = bestLag
+    while (lag / 2 >= minLag && scores[lag / 2] > best * 0.8) lag /= 2
+    return sampleRate.toDouble() / lag
+}
+
 internal val SPOKEN_MODE_NAMES: List<Pair<String, Int>> = listOf(
     "major" to R.raw.mode_major,
     "minor" to R.raw.mode_minor,

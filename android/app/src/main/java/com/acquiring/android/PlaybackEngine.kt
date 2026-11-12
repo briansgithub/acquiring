@@ -80,7 +80,8 @@ internal data class PlaybackTimelineEvent(
     val fifthsFromMajorTonic: Int = 0,
     val keyScale: String? = null,
     val spokenMelodyCue: String? = null,
-    val melodyCueMidi: Int? = null
+    val melodyCueMidi: Int? = null,
+    val keyTonicMidi: Int? = null
 )
 
 internal data class PlaybackTimeline(
@@ -483,7 +484,8 @@ internal class PlaybackPcmRenderer(
         if (!event.speaksFor(config.rootDegreeCue)) return
         spokenNumber = null
         val mode = if (config.rootDegreeCue.speaksRootDegree) takeModeAnnouncement(event.keyScale) else null
-        val phrase = withModePrefix(samples, mode)
+        val tonicMidi = event.keyTonicMidi?.plus(config.transpose)
+        val phrase = withModePrefix(samples, mode, tonicMidi)
         if (phrase == null || config.bpm <= 0.0) return
         val samplesPerBeat = SPOKEN_ROOT_DEGREE_SAMPLE_RATE * 60.0 / config.bpm
         val position = phase?.let { it * phrase.size }
@@ -502,12 +504,13 @@ internal class PlaybackPcmRenderer(
         return announced
     }
 
-    private fun withModePrefix(samples: ShortArray?, mode: String?): ShortArray? {
+    private fun withModePrefix(samples: ShortArray?, mode: String?, tonicMidi: Int?): ShortArray? {
         val modeSamples = mode?.let { spokenRootDegrees.modeClip(it) } ?: return samples
-        if (samples == null || samples.isEmpty()) return modeSamples
-        return ShortArray(modeSamples.size + samples.size).also { combined ->
-            modeSamples.copyInto(combined)
-            samples.copyInto(combined, modeSamples.size)
+        val pitched = tonicMidi?.let { pitchShiftSpokenClip(modeSamples, it) } ?: modeSamples
+        if (samples == null || samples.isEmpty()) return pitched
+        return ShortArray(pitched.size + samples.size).also { combined ->
+            pitched.copyInto(combined)
+            samples.copyInto(combined, pitched.size)
         }
     }
 
@@ -1377,7 +1380,8 @@ internal fun buildPlaybackTimeline(
                             fifthsFromMajorTonic = root?.let {
                                 circleOfFifthsDistance(tonicPitchClass(relativeMajorKey), Math.floorMod(it, 12))
                             } ?: 0,
-                            keyScale = key.scale
+                            keyScale = key.scale,
+                            keyTonicMidi = MusicTheory.getMidiNote("1", 0, key)
                         )
                     )
                 }
