@@ -147,16 +147,18 @@ internal object PlaybackController {
         target.updateConfig(newConfig)
     }
 
-    fun load(identity: String, newTimeline: PlaybackTimeline, continuePlaying: Boolean) {
-        val needsLoad = synchronized(lock) {
-            if (loadedTimelineIdentity == identity) {
-                false
-            } else {
-                loadedTimelineIdentity = identity
-                true
-            }
+    /**
+     * Returns true when this replaced the performance and playback starts at the
+     * beginning. A Loop/Song toggle keeps the same identity; that path only updates
+     * the completion key and leaves the playhead where it is.
+     */
+    fun load(identity: String, newTimeline: PlaybackTimeline, continuePlaying: Boolean): Boolean {
+        val sameIdentity = synchronized(lock) {
+            val same = loadedTimelineIdentity == identity
+            if (!same) loadedTimelineIdentity = identity
+            same
         }
-        if (!needsLoad) return
+        if (sameIdentity && engine?.updateCompletion(newTimeline) == true) return false
         val focusOwner = if (continuePlaying) requestFocus() else null
         val shouldPlay = synchronized(lock) {
             val permitted = focusOwner != null && activePlaybackOwner === focusOwner
@@ -164,6 +166,7 @@ internal object PlaybackController {
             permitted
         }
         if (focusOwner != null && !shouldPlay) abandonFocus()
+        return true
     }
 
     fun play() {

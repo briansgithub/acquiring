@@ -125,3 +125,11 @@ internal fun Map<String, ExtractedSection>.sectionsInSongOrder(): List<Map.Entry
         if (canonical != 0) canonical else a.sourcePosition.compareTo(b.sourcePosition)
     }).map { it.entry }
 }
+
+/** The section that follows [currentId], wrapping from the last section back to the first. */
+internal fun nextSectionInSongOrder(sectionIds: List<String>, currentId: String): String? {
+    if (sectionIds.isEmpty()) return null
+    val index = sectionIds.indexOf(currentId)
+    if (index < 0) return sectionIds.first()
+    return sectionIds[(index + 1) % sectionIds.size]
+}

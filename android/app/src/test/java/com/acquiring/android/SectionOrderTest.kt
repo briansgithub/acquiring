@@ -59,4 +59,14 @@ class SectionOrderTest {
         assertEquals(ranks.sorted(), ranks)
         assertEquals(sectionTypeKey("Pre-Chorus"), sectionTypeKey(" pre chorus "))
     }
+
+    @Test
+    fun nextSectionWrapsFromTheLastBackToTheFirst() {
+        val order = listOf("intro", "verse", "chorus")
+        assertEquals("verse", nextSectionInSongOrder(order, "intro"))
+        assertEquals("chorus", nextSectionInSongOrder(order, "verse"))
+        assertEquals("intro", nextSectionInSongOrder(order, "chorus"))
+        assertEquals("intro", nextSectionInSongOrder(order, "missing"))
+        assertEquals(null, nextSectionInSongOrder(emptyList(), "intro"))
+    }
 }

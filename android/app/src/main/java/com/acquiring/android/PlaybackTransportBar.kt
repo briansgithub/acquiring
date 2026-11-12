@@ -59,6 +59,8 @@ internal val PLAYBACK_TRANSPORT_SELECTOR = 72.dp
 internal val PLAYBACK_TRANSPORT_PLAY = 88.dp
 internal val PLAYBACK_TRANSPORT_GAP = 8.dp
 internal val PLAYBACK_TRANSPORT_WIDTH = 376.dp
+internal val PLAYBACK_SECTION_LOOP_WIDTH = 56.dp
+internal const val PLAYBACK_SECTION_LOOP_TEST_TAG = "PlaybackSectionLoop"
 internal val PLAYBACK_TRANSPORT_CORNER = 8.dp
 internal const val PLAYBACK_VOICE_BUTTON_TEST_TAG = "PlaybackVoiceControls"
 internal const val PLAYBACK_VOICE_VOLUME_TEST_TAG = "PlaybackVoiceVolume"
@@ -183,6 +185,8 @@ internal fun PlaybackTransportBar(
     onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit = {},
     voiceVolume: Float = DEFAULT_PLAYBACK_VOICE_VOLUME,
     onVoiceVolumeChange: (Float) -> Unit = {},
+    loopSection: Boolean = true,
+    onLoopSectionChange: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
     onPreviousSong: (() -> Unit)? = null,
     onNextSong: (() -> Unit)? = null,
@@ -303,6 +307,10 @@ internal fun PlaybackTransportBar(
                             modifier = Modifier.weight(1f)
                         )
                     }
+                    PlaybackSectionLoopToggle(
+                        loopSection = loopSection,
+                        onToggle = { onLoopSectionChange(!loopSection) }
+                    )
                 }
                 onPreviousSong?.let { previous ->
                     PlaybackTransportIconButton(
@@ -373,6 +381,37 @@ private val PlaybackRootDegreeCue.controlLabel: String
         PlaybackRootDegreeCue.MELODY_FUNCTION -> "Melody function"
         PlaybackRootDegreeCue.MELODY_CHORD_TONE -> "Melody chord tones"
     }
+
+@Composable
+private fun PlaybackSectionLoopToggle(
+    loopSection: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val label = if (loopSection) "Loop" else "Song"
+    PlaybackTransportIconButton(
+        onClick = onToggle,
+        width = PLAYBACK_SECTION_LOOP_WIDTH,
+        modifier = modifier
+            .testTag(PLAYBACK_SECTION_LOOP_TEST_TAG)
+            .semantics {
+                contentDescription = if (loopSection) {
+                    "Looping this section"
+                } else {
+                    "Playing through the song"
+                }
+                stateDescription = label
+                role = Role.Button
+            }
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1
+        )
+    }
+}
 
 @Composable
 internal fun PlaybackVoiceControls(

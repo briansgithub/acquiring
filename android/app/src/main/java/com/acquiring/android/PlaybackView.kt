@@ -167,6 +167,7 @@ internal val PLAYBACK_ARPEGGIO_OPTIONS = listOf(
     PlaybackArpeggioOption("4", 4.0)
 )
 internal const val DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX = 3
+internal const val SECTION_PLAY_THROUGH_KEY = "section-play-through"
 
 internal fun steppedPlaybackBeat(
     current: Double,
@@ -204,7 +205,10 @@ fun PlaybackTab(
     onHomeReferenceActions: (() -> Unit, () -> Unit) -> Unit = { _, _ -> },
     rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF,
     onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit = {},
-    voiceVolume: Float = DEFAULT_PLAYBACK_VOICE_VOLUME
+    voiceVolume: Float = DEFAULT_PLAYBACK_VOICE_VOLUME,
+    loopSection: Boolean = true,
+    onSectionFinished: () -> Unit = {},
+    onAutoStartConsumed: () -> Unit = {}
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("PlaybackTab requires an exclusive persistent pitch source")
@@ -413,11 +417,25 @@ fun PlaybackTab(
     }
 
     val latestSectionComplete by rememberUpdatedState(onSectionComplete)
-    LaunchedEffect(playbackState) {
-        if (playbackState.completionKey == playOnceKey && playOnceKey != null &&
-            PlaybackController.isCurrentCompletion(playbackState)) latestSectionComplete(playOnceKey)
+    val latestSectionFinished by rememberUpdatedState(onSectionFinished)
+    val latestLoopSection by rememberUpdatedState(loopSection)
+    val latestAutoStartConsumed by rememberUpdatedState(onAutoStartConsumed)
+    val playbackCompletionKey = playOnceKey ?: if (loopSection) null else SECTION_PLAY_THROUGH_KEY
+    var consumedCompletionRevision by remember { mutableStateOf<Long?>(null) }
+    LaunchedEffect(playbackState.phase, playbackState.transportRevision, playbackState.completionKey) {
+        if (playbackState.phase != PlaybackPhase.COMPLETED) return@LaunchedEffect
+        if (!PlaybackController.isCurrentCompletion(playbackState)) return@LaunchedEffect
+        if (consumedCompletionRevision == playbackState.transportRevision) return@LaunchedEffect
+        consumedCompletionRevision = playbackState.transportRevision
+        val completedKey = playbackState.completionKey
+        if (playOnceKey != null && completedKey == playOnceKey) {
+            latestSectionComplete(playOnceKey)
+        } else if (!latestLoopSection && completedKey == SECTION_PLAY_THROUGH_KEY) {
+            latestSectionFinished()
+        }
     }
-    LaunchedEffect(timeline, sessionKey, playOnceKey) {
+    var loadedPassage by remember { mutableStateOf<Triple<PlaybackTimeline, String, String?>?>(null) }
+    LaunchedEffect(timeline, sessionKey, playOnceKey, loopSection) {
         cancelInertia()
         intervalPreviewJob?.cancel()
         AudioEngine.stopPreviewPlayback()
@@ -427,16 +445,30 @@ fun PlaybackTab(
         // trails the command queue, so a section swap right after a play/pause tap would
         // otherwise carry the state the user just left behind. A scrub that is holding
         // playback counts as playing; it is a pause the user never asked for.
+        val samePassage = loadedPassage?.let { (loadedTimeline, loadedSession, loadedOnce) ->
+            loadedTimeline === timeline && loadedSession == sessionKey && loadedOnce == playOnceKey
+        } == true
+        val resumeBeat = if (samePassage) playbackBeat() else null
+        loadedPassage = Triple(timeline, sessionKey, playOnceKey)
         val continuePlaying = PlaybackController.isPlaybackRequested || wasPlayingBeforeScrub
         isScrubbing = false
         wasPlayingBeforeScrub = false
-        scrubBeat = timeline.startBeat
-        PlaybackController.load(
+        scrubBeat = resumeBeat ?: timeline.startBeat
+        // Read this before consuming the one-shot. Song-mode section changes set it
+        // because completion has already cleared the engine's playback request.
+        val startNow = autoStart
+        val resume = continuePlaying || startNow
+        val restarted = PlaybackController.load(
             identity = playOnceKey ?: sessionKey,
-            newTimeline = timeline.copy(completionKey = playOnceKey),
-            continuePlaying = continuePlaying || autoStart
+            newTimeline = timeline.copy(completionKey = playbackCompletionKey),
+            continuePlaying = resume
         )
-        initialPassage?.let { PlaybackController.seek(it.first.coerceIn(timeline.startBeat,timeline.endBeat),resume=false) }
+        if (restarted && resumeBeat != null) {
+            PlaybackController.seek(resumeBeat.coerceIn(timeline.startBeat, timeline.endBeat), resume = resume)
+        } else if (resumeBeat == null && !startNow) {
+            initialPassage?.let { PlaybackController.seek(it.first.coerceIn(timeline.startBeat, timeline.endBeat), resume = false) }
+        }
+        if (startNow) latestAutoStartConsumed()
     }
 
     DisposableEffect(Unit) {

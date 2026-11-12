@@ -94,6 +94,10 @@ internal data class PlaybackTimeline(
     }
 }
 
+/** Same notes and bounds. A Loop/Song toggle copies the timeline and changes only [PlaybackTimeline.completionKey]. */
+internal fun PlaybackTimeline.samePerformanceAs(other: PlaybackTimeline): Boolean =
+    startBeat == other.startBeat && endBeat == other.endBeat && events === other.events
+
 internal data class PlaybackConfig(
     val bpm: Double,
     val transpose: Int,
@@ -195,9 +199,12 @@ internal class PlaybackPcmRenderer(
     val currentBeatsPerFrame: Double get() = config.bpm / (60.0 * sampleRate)
 
     fun replaceTimeline(newTimeline: PlaybackTimeline, startBeat: Double = newTimeline.startBeat) {
-        lastVoiceScale = null
+        val samePerformance = timeline.samePerformanceAs(newTimeline)
         timeline = newTimeline
-        seek(startBeat)
+        if (!samePerformance) {
+            lastVoiceScale = null
+            seek(startBeat)
+        }
     }
 
     fun seek(requestedBeat: Double, preserveVoiceProgress: Boolean = false) {
@@ -665,6 +672,7 @@ internal class PlaybackEngine(
         data class Pause(val revision: Long) : Command
         data class Seek(val beat: Double, val resume: Boolean, val revision: Long) : Command
         data class Reset(val revision: Long) : Command
+        data class UpdateCompletion(val timeline: PlaybackTimeline) : Command
         data object ConfigChanged : Command
         data object Release : Command
     }
@@ -708,6 +716,20 @@ internal class PlaybackEngine(
     fun isCurrentCompletion(state: PlaybackState): Boolean =
         state.phase == PlaybackPhase.COMPLETED && state.transportRevision == transportRevision.get() &&
             state.completionKey == latestTimeline.get()?.completionKey
+
+    /**
+     * Switches Loop/Song behavior on the performance already loaded.
+     * Returns false when [newTimeline] is different music and the caller must [load] it.
+     * Does not move the playhead or change whether playback was requested.
+     */
+    fun updateCompletion(newTimeline: PlaybackTimeline): Boolean {
+        val current = latestTimeline.get() ?: return false
+        if (!current.samePerformanceAs(newTimeline)) return false
+        if (current.completionKey == newTimeline.completionKey) return true
+        latestTimeline.set(newTimeline)
+        offer(Command.UpdateCompletion(newTimeline))
+        return true
+    }
 
     fun load(timeline: PlaybackTimeline, continuePlaying: Boolean) {
         val revision = transportRevision.incrementAndGet()
@@ -962,7 +984,7 @@ internal class PlaybackEngine(
                 is Command.Pause -> activeTransportRevision = command.revision
                 is Command.Seek -> activeTransportRevision = command.revision
                 is Command.Reset -> activeTransportRevision = command.revision
-                Command.ConfigChanged, Command.Release -> Unit
+                is Command.UpdateCompletion, Command.ConfigChanged, Command.Release -> Unit
             }
             when (command) {
                 is Command.Load -> {
@@ -1019,6 +1041,27 @@ internal class PlaybackEngine(
                     pauseAndReanchor()
                     renderer?.seek(timeline?.startBeat ?: 1.0)
                     publish(PlaybackPhase.STOPPED, force = true)
+                }
+
+                is Command.UpdateCompletion -> {
+                    // Capture the heard beat before the completion key changes, or a loop
+                    // that has already wrapped would clamp to the end on the next read.
+                    val preservedBeat = audibleBeat()
+                    timeline = command.timeline
+                    val activeRenderer = renderer
+                    activeRenderer?.replaceTimeline(command.timeline)
+                    if (sinkStarted && activeRenderer != null) {
+                        clockSegments.clear()
+                        clockSegments.addLast(
+                            ClockSegment(
+                                startFrame = unwrappedPlaybackHead(),
+                                startBeat = preservedBeat,
+                                beatsPerFrame = activeRenderer.currentBeatsPerFrame,
+                                loopStart = command.timeline.startBeat,
+                                loopEnd = command.timeline.endBeat
+                            )
+                        )
+                    }
                 }
 
                 Command.ConfigChanged -> {
