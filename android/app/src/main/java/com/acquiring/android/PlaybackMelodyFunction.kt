@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -39,10 +40,12 @@ internal fun PlaybackMelodyFunctionBanner(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        val toneColor = melodyFunctionColor(description.tone)
         Text(
             text = description.title,
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
+            color = toneColor,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -50,12 +53,21 @@ internal fun PlaybackMelodyFunctionBanner(
         Text(
             text = description.detail,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = toneColor,
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
     }
+}
+
+@Composable
+private fun melodyFunctionColor(tone: MelodyFunctionTone): Color = when (tone) {
+    MelodyFunctionTone.NEUTRAL -> MaterialTheme.colorScheme.onSurfaceVariant
+    MelodyFunctionTone.STABLE -> Color(0xFF4CAF50)
+    MelodyFunctionTone.LEANING -> Color(0xFF4FC3F7)
+    MelodyFunctionTone.MOVING -> Color(0xFFFFB74D)
+    MelodyFunctionTone.OUTSIDE -> Color(0xFFFF8A80)
 }
 
 @Composable

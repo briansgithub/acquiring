@@ -27,19 +27,33 @@ internal data class MelodyFunctionInput(
     val chordChangesDuringNote: Int = 0
 )
 
+internal enum class MelodyFunctionTone {
+    NEUTRAL,
+    STABLE,
+    LEANING,
+    MOVING,
+    OUTSIDE
+}
+
 internal data class MelodyFunctionDescription(
     val title: String,
-    val detail: String
+    val detail: String,
+    val tone: MelodyFunctionTone
 )
 
 internal fun describeMelodyFunction(input: MelodyFunctionInput): MelodyFunctionDescription {
     val current = input.currentPitch
-        ?: return MelodyFunctionDescription("Rest", "No melody note right now.")
+        ?: return MelodyFunctionDescription(
+            "Rest",
+            "No melody note right now.",
+            MelodyFunctionTone.NEUTRAL
+        )
     val currentPc = current.pitchClass()
     val chordTones = input.chordTones
         ?: return MelodyFunctionDescription(
             title = scaleDegreeTitle(input.scaleDegreeLabel),
-            detail = "No chord under this note. It is ${spokenScaleDegree(input.scaleDegreeLabel)} in the key."
+            detail = "No chord under this note. It is ${spokenScaleDegree(input.scaleDegreeLabel)} in the key.",
+            tone = scaleDegreeTone(input.scaleDegreeLabel)
         )
     val chordTone = chordTones.firstOrNull { it.pitchClass == currentPc }
     if (chordTone != null) {
@@ -53,7 +67,7 @@ internal fun describeMelodyFunction(input: MelodyFunctionInput): MelodyFunctionD
     val nextMovement = next?.let { melodicMovement(current, it) }
 
     if (input.currentWillBeNextChordTone && input.arrivedBeforeNextChord) {
-        return MelodyFunctionDescription(
+        return moving(
             roleTitle(chromaticPrefix, "Anticipation"),
             "You are early. This note belongs to the next chord."
         )
@@ -62,18 +76,18 @@ internal fun describeMelodyFunction(input: MelodyFunctionInput): MelodyFunctionD
     if (input.currentWasPreviousChordTone && input.heldAcrossChordChange) {
         if (nextMovement?.isStep == true) {
             return if (nextMovement.direction < 0) {
-                MelodyFunctionDescription(
+                moving(
                     roleTitle(chromaticPrefix, "Suspension"),
                     "This note was in the previous chord. Let it fall by step."
                 )
             } else {
-                MelodyFunctionDescription(
+                moving(
                     roleTitle(chromaticPrefix, "Retardation"),
                     "This note was in the previous chord. Let it rise by step."
                 )
             }
         }
-        return MelodyFunctionDescription(
+        return moving(
             roleTitle(chromaticPrefix, "Held over"),
             "The chord changed under a note you are still holding."
         )
@@ -87,7 +101,7 @@ internal fun describeMelodyFunction(input: MelodyFunctionInput): MelodyFunctionD
         nextMovement?.isStep == true
     ) {
         val direction = if (previousMovement.direction > 0) "Upper" else "Lower"
-        return MelodyFunctionDescription(
+        return moving(
             roleTitle(chromaticPrefix, "$direction neighbor"),
             "Step away and come back. Do not settle here."
         )
@@ -101,7 +115,7 @@ internal fun describeMelodyFunction(input: MelodyFunctionInput): MelodyFunctionD
         input.nextIsCurrentChordTone
     ) {
         val direction = if (nextMovement.direction > 0) "upward" else "downward"
-        return MelodyFunctionDescription(
+        return moving(
             roleTitle(chromaticPrefix, "Passing tone"),
             "Keep moving $direction. This note connects the chord tones on either side."
         )
@@ -113,7 +127,7 @@ internal fun describeMelodyFunction(input: MelodyFunctionInput): MelodyFunctionD
         previousMovement.direction != nextMovement.direction &&
         input.nextIsCurrentChordTone
     ) {
-        return MelodyFunctionDescription(
+        return moving(
             roleTitle(chromaticPrefix, "Appoggiatura"),
             "You leapt onto a tension. Step off it onto the chord tone."
         )
@@ -125,7 +139,7 @@ internal fun describeMelodyFunction(input: MelodyFunctionInput): MelodyFunctionD
         previousMovement.direction != nextMovement.direction &&
         input.previousIsCurrentChordTone
     ) {
-        return MelodyFunctionDescription(
+        return moving(
             roleTitle(chromaticPrefix, "Escape tone"),
             "A short step off the chord, then a leap onward."
         )
@@ -136,14 +150,14 @@ internal fun describeMelodyFunction(input: MelodyFunctionInput): MelodyFunctionD
         next.chromaticPosition - current.chromaticPosition == 1 &&
         input.nextIsCurrentChordTone
     ) {
-        return MelodyFunctionDescription(
+        return moving(
             roleTitle(chromaticPrefix, "Leading tone"),
             "A half step under the next note. Let it rise."
         )
     }
 
     if (input.chordChangesDuringNote > 1) {
-        return MelodyFunctionDescription(
+        return moving(
             roleTitle(chromaticPrefix, "Pedal tone"),
             "The melody holds still while the chords move."
         )
@@ -151,9 +165,13 @@ internal fun describeMelodyFunction(input: MelodyFunctionInput): MelodyFunctionD
 
     return MelodyFunctionDescription(
         roleTitle(chromaticPrefix, "Color tone"),
-        "This note is outside the chord. Hear it against the root, then follow the melody."
+        "This note is outside the chord. Hear it against the root, then follow the melody.",
+        MelodyFunctionTone.OUTSIDE
     )
 }
+
+private fun moving(title: String, detail: String): MelodyFunctionDescription =
+    MelodyFunctionDescription(title, detail, MelodyFunctionTone.MOVING)
 
 private fun roleTitle(prefix: String, role: String): String =
     if (prefix.isEmpty()) role else prefix + role.replaceFirstChar(Char::lowercase)
@@ -203,7 +221,21 @@ private fun describeChordMember(
         7, 9, 11, 13 -> "Lean on this. It belongs to the chord and wants to move."
         else -> "This note belongs to the chord."
     }
-    return MelodyFunctionDescription(title, action + keyAdvice)
+    val tone = when {
+        keyAdvice.contains("leading tone") || keyAdvice.contains("wants to fall to 3") ->
+            MelodyFunctionTone.MOVING
+        degree in setOf(1, 3, 5) -> MelodyFunctionTone.STABLE
+        else -> MelodyFunctionTone.LEANING
+    }
+    return MelodyFunctionDescription(title, action + keyAdvice, tone)
+}
+
+private fun scaleDegreeTone(label: String): MelodyFunctionTone = when (
+    label.filter(Char::isDigit).toIntOrNull()
+) {
+    1, 3, 5 -> MelodyFunctionTone.STABLE
+    2, 4, 6, 7 -> MelodyFunctionTone.MOVING
+    else -> MelodyFunctionTone.NEUTRAL
 }
 
 private data class MelodicMovement(

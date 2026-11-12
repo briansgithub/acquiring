@@ -188,14 +188,55 @@ class MelodyFunctionTest {
     @Test
     fun describesMelodyAndChordRests() {
         assertEquals(
-            MelodyFunctionDescription("Rest", "No melody note right now."),
+            MelodyFunctionDescription(
+                "Rest",
+                "No melody note right now.",
+                MelodyFunctionTone.NEUTRAL
+            ),
             describeMelodyFunction(input(current = null))
         )
         val noChord = describeMelodyFunction(
             input(current = "G", scaleDegree = "5\u0302", tones = null)
         )
         assertEquals("Scale degree 5", noChord.title)
+        assertEquals(MelodyFunctionTone.STABLE, noChord.tone)
         assertTrue(noChord.detail.contains("No chord under this note"))
+    }
+
+    @Test
+    fun colorsStableChordTonesLeanExtensionsAndTonesThatShouldMove() {
+        assertEquals(MelodyFunctionTone.STABLE, describeMelodyFunction(input("C")).tone)
+        assertEquals(
+            MelodyFunctionTone.LEANING,
+            describeMelodyFunction(input("Bb", tones = listOf(tone("Bb", "♭7\u0302")))).tone
+        )
+        assertEquals(
+            MelodyFunctionTone.MOVING,
+            describeMelodyFunction(
+                input(
+                    current = "B",
+                    scaleDegree = "7\u0302",
+                    tones = listOf(tone("G", "1\u0302"), tone("B", "3\u0302")),
+                    next = "C"
+                )
+            ).tone
+        )
+        assertEquals(
+            MelodyFunctionTone.MOVING,
+            describeMelodyFunction(
+                input(
+                    current = "D",
+                    previous = "C",
+                    next = "E",
+                    previousIsTone = true,
+                    nextIsTone = true
+                )
+            ).tone
+        )
+        assertEquals(
+            MelodyFunctionTone.OUTSIDE,
+            describeMelodyFunction(input(current = "Db", scaleDegree = "♭2\u0302")).tone
+        )
     }
 
     @Test
