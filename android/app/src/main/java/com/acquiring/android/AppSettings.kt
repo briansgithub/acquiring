@@ -74,8 +74,6 @@ internal fun AppSettingsScreen(
     onUpdateCatalog: () -> Unit,
     playUpdateStatus: PlayUpdateStatus,
     onOpenPlayUpdate: () -> Unit,
-    timelineFrameRate: TimelineFrameRatePreference,
-    onTimelineFrameRateChange: (TimelineFrameRatePreference) -> Unit,
     onShareAudioDiagnostics: () -> Unit,
     onResetAudioEngine: () -> Unit,
     onBack: () -> Unit,
@@ -219,35 +217,6 @@ internal fun AppSettingsScreen(
             modifier = Modifier.semantics { contentDescription = "Open Play Store for updates" }
         ) {
             Text("Open Play")
-        }
-
-        Divider(modifier = Modifier.padding(vertical = 12.dp))
-        SettingsSectionHeading("Display")
-        Text(
-            text = "Controls visual smoothness, not song tempo.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        )
-        TimelineFrameRatePreference.entries.forEach { option ->
-            val selected = option == timelineFrameRate
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = selected,
-                        onClick = { onTimelineFrameRateChange(option) }
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                    .semantics {
-                        contentDescription = "Timeline frame rate: ${option.title}"
-                        stateDescription = if (selected) "Selected" else "Not selected"
-                    }
-            ) {
-                RadioButton(selected = selected, onClick = null)
-                Text(option.title, modifier = Modifier.padding(start = 8.dp))
-            }
         }
 
         Divider(modifier = Modifier.padding(vertical = 12.dp))

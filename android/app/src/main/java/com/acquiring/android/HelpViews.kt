@@ -112,6 +112,7 @@ internal fun HelpArticleScreen(
                 HELP_TOPIC_SCALE_DEGREES -> ScaleDegreesHelpArticle()
                 HELP_TOPIC_INTERVALS -> IntervalsHelpArticle()
                 HELP_TOPIC_ROMAN -> RomanNumeralsHelpArticle()
+                HELP_TOPIC_MELODY_FUNCTION -> MelodyFunctionHelpArticle()
             }
         }
     }

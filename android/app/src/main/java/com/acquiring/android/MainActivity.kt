@@ -115,6 +115,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
     private lateinit var userDb: UserDataDatabase
     private val songOctaveOffsetViewModel by viewModels<SongOctaveOffsetViewModel>()
+    private val songPlaybackSettingsViewModel by viewModels<SongPlaybackSettingsViewModel>()
     private val songQueueViewModel by viewModels<SongQueueViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,8 +128,7 @@ class MainActivity : ComponentActivity() {
         AppAudioOutput.initialize(this)
         PlaybackController.initialize(this)
         AppInstrumentSession.initialize(this)
-        TimelineFrameRateStore.initialize(this)
-        TimelineFrameRateStore.applyToWindow(window)
+        PlaybackFrameRate.initialize(this)
         AudioDiagnostics.record("app.audioInitialized")
 
         db = Room.databaseBuilder(
@@ -142,8 +142,9 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             UserDataDatabase::class.java, UserDataDatabase.DB_NAME
         ).addMigrations(UserDataDatabase.MIGRATION_1_2, UserDataDatabase.MIGRATION_2_3,
-            UserDataDatabase.MIGRATION_3_4).build()
+            UserDataDatabase.MIGRATION_3_4, UserDataDatabase.MIGRATION_4_5).build()
         songOctaveOffsetViewModel.attachDao(userDb.songOctaveOffsetDao())
+        songPlaybackSettingsViewModel.attachDao(userDb.songPlaybackSettingsDao())
 
         val neutralContainer = Color(0xFF3A3A3A)
         val neutralOnContainer = Color(0xFFE6E6E6)
@@ -185,7 +186,13 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     } else {
-                        MainScreen(db, userDb, songOctaveOffsetViewModel, songQueueViewModel)
+                        MainScreen(
+                            db,
+                            userDb,
+                            songOctaveOffsetViewModel,
+                            songPlaybackSettingsViewModel,
+                            songQueueViewModel
+                        )
                     }
                 }
             }
@@ -194,7 +201,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        TimelineFrameRateStore.applyToWindow(window)
+        PlaybackFrameRate.apply(window)
     }
 
     override fun onPause() {
@@ -210,6 +217,9 @@ internal fun MainScreen(
     db: AppDatabase,
     userDb: UserDataDatabase,
     songOctaveOffsetViewModel: SongOctaveOffsetViewModel,
+    songPlaybackSettingsViewModel: SongPlaybackSettingsViewModel = remember {
+        SongPlaybackSettingsViewModel()
+    },
     songQueue: SongQueueViewModel = remember { SongQueueViewModel() }
 ) {
     var activeDb by remember { mutableStateOf(db) }
@@ -247,21 +257,17 @@ internal fun MainScreen(
     var auralPlaybackPassage by remember { mutableStateOf<AuralSourcePassage?>(null) }
     val auralScreenState = rememberSaveableStateHolder()
     var readyQueueToken by remember { mutableStateOf<String?>(null) }
-    var timelineFrameRate by remember {
-        mutableStateOf(TimelineFrameRateStore.preference)
-    }
     var isShowingPlayback by remember { mutableStateOf(false) }
     var songParentPage by remember { mutableStateOf(SongParentPage.LIBRARY) }
     var showLetterNames by remember { mutableStateOf(false) }
-    var playbackTempoPercent by remember(selectedSong?.slug) { mutableStateOf(100f) }
-    var playbackArpeggioOptionIndex by remember(selectedSong?.slug) {
-        mutableStateOf(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX)
-    }
+    val playbackTempoPercent = songPlaybackSettingsViewModel.tempoPercent
+    val playbackArpeggioOptionIndex = songPlaybackSettingsViewModel.arpeggioOptionIndex
+    val rootDegreeCue = songPlaybackSettingsViewModel.rootDegreeCue
     var isShowingRecent by remember { mutableStateOf(false) }
     var isShowingRecentArtists by remember { mutableStateOf(false) }
     val currentWaveform by AppInstrumentSession.sessionInstrument.collectAsState()
     val defaultInstrument by AppInstrumentSession.defaultInstrument.collectAsState()
-    var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
+    val globalTranspose = songPlaybackSettingsViewModel.transpose
     var singingTargetRequest by remember { mutableStateOf<SingingTargetRequest?>(null) }
     var singingTargetRequestId by remember { mutableStateOf(0) }
     var singingDockExpanded by remember { mutableStateOf(false) }
@@ -422,14 +428,29 @@ internal fun MainScreen(
         val key = singingSessionKey
         if (slug != null && key != null) {
             songOctaveOffsetViewModel.enterSession(slug, key)
+            songPlaybackSettingsViewModel.enterSong(slug)
+        } else {
+            songPlaybackSettingsViewModel.clearSession()
         }
         singingTargetRequest = null
     }
-    LaunchedEffect(selectedSong?.slug) {
-        if (selectedSong != null) {
-            globalTranspose = 0
-            AudioEngine.globalTranspose = 0
+    LaunchedEffect(songPlaybackSettingsViewModel.transpose) {
+        AudioEngine.globalTranspose = songPlaybackSettingsViewModel.transpose
+    }
+    LaunchedEffect(
+        songPlaybackSettingsViewModel.songSlug,
+        songPlaybackSettingsViewModel.instrumentName,
+        defaultInstrument
+    ) {
+        val override = songPlaybackSettingsViewModel.instrumentName?.let { name ->
+            AudioEngine.Waveform.entries.firstOrNull { it.name == name }
         }
+        val waveform = if (songPlaybackSettingsViewModel.songSlug == null) {
+            defaultInstrument
+        } else {
+            override ?: defaultInstrument
+        }
+        AppInstrumentSession.selectForSession(waveform)
     }
     LaunchedEffect(activeDb, selectedSong?.slug) {
         selectedSongComplexityRating = selectedSong?.slug?.let { slug ->
@@ -521,6 +542,7 @@ internal fun MainScreen(
             singingDepartureTick++
             singingCollapseTick++
             songOctaveOffsetViewModel.clearSession()
+            songPlaybackSettingsViewModel.clearSession()
             selectedSongSections = null
             selectedSong = null
             selectedSectionId = null
@@ -538,6 +560,7 @@ internal fun MainScreen(
             isShowingPlayback = true
         } else if (selectedSongSections != null) {
             songOctaveOffsetViewModel.clearSession()
+            songPlaybackSettingsViewModel.clearSession()
             selectedSongSections = null
             selectedSong = null
             isShowingPlayback = false
@@ -611,7 +634,7 @@ internal fun MainScreen(
         } else if (selectedSong == null && selectedArtistSongs == null) {
             artistSuggestions = HistoryManager.getRecentArtists(context)
             isShowingRecentArtists = artistSuggestions.isNotEmpty()
-            isArtistExpanded = false
+            isArtistExpanded = artistSuggestions.isNotEmpty()
         }
     }
 
@@ -633,6 +656,7 @@ internal fun MainScreen(
         // Opening a song is a new load even if it happens to be the song that
         // was open previously, so its tessitura session starts unadjusted.
         songOctaveOffsetViewModel.clearSession()
+        songPlaybackSettingsViewModel.clearSession()
         HistoryManager.addSong(context, song.slug)
         HistoryManager.addArtist(context, song.artist)
         isExpanded = false
@@ -642,6 +666,7 @@ internal fun MainScreen(
             else -> SongParentPage.LIBRARY
         }
         selectedSong = song
+        songPlaybackSettingsViewModel.enterSong(song.slug)
 
         val storedBlob = song.dataBlob
         if (storedBlob != null) {
@@ -728,9 +753,11 @@ internal fun MainScreen(
             ?: sections.entries.firstOrNull { (_, section) -> section.safeSectionName == passage.sectionName }?.key
             ?: return@openAuralFullSongPlayback false
         songOctaveOffsetViewModel.clearSession()
+        songPlaybackSettingsViewModel.clearSession()
         HistoryManager.addSong(context, song.slug)
         HistoryManager.addArtist(context, song.artist)
         selectedSong = song
+        songPlaybackSettingsViewModel.enterSong(song.slug)
         selectedSongSections = sections
         selectedSectionId = sectionId
         auralPlaybackPassage = passage
@@ -760,6 +787,27 @@ internal fun MainScreen(
         }
     }
 
+    val startExampleShuffle: (Int?) -> Unit = { cutoff ->
+        queuePreparationJob?.cancel()
+        val expected = songQueue.begin(originQuiz = false, name = "Example songs", manualAdvance = true, preferChorus = true)
+        PlaybackController.pause()
+        selectedSong = null
+        selectedSongSections = null
+        readyQueueToken = null
+        isShowingAuralQuiz = false
+        queuePreparationJob = scope.launch {
+            var lease: AuralPreparedResource<AuralCatalog>.Lease? = null
+            try {
+                lease = withContext(Dispatchers.IO) { queueStore.acquire() }
+                val entries = withContext(Dispatchers.IO) { shuffledExampleQueue(lease.value.exampleSongs(), cutoff) }
+                songQueue.finishPreparation(expected, entries, shuffled = true)
+                if (songQueue.entries.isNotEmpty()) songQueue.start()
+            } catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: Exception) { songQueue.error(expected, "Could not prepare example songs. Try again.") }
+            finally { lease?.release() }
+        }
+    }
+
     val startSavedQueue: (String, Boolean) -> Unit = { playlistId, shuffle ->
         queuePreparationJob?.cancel()
         val expected = songQueue.begin(originQuiz=false, name="Playlist")
@@ -772,11 +820,14 @@ internal fun MainScreen(
                 val entries = withContext(Dispatchers.IO) {
                     val stored=playlistDao.getEntriesIn(playlistId)
                     val songs=activeDb.songDao().getBrowseSongsBySlugs(stored.map { it.slug }).associateBy { it.slug }
-                    stored.map { entry ->
+                    val queued=stored.map { entry ->
                         val song=songs[entry.slug]
                         QueuedSong(entry.slug,song?.displayTitle ?: entry.slug,song?.displayArtist ?: "",
                             entry.sectionId.orEmpty(),entry.sectionName ?: "First section")
                     }
+                    if (playlistId == PlaylistIds.FAVORITES) {
+                        queued.sortedWith(compareBy({ it.title.lowercase() }, { it.artist.lowercase() }, { it.slug.lowercase() }))
+                    } else queued
                 }
                 songQueue.finishPreparation(expected,entries,if(shuffle)null else playlistId,shuffled=shuffle)
             } catch (cancelled: CancellationException) { throw cancelled }
@@ -800,7 +851,14 @@ internal fun MainScreen(
             val song=loaded?.first
             val sections=loaded?.second
             val requestedSection=songQueue.sectionOverride ?: entry.sectionId
-            val sectionId=sections?.let { resolveQueuedSection(entry.slug,entry.copy(sectionId=requestedSection),it) }
+            val sectionId=sections?.let { loaded ->
+                if (songQueue.preferChorus && songQueue.sectionOverride == null && entry.sectionId.isEmpty()) chorusOrFirstSection(loaded)
+                else resolveQueuedSection(entry.slug, entry.copy(sectionId = requestedSection), loaded)
+            }
+            if (sectionId != null && songQueue.preferChorus) {
+                val resolvedName = sections?.get(sectionId)?.safeSectionName
+                if (resolvedName != null) songQueue.rememberSection(token, sectionId, resolvedName)
+            }
             if(song==null || sections==null || sectionId==null) {
                 songQueue.unavailable(token,"Skipped ${entry.title}: song or saved section unavailable.")
                 return@LaunchedEffect
@@ -826,11 +884,6 @@ internal fun MainScreen(
             playUpdateStatus = playUpdateStatus,
             onOpenPlayUpdate = {
                 openUpdateDistribution(context)
-            },
-            timelineFrameRate = timelineFrameRate,
-            onTimelineFrameRateChange = {
-                TimelineFrameRateStore.select(context, it)
-                timelineFrameRate = it
             },
             onShareAudioDiagnostics = { AudioDiagnostics.share(context) },
             onResetAudioEngine = { AudioDiagnostics.resetEngine() },
@@ -864,12 +917,22 @@ internal fun MainScreen(
                         PlaybackDestination(
                             song=selectedSong!!,sections=selectedSongSections!!,selectedSectionId=selectedSectionId,
                             onSectionChange={ songQueue.changeSection(it,PlaybackController.isPlaybackRequested) },
-                            currentWaveform=currentWaveform,onWaveformChange={AppInstrumentSession.selectForSession(it)},
+                            currentWaveform=currentWaveform,
+                            onWaveformChange={
+                                songPlaybackSettingsViewModel.updateInstrument(it)
+                                AppInstrumentSession.selectForSession(it)
+                            },
                             globalTranspose=globalTranspose,playbackTempoPercent=playbackTempoPercent,
-                            onPlaybackTempoPercentChange={playbackTempoPercent=it},
+                            onPlaybackTempoPercentChange={songPlaybackSettingsViewModel.updateTempoPercent(it)},
                             playbackArpeggioOptionIndex=playbackArpeggioOptionIndex,
-                            onPlaybackArpeggioOptionIndexChange={playbackArpeggioOptionIndex=it},
-                            onTransposeChange={globalTranspose=it;AudioEngine.globalTranspose=it},
+                            onPlaybackArpeggioOptionIndexChange={songPlaybackSettingsViewModel.updateArpeggioOptionIndex(it)},
+                            rootDegreeCue=rootDegreeCue,
+                            onRootDegreeCueChange={songPlaybackSettingsViewModel.updateRootDegreeCue(it)},
+                            onTransposeChange={
+                                songPlaybackSettingsViewModel.updateTranspose(it)
+                                AudioEngine.globalTranspose = songPlaybackSettingsViewModel.transpose
+                            },
+                            playbackSettings=songPlaybackSettingsViewModel,
                             onArtistClick={ artistName ->
                                 queuePreparationJob?.cancel();queuePreparationJob=null
                                 songQueue.dismiss();selectedSongSections=null;selectedSong=null;isShowingPlayback=false
@@ -1074,6 +1137,7 @@ internal fun MainScreen(
                     isShowingRecentArtists = isShowingRecentArtists,
                     onArtistClick = { artistName ->
                         songOctaveOffsetViewModel.clearSession()
+                        songPlaybackSettingsViewModel.clearSession()
                         HistoryManager.addArtist(context, artistName)
                         songParentPage = SongParentPage.ARTIST
                         scope.launch {
@@ -1117,6 +1181,7 @@ internal fun MainScreen(
                     onSongClick = openBrowseSong,
                     onPlayPlaylist = startSavedQueue,
                     onOpenSettings = { isShowingSettings = true },
+                    onShuffleExamples = startExampleShuffle,
                     onOpenAuralQuiz = {
                         PlaybackController.pause()
                         AudioEngine.stopAllPlayback()
@@ -1137,19 +1202,26 @@ internal fun MainScreen(
                     onSectionChange = { selectedSectionId = it },
                     currentWaveform = currentWaveform,
                     onWaveformChange = {
+                        songPlaybackSettingsViewModel.updateInstrument(it)
                         AppInstrumentSession.selectForSession(it)
                     },
                     globalTranspose = globalTranspose,
                     playbackTempoPercent = playbackTempoPercent,
-                    onPlaybackTempoPercentChange = { playbackTempoPercent = it },
+                    onPlaybackTempoPercentChange = { songPlaybackSettingsViewModel.updateTempoPercent(it) },
                     playbackArpeggioOptionIndex = playbackArpeggioOptionIndex,
-                    onPlaybackArpeggioOptionIndexChange = { playbackArpeggioOptionIndex = it },
-                    onTransposeChange = {
-                        globalTranspose = it
-                        AudioEngine.globalTranspose = it
+                    onPlaybackArpeggioOptionIndexChange = {
+                        songPlaybackSettingsViewModel.updateArpeggioOptionIndex(it)
                     },
+                    rootDegreeCue = rootDegreeCue,
+                    onRootDegreeCueChange = { songPlaybackSettingsViewModel.updateRootDegreeCue(it) },
+                    onTransposeChange = {
+                        songPlaybackSettingsViewModel.updateTranspose(it)
+                        AudioEngine.globalTranspose = songPlaybackSettingsViewModel.transpose
+                    },
+                    playbackSettings = songPlaybackSettingsViewModel,
                     onArtistClick = { artistName ->
                         songOctaveOffsetViewModel.clearSession()
+                        songPlaybackSettingsViewModel.clearSession()
                         HistoryManager.addArtist(context, artistName)
                         songParentPage = SongParentPage.ARTIST
                         scope.launch {

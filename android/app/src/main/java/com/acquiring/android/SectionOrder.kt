@@ -125,3 +125,19 @@ internal fun Map<String, ExtractedSection>.sectionsInSongOrder(): List<Map.Entry
         if (canonical != 0) canonical else a.sourcePosition.compareTo(b.sourcePosition)
     }).map { it.entry }
 }
+
+/** Chorus when the song has one, otherwise the first section. Pre-chorus and lead-outs do not count. */
+internal fun chorusOrFirstSection(sections: Map<String, ExtractedSection>): String? {
+    val ordered = sections.sectionsInSongOrder()
+    val chorus = ordered.firstOrNull { canonicalSectionRank(it.value.safeSectionName) in 6000..6999 }
+        ?: ordered.firstOrNull { canonicalSectionRank(it.value.safeSectionName) in 5000..5999 }
+    return (chorus ?: ordered.firstOrNull())?.key
+}
+
+/** The section that follows [currentId], wrapping from the last section back to the first. */
+internal fun nextSectionInSongOrder(sectionIds: List<String>, currentId: String): String? {
+    if (sectionIds.isEmpty()) return null
+    val index = sectionIds.indexOf(currentId)
+    if (index < 0) return sectionIds.first()
+    return sectionIds[(index + 1) % sectionIds.size]
+}

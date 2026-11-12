@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -21,31 +22,37 @@ internal fun SongQueueControls(
     onBack: () -> Unit,
     player: @Composable () -> Unit
 ) {
-    var showQueue by remember { mutableStateOf(false) }
+    var showPlaylist by remember { mutableStateOf(false) }
     var showSave by remember { mutableStateOf(false) }
     var name by remember(queue.suggestedName) { mutableStateOf(queue.suggestedName) }
     var saving by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     Column(Modifier.fillMaxSize().testTag("SongQueueScreen")) {
-        Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            TextButton(onClick=onBack) { Text("Back") }
-            Text(if(queue.started) "${queue.index+1} of ${queue.entries.size}" else "Song examples",
-                Modifier.weight(1f).padding(top=12.dp),style=MaterialTheme.typography.titleMedium)
-            if(queue.started) TextButton(onClick={showQueue=true}) { Text("Queue") }
+        Row(
+            Modifier.fillMaxWidth().padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextButton(onClick = onBack) { Text("Back") }
+            Text(
+                if (queue.started) "${queue.index + 1} of ${queue.entries.size}" else "Song examples",
+                Modifier.weight(1f),
+                style = MaterialTheme.typography.titleMedium
+            )
+            if (queue.started) {
+                TextButton(onClick = { showPlaylist = true }, modifier = Modifier.testTag("OpenPlaylist")) {
+                    Text("Playlist")
+                }
+            }
         }
-        Row(Modifier.fillMaxWidth().padding(horizontal=8.dp),horizontalArrangement=Arrangement.SpaceEvenly) {
-            FilterChip(selected=queue.shuffleEnabled,onClick={queue.toggleShuffle()},enabled=queue.entries.size>1,
-                label={Text("Shuffle")},modifier=Modifier.heightIn(min=48.dp).testTag("ShuffleQueue"))
-            Text(if(queue.shuffleEnabled) "Random order" else if(queue.originQuiz) "Popularity order" else "Saved order",
-                Modifier.padding(top=14.dp),style=MaterialTheme.typography.labelMedium)
-        }
+        if (!queue.started) PlaylistOrderControls(queue)
         queue.notice?.let { Text(it,Modifier.padding(horizontal=16.dp),color=MaterialTheme.colorScheme.onSurfaceVariant) }
         if(queue.loading) { CircularProgressIndicator(Modifier.padding(20.dp)); Text("Finding matching songs…",Modifier.padding(16.dp)) }
         else if(queue.entries.isEmpty()) Text("No matching songs to play or save.",Modifier.padding(16.dp))
         else if(!queue.started) {
             Row(Modifier.fillMaxWidth().padding(horizontal=16.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                 Button(onClick=queue::start,modifier=Modifier.heightIn(min=48.dp).testTag("PlaySongQueue")) {
-                    Text("Play queue")
+                    Text("Play playlist")
                 }
                 TextButton(onClick={showSave=true}) { Text("Save playlist") }
             }
@@ -58,12 +65,13 @@ internal fun SongQueueControls(
             }
         } else Box(Modifier.weight(1f)) { player() }
     }
-    if(showQueue) ModalBottomSheet(onDismissRequest={showQueue=false}) {
-        Text("Song queue",Modifier.padding(16.dp),style=MaterialTheme.typography.titleLarge)
-        TextButton(onClick={showQueue=false;showSave=true},modifier=Modifier.testTag("SaveSongQueue")) { Text("Save playlist") }
+    if(showPlaylist) ModalBottomSheet(onDismissRequest={showPlaylist=false}) {
+        Text("Playlist",Modifier.padding(horizontal=16.dp, vertical=8.dp),style=MaterialTheme.typography.titleLarge)
+        PlaylistOrderControls(queue)
+        TextButton(onClick={showPlaylist=false;showSave=true},modifier=Modifier.testTag("SaveSongQueue")) { Text("Save playlist") }
         LazyColumn(Modifier.fillMaxWidth().heightIn(max=480.dp)) {
             itemsIndexed(queue.entries) { i, song ->
-                TextButton(onClick={showQueue=false;queue.select(i,PlaybackController.isPlaybackRequested)},modifier=Modifier.fillMaxWidth()) {
+                TextButton(onClick={showPlaylist=false;queue.select(i,PlaybackController.isPlaybackRequested)},modifier=Modifier.fillMaxWidth()) {
                     Text("${i+1}. ${song.title} — ${song.artist} · ${song.sectionName}",Modifier.fillMaxWidth())
                 }
             }
@@ -90,4 +98,26 @@ internal fun SongQueueControls(
             }
         }) {Text(if(saving)"Saving…" else "Save")}},
         dismissButton={TextButton(enabled=!saving,onClick={showSave=false}){Text("Cancel")}})
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PlaylistOrderControls(queue: SongQueueViewModel) {
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        FilterChip(
+            selected = queue.shuffleEnabled,
+            onClick = { queue.toggleShuffle() },
+            enabled = queue.entries.size > 1,
+            label = { Text("Shuffle") },
+            modifier = Modifier.heightIn(min = 48.dp).testTag("ShuffleQueue")
+        )
+        Text(
+            if (queue.shuffleEnabled) "Random order" else if (queue.originQuiz) "Popularity order" else "Saved order",
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
 }

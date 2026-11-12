@@ -19,6 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +34,9 @@ internal const val ROOT_ONLY_PREVIOUS_WEIGHT = 0.4f
 internal const val ROOT_ONLY_FEATURED_WEIGHT = 0.6f
 internal val ROOT_ONLY_PREVIOUS_HEIGHT = 128.dp
 internal val ROOT_ONLY_FEATURED_HEIGHT = 162.dp
+internal val ROOT_ONLY_MELODY_CARD_HEIGHT = 96.dp
 private val ROOT_ONLY_CARD_RADIUS = 14.dp
+internal const val PLAYBACK_ROOT_MELODY_CARD_TEST_TAG = "PlaybackRootMelodyCard"
 
 internal fun showsRootOnlyPrevious(previous: SpelledPitch?): Boolean = previous != null
 
@@ -41,6 +45,47 @@ internal fun showsRootOnlyInterval(
     current: SpelledPitch?,
     interval: NamedInterval?
 ): Boolean = previous != null && current != null && interval != null && previous != current
+
+@Composable
+internal fun PlaybackRootOnlyMelodyRow(
+    currentPitch: SpelledPitch?,
+    currentLabel: String,
+    functionText: String,
+    functionColor: Color,
+    onPreviewPitch: (SpelledPitch) -> Unit,
+    onSingPitch: (SpelledPitch, String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(ROOT_ONLY_MELODY_CARD_HEIGHT),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PlaybackEmptyCardSlot(
+            modifier = Modifier.weight(ROOT_ONLY_PREVIOUS_WEIGHT),
+            fixedHeight = ROOT_ONLY_MELODY_CARD_HEIGHT
+        )
+        PlaybackCurrentMelodyCard(
+            pitch = currentPitch,
+            label = currentLabel,
+            functionText = functionText,
+            functionColor = functionColor,
+            onPlayPitch = onPreviewPitch,
+            onSingPitch = onSingPitch,
+            title = "Melody",
+            height = ROOT_ONLY_MELODY_CARD_HEIGHT,
+            modifier = Modifier
+                .weight(ROOT_ONLY_FEATURED_WEIGHT)
+                .testTag(PLAYBACK_ROOT_MELODY_CARD_TEST_TAG)
+        )
+        PlaybackEmptyCardSlot(
+            modifier = Modifier.weight(ROOT_ONLY_FEATURED_WEIGHT),
+            fixedHeight = ROOT_ONLY_MELODY_CARD_HEIGHT
+        )
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

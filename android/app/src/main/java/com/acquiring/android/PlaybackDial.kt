@@ -1,37 +1,39 @@
 package com.acquiring.android
 
-import android.graphics.Paint
-import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.material3.Text
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.atan2
@@ -68,17 +70,20 @@ internal fun PlaybackDial(
     steps: Int = 0,
     ringLabels: List<String> = emptyList(),
     onTap: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
-    val primary = MaterialTheme.colorScheme.primary
+    val primary = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
     val track = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.18f)
     val knob = MaterialTheme.colorScheme.surfaceVariant
     val knobHighlight = MaterialTheme.colorScheme.surface
-    val labelColor = MaterialTheme.colorScheme.onSurface
-    val density = LocalDensity.current
+    val endpointColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
     val rangeSize = (valueRange.endInclusive - valueRange.start).coerceAtLeast(0.0001f)
     val fraction = ((value - valueRange.start) / rangeSize).coerceIn(0f, 1f)
     val semanticsSteps = steps.coerceAtLeast(0)
+    // A pair marks the two ends of the sweep. Longer lists stay off the dial;
+    // the center readout is the current step.
+    val endpoints = if (ringLabels.size == 2) ringLabels else emptyList()
 
     fun snap(raw: Float): Float {
         val bounded = raw.coerceIn(valueRange.start, valueRange.endInclusive)
@@ -88,22 +93,10 @@ internal fun PlaybackDial(
         return valueRange.start + snapped / intervals * rangeSize
     }
 
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = label,
-            modifier = Modifier.fillMaxWidth().height(36.dp),
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.labelMedium,
-            textAlign = TextAlign.Center,
-            maxLines = 2
-        )
-        Text(
-            text = valueLabel,
-            modifier = Modifier.height(18.dp),
-            color = primary,
-            style = MaterialTheme.typography.labelSmall,
-            maxLines = 1
-        )
+    Column(
+        modifier = modifier.alpha(if (enabled) 1f else 0.38f),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Box(
             modifier = Modifier
                 .size(100.dp)
@@ -114,13 +107,17 @@ internal fun PlaybackDial(
                         range = valueRange,
                         steps = (semanticsSteps - 1).coerceAtLeast(0)
                     )
-                    setProgress { requested ->
-                        onValueChange(snap(requested))
-                        true
+                    if (enabled) {
+                        setProgress { requested ->
+                            onValueChange(snap(requested))
+                            true
+                        }
+                    } else {
+                        disabled()
                     }
                 }
                 .then(
-                    if (onTap != null) {
+                    if (enabled && onTap != null) {
                         Modifier.clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -132,7 +129,8 @@ internal fun PlaybackDial(
                         Modifier
                     }
                 )
-                .pointerInput(valueRange, semanticsSteps) {
+                .pointerInput(enabled, valueRange, semanticsSteps) {
+                    if (!enabled) return@pointerInput
                     detectDragGestures(
                         onDragStart = { position ->
                             val dialCenter = Offset(size.width / 2f, size.height / 2f)
@@ -198,30 +196,65 @@ internal fun PlaybackDial(
                         center.y + indicatorRadius * sin(angle).toFloat()
                     )
                 )
-
-                if (ringLabels.size > 1) {
-                    ringLabels.forEachIndexed { index, text ->
-                        val labelFraction = index.toFloat() / (ringLabels.size - 1)
-                        val labelAngle = Math.toRadians(
-                            (PLAYBACK_DIAL_START_ANGLE + PLAYBACK_DIAL_SWEEP_ANGLE * labelFraction).toDouble()
-                        )
-                        val selected = index == (fraction * (ringLabels.size - 1)).roundToInt()
-                        val radius = 45.dp.toPx()
-                        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                            color = (if (selected) primary else labelColor.copy(alpha = 0.65f)).toArgb()
-                            textAlign = Paint.Align.CENTER
-                            textSize = with(density) { (if (selected) 9.sp else 7.sp).toPx() }
-                            typeface = if (selected) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-                        }
-                        drawContext.canvas.nativeCanvas.drawText(
-                            text,
-                            center.x + radius * cos(labelAngle).toFloat(),
-                            center.y + radius * sin(labelAngle).toFloat() + paint.textSize / 3f,
-                            paint
-                        )
-                    }
-                }
             }
+            if (endpoints.size == 2) {
+                DialEndpointLabel(endpoints[0], PLAYBACK_DIAL_START_ANGLE, endpointColor)
+                DialEndpointLabel(
+                    endpoints[1],
+                    PLAYBACK_DIAL_START_ANGLE + PLAYBACK_DIAL_SWEEP_ANGLE,
+                    endpointColor
+                )
+            }
+            Text(
+                text = valueLabel,
+                modifier = Modifier.align(Alignment.Center).clearAndSetSemantics {},
+                color = primary,
+                fontWeight = FontWeight.Bold,
+                fontSize = dialReadoutSize(valueLabel),
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                softWrap = false
+            )
         }
+        Text(
+            text = label,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 2.dp)
+                .clearAndSetSemantics {},
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+            maxLines = 2
+        )
     }
+}
+
+@Composable
+private fun BoxScope.DialEndpointLabel(text: String, angleDegrees: Float, color: Color) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .align(Alignment.Center)
+            .offset {
+                val radius = 46.dp.toPx()
+                val angle = Math.toRadians(angleDegrees.toDouble())
+                IntOffset(
+                    (radius * cos(angle)).roundToInt(),
+                    (radius * sin(angle)).roundToInt()
+                )
+            }
+            .clearAndSetSemantics {},
+        color = color,
+        fontSize = 11.sp,
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+        softWrap = false
+    )
+}
+
+private fun dialReadoutSize(valueLabel: String) = when {
+    valueLabel.length <= 4 -> 16.sp
+    valueLabel.length <= 6 -> 13.sp
+    else -> 11.sp
 }

@@ -16,6 +16,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.IdlingRegistry
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,9 +54,8 @@ class PlaybackTransportSelectorsUiTest {
     }
 
     @Test
-    fun timelineFrameRateSurvivesLockChangesDuringPlayback() {
+    fun playbackRestoresTheMaximumRefreshRateAcrossLockChanges() {
         val activity = composeTestRule.activity
-        val savedPreference = TimelineFrameRateStore.read(activity)
         val sections = linkedMapOf(
             "verse" to section("Verse", 1, "minor"),
             "chorus" to section("Chorus", 4, "minor")
@@ -78,6 +79,8 @@ class PlaybackTransportSelectorsUiTest {
                         onPlaybackTempoPercentChange = {},
                         playbackArpeggioOptionIndex = DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,
                         onPlaybackArpeggioOptionIndexChange = {},
+                        rootDegreeCue = PlaybackRootDegreeCue.OFF,
+                        onRootDegreeCueChange = {},
                         onTransposeChange = {},
                         onArtistClick = {},
                         onShowSongInfo = {},
@@ -98,34 +101,27 @@ class PlaybackTransportSelectorsUiTest {
             clickDescription("Play")
             waitForAdvancingPlayback()
             var locked = false
-            for (preference in listOf(
-                TimelineFrameRatePreference.STANDARD,
-                TimelineFrameRatePreference.MAXIMUM,
-                TimelineFrameRatePreference.STANDARD
-            )) {
-                composeTestRule.runOnUiThread { TimelineFrameRateStore.select(activity, preference) }
-                val fps = preference.framesPerSecond(TimelineFrameRateStore.displayMaximumHz)
-                repeat(3) {
-                    // Verify the production lock effect restores a stale surface request.
-                    composeTestRule.runOnUiThread {
-                        activity.window.attributes = activity.window.attributes.apply {
-                            preferredRefreshRate = 30f
-                        }
+            val maximum = PlaybackFrameRate.maximumRefreshRate(activity.window.decorView.display)
+            repeat(3) {
+                composeTestRule.runOnUiThread {
+                    activity.window.attributes = activity.window.attributes.apply {
+                        preferredRefreshRate = 30f
+                        preferredDisplayModeId = 7
                     }
-                    clickTag(PLAYBACK_LOCK_IN_MAJOR_TEST_TAG)
-                    locked = !locked
-                    composeTestRule.waitUntil(5_000) {
-                        val node = composeTestRule.onAllNodesWithTag(
-                            PLAYBACK_LOCK_IN_MAJOR_TEST_TAG, useUnmergedTree = true
-                        ).fetchSemanticsNodes().firstOrNull()
-                        node?.config?.getOrNull(SemanticsProperties.StateDescription) ==
-                            (if (locked) "On" else "Off") &&
-                            activity.window.attributes.preferredRefreshRate == fps.toFloat()
-                    }
-                    assertEquals(1_000_000_000L / fps, TimelineFrameRateStore.minStateUpdateNanos)
-                    assertEquals(preference, TimelineFrameRateStore.read(activity))
-                    waitForAdvancingPlayback()
                 }
+                clickTag(PLAYBACK_LOCK_IN_MAJOR_TEST_TAG)
+                locked = !locked
+                composeTestRule.waitUntil(5_000) {
+                    val node = composeTestRule.onAllNodesWithTag(
+                        PLAYBACK_LOCK_IN_MAJOR_TEST_TAG, useUnmergedTree = true
+                    ).fetchSemanticsNodes().firstOrNull()
+                    val params = activity.window.attributes
+                    node?.config?.getOrNull(SemanticsProperties.StateDescription) ==
+                        (if (locked) "On" else "Off") &&
+                        params.preferredRefreshRate == maximum &&
+                        params.preferredDisplayModeId == 0
+                }
+                waitForAdvancingPlayback()
             }
             clickDescription("Pause")
             clickDescription("Play")
@@ -133,7 +129,8 @@ class PlaybackTransportSelectorsUiTest {
             clickTag(PLAYBACK_SECTION_BUTTON_TEST_TAG)
             clickTag("PlaybackSection-chorus")
             waitForAdvancingPlayback()
-            assertEquals(60f, activity.window.attributes.preferredRefreshRate, 0f)
+            assertEquals(maximum, activity.window.attributes.preferredRefreshRate, 0f)
+            assertEquals(0, activity.window.attributes.preferredDisplayModeId)
 
             composeTestRule.runOnUiThread {
                 PlaybackController.pause()
@@ -144,15 +141,117 @@ class PlaybackTransportSelectorsUiTest {
             }
             composeTestRule.runOnUiThread { showingPlayback = true }
             waitForPlayback()
-            assertEquals(60f, activity.window.attributes.preferredRefreshRate, 0f)
-            assertEquals(16_666_666L, TimelineFrameRateStore.minStateUpdateNanos)
+            assertEquals(maximum, activity.window.attributes.preferredRefreshRate, 0f)
+            assertEquals(0, activity.window.attributes.preferredDisplayModeId)
         } finally {
-            composeTestRule.runOnUiThread {
-                PlaybackController.pause()
-                TimelineFrameRateStore.select(activity, savedPreference)
-            }
+            composeTestRule.runOnUiThread { PlaybackController.pause() }
             idlingResources.forEach { IdlingRegistry.getInstance().register(it) }
         }
+    }
+
+    @Test
+    fun rootDegreeSelectorSharesStateAndOnlyPulsesDisableTheArpeggioDial() {
+        val sections = linkedMapOf("verse" to section("Verse", 5), "chorus" to section("Chorus", 7))
+        val pitchSource = FakeExclusivePitchSource()
+        val testSong = song("root-cue", "Root Cue")
+        var selectedSectionId by mutableStateOf("verse")
+        var arpeggioOption by mutableStateOf(PLAYBACK_ARPEGGIO_OPTIONS.indexOfFirst { it.cyclesPerBeat == 2.0 })
+        var rootDegreeCue by mutableStateOf(PlaybackRootDegreeCue.OFF)
+        val originalArpeggioOption = arpeggioOption
+
+        composeTestRule.setContent {
+            MaterialTheme {
+                PlaybackDestination(
+                    song = testSong,
+                    sections = sections,
+                    selectedSectionId = selectedSectionId,
+                    onSectionChange = { selectedSectionId = it },
+                    currentWaveform = AudioEngine.Waveform.SINE,
+                    onWaveformChange = {},
+                    globalTranspose = 0,
+                    playbackTempoPercent = 100f,
+                    onPlaybackTempoPercentChange = {},
+                    playbackArpeggioOptionIndex = arpeggioOption,
+                    onPlaybackArpeggioOptionIndexChange = { arpeggioOption = it },
+                    rootDegreeCue = rootDegreeCue,
+                    onRootDegreeCueChange = { rootDegreeCue = it },
+                    onTransposeChange = {},
+                    onArtistClick = {},
+                    onShowSongInfo = {},
+                    onSingingTargetsRequested = {},
+                    octaveOffset = 0,
+                    persistentPitchSource = pitchSource,
+                    isFavorite = false,
+                    onToggleFavorite = {},
+                    onBack = {}
+                )
+            }
+        }
+        waitForPlayback()
+
+        fun cueTag(cue: PlaybackRootDegreeCue) = "PlaybackRootDegree-${cue.name}"
+        fun cueSelected(cue: PlaybackRootDegreeCue) = composeTestRule.onAllNodesWithTag(cueTag(cue))
+            .fetchSemanticsNodes().single().config[SemanticsProperties.Selected]
+        fun arpeggioDial(description: String) = composeTestRule.onAllNodesWithContentDescription(
+            description,
+            useUnmergedTree = true
+        ).fetchSemanticsNodes().single().config
+
+        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        assertTrue(composeTestRule.onAllNodesWithTag(cueTag(PlaybackRootDegreeCue.OFF)).fetchSemanticsNodes().isEmpty())
+        clickText("Full Chords")
+        clickTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
+        assertTrue(cueSelected(PlaybackRootDegreeCue.OFF))
+        val slider = composeTestRule.onNodeWithTag(PLAYBACK_VOICE_VOLUME_TEST_TAG, useUnmergedTree = true)
+        slider.performSemanticsAction(SemanticsActions.SetProgress) { setProgress -> setProgress(0.25f) }
+        clickTag(cueTag(PlaybackRootDegreeCue.ROOT_PULSES))
+        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        clickText("Root Only")
+
+        clickTag(PLAYBACK_SECTION_BUTTON_TEST_TAG)
+        clickTag("PlaybackSection-chorus")
+        clickTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
+        assertTrue(cueSelected(PlaybackRootDegreeCue.ROOT_PULSES))
+        assertEquals(0.25f, slider.fetchSemanticsNode().config[SemanticsProperties.ProgressBarRangeInfo].current)
+        clickTag(cueTag(PlaybackRootDegreeCue.ROOT_PULSES))
+        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
+        clickText("Full Chords")
+        val disabledDial = arpeggioDial("Arpeggiate\n(cycles per beat): Off")
+        assertEquals(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX.toFloat(),
+            disabledDial[SemanticsProperties.ProgressBarRangeInfo].current)
+        assertTrue(SemanticsProperties.Disabled in disabledDial)
+        assertFalse(SemanticsActions.SetProgress in disabledDial)
+        assertFalse(SemanticsActions.OnClick in disabledDial)
+        assertEquals(originalArpeggioOption, arpeggioOption)
+
+        clickTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
+        clickTag(cueTag(PlaybackRootDegreeCue.SPOKEN_NUMBER))
+        val enabledDescription = "Arpeggiate\n(cycles per beat): ${PLAYBACK_ARPEGGIO_OPTIONS[originalArpeggioOption].label}"
+        val enabledDial = arpeggioDial(enabledDescription)
+        assertEquals(originalArpeggioOption.toFloat(),
+            enabledDial[SemanticsProperties.ProgressBarRangeInfo].current)
+        assertTrue(SemanticsActions.SetProgress in enabledDial)
+
+        clickTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
+        assertTrue(cueSelected(PlaybackRootDegreeCue.SPOKEN_NUMBER))
+        clickTag(cueTag(PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS))
+        assertTrue(SemanticsActions.SetProgress in arpeggioDial(enabledDescription))
+
+        val idlingResources = IdlingRegistry.getInstance().resources.toList()
+        idlingResources.forEach { IdlingRegistry.getInstance().unregister(it) }
+        try {
+            clickDescription("Play")
+            waitForAdvancingPlayback(minimumBeatAdvance = 0.8)
+            clickDescription("Pause")
+        } finally {
+            composeTestRule.runOnUiThread { PlaybackController.pause() }
+            idlingResources.forEach { IdlingRegistry.getInstance().register(it) }
+        }
+
+        clickTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
+        assertTrue(cueSelected(PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS))
+        clickTag(cueTag(PlaybackRootDegreeCue.OFF))
+        assertEquals(PlaybackRootDegreeCue.OFF, rootDegreeCue)
     }
 
     @Test
@@ -185,6 +284,8 @@ class PlaybackTransportSelectorsUiTest {
                         onPlaybackTempoPercentChange = { tempoPercent = it },
                         playbackArpeggioOptionIndex = arpeggioOptionIndex,
                         onPlaybackArpeggioOptionIndexChange = { arpeggioOptionIndex = it },
+                        rootDegreeCue = PlaybackRootDegreeCue.OFF,
+                        onRootDegreeCueChange = {},
                         onTransposeChange = {
                             transpose = it
                             AudioEngine.globalTranspose = it
@@ -361,7 +462,7 @@ class PlaybackTransportSelectorsUiTest {
         }
     }
 
-    private fun waitForAdvancingPlayback() {
+    private fun waitForAdvancingPlayback(minimumBeatAdvance: Double = 0.05) {
         val deadline = System.currentTimeMillis() + 8_000
         var markedBeat: Double? = null
         while (System.currentTimeMillis() < deadline) {
@@ -371,7 +472,7 @@ class PlaybackTransportSelectorsUiTest {
                 if (start == null || state.beat + 0.001 < start) {
                     // First PLAYING sample, or a section reload jumped back to the top.
                     markedBeat = state.beat
-                } else if (abs(state.beat - start) > 0.05) {
+                } else if (abs(state.beat - start) > minimumBeatAdvance) {
                     return
                 }
             } else {

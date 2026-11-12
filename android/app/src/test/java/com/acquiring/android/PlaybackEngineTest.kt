@@ -9,6 +9,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.util.ArrayDeque
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -139,6 +140,60 @@ class PlaybackEngineTest {
     }
 
     @Test
+    fun renderer_songModeSplicesTheQueuedSectionInTheSameBlock() {
+        val first = PlaybackTimeline(
+            endBeat = 1.5,
+            events = listOf(event(1, 1.0, 1.5, PlaybackAudioLayer.MELODY, 60)),
+            completionKey = SECTION_PLAY_THROUGH_KEY
+        )
+        val second = PlaybackTimeline(
+            endBeat = 2.0,
+            events = listOf(event(2, 1.0, 2.0, PlaybackAudioLayer.MELODY, 67)),
+            completionKey = SECTION_PLAY_THROUGH_KEY
+        )
+        val renderer = PlaybackPcmRenderer(first, config(), sampleRate = 1_000)
+        renderer.continuation = ArrayDeque(
+            listOf(QueuedSection(second, bpm = 60.0, performanceId = "song:b"))
+        )
+        val samples = ShortArray(1_000)
+
+        renderer.renderInto(samples)
+
+        assertFalse(renderer.finished)
+        assertEquals(1.5, renderer.currentBeat, 1e-9)
+        val splice = renderer.consumeSplices().single()
+        assertEquals("song:b", splice.performanceId)
+        assertEquals(500, splice.frame)
+        assertTrue(samples.copyOfRange(700, 1_000).any { it.toInt() != 0 })
+    }
+
+    @Test
+    fun renderer_completionKeySwapKeepsTheBeatAndRestoresWrapping() {
+        val timeline = PlaybackTimeline(
+            endBeat = 1.5,
+            events = listOf(event(7, 1.0, 1.1, PlaybackAudioLayer.MELODY, 60))
+        )
+        val renderer = PlaybackPcmRenderer(timeline, config(), sampleRate = 1_000)
+        renderer.renderInto(ShortArray(200))
+        val beat = renderer.currentBeat
+        assertEquals(1.2, beat, 1e-9)
+
+        renderer.replaceTimeline(timeline.copy(completionKey = SECTION_PLAY_THROUGH_KEY))
+
+        assertEquals(beat, renderer.currentBeat, 1e-9)
+        renderer.renderInto(ShortArray(1_000))
+        assertEquals(timeline.endBeat, renderer.currentBeat, 1e-9)
+        assertTrue(renderer.finished)
+
+        renderer.replaceTimeline(timeline)
+        assertEquals(timeline.endBeat, renderer.currentBeat, 1e-9)
+        assertFalse(renderer.finished)
+        renderer.renderInto(ShortArray(100))
+        assertEquals(1.1, renderer.currentBeat, 1e-9)
+        assertFalse(renderer.finished)
+    }
+
+    @Test
     fun engine_signalsCompletionOnlyAfterWrittenAudioDrains() {
         val sink=FakeSink(blockAfterPlay=true)
         val engine=PlaybackEngine(config(),sampleRate=1_000) { sink }
@@ -153,6 +208,49 @@ class PlaybackEngineTest {
             engine.pause()
             assertFalse(engine.isCurrentCompletion(engine.state.value))
         } finally { sink.unblockWrites();engine.release() }
+    }
+
+    @Test
+    fun engine_updateCompletionKeepsThePausedBeatAndThenFinishes() {
+        val sink = FakeSink(blockAfterPlay = true)
+        val engine = PlaybackEngine(config(), sampleRate = 1_000) { sink }
+        try {
+            val timeline = simpleTimeline()
+            engine.load(timeline, continuePlaying = false)
+            awaitPhase(engine, PlaybackPhase.STOPPED)
+            engine.seek(2.5, resume = false)
+            awaitCondition {
+                engine.state.value.phase == PlaybackPhase.PAUSED &&
+                    engine.state.value.beat == 2.5
+            }
+            assertFalse(
+                engine.updateCompletion(
+                    timeline.copy(events = listOf(event(9, 1.0, 2.0, PlaybackAudioLayer.MELODY, 64)))
+                )
+            )
+            assertTrue(engine.updateCompletion(timeline.copy(completionKey = "section-play-through")))
+            val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(200)
+            while (System.nanoTime() < deadline) {
+                assertEquals(2.5, engine.state.value.beat, 0.0)
+                assertEquals(PlaybackPhase.PAUSED, engine.state.value.phase)
+                Thread.sleep(10)
+            }
+
+            val ending = PlaybackTimeline(endBeat = 1.05, events = emptyList())
+            engine.load(ending, continuePlaying = false)
+            awaitPhase(engine, PlaybackPhase.STOPPED)
+            assertTrue(engine.updateCompletion(ending.copy(completionKey = "section-play-through")))
+            engine.play()
+            awaitPhase(engine, PlaybackPhase.PLAYING)
+            sink.advancePlaybackHeadToWritten()
+            awaitPhase(engine, PlaybackPhase.COMPLETED)
+            assertEquals("section-play-through", engine.state.value.completionKey)
+            assertTrue(engine.isCurrentCompletion(engine.state.value))
+            assertEquals(1.05, engine.state.value.beat, 1e-6)
+        } finally {
+            sink.unblockWrites()
+            engine.release()
+        }
     }
 
     @Test

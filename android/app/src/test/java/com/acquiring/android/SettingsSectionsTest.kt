@@ -6,15 +6,14 @@ import org.junit.Test
 
 class SettingsSectionsTest {
     @Test
-    fun settingsKeepsHelpDisplayAndDiagnostics() {
+    fun settingsKeepsHelpAndDiagnosticsWithoutAFrameRateControl() {
         assertEquals(
-            listOf("Instructions", "Scale degrees", "Intervals", "Roman numerals"),
+            listOf("Instructions", "Scale degrees", "Intervals", "Roman numerals", "Melody function"),
             HelpCatalog.topics.map { it.title }
         )
-        assertEquals(
-            listOf("60 fps", "Maximum"),
-            TimelineFrameRatePreference.entries.map { it.title }
-        )
+        val settings = androidMainSource("AppSettings.kt")
+        assertTrue(!settings.contains("timelineFrameRate"))
+        assertTrue(!settings.contains("60 fps"))
         assertTrue(AudioDiagnostics.ALLOWED_OPERATIONS.contains("diagnostics.export"))
         assertTrue(AudioDiagnostics.ALLOWED_OPERATIONS.contains("diagnostics.reset"))
     }

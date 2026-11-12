@@ -50,6 +50,13 @@ internal fun orderedQueue(candidates: List<QueueCandidate>, minimumPopularityPer
             .thenBy { it.first.title.lowercase() }.thenBy { it.first.slug })
         .map { it.first }
 
+/** Popularity cutoff, then one random-order entry per song. A null cutoff keeps unscored songs. */
+internal fun shuffledExampleQueue(candidates: List<QueueCandidate>, minimumPopularityPercent: Int?, random: Random = Random.Default): List<QueuedSong> =
+    candidates.filter { auralMeetsMinimumPopularity(it.score, minimumPopularityPercent) }
+        .distinctBy { it.song.slug }
+        .map { it.song }
+        .shuffled(random)
+
 /** Survives Activity rotation; song blobs are loaded on demand by MainScreen. */
 internal class SongQueueViewModel : ViewModel() {
     var active by mutableStateOf(false)
@@ -79,16 +86,20 @@ internal class SongQueueViewModel : ViewModel() {
         private set
     var autoStart by mutableStateOf(false)
         private set
-    // Aural examples stay on the selected section until the listener chooses another song.
+    // Aural examples, and a playlist that holds its song, stay put until the listener advances.
+    var manualAdvance by mutableStateOf(false)
+        private set
+    var preferChorus by mutableStateOf(false)
+        private set
     val playbackCompletionKey: String?
-        get() = if (originQuiz) null else loadToken
+        get() = if (originQuiz || manualAdvance) null else loadToken
     var sectionOverride by mutableStateOf<String?>(null)
         private set
     private var consumedCompletion: String? = null
     private var unavailableCount = 0
     private var generation = 0
 
-    fun begin(originQuiz: Boolean, name: String): Int {
+    fun begin(originQuiz: Boolean, name: String, manualAdvance: Boolean = false, preferChorus: Boolean = false): Int {
         generation++
         active = true
         loading = true
@@ -98,6 +109,8 @@ internal class SongQueueViewModel : ViewModel() {
         started = false
         shuffleEnabled = false
         this.originQuiz = originQuiz
+        this.manualAdvance = manualAdvance
+        this.preferChorus = preferChorus
         suggestedName = name
         savedPlaylistId = null
         notice = null
@@ -135,7 +148,7 @@ internal class SongQueueViewModel : ViewModel() {
         } else originalEntries
         index = if (started && current != null) entries.indexOf(current).coerceAtLeast(0) else 0
         savedPlaylistId = null
-        notice = if (shuffleEnabled) "Queue shuffled" else "Original order restored"
+        notice = if (shuffleEnabled) "Playlist shuffled" else "Original order restored"
     }
 
     fun start() {
@@ -164,8 +177,19 @@ internal class SongQueueViewModel : ViewModel() {
         loadToken = UUID.randomUUID().toString()
     }
 
+    fun rememberSection(token: String, sectionId: String, sectionName: String) {
+        if (!active || token != loadToken) return
+        val current = entries.getOrNull(index) ?: return
+        if (current.sectionId == sectionId && current.sectionName == sectionName) return
+        val updated = current.copy(sectionId = sectionId, sectionName = sectionName)
+        entries = entries.toMutableList().also { it[index] = updated }
+        originalEntries = originalEntries.map { song ->
+            if (song.slug == current.slug && song.sectionId == current.sectionId && song.sectionName == current.sectionName) updated else song
+        }
+    }
+
     fun completed(token: String): Boolean {
-        if (!active || originQuiz || token != loadToken || consumedCompletion == token || entries.isEmpty()) return false
+        if (!active || originQuiz || manualAdvance || token != loadToken || consumedCompletion == token || entries.isEmpty()) return false
         consumedCompletion = token
         if (index == entries.lastIndex) {
             autoStart = false

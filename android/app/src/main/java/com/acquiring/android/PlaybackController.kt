@@ -36,6 +36,7 @@ internal object PlaybackController {
     private var activePlaybackOwner: Any? = null
     private var loadedTimelineIdentity: String? = null
     private var initialized = false
+    private var spokenRootDegrees = SpokenRootDegreeClips()
 
     private val mutableState = MutableStateFlow(PlaybackState())
     val state: StateFlow<PlaybackState> = mutableState.asStateFlow()
@@ -87,6 +88,7 @@ internal object PlaybackController {
         synchronized(lock) {
             if (initialized) return
             val applicationContext = context.applicationContext
+            spokenRootDegrees = loadSpokenRootDegrees(applicationContext.resources)
             audioManager = applicationContext.getSystemService(AudioManager::class.java)
             focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
                 .setAudioAttributes(
@@ -134,7 +136,7 @@ internal object PlaybackController {
             if (existing != null) {
                 existing
             } else {
-                val created = PlaybackEngine(newConfig)
+                val created = PlaybackEngine(newConfig, spokenRootDegrees = spokenRootDegrees)
                 engine = created
                 mirror = scope.launch {
                     created.state.collect { mutableState.value = it }
@@ -145,23 +147,31 @@ internal object PlaybackController {
         target.updateConfig(newConfig)
     }
 
-    fun load(identity: String, newTimeline: PlaybackTimeline, continuePlaying: Boolean) {
-        val needsLoad = synchronized(lock) {
-            if (loadedTimelineIdentity == identity) {
-                false
-            } else {
-                loadedTimelineIdentity = identity
-                true
-            }
+    /**
+     * Returns true when this replaced the performance and playback starts at the
+     * beginning. A Loop/Song toggle keeps the same identity; that path only updates
+     * the completion key and leaves the playhead where it is.
+     */
+    fun load(identity: String, newTimeline: PlaybackTimeline, continuePlaying: Boolean): Boolean {
+        val sameIdentity = synchronized(lock) {
+            val same = loadedTimelineIdentity == identity
+            if (!same) loadedTimelineIdentity = identity
+            same
         }
-        if (!needsLoad) return
+        if (sameIdentity && engine?.updateCompletion(newTimeline) == true) return false
+        if (!sameIdentity && engine?.adoptIfPlaying(newTimeline) == true) return false
         val focusOwner = if (continuePlaying) requestFocus() else null
         val shouldPlay = synchronized(lock) {
             val permitted = focusOwner != null && activePlaybackOwner === focusOwner
-            engine?.load(newTimeline, continuePlaying = permitted)
+            engine?.load(newTimeline, continuePlaying = permitted, performanceId = identity)
             permitted
         }
         if (focusOwner != null && !shouldPlay) abandonFocus()
+        return true
+    }
+
+    fun setSectionContinuation(afterPerformanceId: String, sections: List<QueuedSection>) {
+        engine?.setSectionContinuation(afterPerformanceId, sections)
     }
 
     fun play() {

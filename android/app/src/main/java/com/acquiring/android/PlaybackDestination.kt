@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,7 +30,7 @@ internal const val PLAYBACK_SCREEN_TEST_TAG = "PlaybackScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlaybackDestination(
+internal fun PlaybackDestination(
     song: Song,
     sections: Map<String, ExtractedSection>,
     selectedSectionId: String?,
@@ -41,6 +42,8 @@ fun PlaybackDestination(
     onPlaybackTempoPercentChange: (Float) -> Unit,
     playbackArpeggioOptionIndex: Int,
     onPlaybackArpeggioOptionIndexChange: (Int) -> Unit,
+    rootDegreeCue: PlaybackRootDegreeCue,
+    onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit,
     onTransposeChange: (Int) -> Unit,
     onArtistClick: (String) -> Unit,
     onShowSongInfo: () -> Unit,
@@ -62,9 +65,13 @@ fun PlaybackDestination(
     onPreviousSong: (() -> Unit)? = null,
     onNextSong: (() -> Unit)? = null,
     previousSongEnabled: Boolean = true,
-    nextSongEnabled: Boolean = true
+    nextSongEnabled: Boolean = true,
+    playbackSettings: SongPlaybackSettingsViewModel? = null
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
+    val sectionFacts = remember(sectionsInSongOrder) {
+        sectionsInSongOrder.map { (id, section) -> id to sectionPlaybackFacts(section) }
+    }
     val selectedSectionKey = selectedSectionId
         ?.takeIf { selectedId -> sectionsInSongOrder.any { it.key == selectedId } }
         ?: sectionsInSongOrder.firstOrNull()?.key
@@ -72,12 +79,53 @@ fun PlaybackDestination(
     val selectedSection = sections[selectedSectionKey]
         ?: sectionsInSongOrder.firstOrNull()?.value
         ?: sections.values.first()
-    var isSimpleMode by remember { mutableStateOf(false) }
-    var useRelativeIonianContext by remember { mutableStateOf(false) }
+    var isSimpleMode by rememberSaveable(song.slug) { mutableStateOf(false) }
+    var localLockInMajor by rememberSaveable(song.slug) { mutableStateOf(false) }
     var playbackKeyDisplay by remember { mutableStateOf<PlaybackKeyDisplay?>(null) }
+    var localVoiceVolume by rememberSaveable(song.slug) { mutableStateOf(DEFAULT_PLAYBACK_VOICE_VOLUME) }
+    var localLoopSection by rememberSaveable(song.slug) { mutableStateOf(true) }
+    var localMelodyChordBalance by remember(song.slug) { mutableStateOf(DEFAULT_MELODY_CHORD_BALANCE) }
+    val useRelativeIonianContext = playbackSettings?.lockInMajor ?: localLockInMajor
+    val voiceVolume = playbackSettings?.voiceVolume ?: localVoiceVolume
+    val loopSection = playbackSettings?.loopSection ?: localLoopSection
+    val melodyChordBalance = playbackSettings?.melodyChordBalance ?: localMelodyChordBalance
+    val onLockInMajorChange: (Boolean) -> Unit = { value ->
+        if (playbackSettings != null) playbackSettings.updateLockInMajor(value) else localLockInMajor = value
+    }
+    val onVoiceVolumeChange: (Float) -> Unit = { value ->
+        if (playbackSettings != null) playbackSettings.updateVoiceVolume(value) else localVoiceVolume = value
+    }
+    val onLoopSectionChange: (Boolean) -> Unit = { value ->
+        if (playbackSettings != null) playbackSettings.updateLoopSection(value) else localLoopSection = value
+    }
+    val onMelodyChordBalanceChange: (Float) -> Unit = { value ->
+        if (playbackSettings != null) playbackSettings.updateMelodyChordBalance(value) else localMelodyChordBalance = value
+    }
+    var continueIntoNextSection by remember { mutableStateOf(false) }
+    val sectionContinuation = remember(
+        sectionFacts,
+        selectedSectionKey,
+        loopSection,
+        playOnceKey,
+        playbackTempoPercent,
+        song.slug
+    ) {
+        if (loopSection || playOnceKey != null) {
+            emptyList()
+        } else {
+            songSectionContinuation(
+                sectionFacts,
+                selectedSectionKey.orEmpty(),
+                song.slug,
+                playbackTempoPercent
+            )
+        }
+    }
+    val selectedFacts = sectionFacts.firstOrNull { it.first == selectedSectionKey }?.second
+        ?: sectionPlaybackFacts(selectedSection)
     val context = LocalContext.current
     LaunchedEffect(context, selectedSectionKey, useRelativeIonianContext) {
-        TimelineFrameRateStore.applyToWindow(context)
+        PlaybackFrameRate.apply(context)
     }
     var showTitleSheet by remember { mutableStateOf(false) }
     var showPlaybackHelp by remember { mutableStateOf(false) }
@@ -120,7 +168,7 @@ fun PlaybackDestination(
             onBack = onBack,
             onTitleClick = { showTitleSheet = true },
             useRelativeIonianContext = useRelativeIonianContext,
-            onLockInMajorChange = { useRelativeIonianContext = it },
+            onLockInMajorChange = onLockInMajorChange,
             keyDisplay = playbackKeyDisplay,
             onPlayHomeNote = { homeNoteAction[0]() },
             onPlayHomeChord = { homeChordAction[0]() },
@@ -134,9 +182,20 @@ fun PlaybackDestination(
 
         PlaybackTab(
             playOnceKey = playOnceKey,
-            autoStart = autoStart,
+            autoStart = autoStart || continueIntoNextSection,
             onSectionComplete = onSectionComplete,
             section = selectedSection,
+            facts = selectedFacts,
+            sectionContinuation = sectionContinuation,
+            onEnginePerformance = { performanceId ->
+                val prefix = "${song.slug}:"
+                if (performanceId.startsWith(prefix)) {
+                    val sectionId = performanceId.removePrefix(prefix)
+                    if (sectionId != selectedSectionKey && sections.containsKey(sectionId)) {
+                        onSectionChange(sectionId)
+                    }
+                }
+            },
             initialPassage = initialPassage,
             isSimpleMode = isSimpleMode,
             onSimpleModeChange = { isSimpleMode = it },
@@ -153,6 +212,25 @@ fun PlaybackDestination(
             onTempoPercentChange = onPlaybackTempoPercentChange,
             arpeggioOptionIndex = playbackArpeggioOptionIndex,
             onArpeggioOptionIndexChange = onPlaybackArpeggioOptionIndexChange,
+            rootDegreeCue = rootDegreeCue,
+            onRootDegreeCueChange = onRootDegreeCueChange,
+            voiceVolume = voiceVolume,
+            loopSection = loopSection,
+            melodyChordBalance = melodyChordBalance,
+            onMelodyChordBalanceChange = onMelodyChordBalanceChange,
+            onSectionFinished = {
+                val next = nextSectionInSongOrder(
+                    sectionsInSongOrder.map { it.key },
+                    selectedSectionKey.orEmpty()
+                )
+                if (next == null || next == selectedSectionKey) {
+                    PlaybackController.play()
+                } else {
+                    continueIntoNextSection = true
+                    onSectionChange(next)
+                }
+            },
+            onAutoStartConsumed = { continueIntoNextSection = false },
             onSingingTargetsRequested = onSingingTargetsRequested,
             octaveOffset = octaveOffset,
             sessionKey = playbackSessionKey ?: "${song.slug}:${selectedSectionKey.orEmpty()}",
@@ -191,6 +269,12 @@ fun PlaybackDestination(
             selectedSectionId = selectedSectionKey.orEmpty(),
             selectedSectionLabel = selectedSection.safeSectionName,
             onSectionChange = onSectionChange,
+            rootDegreeCue = rootDegreeCue,
+            onRootDegreeCueChange = onRootDegreeCueChange,
+            voiceVolume = voiceVolume,
+            onVoiceVolumeChange = onVoiceVolumeChange,
+            loopSection = loopSection,
+            onLoopSectionChange = { onLoopSectionChange(it) },
             onPreviousSong = onPreviousSong,
             onNextSong = onNextSong,
             previousSongEnabled = previousSongEnabled,

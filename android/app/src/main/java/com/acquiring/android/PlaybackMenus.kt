@@ -175,7 +175,7 @@ internal fun PlaybackInstrumentMenu(
                 modifier = Modifier.size(PLAYBACK_TRANSPORT_CONTROL)
             ) {
                 Text(
-                    text = "🎹",
+                    text = "🎷",
                     fontSize = 20.sp,
                     lineHeight = 20.sp
                 )

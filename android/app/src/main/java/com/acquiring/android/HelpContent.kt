@@ -6,6 +6,7 @@ internal const val HELP_TOPIC_INSTRUCTIONS = "help.topic.instructions"
 internal const val HELP_TOPIC_SCALE_DEGREES = "help.topic.scaleDegrees"
 internal const val HELP_TOPIC_INTERVALS = "help.topic.intervals"
 internal const val HELP_TOPIC_ROMAN = "help.topic.romanNumerals"
+internal const val HELP_TOPIC_MELODY_FUNCTION = "help.topic.melodyFunction"
 
 internal data class HelpTopic(
     val id: String,
@@ -23,6 +24,11 @@ internal data class RomanHelpExample(
     val symbol: String,
     val meaning: String,
     val borrowedLabel: String? = null
+)
+
+internal data class MelodyFunctionHelpEntry(
+    val word: String,
+    val definition: String
 )
 
 internal data class RomanFigureExample(
@@ -52,7 +58,55 @@ internal object HelpCatalog {
             id = HELP_TOPIC_ROMAN,
             title = "Roman numerals",
             detail = "Chord quality, figures, alterations, and applied chords"
+        ),
+        HelpTopic(
+            id = HELP_TOPIC_MELODY_FUNCTION,
+            title = "Melody function",
+            detail = "The one- or two-word role on the melody card"
         )
+    )
+
+    val melodyFunctionChordTones = listOf(
+        MelodyFunctionHelpEntry("Root", "Sit. This is the chord’s root."),
+        MelodyFunctionHelpEntry("Third", "Sit. A stable tone of the chord."),
+        MelodyFunctionHelpEntry("Fifth", "Sit. A stable tone of the chord."),
+        MelodyFunctionHelpEntry("Second", "Lean. It belongs to the chord."),
+        MelodyFunctionHelpEntry("Fourth", "Lean. It belongs to the chord and wants to fall to the third."),
+        MelodyFunctionHelpEntry("Sixth", "Lean. It belongs to the chord."),
+        MelodyFunctionHelpEntry("Seventh", "Lean. It belongs to the chord and wants to move."),
+        MelodyFunctionHelpEntry("Ninth", "Lean. It belongs to the chord and wants to move."),
+        MelodyFunctionHelpEntry("Eleventh", "Lean. It belongs to the chord and wants to move."),
+        MelodyFunctionHelpEntry("Thirteenth", "Lean. It belongs to the chord and wants to move.")
+    )
+
+    val melodyFunctionScaleDegrees = listOf(
+        MelodyFunctionHelpEntry("One", "Sit. Scale degree 1, and no chord is under the note."),
+        MelodyFunctionHelpEntry("Two", "Keep moving. Scale degree 2, and no chord is under the note."),
+        MelodyFunctionHelpEntry("Three", "Sit. Scale degree 3, and no chord is under the note."),
+        MelodyFunctionHelpEntry("Four", "Keep moving. Scale degree 4, and no chord is under the note."),
+        MelodyFunctionHelpEntry("Five", "Sit. Scale degree 5, and no chord is under the note."),
+        MelodyFunctionHelpEntry("Six", "Keep moving. Scale degree 6, and no chord is under the note."),
+        MelodyFunctionHelpEntry("Seven", "Keep moving. Scale degree 7, and no chord is under the note.")
+    )
+
+    val melodyFunctionMotion = listOf(
+        MelodyFunctionHelpEntry("Passing", "Step between two chord tones in the same direction. Keep going."),
+        MelodyFunctionHelpEntry("Chromatic passing", "A passing step on a note outside the key."),
+        MelodyFunctionHelpEntry("Upper neighbor", "Step up and come back. Do not settle here."),
+        MelodyFunctionHelpEntry("Lower neighbor", "Step down and come back. Do not settle here."),
+        MelodyFunctionHelpEntry("Anticipation", "You are early. This note belongs to the next chord."),
+        MelodyFunctionHelpEntry("Suspension", "The note was in the previous chord. Let it fall by step."),
+        MelodyFunctionHelpEntry("Retardation", "The note was in the previous chord. Let it rise by step."),
+        MelodyFunctionHelpEntry("Held over", "The chord changed under a note you are still holding."),
+        MelodyFunctionHelpEntry("Appoggiatura", "You leapt onto a tension. Step off it onto a chord tone."),
+        MelodyFunctionHelpEntry("Escape", "A short step off the chord, then a leap onward."),
+        MelodyFunctionHelpEntry("Leading", "A half step under the next note. Let it rise."),
+        MelodyFunctionHelpEntry("Pedal", "The melody holds still while the chords move.")
+    )
+
+    val melodyFunctionOutside = listOf(
+        MelodyFunctionHelpEntry("Color", "Outside the chord, with no prepared path. Hear it against the root, then follow the melody."),
+        MelodyFunctionHelpEntry("Chromatic color", "A color tone that is also outside the key.")
     )
 
     val intervalRows = listOf(

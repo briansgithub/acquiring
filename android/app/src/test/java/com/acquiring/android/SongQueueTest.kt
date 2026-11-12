@@ -88,6 +88,50 @@ class SongQueueTest {
         }
     }
 
+    @Test fun shuffledExampleQueueHonorsThePopularityCutoff() {
+        val songs = listOf(
+            candidate("keep", "a", 0.80),
+            candidate("low", "a", 0.79),
+            candidate("zero", "a", 0.0),
+            candidate("perfect", "a", 1.0),
+            candidate("unscored", "a", null),
+            candidate("almost", "a", 0.999)
+        )
+        assertEquals(
+            setOf("keep", "low", "zero", "perfect", "unscored", "almost"),
+            shuffledExampleQueue(songs, null, Random(1)).map { it.slug }.toSet()
+        )
+        assertEquals(setOf("keep", "perfect", "almost"), shuffledExampleQueue(songs, 80, Random(1)).map { it.slug }.toSet())
+        val atZero = shuffledExampleQueue(songs, 0, Random(1)).map { it.slug }.toSet()
+        assertTrue(atZero.contains("zero"))
+        assertFalse(atZero.contains("unscored"))
+        assertEquals(setOf("perfect"), shuffledExampleQueue(songs, 100, Random(1)).map { it.slug }.toSet())
+    }
+
+    @Test fun shuffledExampleQueueRandomizesOneEntryPerSong() {
+        val songs = (0..5).map { candidate("song-$it", "a", 1.0) } + candidate("song-0", "b", 1.0)
+        val distinct = (0..5).map { candidate("song-$it", "a", 1.0).song }
+        val queue = shuffledExampleQueue(songs, null, Random(4))
+        assertEquals(distinct.shuffled(Random(4)), queue)
+        assertEquals(6, queue.map { it.slug }.toSet().size)
+        assertEquals("a", queue.first { it.slug == "song-0" }.sectionId)
+        assertFalse((0..5).map { "song-$it" } == queue.map { it.slug })
+    }
+
+    @Test fun examplePlaylistHoldsTheSongUntilTheListenerAdvances() {
+        val state = SongQueueViewModel()
+        val songs = (0..2).map { QueuedSong("song-$it", "Song $it", "Artist", "", "Chorus") }
+        state.finishPreparation(state.begin(false, "Example songs", manualAdvance = true, preferChorus = true), songs)
+        state.start()
+        val index = state.index
+        assertEquals(null, state.playbackCompletionKey)
+        assertTrue(state.preferChorus)
+        assertFalse(state.completed(state.loadToken))
+        assertEquals(index, state.index)
+        state.select(index + 1, resume = true)
+        assertEquals(index + 1, state.index)
+    }
+
     @Test fun savedPlaylistStillAdvancesAndManualNavigationPreservesPauseIntent() {
         val state = SongQueueViewModel()
         state.finishPreparation(state.begin(false, "Playlist"),

@@ -33,6 +33,15 @@ internal fun canonicalScaleName(scale: String): String = when (scale) {
     else -> scale
 }
 
+/** Shortest circle-of-fifths steps between two pitch classes, from 0 through 6. */
+internal fun circleOfFifthsDistance(fromPitchClass: Int, toPitchClass: Int): Int {
+    val fifths = Math.floorMod((Math.floorMod(toPitchClass, 12) - Math.floorMod(fromPitchClass, 12)) * 7, 12)
+    return minOf(fifths, 12 - fifths)
+}
+
+internal fun tonicPitchClass(key: KeyInfo): Int =
+    Math.floorMod(MusicTheory.getMidiNote("1", 0, key), 12)
+
 internal fun relativeIonianKey(key: KeyInfo): KeyInfo {
     val sourceScale = canonicalScaleName(key.scale)
     val tonic = MusicTheory.getNoteLabel(
