@@ -254,6 +254,40 @@ private fun melodicMovement(from: SpelledPitch, to: SpelledPitch): MelodicMoveme
     )
 }
 
+internal fun spokenMelodyFunction(description: MelodyFunctionDescription): String? {
+    if (description.title == "Rest") return null
+    val chromatic = description.title.startsWith("Chromatic ")
+    val role = description.title.removePrefix("Chromatic ").replaceFirstChar { it.uppercase() }
+    val words = when (role) {
+        "Passing tone" -> if (chromatic) "chromatic passing" else "passing"
+        "Upper neighbor", "Lower neighbor" -> role.lowercase()
+        "Color tone" -> if (chromatic) "chromatic color" else "color"
+        "Escape tone" -> "escape"
+        "Leading tone" -> "leading"
+        "Pedal tone" -> "pedal"
+        "Held over" -> "held over"
+        "Chord octave" -> "root"
+        "Chord tenth" -> "third"
+        else -> when {
+            role.startsWith("Chord ") -> role.removePrefix("Chord ").lowercase()
+            role.startsWith("Scale degree ") -> spokenDegreeNumber(role.removePrefix("Scale degree "))
+            else -> role.lowercase()
+        }
+    }
+    return words?.takeIf { it.isNotEmpty() && it.split(" ").size <= 2 }
+}
+
+private fun spokenDegreeNumber(number: String): String? = when (number) {
+    "1" -> "one"
+    "2" -> "two"
+    "3" -> "three"
+    "4" -> "four"
+    "5" -> "five"
+    "6" -> "six"
+    "7" -> "seven"
+    else -> null
+}
+
 private fun scaleDegreeTitle(label: String): String =
     "Scale degree ${label.filter(Char::isDigit).ifEmpty { label }}"
 
@@ -368,4 +402,55 @@ internal fun buildMelodyFunctionInput(
         heldAcrossChordChange = currentEvent?.let { noteOnset < it.onset } == true,
         chordChangesDuringNote = chordChangesDuringNote
     )
+}
+
+internal fun annotateMelodyVoiceCues(
+    section: ExtractedSection,
+    melody: List<MelodyNote>,
+    events: List<PlaybackTimelineEvent>
+): List<PlaybackTimelineEvent> {
+    val playable = melody.filter { !it.isRest && it.duration > 0.0 }
+    if (playable.isEmpty()) return events
+    fun cueAt(note: MelodyNote, beat: Double): String? = spokenMelodyFunction(
+        describeMelodyFunction(
+            buildMelodyFunctionInput(section, melody, note, activeChordAtBeat(section, beat))
+        )
+    )
+    val soundingMidis = melody.map { note ->
+        if (note.isRest || note.duration <= 0.0) null
+        else events.firstOrNull {
+            it.layer == PlaybackAudioLayer.MELODY &&
+                kotlin.math.abs(it.startBeat - note.beat.coerceAtLeast(1.0)) < 1e-6
+        }?.fullMidiNotes?.firstOrNull()
+    }
+    val spokenMidis = spokenMelodyRegister(soundingMidis)
+    val annotated = events.toMutableList()
+    for (note in playable) {
+        val noteIndex = melody.indexOfFirst { it === note }
+        val noteStart = note.beat.coerceAtLeast(1.0)
+        val noteEnd = noteStart + note.duration
+        val melodyMidi = spokenMidis.getOrNull(noteIndex) ?: soundingMidis.getOrNull(noteIndex)
+        var lastCue = cueAt(note, noteStart)
+        for (index in annotated.indices) {
+            val event = annotated[index]
+            when {
+                event.layer == PlaybackAudioLayer.MELODY &&
+                    kotlin.math.abs(event.startBeat - noteStart) < 1e-6 ->
+                    annotated[index] = event.copy(
+                        spokenMelodyCue = lastCue,
+                        melodyCueMidi = melodyMidi
+                    )
+                event.layer == PlaybackAudioLayer.CHORD &&
+                    event.startBeat > noteStart + 1e-6 &&
+                    event.startBeat < noteEnd -> {
+                    val cue = cueAt(note, event.startBeat)
+                    if (cue != null && cue != lastCue) {
+                        annotated[index] = event.copy(spokenMelodyCue = cue, melodyCueMidi = melodyMidi)
+                        lastCue = cue
+                    }
+                }
+            }
+        }
+    }
+    return annotated
 }

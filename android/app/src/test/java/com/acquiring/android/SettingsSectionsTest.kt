@@ -8,7 +8,7 @@ class SettingsSectionsTest {
     @Test
     fun settingsKeepsHelpDisplayAndDiagnostics() {
         assertEquals(
-            listOf("Instructions", "Scale degrees", "Intervals", "Roman numerals"),
+            listOf("Instructions", "Scale degrees", "Intervals", "Roman numerals", "Melody function"),
             HelpCatalog.topics.map { it.title }
         )
         assertEquals(

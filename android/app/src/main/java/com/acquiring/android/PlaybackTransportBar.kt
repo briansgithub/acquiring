@@ -35,7 +35,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
@@ -356,6 +358,7 @@ private val PlaybackRootDegreeCue.controlLabel: String
         PlaybackRootDegreeCue.ROOT_PULSES -> "Root Pulses"
         PlaybackRootDegreeCue.SPOKEN_NUMBER -> "Spoken Number"
         PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS -> "Sung Number + Details"
+        PlaybackRootDegreeCue.MELODY_FUNCTION -> "Melody function"
     }
 
 @Composable
@@ -367,15 +370,44 @@ internal fun PlaybackVoiceControls(
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    PlaybackOutlinedSelector(
-        label = "Voice",
-        modifier = modifier,
+    val voiceIconTint = androidx.compose.material3.LocalContentColor.current
+    PlaybackTransportIconButton(
+        onClick = { expanded = !expanded },
         width = 56.dp,
-        expanded = expanded,
-        onExpandedChange = { expanded = it },
-        testTag = PLAYBACK_VOICE_BUTTON_TEST_TAG,
-        stateDescription = cue.controlLabel
-    ) {}
+        modifier = modifier
+            .testTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
+            .semantics {
+                contentDescription = "Voice settings"
+                stateDescription = cue.controlLabel
+                role = Role.Button
+            }
+    ) {
+        androidx.compose.foundation.Canvas(Modifier.size(24.dp)) {
+            val stroke = Stroke(width = size.minDimension * 0.085f)
+            val headRadius = size.minDimension * 0.18f
+            drawCircle(
+                color = voiceIconTint,
+                radius = headRadius,
+                center = androidx.compose.ui.geometry.Offset(size.width * 0.39f, size.height * 0.29f),
+                style = stroke
+            )
+            val shoulders = Path().apply {
+                moveTo(size.width * 0.10f, size.height * 0.88f)
+                cubicTo(size.width * 0.11f, size.height * 0.57f, size.width * 0.67f, size.height * 0.57f, size.width * 0.69f, size.height * 0.88f)
+            }
+            drawPath(shoulders, voiceIconTint, style = stroke)
+            val nearWave = Path().apply {
+                moveTo(size.width * 0.67f, size.height * 0.35f)
+                cubicTo(size.width * 0.83f, size.height * 0.40f, size.width * 0.83f, size.height * 0.60f, size.width * 0.67f, size.height * 0.65f)
+            }
+            val farWave = Path().apply {
+                moveTo(size.width * 0.79f, size.height * 0.20f)
+                cubicTo(size.width * 1.06f, size.height * 0.35f, size.width * 1.06f, size.height * 0.65f, size.width * 0.79f, size.height * 0.80f)
+            }
+            drawPath(nearWave, voiceIconTint, style = stroke)
+            drawPath(farWave, voiceIconTint, style = stroke)
+        }
+    }
     if (expanded) {
         Dialog(onDismissRequest = { expanded = false }) {
             Surface(
@@ -385,7 +417,7 @@ internal fun PlaybackVoiceControls(
             ) {
                 Column(modifier = Modifier.padding(vertical = 12.dp)) {
                     Text(
-                        "Audible Root Degree",
+                        "Voice",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )

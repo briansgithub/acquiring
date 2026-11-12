@@ -259,4 +259,37 @@ class MelodyFunctionTest {
         assertNull(built.previousPitch)
         assertFalse(built.previousIsCurrentChordTone)
     }
+
+    @Test
+    fun spokenCuesStayWithinTwoWords() {
+        val descriptions = listOf(
+            describeMelodyFunction(input(current = "C")),
+            describeMelodyFunction(input(current = "D", previous = "C", next = "E", previousIsTone = true, nextIsTone = true)),
+            describeMelodyFunction(input(current = "F#", scaleDegree = "♯4\u0302", previous = "E", next = "G", previousIsTone = true, nextIsTone = true)),
+            describeMelodyFunction(input(current = "Db", scaleDegree = "♭2\u0302", previous = "C", next = "C")),
+            describeMelodyFunction(input(current = "Db", scaleDegree = "♭2\u0302"))
+        )
+        val cues = descriptions.map { spokenMelodyFunction(it) }
+        assertEquals(listOf("root", "passing", "chromatic passing", "upper neighbor", "chromatic color"), cues)
+        assertTrue(cues.all { it != null && it.split(" ").size <= 2 })
+        assertNull(spokenMelodyFunction(describeMelodyFunction(input(current = null))))
+    }
+
+    @Test
+    fun modeAnnouncementsFollowTheRootDegreeVoicesOnly() {
+        assertNull(modeAnnouncement(null, "dorian", PlaybackRootDegreeCue.SPOKEN_NUMBER, majorLocked = false))
+        assertEquals(
+            "dorian",
+            modeAnnouncement("major", "dorian", PlaybackRootDegreeCue.SPOKEN_NUMBER, majorLocked = false)
+        )
+        assertEquals(
+            "harmonic minor",
+            modeAnnouncement("major", "harmonicMinor", PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS, majorLocked = false)
+        )
+        assertNull(modeAnnouncement("major", "major", PlaybackRootDegreeCue.SPOKEN_NUMBER, majorLocked = false))
+        assertNull(modeAnnouncement("major", "dorian", PlaybackRootDegreeCue.SPOKEN_NUMBER, majorLocked = true))
+        assertNull(modeAnnouncement("major", "dorian", PlaybackRootDegreeCue.MELODY_FUNCTION, majorLocked = false))
+        assertNull(modeAnnouncement("major", "dorian", PlaybackRootDegreeCue.OFF, majorLocked = false))
+        assertNull(modeAnnouncement("major", "major", PlaybackRootDegreeCue.SPOKEN_NUMBER, majorLocked = false))
+    }
 }

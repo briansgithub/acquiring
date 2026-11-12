@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,10 +19,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,24 +41,31 @@ internal val PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT = 88.dp
 internal fun PlaybackCurrentMelodyCard(
     pitch: SpelledPitch?,
     label: String,
+    functionText: String,
+    functionColor: Color,
     onPlayPitch: (SpelledPitch) -> Unit,
     onSingPitch: (SpelledPitch, String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    height: Dp = PLAYBACK_MELODY_PAIR_CARD_HEIGHT
 ) {
     if (pitch == null) {
         PlaybackEmptyCardSlot(
             modifier = modifier,
-            fixedHeight = PLAYBACK_MELODY_PAIR_CARD_HEIGHT
+            fixedHeight = height
         )
         return
     }
     MelodyDegreeCard(
         label = label,
-        description = "Play current melody note $label. Double tap to sing it back.",
-        height = PLAYBACK_MELODY_PAIR_CARD_HEIGHT,
+        description = "Melody. $functionText. Play current melody note $label. Double tap to sing it back.",
+        height = height,
         onClick = { onPlayPitch(pitch) },
         onDoubleClick = { onSingPitch(pitch, label) },
-        modifier = modifier
+        modifier = modifier,
+        title = title,
+        functionText = functionText,
+        functionColor = functionColor
     )
 }
 
@@ -72,6 +87,8 @@ internal fun PlaybackMelodyRow(
     onSingPitch: (SpelledPitch, String) -> Unit,
     onPlayInterval: (MelodyIntervalState) -> Unit,
     onSingInterval: (MelodyIntervalState) -> Unit,
+    functionText: String,
+    functionColor: Color,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -106,10 +123,12 @@ internal fun PlaybackMelodyRow(
                         ) {
                             MelodyDegreeCard(
                                 label = currentLabel,
-                                description = "Play current melody note $currentLabel. Double tap to sing it back.",
+                                description = "Melody. $functionText. Play current melody note $currentLabel. Double tap to sing it back.",
                                 height = PLAYBACK_MELODY_PAIR_CARD_HEIGHT,
                                 onClick = { onPlayPitch(currentPitch) },
-                                onDoubleClick = { onSingPitch(currentPitch, currentLabel) }
+                                onDoubleClick = { onSingPitch(currentPitch, currentLabel) },
+                                functionText = functionText,
+                                functionColor = functionColor
                             )
                         }
                     } else {
@@ -143,7 +162,9 @@ internal fun PlaybackMelodyRow(
                         card = current,
                         fallbackAlignment = Alignment.TopCenter,
                         onPlayPitch = onPlayPitch,
-                        onSingPitch = onSingPitch
+                        onSingPitch = onSingPitch,
+                        functionText = functionText,
+                        functionColor = functionColor
                     )
                 }
                 if (intervalState != null) {
@@ -189,7 +210,9 @@ private fun RowScope.MelodyPairSlot(
     card: MelodyPitchCard?,
     fallbackAlignment: Alignment,
     onPlayPitch: (SpelledPitch) -> Unit,
-    onSingPitch: (SpelledPitch, String) -> Unit
+    onSingPitch: (SpelledPitch, String) -> Unit,
+    functionText: String? = null,
+    functionColor: Color = Color.Unspecified
 ) {
     val alignment = when (card?.verticalPosition) {
         MelodyPitchCardVerticalPosition.TOP -> Alignment.TopCenter
@@ -208,10 +231,15 @@ private fun RowScope.MelodyPairSlot(
             }
             MelodyDegreeCard(
                 label = card.scaleDegreeLabel,
-                description = "Play $title melody note ${card.scaleDegreeLabel}. Double tap to sing it back.",
+                description = listOfNotNull(
+                    functionText?.let { "Melody. $it." },
+                    "Play $title melody note ${card.scaleDegreeLabel}. Double tap to sing it back."
+                ).joinToString(" "),
                 height = PLAYBACK_MELODY_PAIR_CARD_HEIGHT,
                 onClick = { onPlayPitch(card.pitch) },
-                onDoubleClick = { onSingPitch(card.pitch, card.scaleDegreeLabel) }
+                onDoubleClick = { onSingPitch(card.pitch, card.scaleDegreeLabel) },
+                functionText = functionText,
+                functionColor = functionColor
             )
         } else {
             PlaybackEmptyCardSlot(fixedHeight = PLAYBACK_MELODY_PAIR_CARD_HEIGHT)
@@ -227,7 +255,10 @@ private fun MelodyDegreeCard(
     height: Dp,
     onClick: () -> Unit,
     onDoubleClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    functionText: String? = null,
+    functionColor: Color = Color.Unspecified
 ) {
     Surface(
         modifier = modifier
@@ -239,17 +270,74 @@ private fun MelodyDegreeCard(
         color = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp),
-            contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp, vertical = 2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = if (title != null) Arrangement.Top else Arrangement.Center
         ) {
-            ScaleDegreeText(
-                label = label,
-                fontSize = if (height >= PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT) 32.sp else 22.sp,
-                minFontSize = 11.sp,
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+            if (title != null) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    textAlign = TextAlign.Center
+                )
+            }
+            if (label.isNotEmpty()) {
+                ScaleDegreeText(
+                    label = label,
+                    fontSize = if (height >= PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT) 32.sp else 22.sp,
+                    minFontSize = 11.sp,
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+            if (!functionText.isNullOrEmpty()) {
+                OutlinedFunctionText(
+                    text = functionText,
+                    color = functionColor,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
+    }
+}
+
+@OptIn(ExperimentalTextApi::class)
+@Composable
+private fun OutlinedFunctionText(
+    text: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    val style = TextStyle(
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
+    )
+    Box(modifier) {
+        Text(
+            text = text,
+            color = Color.Black,
+            style = style.copy(
+                // The stroke is centered on the letter edge and the fill covers the inner half.
+                drawStyle = Stroke(width = 4f, join = StrokeJoin.Round)
+            ),
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Text(
+            text = text,
+            color = color,
+            style = style,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(PLAYBACK_MELODY_FUNCTION_TEST_TAG)
+        )
     }
 }

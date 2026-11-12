@@ -36,6 +36,9 @@ class PlaybackRootDegreeCueTest {
         assertEquals(listOf(2, 6, 6, 5), events.map { it.rootDegree })
         assertEquals(listOf(0, -1, 0, 0), events.map { it.rootDegreeAlteration })
         assertEquals(listOf(50, 56, 57, 50), events.map { it.rootMidiNote })
+        // V/V is spoken from its sounding root (two), with the secondary
+        // dominant seventh's chord detail appended in full.
+        assertEquals("dominant seventh", events.first().spokenChordSuffix?.spokenName)
         assertEquals(SpokenChordSuffix.SEVEN, events.first().spokenChordSuffix)
         assertEquals(null, events.last().spokenChordSuffix)
     }
@@ -59,6 +62,20 @@ class PlaybackRootDegreeCueTest {
                 assertEquals(backing[2_000], spoken[2_000])
             }
         }
+    }
+
+    @Test
+    fun spokenPartsKeepAccidentalDegreeThenFullChordNameOrder() {
+        val pitchCount = SPOKEN_ROOT_DEGREE_PITCHES.count()
+        fun bank(frames: Int, value: Short) = List(pitchCount) { ShortArray(frames) { value } }
+        val clips = SpokenRootDegreeClips(
+            numbers = listOf(bank(4, 20)),
+            suffixes = mapOf(SpokenChordSuffix.MIN to bank(3, 30)),
+            accidentals = listOf(bank(2, 10), bank(2, 11))
+        )
+        val parts = clips.parts(SpokenPhrase(RelativeIonianDegree(1, -1), 36, SpokenChordSuffix.MIN))
+        assertEquals(listOf(2, 4, 3), parts?.map { it.size })
+        assertEquals(listOf<Short>(10, 20, 30), parts?.map { it.first() })
     }
 
     @Test

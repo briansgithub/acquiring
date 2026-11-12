@@ -450,13 +450,19 @@ fun PlaybackTab(
 
     val ionianSourceKey = remember(sectionKeys) { sectionKeys.keyAtBeat(1.0) }
     val ionianContextKey = remember(ionianSourceKey) { relativeIonianKey(ionianSourceKey) }
+    val sungMelodyPitches = remember(melody, sectionKeys) {
+        singingMelodyPitches(melody) { note ->
+            sectionKeys.keyAtBeat(normalizePlaybackBeat(note.beat))
+        }
+    }
     val timelineMelodyVisuals = remember(
         melody,
         sectionKeys,
         useRelativeIonianContext,
-        ionianContextKey
+        ionianContextKey,
+        sungMelodyPitches
     ) {
-        melody.mapNotNull { note ->
+        melody.mapIndexedNotNull { index, note ->
             if (note.isRest) {
                 null
             } else {
@@ -467,10 +473,16 @@ fun PlaybackTab(
                     relativeOctave = note.octave,
                     key = sourceKey
                 )
+                val sungPitch = sungMelodyPitches.getOrNull(index)
+                val octaveShift = if (resolvedPitch != null && sungPitch != null) {
+                    sungPitch.octave - resolvedPitch.octave
+                } else {
+                    0
+                }
                 MelodyTimelinePitchVisual(
                     beat = note.beat,
                     duration = note.duration,
-                    staffDegree = if (useRelativeIonianContext) {
+                    staffDegree = (if (useRelativeIonianContext) {
                         ionianContextStaffDegree(
                             note.sd,
                             note.octave,
@@ -479,8 +491,8 @@ fun PlaybackTab(
                         ) ?: rawStaffDegree
                     } else {
                         rawStaffDegree
-                    },
-                    sourceMidi = resolvedPitch?.let { pitch ->
+                    }) + octaveShift * 7,
+                    sourceMidi = sungPitch?.toAudioNoteNumber() ?: resolvedPitch?.let { pitch ->
                         if (useRelativeIonianContext) {
                             ionianContextPreviewAudioNote(pitch, ionianContextKey)
                                 ?: pitch.toAudioNoteNumber()
@@ -601,20 +613,23 @@ fun PlaybackTab(
     val currentMelodyNote = remember(activeEventIndex, currentBeat) {
         activeEventIndex.melodyNoteAtBeat(currentBeat)
     }
-    val melodyIntervalState = remember(section, melody, currentMelodyNote, isSimpleMode) {
+    val melodyIntervalState = remember(section, melody, currentMelodyNote, isSimpleMode, sungMelodyPitches) {
         if (isSimpleMode || currentMelodyNote == null) null
-        else resolveMelodyIntervalState(melody, currentMelodyNote.beat, section::getKeyAtBeat)
+        else resolveMelodyIntervalState(melody, currentMelodyNote.beat, section::getKeyAtBeat)?.let { state ->
+            val index = melody.indexOfFirst { it === currentMelodyNote }
+            val current = sungMelodyPitches.getOrNull(index) ?: state.current
+            val previous = sungMelodyPitches.getOrNull(index - 1) ?: state.previous
+            state.copy(
+                previous = previous,
+                current = current,
+                interval = calculateNamedInterval(previous, current)
+            )
+        }
     }
-    val currentMelodyPitch = remember(section, currentMelodyNote) {
+    val currentMelodyPitch = remember(melody, currentMelodyNote, sungMelodyPitches) {
         currentMelodyNote
             ?.takeIf { note -> !note.isRest && note.duration > 0.0 }
-            ?.let { note ->
-                MusicTheory.resolveScaleDegreePitch(
-                    sd = note.sd,
-                    relativeOctave = note.octave,
-                    key = section.getKeyAtBeat(normalizePlaybackBeat(note.beat))
-                )
-            }
+            ?.let { note -> sungMelodyPitches.getOrNull(melody.indexOfFirst { it === note }) }
     }
     val melodyPreviousTargetLabel = remember(
         melodyIntervalState,
@@ -681,6 +696,12 @@ fun PlaybackTab(
                 activeChord = currentChord
             )
         )
+    }
+    val melodyFunctionText = melodyFunctionCardText(melodyFunctionDescription)
+    val melodyFunctionToneColor = if (melodyFunctionDescription.tone == MelodyFunctionTone.NEUTRAL) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        melodyFunctionColor(melodyFunctionDescription.tone)
     }
     val density = androidx.compose.ui.platform.LocalDensity.current
 
@@ -1450,11 +1471,11 @@ fun PlaybackTab(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                PlaybackMelodyFunctionBanner(melodyFunctionDescription)
-                                Spacer(Modifier.height(PLAYBACK_CARD_ROW_SPACING))
                                 PlaybackRootOnlyMelodyRow(
                                     currentPitch = currentMelodyPitch,
                                     currentLabel = melodyCurrentTargetLabel,
+                                    functionText = melodyFunctionText,
+                                    functionColor = melodyFunctionToneColor,
                                     onPreviewPitch = ::playSingleNotePreview,
                                     onSingPitch = ::openSingleMelodySingingTarget
                                 )
@@ -1529,8 +1550,6 @@ fun PlaybackTab(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
-                                PlaybackMelodyFunctionBanner(melodyFunctionDescription)
-                                Spacer(Modifier.height(PLAYBACK_CARD_ROW_SPACING))
                                 Row(
                                     modifier = Modifier.fillMaxWidth().height(PLAYBACK_MELODY_ROW_HEIGHT),
                                     verticalAlignment = Alignment.CenterVertically
@@ -1544,6 +1563,8 @@ fun PlaybackTab(
                                         displayMode = melodyCardDisplayMode,
                                         onPlayPitch = ::playSingleNotePreview,
                                         onSingPitch = ::openSingleMelodySingingTarget,
+                                        functionText = melodyFunctionText,
+                                        functionColor = melodyFunctionToneColor,
                                         onPlayInterval = { state ->
                                             playIntervalPreview(state.previous, state.current)
                                         },

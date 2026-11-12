@@ -16,22 +16,22 @@ import kotlin.math.roundToInt
 internal const val SPOKEN_ROOT_DEGREE_SAMPLE_RATE = 24_000
 internal val SPOKEN_ROOT_DEGREE_PITCHES = 36..59
 
-internal enum class SpokenChordSuffix(val resourceId: Int) {
-    MIN(R.raw.root_suffix_min),
-    SEVEN(R.raw.root_suffix_seven),
-    SEV_MAJ(R.raw.root_suffix_sev_maj),
-    SEV_MIN(R.raw.root_suffix_sev_min),
-    MIN_SEV_MAJ(R.raw.root_suffix_min_sev_maj),
-    DIM(R.raw.root_suffix_dim),
-    DIM_SEV(R.raw.root_suffix_dim_sev),
-    HALF_DIM(R.raw.root_suffix_half_dim),
-    AUG(R.raw.root_suffix_aug),
-    SUS_TWO(R.raw.root_suffix_sus_two),
-    SUS_FOUR(R.raw.root_suffix_sus_four),
-    SUS_TWO_FOUR(R.raw.root_suffix_sus_two_four),
-    SEVENTH_SUS_TWO(R.raw.root_suffix_seventh_sus_two),
-    SEVENTH_SUS_FOUR(R.raw.root_suffix_seventh_sus_four),
-    SEVENTH_SUS_TWO_FOUR(R.raw.root_suffix_seventh_sus_two_four)
+internal enum class SpokenChordSuffix(val resourceId: Int, val spokenName: String) {
+    MIN(R.raw.root_suffix_min, "minor"),
+    SEVEN(R.raw.root_suffix_seven, "dominant seventh"),
+    SEV_MAJ(R.raw.root_suffix_sev_maj, "major seventh"),
+    SEV_MIN(R.raw.root_suffix_sev_min, "minor seventh"),
+    MIN_SEV_MAJ(R.raw.root_suffix_min_sev_maj, "minor major seventh"),
+    DIM(R.raw.root_suffix_dim, "diminished"),
+    DIM_SEV(R.raw.root_suffix_dim_sev, "diminished seventh"),
+    HALF_DIM(R.raw.root_suffix_half_dim, "half diminished seventh"),
+    AUG(R.raw.root_suffix_aug, "augmented"),
+    SUS_TWO(R.raw.root_suffix_sus_two, "suspended second"),
+    SUS_FOUR(R.raw.root_suffix_sus_four, "suspended fourth"),
+    SUS_TWO_FOUR(R.raw.root_suffix_sus_two_four, "suspended second and fourth"),
+    SEVENTH_SUS_TWO(R.raw.root_suffix_seventh_sus_two, "dominant seventh suspended second"),
+    SEVENTH_SUS_FOUR(R.raw.root_suffix_seventh_sus_four, "dominant seventh suspended fourth"),
+    SEVENTH_SUS_TWO_FOUR(R.raw.root_suffix_seventh_sus_two_four, "dominant seventh suspended second and fourth")
 }
 
 private val romanBase = Regex("^[♭♯]*([IViv]+)")
@@ -87,7 +87,9 @@ internal data class SpokenPhrase(
 internal class SpokenRootDegreeClips(
     private val numbers: List<List<ShortArray>> = emptyList(),
     private val suffixes: Map<SpokenChordSuffix, List<ShortArray>> = emptyMap(),
-    private val accidentals: List<List<ShortArray>> = emptyList()
+    private val accidentals: List<List<ShortArray>> = emptyList(),
+    private val functions: Map<String, List<ShortArray>> = emptyMap(),
+    private val modes: Map<String, ShortArray> = emptyMap()
 ) {
     fun parts(phrase: SpokenPhrase): List<ShortArray>? {
         val pitch = samplePitch(phrase.midi) - SPOKEN_ROOT_DEGREE_PITCHES.first
@@ -102,6 +104,13 @@ internal class SpokenRootDegreeClips(
         }
     }
 
+    fun functionClip(cue: String, midi: Int): ShortArray? {
+        val pitch = samplePitch(midi) - SPOKEN_ROOT_DEGREE_PITCHES.first
+        return functions[cue]?.getOrNull(pitch)
+    }
+
+    fun modeClip(name: String): ShortArray? = modes[name]
+
     fun samplePitch(midi: Int): Int {
         val pitches = SPOKEN_ROOT_DEGREE_PITCHES
         return when {
@@ -115,8 +124,10 @@ internal class SpokenRootDegreeClips(
 // Sonic Java by Bill Cox, Apache-2.0, upstream revision b93885dcb70aae50c6f76b0fe4e0868f029a077e.
 internal class SpokenPhraseCache(private val clips: SpokenRootDegreeClips) {
     private data class Key(val phrase: SpokenPhrase, val frames: Int)
+    private data class FunctionKey(val cue: String, val midi: Int, val frames: Int)
 
     private val samples = LinkedHashMap<Key, ShortArray>(16, 0.75f, true)
+    private val functionSamples = LinkedHashMap<FunctionKey, ShortArray>(16, 0.75f, true)
     private var cachedFrames = 0
 
     fun prepare(phrase: SpokenPhrase, durationBeats: Double, bpm: Double): ShortArray? {
@@ -158,6 +169,45 @@ internal class SpokenPhraseCache(private val clips: SpokenRootDegreeClips) {
         }
         return output
     }
+
+    fun prepareFunction(cue: String, midi: Int, durationBeats: Double, bpm: Double): ShortArray? {
+        val clip = clips.functionClip(cue, midi) ?: return null
+        return stretchFunction(cue, midi, clip, durationBeats, bpm)
+    }
+
+    private fun stretchFunction(
+        cue: String,
+        midi: Int,
+        clip: ShortArray,
+        durationBeats: Double,
+        bpm: Double
+    ): ShortArray? {
+        if (bpm <= 0 || clip.isEmpty()) return null
+        val chordFrames = (durationBeats * 60 * SPOKEN_ROOT_DEGREE_SAMPLE_RATE / bpm).roundToInt()
+        if (chordFrames <= 0) return null
+        val target = (chordFrames / 3).coerceIn(clip.size, clip.size * 4).coerceAtMost(chordFrames)
+        val key = FunctionKey(cue, midi, target)
+        functionSamples[key]?.let { return it }
+        val semitoneShift = midi - clips.samplePitch(midi)
+        val output = if (target == clip.size && semitoneShift == 0) clip else {
+            val sonic = Sonic(SPOKEN_ROOT_DEGREE_SAMPLE_RATE, 1)
+            sonic.speed = clip.size.toFloat() / target
+            sonic.pitch = 2.0.pow(semitoneShift / 12.0).toFloat()
+            sonic.writeShortToStream(clip, clip.size)
+            sonic.flushStream()
+            ShortArray(target).also { sonic.readShortFromStream(it, target) }
+        }
+        val budget = 48 * SPOKEN_ROOT_DEGREE_SAMPLE_RATE
+        if (output.size <= budget) {
+            while (functionSamples.values.sumOf { it.size } + output.size > budget && functionSamples.isNotEmpty()) {
+                val oldest = functionSamples.entries.iterator()
+                oldest.next()
+                oldest.remove()
+            }
+            functionSamples[key] = output
+        }
+        return output
+    }
 }
 
 // Each resource contains equal-length PCM clips in ascending MIDI order.
@@ -175,14 +225,74 @@ internal fun loadSpokenRootDegrees(resources: Resources): SpokenRootDegreeClips 
     val suffixes = SpokenChordSuffix.entries.associateWith { resources.openPitchedVoiceClips(it.resourceId) }
     val accidentals = listOf(R.raw.root_accidental_flat, R.raw.root_accidental_sharp)
         .map(resources::openPitchedVoiceClips)
-    return SpokenRootDegreeClips(numbers, suffixes, accidentals)
+    val functions = SPOKEN_MELODY_FUNCTIONS.associate { (cue, id) ->
+        cue to resources.openPitchedVoiceClips(id)
+    }
+    val modes = SPOKEN_MODE_NAMES.associate { (name, id) ->
+        name to resources.openVoiceClip(id)
+    }
+    return SpokenRootDegreeClips(numbers, suffixes, accidentals, functions, modes)
 }
 
-private fun Resources.openPitchedVoiceClips(id: Int): List<ShortArray> {
+internal val SPOKEN_MELODY_FUNCTIONS: List<Pair<String, Int>> = listOf(
+    "root" to R.raw.melody_fn_root,
+    "second" to R.raw.melody_fn_second,
+    "third" to R.raw.melody_fn_third,
+    "fourth" to R.raw.melody_fn_fourth,
+    "fifth" to R.raw.melody_fn_fifth,
+    "sixth" to R.raw.melody_fn_sixth,
+    "seventh" to R.raw.melody_fn_seventh,
+    "ninth" to R.raw.melody_fn_ninth,
+    "eleventh" to R.raw.melody_fn_eleventh,
+    "thirteenth" to R.raw.melody_fn_thirteenth,
+    "passing" to R.raw.melody_fn_passing,
+    "chromatic passing" to R.raw.melody_fn_chromatic_passing,
+    "upper neighbor" to R.raw.melody_fn_upper_neighbor,
+    "lower neighbor" to R.raw.melody_fn_lower_neighbor,
+    "anticipation" to R.raw.melody_fn_anticipation,
+    "suspension" to R.raw.melody_fn_suspension,
+    "retardation" to R.raw.melody_fn_retardation,
+    "held over" to R.raw.melody_fn_held_over,
+    "appoggiatura" to R.raw.melody_fn_appoggiatura,
+    "escape" to R.raw.melody_fn_escape,
+    "leading" to R.raw.melody_fn_leading,
+    "pedal" to R.raw.melody_fn_pedal,
+    "color" to R.raw.melody_fn_color,
+    "chromatic color" to R.raw.melody_fn_chromatic_color,
+    "one" to R.raw.melody_fn_one,
+    "two" to R.raw.melody_fn_two,
+    "three" to R.raw.melody_fn_three,
+    "four" to R.raw.melody_fn_four,
+    "five" to R.raw.melody_fn_five,
+    "six" to R.raw.melody_fn_six,
+    "seven" to R.raw.melody_fn_seven
+)
+
+internal val SPOKEN_MODE_NAMES: List<Pair<String, Int>> = listOf(
+    "major" to R.raw.mode_major,
+    "minor" to R.raw.mode_minor,
+    "dorian" to R.raw.mode_dorian,
+    "phrygian" to R.raw.mode_phrygian,
+    "lydian" to R.raw.mode_lydian,
+    "mixolydian" to R.raw.mode_mixolydian,
+    "locrian" to R.raw.mode_locrian,
+    "ionian" to R.raw.mode_ionian,
+    "aeolian" to R.raw.mode_aeolian,
+    "harmonic minor" to R.raw.mode_harmonic_minor,
+    "phrygian dominant" to R.raw.mode_phrygian_dominant
+)
+
+private fun Resources.openPitchedVoiceClips(id: Int): List<ShortArray> =
+    openVoiceClip(id).let { clip ->
+        val count = SPOKEN_ROOT_DEGREE_PITCHES.count()
+        require(clip.size % count == 0)
+        val frames = clip.size / count
+        List(count) { index -> clip.copyOfRange(index * frames, (index + 1) * frames) }
+    }
+
+private fun Resources.openVoiceClip(id: Int): ShortArray {
     val bytes = openRawResource(id).use { it.readBytes() }
-    val count = SPOKEN_ROOT_DEGREE_PITCHES.count()
-    require(bytes.isNotEmpty() && bytes.size % (count * Short.SIZE_BYTES) == 0)
-    val frames = bytes.size / (count * Short.SIZE_BYTES)
+    require(bytes.isNotEmpty() && bytes.size % Short.SIZE_BYTES == 0)
     val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
-    return List(count) { ShortArray(frames) { buffer.short } }
+    return ShortArray(bytes.size / Short.SIZE_BYTES) { buffer.short }
 }

@@ -21,26 +21,61 @@ RATE = 24_000
 DEGREES = ("one", "two", "three", "four", "five", "six", "seven")
 ROOT_PITCHES = range(36, 60)
 VOICE = "af_heart"
-SEVEN = "sˈɛvən"
-SEVENTH_SUS = "sˈɛvənθ sˈʌs"
 SUFFIXES = {
-    "min": "mˈɪn",
-    "seven": SEVEN,
-    "sev_maj": "sˈɛv mˈædʒ",
-    "sev_min": "sˈɛv mˈɪn",
-    "min_sev_maj": "mˈɪn sˈɛv mˈædʒ",
-    "dim": "dˈɪm",
-    "dim_sev": "dˈɪm sˈɛv",
-    "half_dim": "hˈæf dˈɪm",
-    "aug": "ˈɔɡ",
-    "sus_two": "sˈʌs tˈu",
-    "sus_four": "sˈʌs fˈɔɹ",
-    "sus_two_four": "sˈʌs tˈu fˈɔɹ",
-    "seventh_sus_two": f"{SEVENTH_SUS} tˈu",
-    "seventh_sus_four": f"{SEVENTH_SUS} fˈɔɹ",
-    "seventh_sus_two_four": f"{SEVENTH_SUS} tˈu fˈɔɹ",
+    "min": "mˈaɪnɚ",
+    "seven": "dˈɑmɪnənt sˈɛvənθ",
+    "sev_maj": "mˈeɪdʒɚ sˈɛvənθ",
+    "sev_min": "mˈaɪnɚ sˈɛvənθ",
+    "min_sev_maj": "mˈaɪnɚ mˈeɪdʒɚ sˈɛvənθ",
+    "dim": "dɪmˈɪnɪʃt",
+    "dim_sev": "dɪmˈɪnɪʃt sˈɛvənθ",
+    "half_dim": "hˈæf dɪmˈɪnɪʃt sˈɛvənθ",
+    "aug": "ˈɔɡmɛntɪd",
+    "sus_two": "səsˈpɛndɪd sˈɛkənd",
+    "sus_four": "səsˈpɛndɪd fˈɔɹθ",
+    "sus_two_four": "səsˈpɛndɪd sˈɛkənd ænd fˈɔɹθ",
+    "seventh_sus_two": "dˈɑmɪnənt sˈɛvənθ səsˈpɛndɪd sˈɛkənd",
+    "seventh_sus_four": "dˈɑmɪnənt sˈɛvənθ səsˈpɛndɪd fˈɔɹθ",
+    "seventh_sus_two_four": "dˈɑmɪnənt sˈɛvənθ səsˈpɛndɪd sˈɛkənd ænd fˈɔɹθ",
 }
 ACCIDENTALS = {"flat": "flˈæt", "sharp": "ʃˈɑɹp"}
+MELODY_FUNCTIONS = {
+    "root": "root",
+    "second": "second",
+    "third": "third",
+    "fourth": "fourth",
+    "fifth": "fifth",
+    "sixth": "sixth",
+    "seventh": "seventh",
+    "ninth": "ninth",
+    "eleventh": "eleventh",
+    "thirteenth": "thirteenth",
+    "passing": "passing",
+    "chromatic_passing": "chromatic passing",
+    "upper_neighbor": "upper neighbor",
+    "lower_neighbor": "lower neighbor",
+    "anticipation": "anticipation",
+    "suspension": "suspension",
+    "retardation": "retardation",
+    "held_over": "held over",
+    "appoggiatura": "appoggiatura",
+    "escape": "escape",
+    "leading": "leading",
+    "pedal": "pedal",
+    "color": "color",
+    "chromatic_color": "chromatic color",
+    "one": "one",
+    "two": "two",
+    "three": "three",
+    "four": "four",
+    "five": "five",
+    "six": "six",
+    "seven": "seven",
+}
+MODES = (
+    "major", "minor", "dorian", "phrygian", "lydian", "mixolydian", "locrian",
+    "ionian", "aeolian", "harmonic minor", "phrygian dominant",
+)
 
 
 def clarify_seven(samples, timings, first_frame):
@@ -63,7 +98,7 @@ def clarify_seven(samples, timings, first_frame):
     return samples[:(last + 3) * window]
 
 
-def synthesize(model, word):
+def synthesize(model, word, clarify=False):
     # Run a single inference with context on both sides of the cue, then
     # use the model's token boundaries rather than gating quiet consonants.
     lead = "hˈiɹ ɪz ðə kjˈu. "
@@ -79,7 +114,7 @@ def synthesize(model, word):
     first = max(0, round(timings[start].start * RATE) - 240)
     last = round(timings[stop - 1].end * RATE)
     cue = samples[first:last + 480]
-    return clarify_seven(cue, timings[start:stop], first) if word == SEVEN else cue
+    return clarify_seven(cue, timings[start:stop], first) if clarify else cue
 
 
 def pitched_variants(samples):
@@ -125,16 +160,19 @@ def main():
         **{f"root_degree_{word}": word for word in DEGREES},
         **{f"root_suffix_{key}": phonemes for key, phonemes in SUFFIXES.items()},
         **{f"root_accidental_{key}": phonemes for key, phonemes in ACCIDENTALS.items()},
+        **{f"melody_fn_{key}": word for key, word in MELODY_FUNCTIONS.items()},
+        **{f"mode_{name.replace(' ', '_')}": name for name in MODES},
     }
-    parser.add_argument("--only", nargs="+", choices=cues, help="Regenerate only the named PCM resources.")
+    parser.add_argument("--only", nargs="+", choices=sorted(cues), help="Regenerate only the named PCM resources.")
     args = parser.parse_args()
     with tempfile.TemporaryDirectory() as temp:
         model = load_model(args.model, args.voices, Path(temp) / "timed.onnx")
         for name in args.only or cues:
             word = cues[name]
-            phonemes = model.tokenizer.phonemize(word, "en-us") if name.startswith("root_degree_") else word
-            samples = synthesize(model, phonemes)
-            (output / f"{name}.pcm").write_bytes(b"".join(map(pcm, pitched_variants(samples))))
+            phonemes = word if name.startswith("root_suffix_") or name.startswith("root_accidental_") else model.tokenizer.phonemize(word, "en-us")
+            samples = synthesize(model, phonemes, clarify=name == "root_degree_seven")
+            rendered = pcm(samples) if name.startswith("mode_") else b"".join(map(pcm, pitched_variants(samples)))
+            (output / f"{name}.pcm").write_bytes(rendered)
 
 
 if __name__ == "__main__":
