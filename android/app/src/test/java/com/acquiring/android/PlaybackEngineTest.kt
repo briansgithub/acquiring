@@ -9,6 +9,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.util.ArrayDeque
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -136,6 +137,34 @@ class PlaybackEngineTest {
         assertEquals(listOf(0),rendered.startedEvents.map { it.frameOffset })
         assertEquals(1.5,renderer.currentBeat,0.0)
         assertTrue(renderer.finished)
+    }
+
+    @Test
+    fun renderer_songModeSplicesTheQueuedSectionInTheSameBlock() {
+        val first = PlaybackTimeline(
+            endBeat = 1.5,
+            events = listOf(event(1, 1.0, 1.5, PlaybackAudioLayer.MELODY, 60)),
+            completionKey = SECTION_PLAY_THROUGH_KEY
+        )
+        val second = PlaybackTimeline(
+            endBeat = 2.0,
+            events = listOf(event(2, 1.0, 2.0, PlaybackAudioLayer.MELODY, 67)),
+            completionKey = SECTION_PLAY_THROUGH_KEY
+        )
+        val renderer = PlaybackPcmRenderer(first, config(), sampleRate = 1_000)
+        renderer.continuation = ArrayDeque(
+            listOf(QueuedSection(second, bpm = 60.0, performanceId = "song:b"))
+        )
+        val samples = ShortArray(1_000)
+
+        renderer.renderInto(samples)
+
+        assertFalse(renderer.finished)
+        assertEquals(1.5, renderer.currentBeat, 1e-9)
+        val splice = renderer.consumeSplices().single()
+        assertEquals("song:b", splice.performanceId)
+        assertEquals(500, splice.frame)
+        assertTrue(samples.copyOfRange(700, 1_000).any { it.toInt() != 0 })
     }
 
     @Test

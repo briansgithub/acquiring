@@ -179,8 +179,9 @@ internal fun steppedPlaybackBeat(
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun PlaybackTab(
+internal fun PlaybackTab(
     section: ExtractedSection,
+    facts: SectionPlaybackFacts,
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit,
     useRelativeIonianContext: Boolean,
@@ -211,11 +212,13 @@ fun PlaybackTab(
     melodyChordBalance: Float = DEFAULT_MELODY_CHORD_BALANCE,
     onMelodyChordBalanceChange: (Float) -> Unit = {},
     onSectionFinished: () -> Unit = {},
-    onAutoStartConsumed: () -> Unit = {}
+    onAutoStartConsumed: () -> Unit = {},
+    sectionContinuation: List<QueuedSection> = emptyList(),
+    onEnginePerformance: (String) -> Unit = {}
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("PlaybackTab requires an exclusive persistent pitch source")
-    val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
+    val baseBpm = facts.baseBpm
 
     // AudioEngine applies the manual transpose itself, so only the singing
     // octave shift is added to preview MIDI. Song playback is never shifted.
@@ -234,29 +237,7 @@ fun PlaybackTab(
     }
     val arpeggiateCycles = PLAYBACK_ARPEGGIO_OPTIONS[effectiveArpeggioIndex].cyclesPerBeat
     val bpm = (baseBpm * tempoPercent / 100f).toDouble()
-
-    val notesJson = when (val rawNotes = section.notes) {
-        is JsonArray -> rawNotes
-        is JsonObject -> (rawNotes["melody1"] as? JsonArray) ?: emptyList()
-        else -> emptyList()
-    }
-    
-    val melody = remember(notesJson) {
-        notesJson.mapNotNull { el ->
-            try {
-                val obj = el as? JsonObject ?: return@mapNotNull null
-                val rawBeat = (obj["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                MelodyNote(
-                    sd = (obj["sd"] as? JsonPrimitive)?.contentOrNull ?: "1",
-                    beat = normalizePlaybackBeat(rawBeat),
-                    duration = (obj["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0,
-                    octave = (obj["octave"] as? JsonPrimitive)?.intOrNull ?: 0,
-                    isRest = (obj["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
-                        (obj["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                )
-            } catch (_: Exception) { null }
-        }
-    }
+    val melody = facts.melody
     val sectionKeys = remember(section) { section.getKeys() }
     val activeEventIndex = remember(section, melody) {
         PlaybackActiveEventIndex(section, melody)
@@ -272,25 +253,8 @@ fun PlaybackTab(
     var intervalPreviewJob by remember { mutableStateOf<Job?>(null) }
     val scope = rememberCoroutineScope()
 
-    val endBeat = remember(section, melody) {
-        val metadataEndBeat = (section.metadata?.get("endBeat") as? JsonPrimitive)?.doubleOrNull
-        val audibleEventEndBeats = buildList {
-            melody.forEach { note ->
-                playbackEventEndBeat(note.beat, note.duration, note.isRest)?.let(::add)
-            }
-            section.chords.forEach { chord ->
-                val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
-                    (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                playbackEventEndBeat(beat, duration, isRest)?.let(::add)
-            }
-        }
-        resolvePlaybackEndBeat(metadataEndBeat, audibleEventEndBeats)
-    }
-    val timeline = remember(section, melody, endBeat) {
-        buildPlaybackTimeline(section, melody, endBeat)
-    }
+    val endBeat = facts.endBeat
+    val timeline = facts.timeline
     val playbackConfig = PlaybackConfig(
         bpm = bpm,
         transpose = globalTranspose,
@@ -455,6 +419,13 @@ fun PlaybackTab(
             latestSectionFinished()
         }
     }
+    LaunchedEffect(playbackState.performanceId) {
+        val id = playbackState.performanceId ?: return@LaunchedEffect
+        if (latestLoopSection || playOnceKey != null) return@LaunchedEffect
+        if (playbackState.phase != PlaybackPhase.PLAYING) return@LaunchedEffect
+        if (id == sessionKey) return@LaunchedEffect
+        onEnginePerformance(id)
+    }
     var loadedPassage by remember { mutableStateOf<Triple<PlaybackTimeline, String, String?>?>(null) }
     LaunchedEffect(timeline, sessionKey, playOnceKey, loopSection) {
         cancelInertia()
@@ -486,10 +457,20 @@ fun PlaybackTab(
         )
         if (restarted && resumeBeat != null) {
             PlaybackController.seek(resumeBeat.coerceIn(timeline.startBeat, timeline.endBeat), resume = resume)
-        } else if (resumeBeat == null && !startNow) {
+        } else if (restarted && resumeBeat == null && !startNow) {
             initialPassage?.let { PlaybackController.seek(it.first.coerceIn(timeline.startBeat, timeline.endBeat), resume = false) }
         }
         if (startNow) latestAutoStartConsumed()
+        PlaybackController.setSectionContinuation(
+            sessionKey,
+            if (loopSection || playOnceKey != null) emptyList() else sectionContinuation
+        )
+    }
+    LaunchedEffect(sessionKey, sectionContinuation, loopSection, playOnceKey) {
+        PlaybackController.setSectionContinuation(
+            sessionKey,
+            if (loopSection || playOnceKey != null) emptyList() else sectionContinuation
+        )
     }
 
     DisposableEffect(Unit) {
@@ -580,6 +561,7 @@ fun PlaybackTab(
             val structural = previous.phase != next.phase ||
                 previous.error != next.error ||
                 previous.completionKey != next.completionKey ||
+                previous.performanceId != next.performanceId ||
                 previous.transportRevision != next.transportRevision
             val chordOrKeyChanged = identity == null || previousIdentity == null ||
                 identity.chordId != previousIdentity.chordId ||

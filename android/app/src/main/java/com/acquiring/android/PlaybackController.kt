@@ -159,14 +159,19 @@ internal object PlaybackController {
             same
         }
         if (sameIdentity && engine?.updateCompletion(newTimeline) == true) return false
+        if (!sameIdentity && engine?.adoptIfPlaying(newTimeline) == true) return false
         val focusOwner = if (continuePlaying) requestFocus() else null
         val shouldPlay = synchronized(lock) {
             val permitted = focusOwner != null && activePlaybackOwner === focusOwner
-            engine?.load(newTimeline, continuePlaying = permitted)
+            engine?.load(newTimeline, continuePlaying = permitted, performanceId = identity)
             permitted
         }
         if (focusOwner != null && !shouldPlay) abandonFocus()
         return true
+    }
+
+    fun setSectionContinuation(afterPerformanceId: String, sections: List<QueuedSection>) {
+        engine?.setSectionContinuation(afterPerformanceId, sections)
     }
 
     fun play() {

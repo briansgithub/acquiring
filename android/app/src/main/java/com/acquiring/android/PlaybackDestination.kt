@@ -69,6 +69,9 @@ internal fun PlaybackDestination(
     playbackSettings: SongPlaybackSettingsViewModel? = null
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
+    val sectionFacts = remember(sectionsInSongOrder) {
+        sectionsInSongOrder.map { (id, section) -> id to sectionPlaybackFacts(section) }
+    }
     val selectedSectionKey = selectedSectionId
         ?.takeIf { selectedId -> sectionsInSongOrder.any { it.key == selectedId } }
         ?: sectionsInSongOrder.firstOrNull()?.key
@@ -99,6 +102,27 @@ internal fun PlaybackDestination(
         if (playbackSettings != null) playbackSettings.updateMelodyChordBalance(value) else localMelodyChordBalance = value
     }
     var continueIntoNextSection by remember { mutableStateOf(false) }
+    val sectionContinuation = remember(
+        sectionFacts,
+        selectedSectionKey,
+        loopSection,
+        playOnceKey,
+        playbackTempoPercent,
+        song.slug
+    ) {
+        if (loopSection || playOnceKey != null) {
+            emptyList()
+        } else {
+            songSectionContinuation(
+                sectionFacts,
+                selectedSectionKey.orEmpty(),
+                song.slug,
+                playbackTempoPercent
+            )
+        }
+    }
+    val selectedFacts = sectionFacts.firstOrNull { it.first == selectedSectionKey }?.second
+        ?: sectionPlaybackFacts(selectedSection)
     val context = LocalContext.current
     LaunchedEffect(context, selectedSectionKey, useRelativeIonianContext) {
         PlaybackFrameRate.apply(context)
@@ -161,6 +185,17 @@ internal fun PlaybackDestination(
             autoStart = autoStart || continueIntoNextSection,
             onSectionComplete = onSectionComplete,
             section = selectedSection,
+            facts = selectedFacts,
+            sectionContinuation = sectionContinuation,
+            onEnginePerformance = { performanceId ->
+                val prefix = "${song.slug}:"
+                if (performanceId.startsWith(prefix)) {
+                    val sectionId = performanceId.removePrefix(prefix)
+                    if (sectionId != selectedSectionKey && sections.containsKey(sectionId)) {
+                        onSectionChange(sectionId)
+                    }
+                }
+            },
             initialPassage = initialPassage,
             isSimpleMode = isSimpleMode,
             onSimpleModeChange = { isSimpleMode = it },

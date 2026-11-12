@@ -139,7 +139,25 @@ internal data class PlaybackState(
     val underrunCount: Int = 0,
     val error: String? = null,
     val completionKey: String? = null,
-    val transportRevision: Long = 0
+    val transportRevision: Long = 0,
+    val performanceId: String? = null
+)
+
+/** Next song section, already rendered into the same PCM stream at the boundary. */
+internal data class QueuedSection(
+    val timeline: PlaybackTimeline,
+    val bpm: Double,
+    val performanceId: String
+)
+
+internal data class PlaybackSplice(
+    val frame: Int,
+    val beat: Double,
+    val beatsPerFrame: Double,
+    val loopStart: Double,
+    val loopEnd: Double,
+    val performanceId: String,
+    val timeline: PlaybackTimeline
 )
 
 internal data class RenderedPlaybackBlock(
@@ -193,6 +211,8 @@ internal class PlaybackPcmRenderer(
     private var currentChordGain = config.chordGain.toDouble()
     private var currentVoiceGain = config.voiceVolume * 0.8
     private val crossfadeFrames = (sampleRate * 24 / 1_000.0).roundToInt().coerceAtLeast(1)
+    internal var continuation: ArrayDeque<QueuedSection>? = null
+    private val splices = ArrayList<PlaybackSplice>(2)
 
     val currentBeat: Double get() = beat
     val finished: Boolean get() = timeline.completionKey != null && beat >= timeline.endBeat
@@ -307,9 +327,10 @@ internal class PlaybackPcmRenderer(
         val voiceStep = (targetVoiceGain - currentVoiceGain) / frameCount.coerceAtLeast(1)
 
         repeat(frameCount) { frame ->
+            val frameBeats = currentBeatsPerFrame
             activateDueEvents(frame, startedEvents)
 
-            var mixed = renderSpokenNumber(beatsPerFrame) * currentVoiceGain
+            var mixed = renderSpokenNumber(frameBeats) * currentVoiceGain
             var activeIndex = 0
             while (activeIndex < activeEvents.size) {
                 val active = activeEvents[activeIndex]
@@ -382,7 +403,7 @@ internal class PlaybackPcmRenderer(
             currentMelodyGain += melodyStep
             currentChordGain += chordStep
             currentVoiceGain += voiceStep
-            advanceBeat(beatsPerFrame)
+            advanceBeat(frameBeats, frame)
         }
 
         currentMelodyGain = targetMelodyGain
@@ -515,24 +536,63 @@ internal class PlaybackPcmRenderer(
         return sample / Short.MAX_VALUE * envelope
     }
 
-    private fun advanceBeat(beatsPerFrame: Double) {
+    internal fun consumeSplices(): List<PlaybackSplice> {
+        if (splices.isEmpty()) return emptyList()
+        val copy = splices.toList()
+        splices.clear()
+        return copy
+    }
+
+    private fun advanceBeat(beatsPerFrame: Double, frame: Int) {
         if (beatsPerFrame <= 0.0) return
         beat += beatsPerFrame
-        if (beat + BEAT_EPSILON >= timeline.endBeat) {
-            spokenNumber = null
-            if (timeline.completionKey != null) {
-                beat = timeline.endBeat
-                activeEvents.clear()
-                nextEventIndex = timeline.events.size
-                return
-            }
+        if (beat + BEAT_EPSILON < timeline.endBeat) return
+        spokenNumber = null
+        if (timeline.completionKey == null) {
             val loopLength = timeline.endBeat - timeline.startBeat
             val overshoot = (beat - timeline.endBeat).coerceAtLeast(0.0)
-            beat = timeline.startBeat + (overshoot % loopLength)
+            beat = timeline.startBeat + if (loopLength > 0.0) overshoot % loopLength else 0.0
             activeEvents.clear()
             nextEventIndex = timeline.events.indexOfFirst { it.startBeat >= timeline.startBeat }
                 .let { if (it < 0) timeline.events.size else it }
+            return
         }
+        val queue = continuation
+        val next = if (queue.isNullOrEmpty()) null else queue.removeFirst().also(queue::addLast)
+        if (next != null) {
+            spliceTo(next, (beat - timeline.endBeat).coerceAtLeast(0.0), frame)
+            return
+        }
+        beat = timeline.endBeat
+        activeEvents.clear()
+        nextEventIndex = timeline.events.size
+    }
+
+    private fun spliceTo(next: QueuedSection, overshoot: Double, frame: Int) {
+        timeline = next.timeline
+        val loopLength = timeline.endBeat - timeline.startBeat
+        val landed = timeline.startBeat + if (loopLength > 0.0) overshoot % loopLength else 0.0
+        beat = landed.coerceIn(timeline.startBeat, timeline.endBeat)
+        if (next.bpm > 0.0 && next.bpm != config.bpm) {
+            config = config.copy(bpm = next.bpm).sanitized()
+        }
+        activeEvents.clear()
+        spokenNumber = null
+        lastVoiceScale = null
+        nextEventIndex = timeline.events.indexOfFirst { it.startBeat >= timeline.startBeat }
+            .let { if (it < 0) timeline.events.size else it }
+        prepareVoicesForBlock(currentBeatsPerFrame * 64.0)
+        splices.add(
+            PlaybackSplice(
+                frame = frame + 1,
+                beat = beat,
+                beatsPerFrame = currentBeatsPerFrame,
+                loopStart = timeline.startBeat,
+                loopEnd = timeline.endBeat,
+                performanceId = next.performanceId,
+                timeline = timeline
+            )
+        )
     }
 
     private fun activateDueEvents(
@@ -666,13 +726,18 @@ internal class PlaybackEngine(
         data class Load(
             val timeline: PlaybackTimeline,
             val continuePlaying: Boolean,
-            val revision: Long
+            val revision: Long,
+            val performanceId: String?
         ) : Command
         data class Play(val revision: Long) : Command
         data class Pause(val revision: Long) : Command
         data class Seek(val beat: Double, val resume: Boolean, val revision: Long) : Command
         data class Reset(val revision: Long) : Command
         data class UpdateCompletion(val timeline: PlaybackTimeline) : Command
+        data class SetContinuation(
+            val afterPerformanceId: String,
+            val sections: List<QueuedSection>
+        ) : Command
         data object ConfigChanged : Command
         data object Release : Command
     }
@@ -694,6 +759,7 @@ internal class PlaybackEngine(
     // must not infer intent from StateFlow, whose phase necessarily trails the command
     // queue while the audio worker finishes a blocking write.
     private val playbackRequested = AtomicBoolean(false)
+    private val playingPerformanceId = AtomicReference<String?>(null)
     private val transportRevision = AtomicLong(0L)
     private val commands = LinkedBlockingQueue<Command>()
     private val released = AtomicBoolean(false)
@@ -731,15 +797,30 @@ internal class PlaybackEngine(
         return true
     }
 
-    fun load(timeline: PlaybackTimeline, continuePlaying: Boolean) {
+    /** The audio thread already crossed into this timeline. Do not flush the track. */
+    fun adoptIfPlaying(timeline: PlaybackTimeline): Boolean {
+        if (!playbackRequested.get()) return false
+        val current = latestTimeline.get() ?: return false
+        if (!current.samePerformanceAs(timeline)) return false
+        if (current.completionKey != timeline.completionKey) return updateCompletion(timeline)
+        return true
+    }
+
+    fun setSectionContinuation(afterPerformanceId: String, sections: List<QueuedSection>) {
+        offer(Command.SetContinuation(afterPerformanceId, sections))
+    }
+
+    fun load(timeline: PlaybackTimeline, continuePlaying: Boolean, performanceId: String? = null) {
         val revision = transportRevision.incrementAndGet()
         latestTimeline.set(timeline)
+        playingPerformanceId.set(performanceId)
         playbackRequested.set(continuePlaying)
         mutableState.value = mutableState.value.copy(
             beat = timeline.startBeat,
-            error = null
+            error = null,
+            performanceId = performanceId
         )
-        offer(Command.Load(timeline, continuePlaying, revision))
+        offer(Command.Load(timeline, continuePlaying, revision, performanceId))
     }
 
     fun play() {
@@ -829,6 +910,8 @@ internal class PlaybackEngine(
         var headWraps = 0L
         var deadObjectRecoveries = 0
         var activeTransportRevision = 0L
+        var performanceId: String? = null
+        val continuation = ArrayDeque<QueuedSection>()
         val clockSegments = ArrayDeque<ClockSegment>()
         val block = ShortArray(BLOCK_FRAMES)
 
@@ -882,7 +965,8 @@ internal class PlaybackEngine(
                 underrunCount = sink?.underrunCount ?: lastUnderrunCount,
                 error = error,
                 completionKey = if (phase == PlaybackPhase.COMPLETED) timeline?.completionKey else null,
-                transportRevision = activeTransportRevision
+                transportRevision = activeTransportRevision,
+                performanceId = performanceId
             )
         }
 
@@ -947,6 +1031,21 @@ internal class PlaybackEngine(
                 )
             }
             activeRenderer.renderAudioInto(block, count)
+            for (splice in activeRenderer.consumeSplices()) {
+                timeline = splice.timeline
+                performanceId = splice.performanceId
+                latestTimeline.set(splice.timeline)
+                playingPerformanceId.set(splice.performanceId)
+                clockSegments.addLast(
+                    ClockSegment(
+                        startFrame = totalFramesWritten + splice.frame,
+                        startBeat = splice.beat,
+                        beatsPerFrame = splice.beatsPerFrame,
+                        loopStart = splice.loopStart,
+                        loopEnd = splice.loopEnd
+                    )
+                )
+            }
             writeFully(block, count)
             totalFramesWritten += count
             while (clockSegments.size > MAX_CLOCK_SEGMENTS) clockSegments.removeFirst()
@@ -983,13 +1082,22 @@ internal class PlaybackEngine(
                 is Command.Pause -> activeTransportRevision = command.revision
                 is Command.Seek -> activeTransportRevision = command.revision
                 is Command.Reset -> activeTransportRevision = command.revision
-                is Command.UpdateCompletion, Command.ConfigChanged, Command.Release -> Unit
+                is Command.UpdateCompletion, is Command.SetContinuation, Command.ConfigChanged, Command.Release -> Unit
             }
             when (command) {
                 is Command.Load -> {
+                    performanceId = command.performanceId
+                    latestTimeline.set(command.timeline)
+                    playingPerformanceId.set(command.performanceId)
+                    continuation.clear()
                     pauseAndReanchor()
                     timeline = command.timeline
-                    renderer = PlaybackPcmRenderer(command.timeline, latestConfig.get(), sampleRate, spokenRootDegrees)
+                    renderer = PlaybackPcmRenderer(
+                        command.timeline,
+                        latestConfig.get(),
+                        sampleRate,
+                        spokenRootDegrees
+                    ).also { created -> created.continuation = continuation }
                     playRequested = command.continuePlaying
                     deadObjectRecoveries = 0
                     publish(
@@ -1057,6 +1165,14 @@ internal class PlaybackEngine(
                                 loopEnd = command.timeline.endBeat
                             )
                         )
+                    }
+                }
+
+                is Command.SetContinuation -> {
+                    if (command.afterPerformanceId == performanceId) {
+                        continuation.clear()
+                        continuation.addAll(command.sections)
+                        renderer?.continuation = continuation
                     }
                 }
 
