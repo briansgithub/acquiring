@@ -397,7 +397,7 @@ private fun VoiceSectionHeading(title: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 0.dp)
     ) {
         Text(
             text = title,
@@ -407,7 +407,7 @@ private fun VoiceSectionHeading(title: String) {
             modifier = Modifier.semantics { heading() }
         )
         Divider(
-            modifier = Modifier.padding(top = 2.dp),
+            modifier = Modifier.padding(top = 1.dp),
             thickness = 1.dp,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
         )
@@ -424,9 +424,9 @@ private fun VoiceOptionRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 40.dp)
+            .heightIn(min = 32.dp)
             .clickable { onSelect(option) }
-            .padding(start = 32.dp, end = 12.dp, top = 2.dp, bottom = 2.dp)
+            .padding(start = 28.dp, end = 8.dp)
             .testTag("PlaybackRootDegree-${option.name}")
             .semantics {
                 role = Role.RadioButton
@@ -440,7 +440,11 @@ private fun VoiceOptionRow(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
         )
-        RadioButton(selected = isSelected, onClick = null)
+        RadioButton(
+            selected = isSelected,
+            onClick = null,
+            modifier = Modifier.size(20.dp)
+        )
     }
 }
 
@@ -545,12 +549,13 @@ internal fun PlaybackVoiceControls(
                     modifier = Modifier
                         .heightIn(max = 560.dp)
                         .verticalScroll(rememberScrollState())
-                        .padding(vertical = 12.dp)
+                        .padding(top = 8.dp, bottom = 4.dp)
                 ) {
                     Text(
-                        "Voice",
+                        "Metadata Speak Aloud",
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
                     )
                     VoiceOptionRow(PlaybackRootDegreeCue.OFF, cue) { selected ->
                         onCueChange(selected)
@@ -565,7 +570,7 @@ internal fun PlaybackVoiceControls(
                             }
                         }
                     }
-                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)) {
                         Text("Voice volume ${(volume * 100).roundToInt()}%", style = MaterialTheme.typography.labelMedium)
                         Slider(
                             value = volume,
