@@ -359,6 +359,7 @@ private val PlaybackRootDegreeCue.controlLabel: String
         PlaybackRootDegreeCue.SPOKEN_NUMBER -> "Spoken Number"
         PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS -> "Sung Number + Details"
         PlaybackRootDegreeCue.MELODY_FUNCTION -> "Melody function"
+        PlaybackRootDegreeCue.MELODY_CHORD_TONE -> "Melody chord tones"
     }
 
 @Composable

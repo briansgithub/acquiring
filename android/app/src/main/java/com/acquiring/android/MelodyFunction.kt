@@ -277,6 +277,11 @@ internal fun spokenMelodyFunction(description: MelodyFunctionDescription): Strin
     return words?.takeIf { it.isNotEmpty() && it.split(" ").size <= 2 }
 }
 
+internal fun isSpokenMelodyChordTone(cue: String): Boolean = cue in setOf(
+    "root", "second", "third", "fourth", "fifth", "sixth",
+    "seventh", "ninth", "eleventh", "thirteenth"
+)
+
 private fun spokenDegreeNumber(number: String): String? = when (number) {
     "1" -> "one"
     "2" -> "two"

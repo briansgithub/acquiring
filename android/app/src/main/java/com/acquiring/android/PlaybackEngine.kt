@@ -28,13 +28,13 @@ internal enum class PlaybackChordMode { FULL, ROOT_ONLY }
 internal const val DEFAULT_PLAYBACK_VOICE_VOLUME = 0.5f
 
 enum class PlaybackRootDegreeCue {
-    OFF, ROOT_PULSES, SPOKEN_NUMBER, SUNG_NUMBER_WITH_DETAILS, MELODY_FUNCTION;
+    OFF, ROOT_PULSES, SPOKEN_NUMBER, SUNG_NUMBER_WITH_DETAILS, MELODY_FUNCTION, MELODY_CHORD_TONE;
 
     internal val speaksRootDegree: Boolean
         get() = this == SPOKEN_NUMBER || this == SUNG_NUMBER_WITH_DETAILS
 
     internal val speaksMelodyFunction: Boolean
-        get() = this == MELODY_FUNCTION
+        get() = this == MELODY_FUNCTION || this == MELODY_CHORD_TONE
 
     /** Mode names belong to the root-degree readings, not the melody-function option. */
     internal val announcesMode: Boolean
@@ -474,7 +474,10 @@ internal class PlaybackPcmRenderer(
     }
 
     private fun PlaybackTimelineEvent.speaksFor(cue: PlaybackRootDegreeCue): Boolean = when {
-        cue.speaksMelodyFunction -> spokenMelodyCue != null
+        cue.speaksMelodyFunction -> {
+            val words = spokenMelodyCue
+            words != null && (cue != PlaybackRootDegreeCue.MELODY_CHORD_TONE || isSpokenMelodyChordTone(words))
+        }
         cue.speaksRootDegree -> layer == PlaybackAudioLayer.CHORD
         else -> false
     }

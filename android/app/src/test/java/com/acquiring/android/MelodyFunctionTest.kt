@@ -273,6 +273,9 @@ class MelodyFunctionTest {
         assertEquals(listOf("root", "passing", "chromatic passing", "upper neighbor", "chromatic color"), cues)
         assertTrue(cues.all { it != null && it.split(" ").size <= 2 })
         assertNull(spokenMelodyFunction(describeMelodyFunction(input(current = null))))
+        assertEquals(listOf(true, false, false, false, false), cues.map { isSpokenMelodyChordTone(it!!) })
+        assertTrue(isSpokenMelodyChordTone("seventh"))
+        assertFalse(isSpokenMelodyChordTone("one"))
     }
 
     @Test
@@ -289,6 +292,7 @@ class MelodyFunctionTest {
         assertNull(modeAnnouncement("major", "major", PlaybackRootDegreeCue.SPOKEN_NUMBER, majorLocked = false))
         assertNull(modeAnnouncement("major", "dorian", PlaybackRootDegreeCue.SPOKEN_NUMBER, majorLocked = true))
         assertNull(modeAnnouncement("major", "dorian", PlaybackRootDegreeCue.MELODY_FUNCTION, majorLocked = false))
+        assertNull(modeAnnouncement("major", "dorian", PlaybackRootDegreeCue.MELODY_CHORD_TONE, majorLocked = false))
         assertNull(modeAnnouncement("major", "dorian", PlaybackRootDegreeCue.OFF, majorLocked = false))
         assertNull(modeAnnouncement("major", "major", PlaybackRootDegreeCue.SPOKEN_NUMBER, majorLocked = false))
     }
