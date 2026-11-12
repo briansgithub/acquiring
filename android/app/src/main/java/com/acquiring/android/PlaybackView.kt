@@ -39,7 +39,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
@@ -204,7 +203,8 @@ fun PlaybackTab(
     onSectionComplete: (String) -> Unit = {},
     onHomeReferenceActions: (() -> Unit, () -> Unit) -> Unit = { _, _ -> },
     rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF,
-    onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit = {}
+    onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit = {},
+    voiceVolume: Float = DEFAULT_PLAYBACK_VOICE_VOLUME
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("PlaybackTab requires an exclusive persistent pitch source")
@@ -256,7 +256,6 @@ fun PlaybackTab(
     }
 
     var melodyChordBalance by remember { mutableStateOf(0.5f) }
-    var voiceVolume by rememberSaveable { mutableStateOf(DEFAULT_PLAYBACK_VOICE_VOLUME) }
     val melodyVolume = melodyChordBalance
     val chordVolume = 1f - melodyChordBalance
     var inertiaJob by remember { mutableStateOf<Job?>(null) }
@@ -1737,13 +1736,6 @@ fun PlaybackTab(
                                 ringLabels = listOf("Chord", "Melody"),
                                 onTap = { melodyChordBalance = 0.5f },
                                 modifier = Modifier.weight(1f)
-                            )
-                            PlaybackVoiceControls(
-                                cue = rootDegreeCue,
-                                onCueChange = onRootDegreeCueChange,
-                                volume = voiceVolume,
-                                onVolumeChange = { voiceVolume = it },
-                                modifier = Modifier.align(Alignment.CenterVertically)
                             )
                         }
 

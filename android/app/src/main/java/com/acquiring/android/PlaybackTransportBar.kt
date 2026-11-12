@@ -58,7 +58,7 @@ internal val PLAYBACK_TRANSPORT_CONTROL = 44.dp
 internal val PLAYBACK_TRANSPORT_SELECTOR = 72.dp
 internal val PLAYBACK_TRANSPORT_PLAY = 88.dp
 internal val PLAYBACK_TRANSPORT_GAP = 8.dp
-internal val PLAYBACK_TRANSPORT_WIDTH = 324.dp
+internal val PLAYBACK_TRANSPORT_WIDTH = 376.dp
 internal val PLAYBACK_TRANSPORT_CORNER = 8.dp
 internal const val PLAYBACK_VOICE_BUTTON_TEST_TAG = "PlaybackVoiceControls"
 internal const val PLAYBACK_VOICE_VOLUME_TEST_TAG = "PlaybackVoiceVolume"
@@ -179,6 +179,10 @@ internal fun PlaybackTransportBar(
     selectedSectionId: String,
     selectedSectionLabel: String,
     onSectionChange: (String) -> Unit,
+    rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF,
+    onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit = {},
+    voiceVolume: Float = DEFAULT_PLAYBACK_VOICE_VOLUME,
+    onVoiceVolumeChange: (Float) -> Unit = {},
     modifier: Modifier = Modifier,
     onPreviousSong: (() -> Unit)? = null,
     onNextSong: (() -> Unit)? = null,
@@ -232,6 +236,13 @@ internal fun PlaybackTransportBar(
             PlaybackTransposeMenu(
                 transpose = transpose,
                 onTransposeSelected = onTransposeChange
+            )
+            PlaybackVoiceControls(
+                cue = rootDegreeCue,
+                onCueChange = onRootDegreeCueChange,
+                volume = voiceVolume,
+                onVolumeChange = onVoiceVolumeChange,
+                width = PLAYBACK_TRANSPORT_CONTROL
             )
             PlaybackTransportIconButton(
                 onClick = onReset,
@@ -369,13 +380,14 @@ internal fun PlaybackVoiceControls(
     onCueChange: (PlaybackRootDegreeCue) -> Unit,
     volume: Float,
     onVolumeChange: (Float) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    width: Dp = 56.dp
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val voiceIconTint = androidx.compose.material3.LocalContentColor.current
     PlaybackTransportIconButton(
         onClick = { expanded = !expanded },
-        width = 56.dp,
+        width = width,
         modifier = modifier
             .testTag(PLAYBACK_VOICE_BUTTON_TEST_TAG)
             .semantics {

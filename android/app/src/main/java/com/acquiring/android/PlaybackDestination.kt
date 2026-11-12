@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -77,6 +78,7 @@ fun PlaybackDestination(
     var isSimpleMode by remember { mutableStateOf(false) }
     var useRelativeIonianContext by remember { mutableStateOf(false) }
     var playbackKeyDisplay by remember { mutableStateOf<PlaybackKeyDisplay?>(null) }
+    var voiceVolume by rememberSaveable { mutableStateOf(DEFAULT_PLAYBACK_VOICE_VOLUME) }
     val context = LocalContext.current
     LaunchedEffect(context, selectedSectionKey, useRelativeIonianContext) {
         TimelineFrameRateStore.applyToWindow(context)
@@ -157,6 +159,7 @@ fun PlaybackDestination(
             onArpeggioOptionIndexChange = onPlaybackArpeggioOptionIndexChange,
             rootDegreeCue = rootDegreeCue,
             onRootDegreeCueChange = onRootDegreeCueChange,
+            voiceVolume = voiceVolume,
             onSingingTargetsRequested = onSingingTargetsRequested,
             octaveOffset = octaveOffset,
             sessionKey = playbackSessionKey ?: "${song.slug}:${selectedSectionKey.orEmpty()}",
@@ -195,6 +198,10 @@ fun PlaybackDestination(
             selectedSectionId = selectedSectionKey.orEmpty(),
             selectedSectionLabel = selectedSection.safeSectionName,
             onSectionChange = onSectionChange,
+            rootDegreeCue = rootDegreeCue,
+            onRootDegreeCueChange = onRootDegreeCueChange,
+            voiceVolume = voiceVolume,
+            onVoiceVolumeChange = { voiceVolume = it },
             onPreviousSong = onPreviousSong,
             onNextSong = onNextSong,
             previousSongEnabled = previousSongEnabled,
