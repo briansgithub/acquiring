@@ -457,6 +457,18 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
         }
         return result
     }
+    /** One candidate per example song. An empty section id opens that song's first section. */
+    fun exampleSongs(): List<QueueCandidate> {
+        val result = mutableListOf<QueueCandidate>()
+        db.rawQuery("SELECT id,title,artist FROM catalog_song ORDER BY id", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                val slug = cursor.getString(0)
+                val score = popularity[slug]?.score?.takeIf { it.isFinite() && it in 0.0..1.0 }
+                result += QueueCandidate(QueuedSong(slug, cursor.getString(1) ?: slug, cursor.getString(2) ?: "", "", "Chorus"), score)
+            }
+        }
+        return result
+    }
     fun passage(target: AuralPatternTarget, settings: AuralExampleSettings, context: AuralSelectionContext, seed: Long, familyId: String, songId:String?=null,
         minimumPopularityPercent: Int? = null): AuralSourcePassage {
         val resolved = requireNotNull(lookup(target.tokens,target.view))

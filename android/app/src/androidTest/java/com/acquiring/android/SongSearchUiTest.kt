@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -52,12 +53,12 @@ class SongSearchUiTest {
 
     @Test
     fun partialArtistSearchShowsResultsAndOpensPlayback() {
-        searchAndOpenSong("Search Library", " sMaSh ", "Search", 2, artists = true)
+        searchAndOpenSong(" sMaSh ", 2, artists = true)
     }
 
     @Test
     fun titleSearchShowsResultsAndOpensPlayback() {
-        searchAndOpenSong("Search Library", " ALL STAR ", "Search", 1)
+        searchAndOpenSong(" ALL STAR ", 1)
     }
 
     @Test
@@ -91,7 +92,7 @@ class SongSearchUiTest {
         composeRule.setContent {
             MaterialTheme { MainScreen(db, userDb, session) }
         }
-        val field = composeRule.onNode(hasSetTextAction() and hasText("Search Library"))
+        val field = composeRule.onNodeWithTag(LIBRARY_TITLE_SEARCH_TEST_TAG)
         field.performClick().performTextInput("All")
         waitForText("All Star")
         composeRule.onNodeWithText("All Star").performClick()
@@ -124,9 +125,7 @@ class SongSearchUiTest {
 
 
     private fun searchAndOpenSong(
-        label: String,
         query: String,
-        button: String,
         count: Int,
         artists: Boolean = false
     ) {
@@ -138,9 +137,9 @@ class SongSearchUiTest {
         if (artists) {
             composeRule.onNodeWithTag("LibrarySearchScopeArtists").performClick()
         }
-        val field = composeRule.onNode(hasSetTextAction() and hasText(label))
+        val field = composeRule.onNodeWithTag(LIBRARY_TITLE_SEARCH_TEST_TAG)
         field.performClick().performTextInput(query)
-        composeRule.onNodeWithText(button).performClick()
+        field.performImeAction()
         waitForText("Found $count matches")
         // Clearing input focus releases the keyboard's space for the result list.
         field.assertIsNotFocused()

@@ -69,4 +69,25 @@ class SectionOrderTest {
         assertEquals("intro", nextSectionInSongOrder(order, "missing"))
         assertEquals(null, nextSectionInSongOrder(emptyList(), "intro"))
     }
+
+    @Test
+    fun chorusIsPreferredAndMissingChorusFallsBackToTheFirstSection() {
+        val withChorus = linkedMapOf(
+            "intro" to ExtractedSection(sectionName = "Intro", sectionIndex = 0),
+            "pre" to ExtractedSection(sectionName = "Pre-Chorus", sectionIndex = 1),
+            "chorus" to ExtractedSection(sectionName = "Chorus", sectionIndex = 2),
+            "lead" to ExtractedSection(sectionName = "Chorus Lead-Out", sectionIndex = 3)
+        )
+        assertEquals("chorus", chorusOrFirstSection(withChorus))
+        val noChorus = linkedMapOf(
+            "intro" to ExtractedSection(sectionName = "Intro", sectionIndex = 0),
+            "verse" to ExtractedSection(sectionName = "Verse", sectionIndex = 1)
+        )
+        assertEquals("intro", chorusOrFirstSection(noChorus))
+        val combined = linkedMapOf(
+            "verse" to ExtractedSection(sectionName = "Verse", sectionIndex = 0),
+            "both" to ExtractedSection(sectionName = "Pre-Chorus and Chorus", sectionIndex = 1)
+        )
+        assertEquals("both", chorusOrFirstSection(combined))
+    }
 }

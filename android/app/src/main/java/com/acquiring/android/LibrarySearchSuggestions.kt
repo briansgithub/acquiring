@@ -3,10 +3,9 @@ package com.acquiring.android
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,43 +20,20 @@ internal fun LibrarySongSuggestionPanel(
     searchQuery: String,
     suggestions: List<SongBrowseRow>,
     onSuggestionClick: (SongBrowseRow) -> Unit,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (!isExpanded) return
-    LibrarySuggestionScroller(onLoadMore = onLoadMore) {
+    LibrarySuggestionScroller(onLoadMore = onLoadMore, modifier = modifier) {
         if (isShowingRecent) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        "Recent Selections",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                onClick = {},
-                enabled = false
-            )
+            SuggestionHeading("Recent")
         } else if (suggestions.isEmpty() && searchQuery.isNotEmpty()) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        "No results found for '$searchQuery'",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                },
-                onClick = {},
-                enabled = false
-            )
+            SuggestionMessage("No results found for '$searchQuery'")
         }
         suggestions.forEach { song ->
-            DropdownMenuItem(
-                text = {
-                    Column {
-                        Text(text = song.displayTitle, style = MaterialTheme.typography.bodyLarge)
-                        Text(text = song.displayArtist, style = MaterialTheme.typography.bodySmall)
-                    }
-                },
+            LibrarySongRow(
+                title = song.displayTitle,
+                subtitle = song.displayArtist,
                 onClick = { onSuggestionClick(song) }
             )
         }
@@ -71,43 +47,20 @@ internal fun LibraryArtistSuggestionPanel(
     searchArtistQuery: String,
     artistSuggestions: List<String>,
     onArtistClick: (String) -> Unit,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (!isExpanded) return
-    LibrarySuggestionScroller(onLoadMore = onLoadMore) {
+    LibrarySuggestionScroller(onLoadMore = onLoadMore, modifier = modifier) {
         if (isShowingRecentArtists) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        "Recent Artists",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                onClick = {},
-                enabled = false
-            )
+            SuggestionHeading("Recent")
         } else if (artistSuggestions.isEmpty() && searchArtistQuery.isNotEmpty()) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        "No artists matching '$searchArtistQuery'",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                },
-                onClick = {},
-                enabled = false
-            )
+            SuggestionMessage("No artists matching '$searchArtistQuery'")
         }
         artistSuggestions.forEach { artistName ->
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = CatalogDisplayName.artist(artistName),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                },
+            LibrarySongRow(
+                title = CatalogDisplayName.artist(artistName),
+                subtitle = null,
                 onClick = { onArtistClick(artistName) }
             )
         }
@@ -115,8 +68,29 @@ internal fun LibraryArtistSuggestionPanel(
 }
 
 @Composable
+private fun SuggestionHeading(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+    )
+}
+
+@Composable
+private fun SuggestionMessage(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(vertical = 12.dp)
+    )
+}
+
+@Composable
 private fun LibrarySuggestionScroller(
     onLoadMore: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -126,11 +100,7 @@ private fun LibrarySuggestionScroller(
         }
     }
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(max = 400.dp)
-            .verticalScroll(scrollState)
-    ) {
-        content()
-    }
+        modifier = modifier.fillMaxWidth().verticalScroll(scrollState),
+        content = content
+    )
 }

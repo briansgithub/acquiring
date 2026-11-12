@@ -634,7 +634,7 @@ internal fun MainScreen(
         } else if (selectedSong == null && selectedArtistSongs == null) {
             artistSuggestions = HistoryManager.getRecentArtists(context)
             isShowingRecentArtists = artistSuggestions.isNotEmpty()
-            isArtistExpanded = false
+            isArtistExpanded = artistSuggestions.isNotEmpty()
         }
     }
 
@@ -787,6 +787,27 @@ internal fun MainScreen(
         }
     }
 
+    val startExampleShuffle: (Int?) -> Unit = { cutoff ->
+        queuePreparationJob?.cancel()
+        val expected = songQueue.begin(originQuiz = false, name = "Example songs", manualAdvance = true, preferChorus = true)
+        PlaybackController.pause()
+        selectedSong = null
+        selectedSongSections = null
+        readyQueueToken = null
+        isShowingAuralQuiz = false
+        queuePreparationJob = scope.launch {
+            var lease: AuralPreparedResource<AuralCatalog>.Lease? = null
+            try {
+                lease = withContext(Dispatchers.IO) { queueStore.acquire() }
+                val entries = withContext(Dispatchers.IO) { shuffledExampleQueue(lease.value.exampleSongs(), cutoff) }
+                songQueue.finishPreparation(expected, entries, shuffled = true)
+                if (songQueue.entries.isNotEmpty()) songQueue.start()
+            } catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: Exception) { songQueue.error(expected, "Could not prepare example songs. Try again.") }
+            finally { lease?.release() }
+        }
+    }
+
     val startSavedQueue: (String, Boolean) -> Unit = { playlistId, shuffle ->
         queuePreparationJob?.cancel()
         val expected = songQueue.begin(originQuiz=false, name="Playlist")
@@ -799,11 +820,14 @@ internal fun MainScreen(
                 val entries = withContext(Dispatchers.IO) {
                     val stored=playlistDao.getEntriesIn(playlistId)
                     val songs=activeDb.songDao().getBrowseSongsBySlugs(stored.map { it.slug }).associateBy { it.slug }
-                    stored.map { entry ->
+                    val queued=stored.map { entry ->
                         val song=songs[entry.slug]
                         QueuedSong(entry.slug,song?.displayTitle ?: entry.slug,song?.displayArtist ?: "",
                             entry.sectionId.orEmpty(),entry.sectionName ?: "First section")
                     }
+                    if (playlistId == PlaylistIds.FAVORITES) {
+                        queued.sortedWith(compareBy({ it.title.lowercase() }, { it.artist.lowercase() }, { it.slug.lowercase() }))
+                    } else queued
                 }
                 songQueue.finishPreparation(expected,entries,if(shuffle)null else playlistId,shuffled=shuffle)
             } catch (cancelled: CancellationException) { throw cancelled }
@@ -827,7 +851,14 @@ internal fun MainScreen(
             val song=loaded?.first
             val sections=loaded?.second
             val requestedSection=songQueue.sectionOverride ?: entry.sectionId
-            val sectionId=sections?.let { resolveQueuedSection(entry.slug,entry.copy(sectionId=requestedSection),it) }
+            val sectionId=sections?.let { loaded ->
+                if (songQueue.preferChorus && songQueue.sectionOverride == null && entry.sectionId.isEmpty()) chorusOrFirstSection(loaded)
+                else resolveQueuedSection(entry.slug, entry.copy(sectionId = requestedSection), loaded)
+            }
+            if (sectionId != null && songQueue.preferChorus) {
+                val resolvedName = sections?.get(sectionId)?.safeSectionName
+                if (resolvedName != null) songQueue.rememberSection(token, sectionId, resolvedName)
+            }
             if(song==null || sections==null || sectionId==null) {
                 songQueue.unavailable(token,"Skipped ${entry.title}: song or saved section unavailable.")
                 return@LaunchedEffect
@@ -1150,6 +1181,7 @@ internal fun MainScreen(
                     onSongClick = openBrowseSong,
                     onPlayPlaylist = startSavedQueue,
                     onOpenSettings = { isShowingSettings = true },
+                    onShuffleExamples = startExampleShuffle,
                     onOpenAuralQuiz = {
                         PlaybackController.pause()
                         AudioEngine.stopAllPlayback()
