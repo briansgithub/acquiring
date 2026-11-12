@@ -174,15 +174,7 @@ fun LibraryView(
             updateAvailable = settingsUpdateAvailable,
             onOpenSettings = onOpenSettings
         )
-        if (showChrome) {
-            PlaylistsSection(
-                playlistDao = playlistDao,
-                songDao = activeDb.songDao(),
-                onSongClick = onSongClick,
-                onPlayPlaylist = onPlayPlaylist
-            )
-        }
-        
+
         OutlinedTextField(
             value = activeQuery,
             onValueChange = { raw ->
@@ -287,51 +279,63 @@ fun LibraryView(
             Text("Aural Quiz")
         }
 
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(allSongs) { song ->
-                Card(
-                    onClick = { onSongClick(song) },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        Text(text = song.displayTitle, style = MaterialTheme.typography.bodyLarge)
-                        Text(text = song.displayArtist, style = MaterialTheme.typography.bodyMedium)
+        if (allSongs.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                items(allSongs) { song ->
+                    Card(
+                        onClick = { onSongClick(song) },
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(text = song.displayTitle, style = MaterialTheme.typography.bodyLarge)
+                            Text(text = song.displayArtist, style = MaterialTheme.typography.bodyMedium)
+                        }
                     }
                 }
             }
+        } else if (!showChrome) {
+            Spacer(modifier = Modifier.weight(1f))
         }
 
         if (showChrome) {
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+            PlaylistsSection(
+                playlistDao = playlistDao,
+                songDao = activeDb.songDao(),
+                onSongClick = onSongClick,
+                onPlayPlaylist = onPlayPlaylist,
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            )
 
-        LibraryHooktheorySection(
-            urlToHarvest = urlToHarvest,
-            onUrlChange = onUrlChange,
-            harvestStatus = harvestStatus,
-            onHarvest = onHarvest,
-            onFocusChanged = { hooktheoryFocused = it }
-        )
+            Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-        Surface(
-            onClick = onAllSongs,
-            modifier = Modifier
-                .fillMaxWidth()
-                .semantics(mergeDescendants = true) {
-                    contentDescription = "All Songs"
-                    role = Role.Button
-                }
-        ) {
-            Row(
-                modifier = Modifier.padding(vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+            LibraryHooktheorySection(
+                urlToHarvest = urlToHarvest,
+                onUrlChange = onUrlChange,
+                harvestStatus = harvestStatus,
+                onHarvest = onHarvest,
+                onFocusChanged = { hooktheoryFocused = it }
+            )
+
+            Surface(
+                onClick = onAllSongs,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics(mergeDescendants = true) {
+                        contentDescription = "All Songs"
+                        role = Role.Button
+                    }
             ) {
-                Text(
-                    text = "All Songs",
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.weight(1f)
-                )
+                Row(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "All Songs",
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
-        }
         }
 
     }

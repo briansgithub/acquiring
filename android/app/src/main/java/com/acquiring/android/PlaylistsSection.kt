@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,9 +46,6 @@ import kotlinx.coroutines.launch
 internal const val PLAYLISTS_SECTION_TEST_TAG = "PlaylistsSection"
 internal const val PLAYLISTS_SECTION_HEADER_TEST_TAG = "PlaylistsSectionHeader"
 
-/** Keeps a long playlist from pushing the search results off the screen. */
-private val PLAYLIST_SONGS_MAX_HEIGHT = 280.dp
-
 /**
  * The Playlists accordion on the search screen.
  *
@@ -67,7 +63,9 @@ fun PlaylistsSection(
     modifier: Modifier = Modifier
 ) {
     var isSectionExpanded by rememberSaveable { mutableStateOf(true) }
-    var expandedPlaylistId by rememberSaveable { mutableStateOf<String?>(null) }
+    var expandedPlaylistId by rememberSaveable(key = "expandedPlaylistIdFavoritesDefault") {
+        mutableStateOf<String?>(PlaylistIds.FAVORITES)
+    }
     var summaries by remember { mutableStateOf<List<PlaylistSummary>>(emptyList()) }
     var songs by remember { mutableStateOf<List<SongBrowseRow>>(emptyList()) }
     var isLoadingSongs by remember { mutableStateOf(false) }
@@ -129,7 +127,11 @@ fun PlaylistsSection(
         Surface(
             onClick = {
                 isSectionExpanded = !isSectionExpanded
-                if (!isSectionExpanded) expandedPlaylistId = null
+                if (isSectionExpanded) {
+                    if (expandedPlaylistId == null) expandedPlaylistId = PlaylistIds.FAVORITES
+                } else {
+                    expandedPlaylistId = null
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -162,7 +164,7 @@ fun PlaylistsSection(
         }
 
         if (isSectionExpanded) {
-            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+            Column(modifier = Modifier.weight(1f).fillMaxWidth().padding(bottom = 8.dp)) {
                 summaries.forEach { summary ->
                     val isPlaylistExpanded = expandedPlaylistId == summary.id
                     Surface(
@@ -242,8 +244,8 @@ fun PlaylistsSection(
 
                             else -> LazyColumn(
                                 modifier = Modifier
+                                    .weight(1f)
                                     .fillMaxWidth()
-                                    .heightIn(max = PLAYLIST_SONGS_MAX_HEIGHT)
                             ) {
                                 items(
                                     items = songs,
