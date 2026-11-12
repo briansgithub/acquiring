@@ -127,8 +127,7 @@ class MainActivity : ComponentActivity() {
         AppAudioOutput.initialize(this)
         PlaybackController.initialize(this)
         AppInstrumentSession.initialize(this)
-        TimelineFrameRateStore.initialize(this)
-        TimelineFrameRateStore.applyToWindow(window)
+        PlaybackFrameRate.initialize(this)
         AudioDiagnostics.record("app.audioInitialized")
 
         db = Room.databaseBuilder(
@@ -194,7 +193,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        TimelineFrameRateStore.applyToWindow(window)
+        PlaybackFrameRate.apply(window)
     }
 
     override fun onPause() {
@@ -247,9 +246,6 @@ internal fun MainScreen(
     var auralPlaybackPassage by remember { mutableStateOf<AuralSourcePassage?>(null) }
     val auralScreenState = rememberSaveableStateHolder()
     var readyQueueToken by remember { mutableStateOf<String?>(null) }
-    var timelineFrameRate by remember {
-        mutableStateOf(TimelineFrameRateStore.preference)
-    }
     var isShowingPlayback by remember { mutableStateOf(false) }
     var songParentPage by remember { mutableStateOf(SongParentPage.LIBRARY) }
     var showLetterNames by remember { mutableStateOf(false) }
@@ -830,11 +826,6 @@ internal fun MainScreen(
             playUpdateStatus = playUpdateStatus,
             onOpenPlayUpdate = {
                 openUpdateDistribution(context)
-            },
-            timelineFrameRate = timelineFrameRate,
-            onTimelineFrameRateChange = {
-                TimelineFrameRateStore.select(context, it)
-                timelineFrameRate = it
             },
             onShareAudioDiagnostics = { AudioDiagnostics.share(context) },
             onResetAudioEngine = { AudioDiagnostics.resetEngine() },

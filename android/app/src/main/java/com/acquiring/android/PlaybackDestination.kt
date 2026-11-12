@@ -83,7 +83,7 @@ fun PlaybackDestination(
     var continueIntoNextSection by remember { mutableStateOf(false) }
     val context = LocalContext.current
     LaunchedEffect(context, selectedSectionKey, useRelativeIonianContext) {
-        TimelineFrameRateStore.applyToWindow(context)
+        PlaybackFrameRate.apply(context)
     }
     var showTitleSheet by remember { mutableStateOf(false) }
     var showPlaybackHelp by remember { mutableStateOf(false) }
