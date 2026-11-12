@@ -873,11 +873,12 @@ internal class PlaybackEngine(
             // A newer UI transport command may already have published its target beat.
             // Never let completion of an older pause/seek overwrite that position.
             if (activeTransportRevision < transportRevision.get()) return
+            val beat = audibleBeat()
             // Audio blocks are shorter than a 120 Hz frame, so each one is a new
             // playhead sample. The display refresh rate is the frame clock.
             mutableState.value = PlaybackState(
                 phase = phase,
-                beat = audibleBeat(),
+                beat = beat,
                 underrunCount = sink?.underrunCount ?: lastUnderrunCount,
                 error = error,
                 completionKey = if (phase == PlaybackPhase.COMPLETED) timeline?.completionKey else null,

@@ -26,13 +26,15 @@ internal fun melodyFunctionColor(tone: MelodyFunctionTone): Color = when (tone) 
 
 @Composable
 internal fun PlaybackRootScrubBar(
-    currentBeat: Double,
+    beat: androidx.compose.runtime.State<Double>,
+    scrubBeat: Double?,
     startBeat: Double,
     endBeat: Double,
     onScrub: (Double) -> Unit,
     onScrubFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currentBeat = scrubBeat ?: beat.value
     val upperBeat = endBeat.coerceAtLeast(startBeat + 0.001)
     Slider(
         value = currentBeat.coerceIn(startBeat, upperBeat).toFloat(),
