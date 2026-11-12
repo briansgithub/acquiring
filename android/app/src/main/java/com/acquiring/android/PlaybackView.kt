@@ -598,16 +598,16 @@ fun PlaybackTab(
             )
         }
     }
-    val currentMelodyNote = remember(activeEventIndex, currentBeat, isSimpleMode) {
-        if (isSimpleMode) null else activeEventIndex.melodyNoteAtBeat(currentBeat)
+    val currentMelodyNote = remember(activeEventIndex, currentBeat) {
+        activeEventIndex.melodyNoteAtBeat(currentBeat)
     }
     val melodyIntervalState = remember(section, melody, currentMelodyNote, isSimpleMode) {
         if (isSimpleMode || currentMelodyNote == null) null
         else resolveMelodyIntervalState(melody, currentMelodyNote.beat, section::getKeyAtBeat)
     }
-    val currentMelodyPitch = remember(section, currentMelodyNote, isSimpleMode) {
+    val currentMelodyPitch = remember(section, currentMelodyNote) {
         currentMelodyNote
-            ?.takeIf { note -> !isSimpleMode && !note.isRest && note.duration > 0.0 }
+            ?.takeIf { note -> !note.isRest && note.duration > 0.0 }
             ?.let { note ->
                 MusicTheory.resolveScaleDegreePitch(
                     sd = note.sd,
@@ -666,6 +666,21 @@ fun PlaybackTab(
     }
     val melodyCardDisplayMode = remember(currentMelodyPitch, melodyIntervalState) {
         melodyPitchCardDisplayMode(currentMelodyPitch, melodyIntervalState)
+    }
+    val melodyFunctionDescription = remember(
+        section,
+        melody,
+        currentMelodyNote,
+        currentChord
+    ) {
+        describeMelodyFunction(
+            buildMelodyFunctionInput(
+                section = section,
+                melody = melody,
+                activeNote = currentMelodyNote,
+                activeChord = currentChord
+            )
+        )
     }
     val density = androidx.compose.ui.platform.LocalDensity.current
 
@@ -1431,59 +1446,81 @@ fun PlaybackTab(
                         contentAlignment = if (isSimpleMode) Alignment.Center else Alignment.TopCenter
                     ) {
                         if (isSimpleMode) {
-                            val currentIntervalPitch = chordRootIntervalState?.currentIntervalPitch
-                            val previousIntervalPitch = chordRootIntervalState?.previousIntervalPitch
-                            val previousRootLabel = if (useRelativeIonianContext && previousIntervalPitch != null) {
-                                ionianContextDegreeLabel(previousIntervalPitch, ionianContextKey)
-                            } else {
-                                chordRootIntervalState?.previousDegreeLabel.orEmpty()
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                PlaybackMelodyFunctionBanner(melodyFunctionDescription)
+                                Spacer(Modifier.height(PLAYBACK_CARD_ROW_SPACING))
+                                PlaybackRootOnlyMelodyRow(
+                                    currentPitch = currentMelodyPitch,
+                                    currentLabel = melodyCurrentTargetLabel,
+                                    onPreviewPitch = ::playSingleNotePreview,
+                                    onSingPitch = ::openSingleMelodySingingTarget
+                                )
+                                Spacer(Modifier.height(PLAYBACK_CARD_ROW_SPACING))
+                                val currentIntervalPitch = chordRootIntervalState?.currentIntervalPitch
+                                val previousIntervalPitch = chordRootIntervalState?.previousIntervalPitch
+                                val previousRootLabel = if (useRelativeIonianContext && previousIntervalPitch != null) {
+                                    ionianContextDegreeLabel(previousIntervalPitch, ionianContextKey)
+                                } else {
+                                    chordRootIntervalState?.previousDegreeLabel.orEmpty()
+                                }
+                                PlaybackRootOnlyRow(
+                                    previousPitch = previousIntervalPitch,
+                                    currentPitch = currentIntervalPitch,
+                                    previousLabel = previousRootLabel,
+                                    currentLabel = currentRootDegreeLabel,
+                                    interval = chordRootIntervalState?.interval,
+                                    onPreviewPitch = { pitch ->
+                                        playCardPreview(listOf(tessituraPreviewMidi(pitch.toAudioNoteNumber())))
+                                    },
+                                    onPreviewInterval = ::playIntervalPreview,
+                                    onSingCurrent = {
+                                        if (currentRootPreviewAudioNote > 0) {
+                                            requestSingingTargets(
+                                                SingingTargetRequest(
+                                                    first = SingingTargetNote(
+                                                        currentRootPreviewAudioNote,
+                                                        currentRootDegreeLabel
+                                                    ),
+                                                    second = null,
+                                                    requestId = 0
+                                                )
+                                            )
+                                        }
+                                    },
+                                    onSingInterval = {
+                                        if (previousIntervalPitch != null && currentIntervalPitch != null) {
+                                            requestSingingTargets(
+                                                SingingTargetRequest(
+                                                    first = SingingTargetNote(
+                                                        intervalPreviewNote(previousIntervalPitch),
+                                                        previousRootLabel
+                                                    ),
+                                                    second = SingingTargetNote(
+                                                        intervalPreviewNote(currentIntervalPitch),
+                                                        currentRootDegreeLabel
+                                                    ),
+                                                    requestId = 0
+                                                )
+                                            )
+                                        }
+                                    },
+                                    showPitchGauge = resolvedPersistentPitchTarget?.position ==
+                                        PersistentPitchCardPosition.SimpleRoot,
+                                    pitchGaugeResult = persistentPitchGaugeResult,
+                                    pitchGaugeLabel = resolvedPersistentPitchTarget?.label.orEmpty()
+                                )
+                                Spacer(Modifier.height(PLAYBACK_CARD_ROW_SPACING))
+                                PlaybackRootScrubBar(
+                                    currentBeat = currentBeat,
+                                    startBeat = timeline.startBeat,
+                                    endBeat = endBeat,
+                                    onScrub = ::scrubTo,
+                                    onScrubFinished = ::finishScrubbing
+                                )
                             }
-                            PlaybackRootOnlyRow(
-                                previousPitch = previousIntervalPitch,
-                                currentPitch = currentIntervalPitch,
-                                previousLabel = previousRootLabel,
-                                currentLabel = currentRootDegreeLabel,
-                                interval = chordRootIntervalState?.interval,
-                                onPreviewPitch = { pitch ->
-                                    playCardPreview(listOf(tessituraPreviewMidi(pitch.toAudioNoteNumber())))
-                                },
-                                onPreviewInterval = ::playIntervalPreview,
-                                onSingCurrent = {
-                                    if (currentRootPreviewAudioNote > 0) {
-                                        requestSingingTargets(
-                                            SingingTargetRequest(
-                                                first = SingingTargetNote(
-                                                    currentRootPreviewAudioNote,
-                                                    currentRootDegreeLabel
-                                                ),
-                                                second = null,
-                                                requestId = 0
-                                            )
-                                        )
-                                    }
-                                },
-                                onSingInterval = {
-                                    if (previousIntervalPitch != null && currentIntervalPitch != null) {
-                                        requestSingingTargets(
-                                            SingingTargetRequest(
-                                                first = SingingTargetNote(
-                                                    intervalPreviewNote(previousIntervalPitch),
-                                                    previousRootLabel
-                                                ),
-                                                second = SingingTargetNote(
-                                                    intervalPreviewNote(currentIntervalPitch),
-                                                    currentRootDegreeLabel
-                                                ),
-                                                requestId = 0
-                                            )
-                                        )
-                                    }
-                                },
-                                showPitchGauge = resolvedPersistentPitchTarget?.position ==
-                                    PersistentPitchCardPosition.SimpleRoot,
-                                pitchGaugeResult = persistentPitchGaugeResult,
-                                pitchGaugeLabel = resolvedPersistentPitchTarget?.label.orEmpty()
-                            )
                         } else {
                             Column(
                                 modifier = Modifier
@@ -1492,6 +1529,8 @@ fun PlaybackTab(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
+                                PlaybackMelodyFunctionBanner(melodyFunctionDescription)
+                                Spacer(Modifier.height(PLAYBACK_CARD_ROW_SPACING))
                                 Row(
                                     modifier = Modifier.fillMaxWidth().height(PLAYBACK_MELODY_ROW_HEIGHT),
                                     verticalAlignment = Alignment.CenterVertically

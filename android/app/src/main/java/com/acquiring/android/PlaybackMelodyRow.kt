@@ -29,6 +29,31 @@ import androidx.compose.ui.unit.sp
 internal val PLAYBACK_MELODY_PAIR_CARD_HEIGHT = 44.dp
 internal val PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT = 88.dp
 
+@Composable
+internal fun PlaybackCurrentMelodyCard(
+    pitch: SpelledPitch?,
+    label: String,
+    onPlayPitch: (SpelledPitch) -> Unit,
+    onSingPitch: (SpelledPitch, String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (pitch == null) {
+        PlaybackEmptyCardSlot(
+            modifier = modifier,
+            fixedHeight = PLAYBACK_MELODY_PAIR_CARD_HEIGHT
+        )
+        return
+    }
+    MelodyDegreeCard(
+        label = label,
+        description = "Play current melody note $label. Double tap to sing it back.",
+        height = PLAYBACK_MELODY_PAIR_CARD_HEIGHT,
+        onClick = { onPlayPitch(pitch) },
+        onDoubleClick = { onSingPitch(pitch, label) },
+        modifier = modifier
+    )
+}
+
 internal fun showsMelodyPreviousCard(
     displayMode: MelodyPitchCardDisplayMode,
     pitchCards: List<MelodyPitchCard>
