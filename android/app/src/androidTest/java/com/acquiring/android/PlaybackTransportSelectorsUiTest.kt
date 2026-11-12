@@ -54,9 +54,8 @@ class PlaybackTransportSelectorsUiTest {
     }
 
     @Test
-    fun timelineFrameRateSurvivesLockChangesDuringPlayback() {
+    fun playbackRestoresTheMaximumRefreshRateAcrossLockChanges() {
         val activity = composeTestRule.activity
-        val savedPreference = TimelineFrameRateStore.read(activity)
         val sections = linkedMapOf(
             "verse" to section("Verse", 1, "minor"),
             "chorus" to section("Chorus", 4, "minor")
@@ -102,34 +101,27 @@ class PlaybackTransportSelectorsUiTest {
             clickDescription("Play")
             waitForAdvancingPlayback()
             var locked = false
-            for (preference in listOf(
-                TimelineFrameRatePreference.STANDARD,
-                TimelineFrameRatePreference.MAXIMUM,
-                TimelineFrameRatePreference.STANDARD
-            )) {
-                composeTestRule.runOnUiThread { TimelineFrameRateStore.select(activity, preference) }
-                val fps = preference.framesPerSecond(TimelineFrameRateStore.displayMaximumHz)
-                repeat(3) {
-                    // Verify the production lock effect restores a stale surface request.
-                    composeTestRule.runOnUiThread {
-                        activity.window.attributes = activity.window.attributes.apply {
-                            preferredRefreshRate = 30f
-                        }
+            val maximum = PlaybackFrameRate.maximumRefreshRate(activity.window.decorView.display)
+            repeat(3) {
+                composeTestRule.runOnUiThread {
+                    activity.window.attributes = activity.window.attributes.apply {
+                        preferredRefreshRate = 30f
+                        preferredDisplayModeId = 7
                     }
-                    clickTag(PLAYBACK_LOCK_IN_MAJOR_TEST_TAG)
-                    locked = !locked
-                    composeTestRule.waitUntil(5_000) {
-                        val node = composeTestRule.onAllNodesWithTag(
-                            PLAYBACK_LOCK_IN_MAJOR_TEST_TAG, useUnmergedTree = true
-                        ).fetchSemanticsNodes().firstOrNull()
-                        node?.config?.getOrNull(SemanticsProperties.StateDescription) ==
-                            (if (locked) "On" else "Off") &&
-                            activity.window.attributes.preferredRefreshRate == fps.toFloat()
-                    }
-                    assertEquals(1_000_000_000L / fps, TimelineFrameRateStore.minStateUpdateNanos)
-                    assertEquals(preference, TimelineFrameRateStore.read(activity))
-                    waitForAdvancingPlayback()
                 }
+                clickTag(PLAYBACK_LOCK_IN_MAJOR_TEST_TAG)
+                locked = !locked
+                composeTestRule.waitUntil(5_000) {
+                    val node = composeTestRule.onAllNodesWithTag(
+                        PLAYBACK_LOCK_IN_MAJOR_TEST_TAG, useUnmergedTree = true
+                    ).fetchSemanticsNodes().firstOrNull()
+                    val params = activity.window.attributes
+                    node?.config?.getOrNull(SemanticsProperties.StateDescription) ==
+                        (if (locked) "On" else "Off") &&
+                        params.preferredRefreshRate == maximum &&
+                        params.preferredDisplayModeId == 0
+                }
+                waitForAdvancingPlayback()
             }
             clickDescription("Pause")
             clickDescription("Play")
@@ -137,7 +129,8 @@ class PlaybackTransportSelectorsUiTest {
             clickTag(PLAYBACK_SECTION_BUTTON_TEST_TAG)
             clickTag("PlaybackSection-chorus")
             waitForAdvancingPlayback()
-            assertEquals(60f, activity.window.attributes.preferredRefreshRate, 0f)
+            assertEquals(maximum, activity.window.attributes.preferredRefreshRate, 0f)
+            assertEquals(0, activity.window.attributes.preferredDisplayModeId)
 
             composeTestRule.runOnUiThread {
                 PlaybackController.pause()
@@ -148,13 +141,10 @@ class PlaybackTransportSelectorsUiTest {
             }
             composeTestRule.runOnUiThread { showingPlayback = true }
             waitForPlayback()
-            assertEquals(60f, activity.window.attributes.preferredRefreshRate, 0f)
-            assertEquals(16_666_666L, TimelineFrameRateStore.minStateUpdateNanos)
+            assertEquals(maximum, activity.window.attributes.preferredRefreshRate, 0f)
+            assertEquals(0, activity.window.attributes.preferredDisplayModeId)
         } finally {
-            composeTestRule.runOnUiThread {
-                PlaybackController.pause()
-                TimelineFrameRateStore.select(activity, savedPreference)
-            }
+            composeTestRule.runOnUiThread { PlaybackController.pause() }
             idlingResources.forEach { IdlingRegistry.getInstance().register(it) }
         }
     }

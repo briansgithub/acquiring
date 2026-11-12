@@ -173,7 +173,7 @@ class AuralQuizUiTest {
         var requests = 0
         compose.setContent { MaterialTheme {
             AppSettingsScreen(AudioEngine.Waveform.CLARINET, {}, "", "", {}, PlayUpdateStatus.UNAVAILABLE, {},
-                TimelineFrameRatePreference.STANDARD, {}, {}, {}, {},
+                {}, {}, {},
                 exampleSongsStatus = status, exampleSongsDownloading = downloading,
                 onDownloadExampleSongs = { requests++; downloading = true; status = "Downloading example songs 1/3" })
         } }
@@ -195,7 +195,7 @@ class AuralQuizUiTest {
         compose.setContent { MaterialTheme {
             AuralQuizScreen({}, session, defaultInstrument = instrument, settingsContent = { close ->
                 AppSettingsScreen(instrument, { instrument = it }, "", "", {}, PlayUpdateStatus.entries.first(), {},
-                    TimelineFrameRatePreference.STANDARD, {}, {}, {}, close)
+                    {}, {}, close)
             }, catalogEnabled = false) { exercise ->
                 played += exercise.instrument
                 if (played.size == 1) try { awaitCancellation() } finally { cancelled = true }

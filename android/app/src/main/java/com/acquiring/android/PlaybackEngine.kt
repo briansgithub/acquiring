@@ -827,7 +827,6 @@ internal class PlaybackEngine(
         var headOriginRaw = 0L
         var lastRawHead = 0L
         var headWraps = 0L
-        var lastStateUpdateNanos = 0L
         var deadObjectRecoveries = 0
         var activeTransportRevision = 0L
         val clockSegments = ArrayDeque<ClockSegment>()
@@ -870,16 +869,16 @@ internal class PlaybackEngine(
             else segment.loopStart + ((segment.startBeat - segment.loopStart + advanced) % loopLength)
         }
 
-        fun publish(phase: PlaybackPhase, error: String? = null, force: Boolean = false) {
+        fun publish(phase: PlaybackPhase, error: String? = null) {
             // A newer UI transport command may already have published its target beat.
             // Never let completion of an older pause/seek overwrite that position.
             if (activeTransportRevision < transportRevision.get()) return
-            val now = System.nanoTime()
-            if (!force && now - lastStateUpdateNanos < TimelineFrameRateStore.minStateUpdateNanos) return
-            lastStateUpdateNanos = now
+            val beat = audibleBeat()
+            // Audio blocks are shorter than a 120 Hz frame, so each one is a new
+            // playhead sample. The display refresh rate is the frame clock.
             mutableState.value = PlaybackState(
                 phase = phase,
-                beat = audibleBeat(),
+                beat = beat,
                 underrunCount = sink?.underrunCount ?: lastUnderrunCount,
                 error = error,
                 completionKey = if (phase == PlaybackPhase.COMPLETED) timeline?.completionKey else null,
@@ -954,7 +953,7 @@ internal class PlaybackEngine(
         }
 
         fun prime(activeRenderer: PlaybackPcmRenderer): Boolean {
-            publish(PlaybackPhase.BUFFERING, force = true)
+            publish(PlaybackPhase.BUFFERING)
             val primeStartBeat = activeRenderer.currentBeat
             var primed = 0
             while (primed < targetBufferFrames) {
@@ -973,7 +972,7 @@ internal class PlaybackEngine(
             }
             sink?.play()
             sinkStarted = true
-            publish(PlaybackPhase.PLAYING, force = true)
+            publish(PlaybackPhase.PLAYING)
             return true
         }
 
@@ -998,8 +997,7 @@ internal class PlaybackEngine(
                             PlaybackPhase.BUFFERING
                         } else {
                             PlaybackPhase.STOPPED
-                        },
-                        force = true
+                        }
                     )
                 }
 
@@ -1011,15 +1009,14 @@ internal class PlaybackEngine(
                     playRequested = true
                     publish(
                         if (latestConfig.get().bpm > 0.0) PlaybackPhase.BUFFERING
-                        else PlaybackPhase.PAUSED,
-                        force = true
+                        else PlaybackPhase.PAUSED
                     )
                 }
 
                 is Command.Pause -> {
                     playRequested = false
                     pauseAndReanchor()
-                    publish(PlaybackPhase.PAUSED, force = true)
+                    publish(PlaybackPhase.PAUSED)
                 }
 
                 is Command.Seek -> {
@@ -1031,8 +1028,7 @@ internal class PlaybackEngine(
                             PlaybackPhase.BUFFERING
                         } else {
                             PlaybackPhase.PAUSED
-                        },
-                        force = true
+                        }
                     )
                 }
 
@@ -1040,7 +1036,7 @@ internal class PlaybackEngine(
                     playRequested = false
                     pauseAndReanchor()
                     renderer?.seek(timeline?.startBeat ?: 1.0)
-                    publish(PlaybackPhase.STOPPED, force = true)
+                    publish(PlaybackPhase.STOPPED)
                 }
 
                 is Command.UpdateCompletion -> {
@@ -1070,7 +1066,7 @@ internal class PlaybackEngine(
                     if (updated.bpm <= 0.0 && sinkStarted) pauseAndReanchor()
                     renderer?.updateConfig(updated)
                     if (playRequested && updated.bpm <= 0.0) {
-                        publish(PlaybackPhase.PAUSED, force = true)
+                        publish(PlaybackPhase.PAUSED)
                     }
                 }
 
@@ -1109,7 +1105,7 @@ internal class PlaybackEngine(
                             playRequested = false
                             playbackRequested.set(false)
                             sink?.pause()
-                            publish(PlaybackPhase.COMPLETED, force = true)
+                            publish(PlaybackPhase.COMPLETED)
                         } else {
                             commands.poll(5, java.util.concurrent.TimeUnit.MILLISECONDS)?.let(::handle)
                         }
@@ -1142,7 +1138,7 @@ internal class PlaybackEngine(
                         playbackRequested.set(false)
                         val message = "Playback audio write failed (${writeError.code})"
                         Log.e(TAG, message)
-                        publish(PlaybackPhase.ERROR, message, force = true)
+                        publish(PlaybackPhase.ERROR, message)
                     }
                 } catch (error: Exception) {
                     playRequested = false
@@ -1150,7 +1146,7 @@ internal class PlaybackEngine(
                     closeSink()
                     val message = error.message ?: "Playback audio initialization failed"
                     Log.e(TAG, message, error)
-                    publish(PlaybackPhase.ERROR, message, force = true)
+                    publish(PlaybackPhase.ERROR, message)
                 }
             }
         } finally {

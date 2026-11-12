@@ -88,6 +88,7 @@ import androidx.compose.ui.zIndex
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import androidx.room.Room
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -306,7 +307,17 @@ fun PlaybackTab(
     LaunchedEffect(playbackConfig) {
         PlaybackController.configure(playbackConfig)
     }
-    val playbackState by PlaybackController.state.collectAsState()
+    // Beat samples stay off the composition clock. Publishing one into this
+    // screen rebuilt it about every 40 ms, so the timeline moved at ~25 Hz
+    // while the display kept vsyncing at 120 Hz.
+    val playhead = remember { PlaybackPlayhead() }
+    val frameClock = remember { mutableStateOf(0L) }
+    val trackedBeat = remember { mutableStateOf(PlaybackController.state.value.beat) }
+    val visualInputs = remember { PlaybackVisualInputs() }
+    var playbackState by remember { mutableStateOf(PlaybackController.state.value) }
+    SideEffect {
+        playhead.beatsPerSecond = if (bpm > 0.0) bpm / 60.0 else 0.0
+    }
     val isPlaying = playbackState.phase == PlaybackPhase.BUFFERING ||
         playbackState.phase == PlaybackPhase.PLAYING
     val currentBeat = if (isScrubbing) {
@@ -318,15 +329,24 @@ fun PlaybackTab(
     // recreated for every played-frame state update. Keep the rapidly changing
     // transport values behind stable State objects instead of capturing the values
     // from the composition that created the gesture coroutine.
-    val latestCurrentBeat by rememberUpdatedState(currentBeat)
     val latestIsPlaying by rememberUpdatedState(isPlaying)
     val latestBpm by rememberUpdatedState(bpm)
+    LaunchedEffect(isPlaying) {
+        if (!isPlaying) return@LaunchedEffect
+        while (isActive) {
+            withFrameNanos { frameClock.value = it }
+        }
+    }
 
     val pixelsPerBeat = 60f
     val chordLaneHeight = 40.dp
     val melodyLaneHeight = 88.dp
 
-    fun playbackBeat(): Double = latestCurrentBeat.coerceIn(1.0, endBeat)
+    fun playbackBeat(): Double = if (isScrubbing) {
+        scrubBeat
+    } else {
+        playhead.project().coerceIn(1.0, endBeat)
+    }
 
     fun cancelInertia() {
         inertiaGeneration++
@@ -541,6 +561,45 @@ fun PlaybackTab(
     }
     val timelineMelodyPitchRunsById = remember(timelineMelodyPitchRuns) {
         timelineMelodyPitchRuns.associateBy(MelodyTimelinePitchRun::id)
+    }
+    SideEffect {
+        visualInputs.keys = sectionKeys
+        visualInputs.index = activeEventIndex
+        visualInputs.runs = timelineMelodyPitchRuns
+        visualInputs.endBeat = endBeat
+    }
+    LaunchedEffect(playhead) {
+        var lastIdentity: PlaybackVisualIdentity? = null
+        PlaybackController.state.collect { next ->
+            val playing = next.phase == PlaybackPhase.BUFFERING ||
+                next.phase == PlaybackPhase.PLAYING
+            playhead.sample(next.beat, playing)
+            val identity = visualInputs.identityAt(next.beat)
+            val previous = playbackState
+            val previousIdentity = lastIdentity
+            val structural = previous.phase != next.phase ||
+                previous.error != next.error ||
+                previous.completionKey != next.completionKey ||
+                previous.transportRevision != next.transportRevision
+            val chordOrKeyChanged = identity == null || previousIdentity == null ||
+                identity.chordId != previousIdentity.chordId ||
+                identity.keyBeat != previousIdentity.keyBeat ||
+                identity.keyHash != previousIdentity.keyHash
+            val noteChanged = identity == null || previousIdentity == null ||
+                identity.noteId != previousIdentity.noteId ||
+                identity.runId != previousIdentity.runId
+            // A melody-note change used to publish playbackState, and this screen
+            // rebuilds when that state changes. That rebuild is the hitch at each note.
+            if (!playing || structural || chordOrKeyChanged) {
+                playbackState = next
+            }
+            if (!playing || noteChanged || chordOrKeyChanged) {
+                val limit = visualInputs.endBeat.coerceAtLeast(1.0)
+                val bounded = next.beat.coerceIn(1.0, limit)
+                if (trackedBeat.value != bounded) trackedBeat.value = bounded
+            }
+            lastIdentity = identity
+        }
     }
     val timelineChordVisuals = remember(
         section.chords,
@@ -1217,19 +1276,19 @@ fun PlaybackTab(
                                             cancelInertia()
                                             val centerX = size.width / 2f
                                             val deltaX = offset.x - centerX
-                                            scrubTo(latestCurrentBeat + deltaX / pixelsPerBeatPx)
+                                            scrubTo(playbackBeat() + deltaX / pixelsPerBeatPx)
                                             finishScrubbing()
                                         }
                                     }
                                 }
                                 .pointerInput(endBeat) {
-                                    var dragBeat = latestCurrentBeat
+                                    var dragBeat = playbackBeat()
                                     val velocityTracker = VelocityTracker()
                                     detectDragGestures(
                                         onDragStart = {
                                             velocityTracker.resetTracking()
                                             beginScrubbing()
-                                            dragBeat = latestCurrentBeat
+                                            dragBeat = playbackBeat()
                                         },
                                         onDrag = { change, dragAmount ->
                                             velocityTracker.addPointerInputChange(change)
@@ -1282,7 +1341,14 @@ fun PlaybackTab(
                                     )
                                 }
                         ) {
-                            val totalHeight = size.height; val mLaneHeightPx = melodyLaneHeight.toPx(); val cLaneHeightPx = chordLaneHeight.toPx(); val noteHeight = (mLaneHeightPx / 28f).coerceIn(5f, 10f); val melodyBaseY = mLaneHeightPx / 2; val centerX = size.width / 2f; val translationX = centerX - (currentBeat - 1).toFloat() * pixelsPerBeatPx
+                            val totalHeight = size.height; val mLaneHeightPx = melodyLaneHeight.toPx(); val cLaneHeightPx = chordLaneHeight.toPx(); val noteHeight = (mLaneHeightPx / 28f).coerceIn(5f, 10f); val melodyBaseY = mLaneHeightPx / 2; val centerX = size.width / 2f
+                            val frameTimeNanos = frameClock.value
+                            val playBeat = if (isPlaying && !isScrubbing) {
+                                playhead.project(frameTimeNanos).coerceIn(1.0, endBeat)
+                            } else {
+                                currentBeat
+                            }
+                            val translationX = centerX - (playBeat - 1).toFloat() * pixelsPerBeatPx
                             drawContext.canvas.save(); drawContext.canvas.translate(translationX, 0f)
                             timelineMelodyVisuals.forEach { note ->
                                 val x = (note.beat - 1).toFloat() * pixelsPerBeatPx
@@ -1290,8 +1356,8 @@ fun PlaybackTab(
                                 val screenX = x + translationX
                                 if (screenX + w < 0f || screenX > size.width) return@forEach
                                 val y = melodyBaseY - (note.staffDegree * noteHeight)
-                                val isActive = currentBeat >= note.beat &&
-                                    currentBeat < note.beat + note.duration
+                                val isActive = playBeat >= note.beat &&
+                                    playBeat < note.beat + note.duration
                                 drawRect(
                                     color = if (isActive) laneTint else laneTint.copy(alpha = 0.6f),
                                     topLeft = Offset(x, y),
@@ -1361,8 +1427,8 @@ fun PlaybackTab(
                                 val w = chord.duration.toFloat() * pixelsPerBeatPx
                                 val screenX = x + translationX
                                 if (screenX + w < 0f || screenX > size.width) return@forEach
-                                val isActive = currentBeat >= chord.beat &&
-                                    currentBeat < chord.beat + chord.duration
+                                val isActive = playBeat >= chord.beat &&
+                                    playBeat < chord.beat + chord.duration
                                 val inQuizPassage = initialPassage?.let { chord.beat < it.second && chord.beat+chord.duration > it.first } == true
                                 drawRect(
                                     color = if (isActive) {
@@ -1401,7 +1467,9 @@ fun PlaybackTab(
                             )
 
                             val pitchEstimate = melodyTimelinePitchEstimate
-                            val activeMelodyVisual = melodyTimelinePitchVisual
+                            val activeMelodyVisual = timelineMelodyVisuals.lastOrNull { visual ->
+                                playBeat >= visual.beat && playBeat < visual.beat + visual.duration
+                            }
                             val isMelodyMonitoring =
                                 persistentPitchController.selection == PersistentPitchSelection.Melody &&
                                     persistentPitchController.phase == PersistentPitchPhase.LISTENING &&
@@ -1503,14 +1571,26 @@ fun PlaybackTab(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                PlaybackRootOnlyMelodyRow(
-                                    currentPitch = currentMelodyPitch,
-                                    currentLabel = melodyCurrentTargetLabel,
-                                    functionText = melodyFunctionText,
-                                    functionColor = melodyFunctionToneColor,
-                                    onPreviewPitch = ::playSingleNotePreview,
-                                    onSingPitch = ::openSingleMelodySingingTarget
-                                )
+                                PlaybackMelodyFollow(
+                                    beatState = trackedBeat,
+                                    section = section,
+                                    melody = melody,
+                                    activeEventIndex = activeEventIndex,
+                                    isSimpleMode = isSimpleMode,
+                                    sungMelodyPitches = sungMelodyPitches,
+                                    useRelativeIonianContext = useRelativeIonianContext,
+                                    ionianContextKey = ionianContextKey,
+                                    currentChord = currentChord
+                                ) { follow ->
+                                    PlaybackRootOnlyMelodyRow(
+                                        currentPitch = follow.pitch,
+                                        currentLabel = follow.currentLabel,
+                                        functionText = follow.functionText,
+                                        functionColor = follow.functionColor,
+                                        onPreviewPitch = ::playSingleNotePreview,
+                                        onSingPitch = ::openSingleMelodySingingTarget
+                                    )
+                                }
                                 Spacer(Modifier.height(PLAYBACK_CARD_ROW_SPACING))
                                 val currentIntervalPitch = chordRootIntervalState?.currentIntervalPitch
                                 val previousIntervalPitch = chordRootIntervalState?.previousIntervalPitch
@@ -1567,7 +1647,8 @@ fun PlaybackTab(
                                 )
                                 Spacer(Modifier.height(PLAYBACK_CARD_ROW_SPACING))
                                 PlaybackRootScrubBar(
-                                    currentBeat = currentBeat,
+                                    beat = trackedBeat,
+                                    scrubBeat = if (isScrubbing) currentBeat else null,
                                     startBeat = timeline.startBeat,
                                     endBeat = endBeat,
                                     onScrub = ::scrubTo,
@@ -1582,57 +1663,69 @@ fun PlaybackTab(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(PLAYBACK_MELODY_FUNCTION_CAPTION_HEIGHT),
-                                    verticalAlignment = Alignment.Bottom
-                                ) {
-                                    Spacer(Modifier.width(PLAYBACK_ROW_LABEL_WIDTH))
-                                    Row(Modifier.weight(1f).fillMaxHeight()) {
-                                        Spacer(Modifier.weight(1f))
-                                        PlaybackMelodyFunctionCaption(
-                                            text = if (currentMelodyPitch != null) melodyFunctionText else "",
-                                            color = melodyFunctionToneColor,
+                                PlaybackMelodyFollow(
+                                    beatState = trackedBeat,
+                                    section = section,
+                                    melody = melody,
+                                    activeEventIndex = activeEventIndex,
+                                    isSimpleMode = isSimpleMode,
+                                    sungMelodyPitches = sungMelodyPitches,
+                                    useRelativeIonianContext = useRelativeIonianContext,
+                                    ionianContextKey = ionianContextKey,
+                                    currentChord = currentChord
+                                ) { follow ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(PLAYBACK_MELODY_FUNCTION_CAPTION_HEIGHT),
+                                        verticalAlignment = Alignment.Bottom
+                                    ) {
+                                        Spacer(Modifier.width(PLAYBACK_ROW_LABEL_WIDTH))
+                                        Row(Modifier.weight(1f).fillMaxHeight()) {
+                                            Spacer(Modifier.weight(1f))
+                                            PlaybackMelodyFunctionCaption(
+                                                text = if (follow.pitch != null) follow.functionText else "",
+                                                color = follow.functionColor,
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            Spacer(Modifier.weight(2f))
+                                        }
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().height(PLAYBACK_MELODY_ROW_HEIGHT),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        PlaybackRowLabel("Melody")
+                                        PlaybackMelodyRow(
+                                            currentPitch = follow.pitch,
+                                            currentLabel = follow.currentLabel,
+                                            intervalState = follow.intervalState,
+                                            pitchCards = follow.pitchCards,
+                                            displayMode = follow.displayMode,
+                                            onPlayPitch = ::playSingleNotePreview,
+                                            onSingPitch = ::openSingleMelodySingingTarget,
+                                            functionText = follow.functionText,
+                                            onPlayInterval = { state ->
+                                                playIntervalPreview(state.previous, state.current)
+                                            },
+                                            onSingInterval = { state ->
+                                                requestSingingTargets(
+                                                    SingingTargetRequest(
+                                                        first = SingingTargetNote(
+                                                            intervalPreviewNote(state.previous),
+                                                            follow.previousLabel
+                                                        ),
+                                                        second = SingingTargetNote(
+                                                            intervalPreviewNote(state.current),
+                                                            follow.currentLabel
+                                                        ),
+                                                        requestId = 0
+                                                    )
+                                                )
+                                            },
                                             modifier = Modifier.weight(1f)
                                         )
-                                        Spacer(Modifier.weight(2f))
                                     }
-                                }
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().height(PLAYBACK_MELODY_ROW_HEIGHT),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    PlaybackRowLabel("Melody")
-                                    PlaybackMelodyRow(
-                                        currentPitch = currentMelodyPitch,
-                                        currentLabel = melodyCurrentTargetLabel,
-                                        intervalState = melodyIntervalState,
-                                        pitchCards = melodyPitchCards,
-                                        displayMode = melodyCardDisplayMode,
-                                        onPlayPitch = ::playSingleNotePreview,
-                                        onSingPitch = ::openSingleMelodySingingTarget,
-                                        functionText = melodyFunctionText,
-                                        onPlayInterval = { state ->
-                                            playIntervalPreview(state.previous, state.current)
-                                        },
-                                        onSingInterval = { state ->
-                                            requestSingingTargets(
-                                                SingingTargetRequest(
-                                                    first = SingingTargetNote(
-                                                        intervalPreviewNote(state.previous),
-                                                        melodyPreviousTargetLabel
-                                                    ),
-                                                    second = SingingTargetNote(
-                                                        intervalPreviewNote(state.current),
-                                                        melodyCurrentTargetLabel
-                                                    ),
-                                                    requestId = 0
-                                                )
-                                            )
-                                        },
-                                        modifier = Modifier.weight(1f)
-                                    )
                                 }
                                 // A rest, or a chord whose root will not resolve, empties these
                                 // rows but does not remove them: the captions and the row heights
