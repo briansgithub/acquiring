@@ -574,8 +574,10 @@ internal class PlaybackPcmRenderer(
 
         val pulseCount = when (config.rootDegreeCue) {
             PlaybackRootDegreeCue.ROOT_PULSES -> event.rootDegree?.takeIf { it in 1..7 } ?: 0
-            PlaybackRootDegreeCue.HARMONIC_DISTANCE ->
-                event.harmonicPulseCount(config.useRelativeIonianContext)
+            PlaybackRootDegreeCue.HARMONIC_DISTANCE -> {
+                val distance = event.harmonicPulseCount(config.useRelativeIonianContext)
+                if (distance <= 0) 0 else distance + 1
+            }
             else -> 0
         }
         val pulsing = when (config.rootDegreeCue) {

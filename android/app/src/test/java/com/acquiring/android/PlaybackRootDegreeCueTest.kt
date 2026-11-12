@@ -479,7 +479,7 @@ class PlaybackRootDegreeCueTest {
             majorLocked = true
         )
         assertEquals(1, attackStarts(unlocked).size)
-        assertEquals(2, attackStarts(locked).size)
+        assertEquals(3, attackStarts(locked).size)
     }
 
     @Test
@@ -495,8 +495,8 @@ class PlaybackRootDegreeCueTest {
         val farFull = render(listOf(far), PlaybackChordMode.FULL, cue = cue, arpeggiateCycles = 3.0)
         val tail = 7_000 until 7_600
         assertTrue(tail.maxOf { abs(home[it].toInt()) } > 500)
-        assertEquals(1, attackStarts(near).size)
-        assertEquals(5, attackStarts(farFull).size)
+        assertEquals(2, attackStarts(near).size)
+        assertEquals(6, attackStarts(farFull).size)
         assertArrayEquals(render(listOf(far), PlaybackChordMode.ROOT_ONLY, cue = cue), farFull)
     }
 
