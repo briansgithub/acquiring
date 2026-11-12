@@ -1688,8 +1688,12 @@ fun PlaybackTab(
                             )
                             if (!isSimpleMode) {
                                 PlaybackDial(
-                                    label = "Arpeggiate",
-                                    valueLabel = if (rootPulsesEnabled) "Off" else "cycles per beat",
+                                    label = "Arpeggiate\n(cycles per beat)",
+                                    valueLabel = if (rootPulsesEnabled) {
+                                        "Off"
+                                    } else {
+                                        PLAYBACK_ARPEGGIO_OPTIONS[effectiveArpeggioIndex].label
+                                    },
                                     value = effectiveArpeggioIndex.toFloat(),
                                     onValueChange = {
                                         onArpeggioOptionIndexChange(
@@ -1698,7 +1702,6 @@ fun PlaybackTab(
                                     },
                                     valueRange = 0f..PLAYBACK_ARPEGGIO_OPTIONS.lastIndex.toFloat(),
                                     steps = PLAYBACK_ARPEGGIO_OPTIONS.lastIndex,
-                                    ringLabels = PLAYBACK_ARPEGGIO_OPTIONS.map { it.label },
                                     onTap = {
                                         onArpeggioOptionIndexChange(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX)
                                     },
@@ -1709,13 +1712,13 @@ fun PlaybackTab(
                             val melodyPercent = (melodyChordBalance * 100f).roundToInt()
                             val chordPercent = 100 - melodyPercent
                             PlaybackDial(
-                                label = "Melody / Chord Mix",
-                                valueLabel = "$melodyPercent% / $chordPercent%",
+                                label = "Melody / Chord\nVolume Mix",
+                                valueLabel = "$melodyPercent / $chordPercent",
                                 value = melodyChordBalance,
                                 onValueChange = { melodyChordBalance = it },
                                 valueRange = 0f..1f,
                                 steps = 100,
-                                ringLabels = listOf("Chord", "Equal", "Melody"),
+                                ringLabels = listOf("Chord", "Melody"),
                                 onTap = { melodyChordBalance = 0.5f },
                                 modifier = Modifier.weight(1f)
                             )
