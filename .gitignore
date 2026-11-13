@@ -64,3 +64,5 @@ acquiring-asc.json
 # Separate Android project under active development; it is intentionally not
 # part of the Acquiring repository.
 /Attitude-android/
+/pwa/dist/
+/pwa/test-results/
