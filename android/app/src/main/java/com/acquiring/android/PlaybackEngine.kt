@@ -61,6 +61,44 @@ internal fun modeAnnouncement(
     return spokenModeName(currentScale)
 }
 
+/** The chord that introduces a new mode after [host], when [host] should speak that mode at its end. */
+internal fun followingModeChord(
+    chords: List<PlaybackTimelineEvent>,
+    host: PlaybackTimelineEvent,
+    loops: Boolean,
+    cue: PlaybackRootDegreeCue,
+    majorLocked: Boolean
+): PlaybackTimelineEvent? {
+    if (!cue.announcesMode || majorLocked) return null
+    val index = chords.indexOfFirst { it.id == host.id }
+    if (index < 0) return null
+    val next = if (index + 1 < chords.size) {
+        chords[index + 1]
+    } else if (loops && chords.size > 1) {
+        chords.first()
+    } else {
+        return null
+    }
+    if (next.id == host.id) return null
+    if (modeAnnouncement(host.keyScale, next.keyScale, cue, majorLocked = false) == null) return null
+    return next
+}
+
+/** Right-align a mode phrase with the end of the chord that precedes the new mode. */
+internal fun modeAnnouncementWindow(
+    hostStart: Double,
+    hostEnd: Double,
+    nextStart: Double,
+    sampleCount: Int,
+    samplesPerBeat: Double
+): Pair<Double, Double>? {
+    if (sampleCount <= 0 || samplesPerBeat <= 0.0) return null
+    val end = minOf(hostEnd, nextStart)
+    if (end <= hostStart) return null
+    val start = (end - sampleCount / samplesPerBeat).coerceAtLeast(hostStart)
+    return start to end
+}
+
 internal fun PlaybackTimelineEvent.harmonicPulseCount(majorLocked: Boolean): Int =
     if (majorLocked) fifthsFromMajorTonic else fifthsFromKeyTonic
 
@@ -200,14 +238,21 @@ internal class PlaybackPcmRenderer(
             (anchorPosition + (beat - anchorBeat) * samplesPerBeat).coerceAtLeast(0.0)
     }
 
+    private data class SpokenMode(
+        val samples: ShortArray,
+        val startBeat: Double,
+        val endBeat: Double,
+        var renderedFrames: Int = 0
+    )
+
     private val phraseCache = SpokenPhraseCache(spokenRootDegrees)
-    private var lastVoiceScale: String? = null
     private val preparedVoices = mutableMapOf<Long, ShortArray>()
     private var config = initialConfig.sanitized()
     private var beat = timeline.startBeat
     private var nextEventIndex = 0
     private val activeEvents = mutableListOf<ActiveEvent>()
     private var spokenNumber: SpokenNumber? = null
+    private var spokenMode: SpokenMode? = null
     private var currentMelodyGain = config.melodyGain.toDouble()
     private var currentChordGain = config.chordGain.toDouble()
     private var currentVoiceGain = config.voiceVolume * 0.8
@@ -222,10 +267,7 @@ internal class PlaybackPcmRenderer(
     fun replaceTimeline(newTimeline: PlaybackTimeline, startBeat: Double = newTimeline.startBeat) {
         val samePerformance = timeline.samePerformanceAs(newTimeline)
         timeline = newTimeline
-        if (!samePerformance) {
-            lastVoiceScale = null
-            seek(startBeat)
-        }
+        if (!samePerformance) seek(startBeat)
     }
 
     fun seek(requestedBeat: Double, preserveVoiceProgress: Boolean = false) {
@@ -233,6 +275,7 @@ internal class PlaybackPcmRenderer(
         beat = requestedBeat.coerceIn(timeline.startBeat, timeline.endBeat)
         activeEvents.clear()
         spokenNumber = null
+        spokenMode = null
         activateEventsAtPosition(fadeIn = false)
         if (previousVoice != null && spokenNumber?.event?.id == previousVoice.event.id) {
             spokenNumber = previousVoice.copy(renderedFrames = 0)
@@ -262,6 +305,7 @@ internal class PlaybackPcmRenderer(
             preparedVoices.clear()
             if (!config.rootDegreeCue.usesVoice) {
                 spokenNumber = null
+                spokenMode = null
             } else if (config.bpm > 0.0) {
                 val speaking = timeline.events.lastOrNull { event ->
                     beat >= event.startBeat && beat < event.endBeat && event.speaksFor(config.rootDegreeCue)
@@ -331,7 +375,7 @@ internal class PlaybackPcmRenderer(
             val frameBeats = currentBeatsPerFrame
             activateDueEvents(frame, startedEvents)
 
-            var mixed = renderSpokenNumber(frameBeats) * currentVoiceGain
+            var mixed = (renderSpokenNumber(frameBeats) + renderSpokenMode(frameBeats)) * currentVoiceGain
             var activeIndex = 0
             while (activeIndex < activeEvents.size) {
                 val active = activeEvents[activeIndex]
@@ -482,36 +526,40 @@ internal class PlaybackPcmRenderer(
 
     private fun startSpokenNumber(event: PlaybackTimelineEvent, samples: ShortArray?, phase: Double? = null) {
         if (!event.speaksFor(config.rootDegreeCue)) return
+        scheduleModeAnnouncement(event)
         spokenNumber = null
-        val mode = if (config.rootDegreeCue.speaksRootDegree) takeModeAnnouncement(event.keyScale) else null
-        val tonicMidi = event.keyTonicMidi?.plus(config.transpose)
-        val phrase = withModePrefix(samples, mode, tonicMidi)
-        if (phrase == null || config.bpm <= 0.0) return
+        if (samples == null || samples.isEmpty() || config.bpm <= 0.0) return
         val samplesPerBeat = SPOKEN_ROOT_DEGREE_SAMPLE_RATE * 60.0 / config.bpm
-        val position = phase?.let { it * phrase.size }
+        val position = phase?.let { it * samples.size }
             ?: (beat - event.startBeat).coerceAtLeast(0.0) * samplesPerBeat
-        spokenNumber = SpokenNumber(event, phrase, beat, position, samplesPerBeat)
+        spokenNumber = SpokenNumber(event, samples, beat, position, samplesPerBeat)
     }
 
-    private fun takeModeAnnouncement(scale: String?): String? {
-        val announced = modeAnnouncement(
-            previousScale = lastVoiceScale,
-            currentScale = scale,
+    private fun scheduleModeAnnouncement(event: PlaybackTimelineEvent) {
+        spokenMode = null
+        if (event.layer != PlaybackAudioLayer.CHORD || config.bpm <= 0.0) return
+        val chords = timeline.events.filter { it.layer == PlaybackAudioLayer.CHORD }
+        val next = followingModeChord(
+            chords,
+            event,
+            loops = timeline.completionKey == null,
             cue = config.rootDegreeCue,
             majorLocked = config.useRelativeIonianContext
-        )
-        if (scale != null) lastVoiceScale = scale
-        return announced
-    }
-
-    private fun withModePrefix(samples: ShortArray?, mode: String?, tonicMidi: Int?): ShortArray? {
-        val modeSamples = mode?.let { spokenRootDegrees.modeClip(it) } ?: return samples
-        val pitched = tonicMidi?.let { pitchShiftSpokenClip(modeSamples, it) } ?: modeSamples
-        if (samples == null || samples.isEmpty()) return pitched
-        return ShortArray(pitched.size + samples.size).also { combined ->
-            pitched.copyInto(combined)
-            samples.copyInto(combined, pitched.size)
-        }
+        ) ?: return
+        val name = modeAnnouncement(event.keyScale, next.keyScale, config.rootDegreeCue, majorLocked = false) ?: return
+        val clip = spokenRootDegrees.modeClip(name) ?: return
+        val tonicMidi = next.keyTonicMidi?.let { spokenKeyTonicMidi(it + config.transpose) }
+        val pitched = tonicMidi?.let { pitchShiftSpokenClip(clip, it) } ?: clip
+        val samplesPerBeat = SPOKEN_ROOT_DEGREE_SAMPLE_RATE * 60.0 / config.bpm
+        val nextStart = if (next.startBeat <= event.startBeat) event.endBeat else next.startBeat
+        val window = modeAnnouncementWindow(
+            event.startBeat,
+            event.endBeat,
+            nextStart,
+            pitched.size,
+            samplesPerBeat
+        ) ?: return
+        spokenMode = SpokenMode(pitched, window.first, window.second)
     }
 
     private fun PlaybackTimelineEvent.speaksFor(cue: PlaybackRootDegreeCue): Boolean = when {
@@ -539,6 +587,24 @@ internal class PlaybackPcmRenderer(
         return sample / Short.MAX_VALUE * envelope
     }
 
+    private fun renderSpokenMode(beatsPerFrame: Double): Double {
+        val voice = spokenMode ?: return 0.0
+        if (beatsPerFrame <= 0.0 || config.bpm <= 0.0 || beat < voice.startBeat || beat >= voice.endBeat) return 0.0
+        val samplesPerBeat = SPOKEN_ROOT_DEGREE_SAMPLE_RATE * 60.0 / config.bpm
+        if (samplesPerBeat <= 0.0) return 0.0
+        val position = (beat - voice.startBeat) * samplesPerBeat
+        val index = position.toInt()
+        if (index < 0 || index >= voice.samples.size) return 0.0
+        val first = voice.samples[index].toInt()
+        val sample = first + ((voice.samples.getOrNull(index + 1)?.toInt() ?: 0) - first) * (position - index)
+        val framesLeft = (voice.endBeat - beat) / beatsPerFrame
+        val fadeFrames = sampleRate * 0.005
+        val phraseFramesLeft = (voice.samples.size - position) * sampleRate / SPOKEN_ROOT_DEGREE_SAMPLE_RATE
+        val envelope = minOf(voice.renderedFrames / fadeFrames, framesLeft / fadeFrames, phraseFramesLeft / fadeFrames, 1.0)
+        voice.renderedFrames++
+        return sample / Short.MAX_VALUE * envelope
+    }
+
     internal fun consumeSplices(): List<PlaybackSplice> {
         if (splices.isEmpty()) return emptyList()
         val copy = splices.toList()
@@ -551,6 +617,7 @@ internal class PlaybackPcmRenderer(
         beat += beatsPerFrame
         if (beat + BEAT_EPSILON < timeline.endBeat) return
         spokenNumber = null
+        spokenMode = null
         if (timeline.completionKey == null) {
             val loopLength = timeline.endBeat - timeline.startBeat
             val overshoot = (beat - timeline.endBeat).coerceAtLeast(0.0)
@@ -581,7 +648,7 @@ internal class PlaybackPcmRenderer(
         }
         activeEvents.clear()
         spokenNumber = null
-        lastVoiceScale = null
+        spokenMode = null
         nextEventIndex = timeline.events.indexOfFirst { it.startBeat >= timeline.startBeat }
             .let { if (it < 0) timeline.events.size else it }
         prepareVoicesForBlock(currentBeatsPerFrame * 64.0)

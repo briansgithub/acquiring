@@ -268,6 +268,21 @@ internal val SPOKEN_MELODY_FUNCTIONS: List<Pair<String, Int>> = listOf(
     "seven" to R.raw.melody_fn_seven
 )
 
+/** C3 through B3. Key-change speech uses this register, not the tonic's written octave. */
+internal const val SPOKEN_KEY_LOW_MIDI = 48
+internal const val SPOKEN_KEY_HIGH_MIDI = 59
+
+/**
+ * Same pitch class as [tonicMidi], moved by octaves until it sits between C3 and B3.
+ * A tonic already in that span is left where it is.
+ */
+internal fun spokenKeyTonicMidi(tonicMidi: Int): Int {
+    var midi = tonicMidi
+    while (midi < SPOKEN_KEY_LOW_MIDI) midi += 12
+    while (midi > SPOKEN_KEY_HIGH_MIDI) midi -= 12
+    return midi
+}
+
 /**
  * Moves a spoken clip so its pitch center is [targetMidi], keeping the contour.
  * The source pitch is the clip's own fundamental, so an unpitched mode take lands
