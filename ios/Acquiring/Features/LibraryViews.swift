@@ -48,6 +48,21 @@ struct LibraryScene: View {
                     AllSongsBrowseView(store: store)
                         .navigationTitle("All Songs")
                         .navigationBarTitleDisplayMode(.inline)
+                case .auralQuiz:
+                    AuralQuizView(environment: environment, libraryStore: store)
+                case let .auralPattern(pattern):
+                    AuralPatternView(
+                        pattern: pattern,
+                        environment: environment,
+                        libraryStore: store
+                    )
+                case let .auralPlayback(request):
+                    QuizView(
+                        songID: request.passage.songId,
+                        auralRequest: request
+                    ) { song in
+                        Task { await store.openArtist(from: song) }
+                    }
                 case let .playlist(id): PlaylistSongsView(playlistID: id, store: store)
                 case let .songDetail(id):
                     SongDetailView(songID: id) { song in
@@ -66,11 +81,12 @@ struct LibraryScene: View {
         .environment(environment.vocalPractice)
         .quizHelpHost(state: quizHelp)
         .onChange(of: store.path) { _, path in
+            environment.auralRestoration.record(path: path)
             quizHelp.dismiss()
             let remainsInSong = path.last.map { route in
                 switch route {
                 case .songDetail, .quiz: true
-                default: false
+                case .artist, .allSongs, .auralQuiz, .auralPattern, .auralPlayback, .playlist: false
                 }
             } ?? false
             if !remainsInSong {
@@ -92,6 +108,10 @@ struct LibraryScene: View {
         }
         .task {
             await store.load()
+            if store.path.isEmpty {
+                store.path = environment.auralRestoration.restoredRoutes()
+            }
+            Task { await environment.warmAuralCatalog() }
             await store.refreshUpdateIndicatorsIfNeeded()
         }
     }
@@ -352,6 +372,34 @@ private struct SearchCatalogView: View {
                         )
                     )
                     .listRowSeparator(.hidden)
+            }
+            if !isDatabaseSearchFocused {
+                Section {
+                    Button {
+                        focusedElement = nil
+                        store.openAuralQuiz()
+                    } label: {
+                        Label {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Aural Quiz")
+                                    .font(.headline)
+                                Text("Learn harmony by ear")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } icon: {
+                            Image(systemName: "ear.and.waveform")
+                                .font(.title2)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityLabel("Aural Quiz, learn harmony by ear")
+                    .accessibilityHint("Opens ear-training lessons and the progression catalog")
+                    .accessibilityIdentifier("library.auralQuiz")
+                    .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
+                    .listRowSeparator(.hidden)
+                }
             }
             if store.hasInstalledCatalog {
                 searchResults
@@ -716,7 +764,7 @@ struct SongRow: View {
     }
 }
 
-private struct CatalogSettingsView: View {
+struct CatalogSettingsView: View {
     @Bindable var store: LibraryStore
     @State private var showsHelp = false
     @AppStorage(QuizNavigationPreference.edgeSwipeBackKey, store: QuizNavigationPreference.defaults)
@@ -725,13 +773,14 @@ private struct CatalogSettingsView: View {
     var body: some View {
         Form {
             InstrumentSettingsSection()
+            AuralDataSettingsSection()
             Section {
-                Toggle("Edge swipe Back in Quiz", isOn: $enablesQuizEdgeSwipeBack)
+                Toggle("Edge swipe Back in Playback", isOn: $enablesQuizEdgeSwipeBack)
                     .accessibilityIdentifier("settings.quizEdgeSwipeBack")
             } header: {
                 Text("Navigation")
             } footer: {
-                Text("Swipe from the left screen edge to return to the list that opened the quiz.")
+                Text("Swipe from the left screen edge to return to the list that opened Playback.")
             }
             Section {
                 Button {

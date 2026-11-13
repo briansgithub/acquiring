@@ -5,6 +5,7 @@ import Foundation
 enum MicrophoneOwner: Sendable {
     case singingTool
     case persistentPractice
+    case auralQuiz
 }
 
 /// A capability for one microphone acquisition. Only this exact identifier may

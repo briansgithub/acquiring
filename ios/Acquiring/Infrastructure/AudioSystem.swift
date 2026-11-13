@@ -35,6 +35,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private let quizRenderer: LockedQuizRenderer
     private var sourceNode: AVAudioSourceNode
     private var transportState = TransportState(phase: .stopped)
+    private var transportInterruptionGeneration: UInt64 = 0
     private var stateContinuations: [UUID: AsyncStream<TransportState>.Continuation] = [:]
     private var pendingMicrophone: PendingMicrophone?
     private var activeMicrophone: ActiveMicrophone?
@@ -159,7 +160,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         guard !recoveryInProgress else { throw CancellationError() }
         recordAudioEvent("preview.cardRequest")
         guard !midiNotes.isEmpty, midiNotes.allSatisfy({ (0...127).contains($0) }) else {
-            throw AcquiringAudioError.invalidRequest("Quiz card previews require valid MIDI notes.")
+            throw AcquiringAudioError.invalidRequest("Playback card previews require valid MIDI notes.")
         }
         let noteGroups: [[Int]]
         if asInterval, midiNotes.count >= 2 {
@@ -289,6 +290,19 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                 Task { @MainActor in self?.stateContinuations[id] = nil }
             }
         }
+    }
+
+    /// The renderer cursor can reach the end before the hardware finishes its
+    /// buffered output. Aural responses wait through this bounded drain window.
+    func auralOutputDrainDelay() -> Duration {
+        let session = AVAudioSession.sharedInstance()
+        return .seconds(min(0.5, max(0.05, session.outputLatency + session.ioBufferDuration)))
+    }
+
+    func currentTransportState() -> TransportState { transportState }
+
+    func currentTransportInterruptionGeneration() -> UInt64 {
+        transportInterruptionGeneration
     }
 
     func load(_ timeline: QuizTimeline, position: QuizLoadPosition) async throws {
@@ -650,7 +664,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             throw CancellationError()
         }
         guard quizTimelineLoaded else {
-            throw AcquiringAudioError.invalidRequest("Load a quiz timeline before starting playback.")
+            throw AcquiringAudioError.invalidRequest("Load a Playback timeline before starting playback.")
         }
 
         quizPlaybackRequested = true
@@ -1018,7 +1032,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     /// through the speaker and tracks the song rather than the singer.
     private func captureMode(for owner: MicrophoneOwner?) -> AVAudioSession.Mode {
         switch owner {
-        case .singingTool: .measurement
+        case .singingTool, .auralQuiz: .measurement
         case .persistentPractice, nil: .default
         }
     }
@@ -1031,7 +1045,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         recordAudioEvent("session.configure", details: ["requestedCategory": category.rawValue])
         let session = AVAudioSession.sharedInstance()
         let options: AVAudioSession.CategoryOptions = category == .playAndRecord
-            ? [.defaultToSpeaker, .allowAirPlay, .allowBluetoothA2DP, .allowBluetoothHFP]
+            ? [.defaultToSpeaker, .allowAirPlay, .allowBluetoothA2DP, .allowBluetooth]
             : []
         let owner = captureOwner ?? activeMicrophone?.owner ?? pendingMicrophone?.owner
         let mode: AVAudioSession.Mode = category == .playAndRecord ? captureMode(for: owner) : .default
@@ -1369,11 +1383,14 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         player.volume = 1
     }
 
-    private static func frequency(forMIDINote midiNote: Int) -> Double {
+    nonisolated private static func frequency(forMIDINote midiNote: Int) -> Double {
         440 * pow(2, Double(midiNote - 69) / 12)
     }
 
     private func publish(_ state: TransportState) {
+        if transportState.phase == .playing && state.phase != .playing {
+            transportInterruptionGeneration &+= 1
+        }
         transportState = state
         for continuation in stateContinuations.values { continuation.yield(state) }
     }
