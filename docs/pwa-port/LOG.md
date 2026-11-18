@@ -2,6 +2,31 @@
 
 Chronological per-slice receipts, newest first (formerly HANDOFF.md through 2026-11-07). Current state lives in [HANDOFF.md](HANDOFF.md).
 
+## 2026-11-18 Phases 2–4: audio cues, melody functions, voice UI, Library, Song mode
+
+All native parity was captured from the pinned Kotlin/Java sources compiled with the Android Studio JBR, using the Gradle-cache Kotlin 2.3 compiler plus kotlin-reflect.
+
+**Commits**
+- `0129c77f`: Sonic, 14/14 bit-exact.
+- `f7fdd086`: renderer N06/N07/N11.
+  - 26 stream scenarios re-captured at `3c887223`. Fading events now keep their own arpeggio rate, as native does.
+  - 14 cue scenarios plus a splice sequence over the real `res/raw` clips, 16/16 bit-exact.
+- `48f89cad`: timeline and N08 theory. 24 native timelines/115 events plus 15 ported MelodyFunction/SingingMelodyRegister/suffix cases.
+- `dbc52498`: `public/voice` (same git blobs as Android), verified loader, worker `voices` op.
+- `dbd6d703`: voice dialog, captions, root-only melody, Help article.
+- `34ca9ffa`: Library relayout.
+- `0f3074e2`: Song mode.
+
+**Test updates (each follows a native behavior change)**
+- Per-song settings (N10).
+- Root-only melody (N16).
+- Favorites box and inner-list scroll (N14, owner decision).
+- Library home lists no songs until a search (native `allSongs` only from search).
+
+**Flaky test:** `playback.spec` "persistent pending permission singing owner switch" failed once in a full run (52/53) and passed 2/2 on rerun.
+
+**Final checks:** vitest 1286/1286 plus parity; `library.spec` 8/8; `shell.spec` 3/3; the focused `playback.spec` cases listed in each commit.
+
 ## 2026-11-18 Phase 1: N12 frame clock and N10 per-song settings
 
 - **N12 `0c466a0b`.** Settings Display section removed; `acquiring-display` is retired on startup. The controller publishes once per display frame (`playback-frame-rate.ts`). `PlaybackTimeline` repaints every requestAnimationFrame from the `PlaybackPlayhead` projection (native 50 ms clamp). Ported the native PlaybackFrameRateTest cases.

@@ -23,10 +23,21 @@ Ordered phases. Each slice is one validated commit:
    - Speech pack and worker plumbing `dbc52498`: `public/voice` with its manifest, `voice-pack.ts`, the worker `voices` op, and the transport.
    - Fixture generators run with `PATH` = JBR bin plus `PYTHONUTF8=1`.
 3. **Done.** UI `dbd6d703`: N09 voice dialog, N08 caption plus Help article, N16 root-only melody.
-   - **Still open:** N13 + N04 rotary dials with in-dial values. N03 contextual help. N11 Song/Loop toggle: needs a transport continuation op, splice clock mapping, and section-follow UI (the renderer is ready). Saxophone instrument icon.
-4. **NEXT — start here.**
-   - N14 Library home relayout. Native order: search header, Aural Quiz row, example-shuffle row, a Favorites box that scrolls internally, All Songs row, Hooktheory accordion. Rewrite `library.spec.ts:49` against the inner-list scroll, per the owner decision.
-   - Then N15 example shuffle, then N11 Song mode.
+4. **Done.** N14 Library relayout `34ca9ffa`.
+   - Search first; the Favorites box (or search results) scrolls internally; All Songs follows.
+   - Settings Back restores the inner list. `library.spec` 8/8, including the old `:49` test.
+   - Found: after Settings Back, the reopened catalog reader reports `error` while still showing the remembered rows. This is probably the old CI "Received 110" cause; open.
+5. **Done.** N11 Song mode `0f3074e2`: Loop/Song toggle, saved per song; Song mode continues into the next section.
+6. **NEXT — start here.**
+   - N15 example shuffle:
+     - Catalog-worker query: `catalog_song` id/title/artist from the installed Aural catalog plus `aural-popularity` scores (see `storage/catalog/aural-popularity-query.ts`).
+     - `shuffledExampleQueue` cutoff semantics (`auralMeetsMinimumPopularity`).
+     - Queue model: `manualAdvance`, `preferChorus`, `rememberSection`, and the notice text "Playlist shuffled".
+     - `chorusOrFirstSection` (canonical rank 6000–6999, else 5000–5999, else first).
+     - Library row "Shuffle Songs" with a "Minimum Popularity" menu (100%..0%, then Any; default 80).
+   - Then N03 contextual help, then N13 + N04 rotary dials.
+   - Then wire the N11 in-block splice: transport continuation op, splitting PCM at `PlaybackSplice` frames, section-follow.
+   - Saxophone icon.
 5. Resume the earlier queue: T13/T08 gates, T22, then Aural last, then T23–T28.
 
 ## Owner decisions in force
