@@ -69,6 +69,7 @@ export function App() {
       autoStart={queued&&queue.autoStart}
       queueSectionId={current?(queue.sectionOverride??current.sectionId):undefined}
       queueSectionName={current?.sectionName}
+      queuePreferChorus={queue.preferChorus}
       onSectionComplete={key=>mutateSongQueue(session=>session.completed(key))}
       onSongUnavailable={message=>mutateSongQueue(session=>session.unavailable(queue.loadToken,message))}
       onQueueSectionChange={queued?(id,resume)=>mutateSongQueue(session=>session.changeSection(id,resume)):undefined}

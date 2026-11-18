@@ -6,6 +6,7 @@ import type {WithSongs} from './catalog-song-reads';
 import {captureAuralStatisticsRequest} from './aural-statistics-request';
 import {readAuralStatisticsFacts} from './aural-statistics-query';
 import {readAuralPopularity} from './aural-popularity-query';
+import {exampleSongScore,readAuralExampleSongRows,type AuralExampleSongs} from './aural-example-songs';
 import {computeAuralCatalogStatistics} from '../../domain/catalog/catalog-statistics';
 import type {AuralStatisticsRequest,AuralStatisticsResponse} from './aural-statistics-runtime-contracts';
 import {captureAuralTargetQuery,readAuralTargetRow} from './aural-target-query';
@@ -263,6 +264,18 @@ async function withAuralDatabase<T>(read:(db:InstanceType<Sqlite3Static['oo1']['
   finally {db?.close();}
 }
 function auralHeader(){return withAuralDatabase((db,source)=>readAuralHeader(db,source.sourceSnapshot));}
+function auralExampleSongs():Promise<AuralExampleSongs>{
+  return withAuralDatabase((db,source)=>{
+    const rows=readAuralExampleSongRows(db);
+    let popularityDb:InstanceType<Sqlite3Static['oo1']['DB']>|undefined;
+    try {
+      popularityDb=new sqlite!.oo1.DB(stagedPath(source.id,'aural-popularity.db'),'r',owner().vfsName);
+      const scores=new Map(readAuralPopularity(popularityDb,rows.map(row=>row.slug)).map(entry=>[entry.songId,entry.score]));
+      return Object.freeze({sourceSnapshot:source.sourceSnapshot,
+        songs:Object.freeze(rows.map(row=>Object.freeze({...row,score:exampleSongScore(scores.get(row.slug))})))});
+    } finally {popularityDb?.close();}
+  });
+}
 function auralTarget(query:AuralCatalogTargetQuery){
   const captured=captureAuralTargetQuery(query);
   return withAuralDatabase(async(db,source)=>{
@@ -302,6 +315,7 @@ async function execute(id: string, command: CatalogCommand): Promise<unknown> {
   if (command.kind === 'auralTarget') return auralTarget(command.query);
   if (command.kind === 'auralStatistics') return auralStatistics(command.request);
   if (command.kind === 'auralHeader') return auralHeader();
+  if (command.kind === 'auralExampleSongs') return auralExampleSongs();
   if (command.kind === 'songPage') return songPage(withSongBrowse, command.query);
   if (command.kind === 'songBrowseBySlugs') {
     return songBrowseBySlugs(withSongBrowse, command.slugs);

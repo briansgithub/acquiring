@@ -25,7 +25,7 @@ import {emptyPlaybackState,playbackStatusCopy,rememberPlayback,startSectionPlayb
 import {useQueuePlayback} from './queue-playback';
 import {resolveQueuedSection} from '../library/song-queue';
 import {formatBeat} from '../details/overview';
-import {displayTitle,safeSectionName} from '../../domain/data';
+import {chorusOrFirstSection,displayTitle,safeSectionName} from '../../domain/data';
 import {AppShell} from '../../ui/shell/AppShell';
 import {SongDetailController} from '../details/controller';
 import {PreviewOwner} from '../../audio/transport';
@@ -41,7 +41,7 @@ function savedTransportSettings(saved:SongPlaybackSettingsSnapshot,defaultInstru
 }
 const emptySnapshot=()=>emptyPlaybackState;
 
-export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,autoStart=false,queueSectionId,queueSectionName,onSectionComplete,onSongUnavailable,onQueueSectionChange,queueNav}:PlaybackScreenProps){
+export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,autoStart=false,queueSectionId,queueSectionName,queuePreferChorus=false,onSectionComplete,onSongUnavailable,onQueueSectionChange,queueNav}:PlaybackScreenProps){
   const [detailController,setDetailController]=useState(()=>new SongDetailController(slug));
   const detailState=useSyncExternalStore(detailController.subscribe,detailController.getSnapshot,detailController.getSnapshot);
   const [sectionId,setSectionId]=useState<string|null>(null);
@@ -127,9 +127,9 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
     const initial=savedTransportSettings(appSongPlaybackSettings.getSnapshot(),appInstrumentSession.defaultInstrument);
     let beat=1;
     if(playOnceKey){
-      const resolved=resolveQueuedSection({
-        sectionId:queueSectionId??'',sectionName:queueSectionName??'First section',
-      },named);
+      const resolved=queuePreferChorus&&!queueSectionId
+        ? chorusOrFirstSection(new Map(details.sections))
+        : resolveQueuedSection({sectionId:queueSectionId??'',sectionName:queueSectionName??'First section'},named);
       if(!resolved){
         onSongUnavailable?.(`Skipped ${displayTitle(details.song.title)}: song or saved section unavailable.`);
         return;
@@ -166,7 +166,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
       current?.dispose();
       if(current!==owner)owner?.dispose();
     };
-  },[details,slug,playOnceKey,queueSectionId,queueSectionName]);
+  },[details,slug,playOnceKey,queueSectionId,queueSectionName,queuePreferChorus]);
 
   useEffect(()=>{
     if(saved.songSlug!==slug)return;

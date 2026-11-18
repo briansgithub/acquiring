@@ -26,7 +26,8 @@ export type CatalogCommand =
   | { kind: 'cancelHarvestCommit'; requestId: string }
   | { kind: 'auralHeader' }
   | { kind: 'auralTarget'; query: AuralCatalogTargetQuery }
-  | { kind: 'auralStatistics'; request: AuralStatisticsRequest };
+  | { kind: 'auralStatistics'; request: AuralStatisticsRequest }
+  | { kind: 'auralExampleSongs' };
 export interface ActiveCatalog { pointer: CatalogPointer; inspection: CatalogInspection; recovered: boolean; harvestedRestored?: number }
 export type InstallStatus = CatalogInstall | null;
 export interface CatalogRequest { id: string; command: CatalogCommand }

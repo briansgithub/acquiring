@@ -4,6 +4,7 @@ import { libraryChromeVisible, type SongBrowseRow } from './grouping';
 import {AllSongsView} from './AllSongsView';
 import {LibrarySearchPanel,type LibrarySearchScope} from './LibrarySearchPanel';
 import {PlaylistsSection} from './PlaylistsSection';
+import {LibraryExampleShuffle} from './LibraryExampleShuffle';
 import {RecentSelections} from './RecentSelections';
 import type { LibraryContentProps } from './view-contract';
 import './library.css';
@@ -22,6 +23,7 @@ export function LibraryContent({
   browseGroupCounts,
   browseGroupSongs,
   artistSuggestions,
+  onShuffleExamples,
 }: LibraryContentProps) {
   const [searchFocused,setSearchFocused]=useState(false);
   const [showingAllSongs,setShowingAllSongs]=useState(false);
@@ -121,6 +123,9 @@ export function LibraryContent({
         {state.loadingMore && <p className="library-status" role="status" aria-live="polite">Loading more songs...</p>}
       </div>}
     </div>}
+
+    {!showResults && libraryChromeVisible(searchFocused) && onShuffleExamples &&
+      <LibraryExampleShuffle onShuffle={onShuffleExamples} />}
 
     {!showResults && libraryChromeVisible(searchFocused) &&
       <PlaylistsSection browseBySlugs={browseBySlugs} onOpenSong={onOpenSong} />}

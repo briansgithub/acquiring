@@ -110,6 +110,9 @@ export class SongQueueSession {
   loadToken = '';
   autoStart = false;
   sectionOverride: string | null = null;
+  /** N15 (Android 1b86ef6c): example-song queues hold each song until the listener advances, opening on the chorus. */
+  manualAdvance = false;
+  preferChorus = false;
   private consumedCompletion: string | null = null;
   private unavailableCount = 0;
   private generation = 0;
@@ -122,10 +125,12 @@ export class SongQueueSession {
   }
 
   get playbackCompletionKey(): string | null {
-    return this.originQuiz ? null : this.loadToken;
+    return this.originQuiz || this.manualAdvance ? null : this.loadToken;
   }
 
-  begin(originQuiz: boolean, name: string): number {
+  begin(originQuiz: boolean, name: string, manualAdvance = false, preferChorus = false): number {
+    this.manualAdvance = manualAdvance;
+    this.preferChorus = preferChorus;
     this.generation += 1;
     this.active = true;
     this.loading = true;
@@ -185,7 +190,7 @@ export class SongQueueSession {
       ? Math.max(0, this.entries.indexOf(current))
       : 0;
     this.savedPlaylistId = null;
-    this.notice = this.shuffleEnabled ? 'Queue shuffled' : 'Original order restored';
+    this.notice = this.shuffleEnabled ? 'Playlist shuffled' : 'Original order restored';
   }
 
   start(): void {
@@ -214,8 +219,19 @@ export class SongQueueSession {
     this.loadToken = this.uuid();
   }
 
+  /** Native rememberSection: keep the section the listener chose for the current entry (and its original). */
+  rememberSection(token: string, sectionId: string, sectionName: string): void {
+    if (!this.active || token !== this.loadToken) return;
+    const current = this.entries[this.index];
+    if (!current || (current.sectionId === sectionId && current.sectionName === sectionName)) return;
+    const updated = Object.freeze({ ...current, sectionId, sectionName });
+    this.entries = this.entries.map((song, index) => index === this.index ? updated : song);
+    this.originalEntries = this.originalEntries.map((song) =>
+      song.slug === current.slug && song.sectionId === current.sectionId && song.sectionName === current.sectionName ? updated : song);
+  }
+
   completed(token: string): boolean {
-    if (!this.active || this.originQuiz || token !== this.loadToken
+    if (!this.active || this.originQuiz || this.manualAdvance || token !== this.loadToken
       || this.consumedCompletion === token || this.entries.length === 0) return false;
     this.consumedCompletion = token;
     if (this.index === this.entries.length - 1) {
@@ -250,4 +266,15 @@ export class SongQueueSession {
     this.originalEntries = [];
     this.started = false;
   }
+}
+
+/** Native shuffledExampleQueue: popularity cutoff, then one random-order entry per song (null keeps unscored songs). */
+export function shuffledExampleQueue(candidates: readonly QueueCandidate[], minimumPopularityPercent: number | null,
+  random: () => number = Math.random): QueuedSong[] {
+  const seen = new Set<string>(), songs: QueuedSong[] = [];
+  for (const candidate of candidates) {
+    if (!auralMeetsMinimumPopularity(candidate.score, minimumPopularityPercent) || seen.has(candidate.song.slug)) continue;
+    seen.add(candidate.song.slug); songs.push(candidate.song);
+  }
+  return fisherYates(songs, random);
 }

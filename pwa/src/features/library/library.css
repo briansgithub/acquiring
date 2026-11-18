@@ -164,3 +164,11 @@
    page scroll to them instead of collapsing them to zero height. */
 .library-scroll-region, .library-home > .library-playlists { min-height: min(14rem, 60dvh); }
 .library-favorites-box .library-playlist-songs { min-height: 6rem; }
+
+/* N15 example shuffle row (native LibraryExampleShuffleRow). */
+.library-example-shuffle { flex: none; display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 4px 12px 4px 4px;
+  border-radius: 12px; background: rgba(255, 255, 255, 0.08); }
+.library-example-shuffle__button { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%;
+  background: transparent; color: inherit; cursor: pointer; }
+.library-example-shuffle__title { flex: 1; min-width: 0; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.library-example-shuffle__cutoff { display: flex; flex-direction: column; align-items: center; width: 156px; font-size: 0.6875rem; }

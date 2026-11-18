@@ -54,3 +54,20 @@ export function sectionsInSongOrder(sections: ReadonlyMap<string, ExtractedSecti
     return a.rank - b.rank || a.position - b.position;
   }).map(item => item.entry);
 }
+
+/** Native chorusOrFirstSection (SectionOrder.kt, Android 1b86ef6c): the chorus when the song has one (canonical rank
+ * 6000..6999, else 5000..5999), otherwise the first section. Pre-chorus and lead-outs do not count. */
+export function chorusOrFirstSection(sections: ReadonlyMap<string, ExtractedSection>): string | null {
+  const ordered = sectionsInSongOrder(sections);
+  const rank = (section: ExtractedSection) => canonicalSectionRank(safeSectionName(section));
+  const chorus = ordered.find(([, section]) => rank(section) >= 6000 && rank(section) <= 6999)
+    ?? ordered.find(([, section]) => rank(section) >= 5000 && rank(section) <= 5999);
+  return (chorus ?? ordered[0])?.[0] ?? null;
+}
+
+/** Native nextSectionInSongOrder: the section after `currentId`, wrapping; an unknown id starts over. */
+export function nextSectionInSongOrder(sectionIds: readonly string[], currentId: string): string | null {
+  if (!sectionIds.length) return null;
+  const index = sectionIds.indexOf(currentId);
+  return index < 0 ? sectionIds[0]! : sectionIds[(index + 1) % sectionIds.length]!;
+}

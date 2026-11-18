@@ -1,4 +1,5 @@
 import { CatalogWorkerClient } from '../../storage/catalog/client';
+import type { AuralExampleSongs } from '../../storage/catalog/aural-example-songs';
 import { CatalogError } from '../../storage/catalog/protocol';
 import type { ArtistSuggestionsPage, ArtistSuggestionsRequest, SongBrowseGroupCount, SongBrowseSortMode, SongPage, SongPageRequest } from '../../storage/catalog/library-queries';
 import type { SongBrowseRow } from './grouping';
@@ -16,6 +17,8 @@ export interface LibraryClient {
   songBrowseGroupCounts(sortMode:SongBrowseSortMode,filterText?:string):Promise<SongBrowseGroupCount[]>;
   songBrowseGroupSongs(sortMode:SongBrowseSortMode,groupKey:string,filterText?:string):Promise<SongBrowseRow[]>;
   artistSuggestions(query:ArtistSuggestionsRequest):Promise<ArtistSuggestionsPage>;
+  /** N15: optional so test doubles and older readers can omit it; absence means no example songs. */
+  auralExampleSongs?():Promise<AuralExampleSongs>;
   terminate():void;
 }
 const emptyView=():LibraryView=>({text:'',artist:null,artistSearch:false,rows:[],sourceSnapshot:null,nextOffset:null});
@@ -103,6 +106,12 @@ export class LibraryController {
     if(this.state.phase!=='ready'||this.state.loadingMore||this.state.nextOffset===null||this.disposed)return Promise.resolve();
     return this.load(true);
   }
+  exampleSongs=async():Promise<AuralExampleSongs['songs']>=>{
+    if(this.disposed)return [];
+    const reader=await this.reader();
+    if(this.disposed||!reader.auralExampleSongs)return [];
+    return (await reader.auralExampleSongs()).songs;
+  };
   browseBySlugs=async(slugs:string[]):Promise<SongBrowseRow[]>=>{
     if(this.disposed)return [];
     const reader=await this.reader();

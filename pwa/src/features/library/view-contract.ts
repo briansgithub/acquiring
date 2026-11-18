@@ -16,4 +16,6 @@ export interface LibraryContentProps {
   browseGroupCounts(sortMode:SongBrowseSortMode,filterText?:string):Promise<SongBrowseGroupCount[]>;
   browseGroupSongs(sortMode:SongBrowseSortMode,groupKey:string,filterText?:string):Promise<SongBrowseRow[]>;
   artistSuggestions(query:string,limit?:number,offset?:number):Promise<ArtistSuggestionsPage>;
+  /** N15: start an example-song shuffle above the chosen minimum popularity (null = Any). */
+  onShuffleExamples?(minimumPopularityPercent:number|null):void;
 }

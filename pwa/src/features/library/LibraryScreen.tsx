@@ -4,7 +4,7 @@ import {LibraryController,type LibraryView} from './controller';
 import {recordOpenedArtist,recordOpenedSong} from './history-store';
 import {LibraryContent} from './LibraryContent';
 import {SongQueueScreen} from './SongQueueScreen';
-import {mutateSongQueue,songQueueSession,songQueueVersion,subscribeSongQueue} from './song-queue-host';
+import {mutateSongQueue,songQueueSession,songQueueVersion,startExampleShuffle,subscribeSongQueue} from './song-queue-host';
 
 interface Remembered {view:LibraryView;scrollY:number}
 // Transient view state only. Durable favorites/recents remain in user storage.
@@ -111,6 +111,7 @@ export function LibraryScreen(){
     onDownload={()=>{saveLibraryView();navigate('/settings',{fromLibrary:true});}}
     onOpenSong={row=>{void recordOpenedSong(row.slug,row.artist);controller.rememberFocused(row.slug);saveLibraryView();navigate('/songs/'+encodeURIComponent(row.slug),{fromLibrary:true});window.scrollTo(0,0);}}
     browseBySlugs={controller.browseBySlugs}
+    onShuffleExamples={percent=>{void startExampleShuffle(controller.exampleSongs,percent);}}
     browseGroupCounts={controller.browseGroupCounts}
     browseGroupSongs={controller.browseGroupSongs}
     artistSuggestions={controller.artistSuggestions}

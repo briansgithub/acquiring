@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ExtractedSection } from '../../contracts';
-import { CANONICAL_SECTION_TYPES, canonicalSectionRank, sectionTypeKey, sectionsInSongOrder } from './index';
+import { CANONICAL_SECTION_TYPES, canonicalSectionRank, chorusOrFirstSection, nextSectionInSongOrder, sectionTypeKey, sectionsInSongOrder } from './index';
 const section = (sectionName: string | null, sectionIndex?: number): ExtractedSection => ({ sectionName, sectionIndex, chords: [] });
 const ids = (values: Map<string, ExtractedSection>) => sectionsInSongOrder(values).map(([id]) => id);
 
@@ -35,5 +35,22 @@ describe('Android SectionOrder fixtures', () => {
     expect(canonicalSectionRank('Solo 2000')).toBe(9999);
     expect(canonicalSectionRank('Solo 2147483648')).toBe(9000);
     expect(canonicalSectionRank('Bridge and Outro')).toBe(11500);
+  });
+});
+
+describe('native SectionOrderTest chorus and continuation (Android 1b86ef6c/01b654b6)', () => {
+  const section = (sectionName: string, sectionIndex: number) => ({ chords: [], metadata: null, sectionName, sectionIndex }) as unknown as import('../../contracts').ExtractedSection;
+  it('nextSectionInSongOrder wraps and restarts unknown ids', () => {
+    const order = ['intro', 'verse', 'chorus'];
+    expect(nextSectionInSongOrder(order, 'intro')).toBe('verse');
+    expect(nextSectionInSongOrder(order, 'verse')).toBe('chorus');
+    expect(nextSectionInSongOrder(order, 'chorus')).toBe('intro');
+    expect(nextSectionInSongOrder(order, 'missing')).toBe('intro');
+    expect(nextSectionInSongOrder([], 'intro')).toBeNull();
+  });
+  it('chorusIsPreferredAndMissingChorusFallsBackToTheFirstSection', () => {
+    expect(chorusOrFirstSection(new Map([['intro', section('Intro', 0)], ['verse', section('Verse', 1)], ['chorus', section('Chorus', 2)]]))).toBe('chorus');
+    expect(chorusOrFirstSection(new Map([['intro', section('Intro', 0)], ['verse', section('Verse', 1)]]))).toBe('intro');
+    expect(chorusOrFirstSection(new Map([['verse', section('Verse', 0)], ['both', section('Pre-Chorus and Chorus', 1)]]))).toBe('both');
   });
 });

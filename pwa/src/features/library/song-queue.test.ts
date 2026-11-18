@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  SongQueueSession, auralMeetsMinimumPopularity, orderedQueue, queuedSong, resolveQueuedSection,
+  SongQueueSession, auralMeetsMinimumPopularity, orderedQueue, queuedSong, resolveQueuedSection, shuffledExampleQueue,
   type QueueCandidate,
 } from './song-queue';
 
@@ -145,5 +145,43 @@ describe('SongQueueSession', () => {
     expect(state.playbackCompletionKey).toBeNull();
     expect(state.completed(state.loadToken)).toBe(false);
     expect(state.index).toBe(0);
+  });
+});
+
+describe('native SongQueueTest example shuffle (Android 1b86ef6c)', () => {
+  const candidate = (slug: string, sectionId: string, score: number | null) => ({ song: queuedSong(slug, slug, 'Artist', sectionId, 'Chorus'), score });
+  const seeded = (seed: number) => { let state = seed; return () => { state = (state * 1103515245 + 12345) % 2147483648; return state / 2147483648; }; };
+  it('shuffledExampleQueueHonorsThePopularityCutoff', () => {
+    const songs = [candidate('keep', 'a', 0.80), candidate('low', 'a', 0.79), candidate('zero', 'a', 0.0), candidate('perfect', 'a', 1.0),
+      candidate('unscored', 'a', null), candidate('almost', 'a', 0.999)];
+    const slugs = (percent: number | null) => new Set(shuffledExampleQueue(songs, percent, seeded(1)).map((song) => song.slug));
+    expect(slugs(null)).toEqual(new Set(['keep', 'low', 'zero', 'perfect', 'unscored', 'almost']));
+    expect(slugs(80)).toEqual(new Set(['keep', 'perfect', 'almost']));
+    expect(slugs(0).has('zero')).toBe(true);
+    expect(slugs(0).has('unscored')).toBe(false);
+    expect(slugs(100)).toEqual(new Set(['perfect']));
+  });
+  it('shuffledExampleQueueRandomizesOneEntryPerSong', () => {
+    const songs = [...Array.from({ length: 6 }, (_, i) => candidate(`song-${i}`, 'a', 1.0)), candidate('song-0', 'b', 1.0)];
+    const queue = shuffledExampleQueue(songs, null, seeded(4));
+    expect(new Set(queue.map((song) => song.slug)).size).toBe(6);
+    expect(queue.find((song) => song.slug === 'song-0')?.sectionId).toBe('a');
+  });
+  it('examplePlaylistHoldsTheSongUntilTheListenerAdvances and remembers the chosen section', () => {
+    const state = new SongQueueSession({ uuid: (() => { let n = 0; return () => `t${++n}`; })() });
+    const songs = [0, 1, 2].map((i) => queuedSong(`song-${i}`, `Song ${i}`, 'Artist', '', 'Chorus'));
+    state.finishPreparation(state.begin(false, 'Example songs', true, true), songs);
+    state.start();
+    const index = state.index;
+    expect(state.playbackCompletionKey).toBeNull();
+    expect(state.preferChorus).toBe(true);
+    expect(state.completed(state.loadToken)).toBe(false);
+    expect(state.index).toBe(index);
+    state.rememberSection(state.loadToken, 'verse-id', 'Verse');
+    expect(state.entries[index]).toMatchObject({ sectionId: 'verse-id', sectionName: 'Verse' });
+    state.select(index + 1, true);
+    expect(state.index).toBe(index + 1);
+    state.toggleShuffle();
+    expect(state.notice).toBe('Playlist shuffled');
   });
 });

@@ -504,9 +504,12 @@
     "android/app/src/main/java/com/acquiring/android/MainActivity.kt"
    ],
    "pwa": [
-    "pwa/src/features/library/song-queue.ts"
+    "pwa/src/storage/catalog/aural-example-songs.ts",
+    "pwa/src/features/library/song-queue.ts",
+    "pwa/src/features/library/LibraryExampleShuffle.tsx",
+    "pwa/src/domain/data/section-order.ts"
    ],
-   "pwaStatus": "missing",
+   "pwaStatus": "partial",
    "tasks": [
     "T10",
     "T19"
@@ -514,7 +517,7 @@
    "reopens": [
     "A08"
    ],
-   "acceptance": "chorusOrFirstSection and cutoff semantics match native tests; the queue holds each song until next/previous."
+   "acceptance": "chorusOrFirstSection and cutoff semantics match native tests; the queue holds each song until next/previous. Status 2026-11-18: worker auralExampleSongs (catalog_song + aural-popularity), shuffledExampleQueue, manualAdvance/preferChorus/rememberSection, chorusOrFirstSection and the Shuffle Songs row are ported with native unit cases; no browser run against an installed Aural catalog yet (fixture lacks catalog_song title/artist), and the new library.spec row/error test had not run at commit time."
   },
   {
    "id": "N16",

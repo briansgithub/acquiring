@@ -53,6 +53,8 @@ export interface PlaybackScreenProps {
   readonly autoStart?:boolean;
   readonly queueSectionId?:string;
   readonly queueSectionName?:string;
+  /** N15: example-song queues open on the chorus (else the first section) when no section was saved. */
+  readonly queuePreferChorus?:boolean;
   readonly onSectionComplete?:(key:string)=>void;
   readonly onSongUnavailable?:(message:string)=>void;
   readonly onQueueSectionChange?:(sectionId:string,resume:boolean)=>void;

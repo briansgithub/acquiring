@@ -7,6 +7,7 @@ import type { SongPayload } from './detail-query';
 import type {AuralCatalogTargetQuery} from './aural-target-query-contracts';
 import type {AuralCatalogPatternTarget} from './aural-target-contracts';
 import type { AuralCatalogHeader } from './aural-read-contracts';
+import type { AuralExampleSongs } from './aural-example-songs';
 import type { CatalogManifest } from './manifest';
 import { CatalogError, type CatalogCommand, type ActiveCatalog, type InstallStatus, type CatalogInfo, type CatalogInspection, type CatalogProgress, type CatalogRequest, type CatalogResponse } from './protocol';
 
@@ -70,6 +71,8 @@ export class CatalogWorkerClient {
     catch(error){return Promise.reject(error);}
   }
   auralHeader(): Promise<AuralCatalogHeader> { return this.request({ kind: 'auralHeader' }, 30_000); }
+  /** N15: example songs from the installed Aural catalog with popularity scores. */
+  auralExampleSongs(): Promise<AuralExampleSongs> { return this.request({ kind: 'auralExampleSongs' }, 30_000); }
   info(): Promise<CatalogInfo> { return this.request({ kind: 'info' }); }
   stage(attemptId: string, manifest: CatalogManifest, baseUrl: string): Promise<CatalogInspection> { return this.request({ kind: 'stage', attemptId, manifest, baseUrl }); }
   inspect(attemptId: string, manifest: CatalogManifest): Promise<CatalogInspection> { return this.request({ kind: 'inspect', attemptId, manifest }); }

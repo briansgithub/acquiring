@@ -2,7 +2,7 @@
 import type {PlaylistEntryRecord,PlaylistRecord,PlaylistStore} from '../playback/playlist-store';
 import type {SongBrowseRow} from './grouping';
 import {queuedSongsFromEntries} from './playlists';
-import {SongQueueSession} from './song-queue';
+import {SongQueueSession,queuedSong,shuffledExampleQueue} from './song-queue';
 
 const session=new SongQueueSession();
 let version=0;
@@ -45,6 +45,24 @@ export async function startSavedQueue(
     session.finishPreparation(expected,queuedSongsFromEntries(stored,rows),shuffle?null:playlistId,shuffle);
   } catch {
     session.error(expected,'Could not open this playlist.');
+  }
+  emit();
+}
+
+/** N15 (Android startExampleShuffle): shuffle example songs above a popularity cutoff into a queue that opens on
+ * each song's chorus and holds it until the listener advances. */
+export async function startExampleShuffle(
+  loadExampleSongs:()=>Promise<readonly {slug:string;title:string;artist:string;score:number|null}[]>,
+  minimumPopularityPercent:number|null,
+):Promise<void> {
+  const expected=session.begin(false,'Example songs',true,true);
+  emit();
+  try {
+    const candidates=(await loadExampleSongs()).map(song=>({song:queuedSong(song.slug,song.title,song.artist,'','Chorus'),score:song.score}));
+    session.finishPreparation(expected,shuffledExampleQueue(candidates,minimumPopularityPercent),null,true);
+    if(session.entries.length>0)session.start();
+  } catch {
+    session.error(expected,'Could not prepare example songs. Try again.');
   }
   emit();
 }

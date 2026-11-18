@@ -180,3 +180,19 @@ test('All Songs groups expand one heading, filter in place, and hide while searc
   await expect(page.locator('[data-favorites-box]')).toBeVisible();
   await expect(page.getByRole('button',{name:'All Songs',exact:true})).toBeVisible();
 });
+
+// N15 (Android 1b86ef6c/08280a4e): Shuffle Songs row with a Minimum Popularity menu (100%..0%, Any; default 80%).
+// This fixture installs only the song catalog, so starting a shuffle shows the native preparation error.
+test('example-song shuffle row offers the native popularity menu and reports a missing Aural catalog',async({page})=>{
+  await install(page);
+  const row=page.locator('[data-example-shuffle]');
+  await expect(row).toBeVisible();await expect(row).toContainText('Shuffle Songs');
+  const cutoff=page.getByRole('combobox',{name:'Minimum Popularity',exact:true});
+  await expect(cutoff).toHaveValue('80');
+  const options=await cutoff.locator('option').allTextContents();
+  expect(options[0]).toBe('100%');expect(options.at(-2)).toBe('0%');expect(options.at(-1)).toBe('Any');expect(options).toHaveLength(102);
+  expect(await row.evaluate((node,box)=>!!(node.compareDocumentPosition(box!)&Node.DOCUMENT_POSITION_FOLLOWING),await page.locator('[data-favorites-box]').elementHandle())).toBe(true);
+  await cutoff.selectOption('any');
+  await page.getByRole('button',{name:'Shuffle example songs',exact:true}).click();
+  await expect(page.getByText('Could not prepare example songs. Try again.',{exact:true})).toBeVisible();
+});
