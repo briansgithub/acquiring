@@ -408,6 +408,8 @@
     "android/app/src/main/java/com/acquiring/android/SectionOrder.kt"
    ],
    "pwa": [
+    "pwa/src/features/playback/controller.ts",
+    "pwa/src/features/playback/PlaybackScreen.tsx",
     "pwa/src/audio/synth/playback-pcm.ts"
    ],
    "pwaStatus": "partial",
@@ -419,7 +421,7 @@
     "P01",
     "G01"
    ],
-   "acceptance": "Exact PCM continuity across the splice versus a native fixture; section label and timeline follow the continuation. Status 2026-11-18: renderer splice/continuation is bit-exact with native; the Song/Loop toggle, transport continuation, splice clock mapping and section-follow UI are not yet ported."
+   "acceptance": "Exact PCM continuity across the splice versus a native fixture; section label and timeline follow the continuation. Status 2026-11-18: Loop/Song toggle (saved per song) and Song-mode continuation into the next section in song order (wrapping) work like 01b654b6; toggling keeps the playhead but re-buffers audio briefly. The gapless in-block splice (95687890) is bit-exact in the renderer but not yet wired: the transport would need a continuation op and to split PCM at PlaybackSplice frames for the clock."
   },
   {
    "id": "N12",

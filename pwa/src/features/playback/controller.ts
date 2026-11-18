@@ -8,6 +8,8 @@ import {preparePlaybackSection,type PreparedPlaybackSection} from './section-mod
 export const PLAYBACK_ARPEGGIOS=Object.freeze([.25,1/3,.5,0,1,2,3,4]);
 export const DEFAULT_PLAYBACK_TEMPO_PERCENT=100;
 export const DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX=3;
+/** N11 (Android 01b654b6): Song mode plays each section once and the screen continues into the next one. */
+export const SONG_MODE_COMPLETION_KEY='song-mode';
 export interface PlaybackSettings {
   readonly tempoPercent:number;readonly transpose:number;readonly melodyPercent:number;
   readonly waveform:Waveform;readonly rootOnly:boolean;readonly arpeggioIndex:number;
@@ -48,7 +50,24 @@ export class SectionPlaybackController {
   private unregisterEngine:(()=>void)|null=null;
   private lastStateUpdateNanos=0;
   constructor(section:ExtractedSection,private readonly factory:(config:PlaybackConfig)=>AudioPlaybackTransport=config=>new PlaybackTransport({initialConfig:config}),private readonly playOnceKey:string|null=null) {
-    this.model=preparePlaybackSection(section,playOnceKey);this.state=this.snapshot();
+    this.section=section;this.model=preparePlaybackSection(section,playOnceKey);this.state=this.snapshot();
+  }
+  private section:ExtractedSection;
+  private songMode=false;
+  private completionKey():string|null {return this.playOnceKey??(this.songMode?SONG_MODE_COMPLETION_KEY:null);}
+  get songModeActive():boolean {return this.songMode&&this.playOnceKey===null;}
+  /** Loop repeats the section; Song plays it once so the caller can continue into the next section.
+   * Toggling keeps the playhead (native keeps it in place); queue playback keeps its own completion key. */
+  setSongMode(on:boolean):void {
+    if(this.stopped||this.playOnceKey!==null||on===this.songMode)return;
+    this.songMode=on;
+    const model=preparePlaybackSection(this.section,this.completionKey());
+    const engine=this.engine;this.model=model;++this.revision;
+    if(engine){
+      const snapshot=engine.getSnapshot(),beat=snapshot.beat,resume=snapshot.playbackRequested;
+      engine.load(model.timeline,resume);engine.seek(Math.min(model.timeline.endBeat,Math.max(1,beat)),resume);
+    }
+    this.publish();
   }
   get closed():boolean{return this.stopped;}
   getSnapshot=():SectionPlaybackState=>this.state;
@@ -96,12 +115,12 @@ export class SectionPlaybackController {
     if(this.stopped||revision!==this.revision)throw new Error('Playback settings superseded');
     ++this.revision;this.settings=next;this.engine?.updateConfig(updated);this.publish();
   }
-  loadSection(section:ExtractedSection):void {
+  loadSection(section:ExtractedSection,continuePlaying?:boolean):void {
     if(this.stopped)return;
-    const previous=this.revision,model=preparePlaybackSection(section,this.playOnceKey),updated=config(model,this.settings);
+    const previous=this.revision,model=preparePlaybackSection(section,this.completionKey()),updated=config(model,this.settings);
     if(this.stopped||previous!==this.revision)throw new Error('Playback section superseded');
-    const resume=this.engine?.getSnapshot().playbackRequested??false,revision=++this.revision;
-    this.clearScrub();this.model=model;this.engine?.updateConfig(updated);
+    const resume=continuePlaying??this.engine?.getSnapshot().playbackRequested??false,revision=++this.revision;
+    this.clearScrub();this.section=section;this.model=model;this.engine?.updateConfig(updated);
     if(!this.stopped&&revision===this.revision)this.engine?.load(model.timeline,resume);
     this.publish();
   }

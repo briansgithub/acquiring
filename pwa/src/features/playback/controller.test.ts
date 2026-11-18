@@ -1,8 +1,8 @@
-import {expect,it,vi} from 'vitest';
+import {describe,expect,it,vi} from 'vitest';
 import type {ExtractedSection} from '../../contracts';
 import {PlaybackIntentKernel,type AudioPlaybackTransport} from '../../audio/transport';
 import {PlaybackChordMode,Waveform,type PlaybackConfig} from '../../audio/synth';
-import {SectionPlaybackController} from './controller';
+import {SONG_MODE_COMPLETION_KEY,SectionPlaybackController} from './controller';
 import {displayRefreshStore} from '../settings/playback-frame-rate';
 const section=(bpm=90,duration=3):ExtractedSection=>({chords:[{root:1,type:5,beat:1,duration}],metadata:{tempos:[{bpm}]}});
 function setup(){
@@ -100,4 +100,33 @@ it('throttles playing ticks to one display frame but forces completion like nati
   s.listeners.forEach(listener=>listener());
   expect(s.controller.getSnapshot().transport.phase).toBe('error');
   now.mockRestore();s.controller.dispose();displayRefreshStore.resetForTests();
+});
+
+describe('N11 Song mode (Android 01b654b6)',()=>{
+  it('toggles the completion key without moving the playhead and continues playing on the next section',()=>{
+    const s=setup();s.controller.start();s.controller.play();
+    s.controller.scrubTo(3);s.controller.finishScrub();
+    const beat=s.controller.getSnapshot().transport.beat;
+    s.controller.setSongMode(true);
+    expect(s.controller.songModeActive).toBe(true);
+    expect(s.engine.load).toHaveBeenLastCalledWith(expect.objectContaining({completionKey:SONG_MODE_COMPLETION_KEY}),true);
+    expect(s.engine.seek).toHaveBeenLastCalledWith(beat,true);
+    expect(s.controller.getSnapshot().transport.beat).toBe(beat);
+    s.controller.setSongMode(false);
+    expect(s.engine.load).toHaveBeenLastCalledWith(expect.objectContaining({completionKey:null}),true);
+    s.controller.setSongMode(true);s.controller.pause();
+    s.controller.loadSection(section(120,6),true);
+    expect(s.engine.load).toHaveBeenLastCalledWith(expect.objectContaining({completionKey:SONG_MODE_COMPLETION_KEY,endBeat:7}),true);
+    s.controller.dispose();
+  });
+  it('queue playback keeps its own completion key and ignores Song mode',()=>{
+    const kernel=new PlaybackIntentKernel(90);
+    const engine={getSnapshot:()=>({...kernel.getSnapshot(),clock:null}),subscribe:()=>()=>{},load:vi.fn(),playFromGesture:vi.fn(),pause:vi.fn(),
+      pauseForScrub:vi.fn(()=>false),seek:vi.fn(),reset:vi.fn(),updateConfig:vi.fn(),isCurrentCompletion:()=>false,release:vi.fn()} satisfies AudioPlaybackTransport;
+    const controller=new SectionPlaybackController(section(),()=>engine,'queue-key');
+    controller.start();const loads=engine.load.mock.calls.length;controller.setSongMode(true);
+    expect(controller.songModeActive).toBe(false);
+    expect(engine.load.mock.calls.length).toBe(loads);
+    controller.dispose();
+  });
 });

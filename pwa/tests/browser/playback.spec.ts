@@ -1251,3 +1251,25 @@ test('voice settings follow native order, persist per song and fetch the speech 
   await button.click();
   await expect(dialog.getByText('Voice volume 80%',{exact:true})).toBeVisible();
 });
+
+// N11 (Android 01b654b6): Loop repeats the section; Song finishes it and continues into the next section in song
+// order. The choice persists per song (N10).
+test('Song mode continues into the next section and the Loop/Song choice persists per song',async({page})=>{
+  await instrument(page);await installAndOpen(page);
+  const toggle=page.locator('.playback-loop-toggle');
+  await expect(toggle).toHaveText('Loop');await expect(toggle).toHaveAttribute('aria-label','Looping this section');
+  await toggle.click();
+  await expect(toggle).toHaveText('Song');await expect(toggle).toHaveAttribute('aria-label','Playing through the song');
+  await page.reload();await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect(toggle).toHaveText('Song');
+  const select=page.getByRole('combobox',{name:'Section',exact:true});
+  const options=await select.locator('option').count();
+  test.skip(options<2,'fixture song has a single section');
+  const first=await select.inputValue();
+  const position=page.getByRole('slider',{name:'Position',exact:true});
+  await position.focus();await position.press('End');for(let i=0;i<4;i++)await position.press('ArrowLeft');
+  await page.getByRole('button',{name:'Play',exact:true}).click();
+  await expect.poll(async()=>select.inputValue(),{timeout:20_000}).not.toBe(first);
+  await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','completed');
+  await toggle.click();await expect(toggle).toHaveText('Loop');
+});

@@ -14,7 +14,7 @@ import {openGuestSongOctaveOffsetStore,SongOctaveOffsetSession} from '../singing
 import type {UserDatabase} from '../../storage/user';
 import {singingTargetRequest,type SingingTargetRequest} from '../singing/singing-octave';
 import {useEffect,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
-import {type PlaybackSettings,type SectionPlaybackController} from './controller';
+import {SONG_MODE_COMPLETION_KEY,type PlaybackSettings,type SectionPlaybackController} from './controller';
 import type {PlaybackRootDegreeCue,Waveform} from '../../audio/synth';
 import {PlaybackVoiceControls} from './PlaybackVoiceControls';
 import {appInstrumentSession} from '../settings/instrument-session';
@@ -195,6 +195,22 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   },[playback,selected,playbackError]);
 
   const playbackState=useSyncExternalStore(playback?.subscribe??emptySubscribe,playback?.getSnapshot??emptySnapshot,playback?.getSnapshot??emptySnapshot);
+  // N11 (Android 01b654b6): Loop repeats the section; Song plays it once and continues into the next section in
+  // song order, wrapping to the first. Saved per song (N10). Queue playback keeps its own once-per-entry key.
+  useEffect(()=>{
+    if(!playback||playback.closed||playOnceKey||saved.songSlug!==slug)return;
+    playback.setSongMode(!saved.loopSection);
+  },[playback,playOnceKey,saved.loopSection,saved.songSlug,slug]);
+  const completedKey=playbackState.transport.completion?.completionKey??null;
+  useEffect(()=>{
+    if(!playback||playback.closed||playOnceKey||!details||playbackState.transport.phase!=='completed'||completedKey!==SONG_MODE_COMPLETION_KEY)return;
+    const ids=details.sections.map(([id])=>id),current=loadedSection.current;
+    if(!current||!ids.length)return;
+    const nextId=ids[(Math.max(0,ids.indexOf(current))+1)%ids.length]!,next=details.sections.find(([id])=>id===nextId);
+    if(!next)return;
+    try{playback.loadSection(next[1],true);loadedSection.current=nextId;intendedSection.current=nextId;setSectionId(nextId);setPlaybackError(null);}
+    catch(error){setPlaybackError(error instanceof Error?error.message:'This section could not be prepared for playback.');}
+  },[playback,playOnceKey,details,playbackState.transport.phase,completedKey]);
   const settings=playbackState.settings as PlaybackSettings;
   const transport=playbackState.transport;
   const title=details?displayTitle(details.song.title):'Playback';
@@ -281,6 +297,9 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
             <PlaybackVoiceControls cue={settings.rootDegreeCue} volume={settings.voiceVolume} disabled={!playback}
               onCueChange={rootDegreeCue=>updateSettings({rootDegreeCue})} onVolumeChange={voiceVolume=>updateSettings({voiceVolume})}/>
             <button className="action" onClick={()=>{cardPreviewStop.current?.();pitch.clear();playback?.reset();}} disabled={!playback}>Reset</button>
+            <button className="action playback-loop-toggle" type="button" data-loop-section={saved.loopSection?'true':'false'}
+              aria-label={saved.loopSection?'Looping this section':'Playing through the song'} disabled={!playback||Boolean(playOnceKey)}
+              onClick={()=>appSongPlaybackSettings.updateLoopSection(!saved.loopSection)}>{saved.loopSection?'Loop':'Song'}</button>
           </div>
           <label className="playback-field playback-position">Position
             <input aria-label="Position" type="range" min="1" max={playbackState.endBeat} step="0.01" value={beat} disabled={!playback}
