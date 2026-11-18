@@ -389,12 +389,14 @@
         "historicalDelta": "Selectable expanded title sheet and dismissible contextual help."
       },
       "pwa": {
-        "status": "missing",
+        "status": "implemented",
         "paths": [
+          "pwa/src/features/playback/PlaybackHelpOverlay.tsx",
           "pwa/src/features/playback/PlaybackScreen.tsx",
-          "pwa/src/features/help/HelpScreen.tsx"
+          "pwa/src/ui/shell/AppShell.tsx"
         ],
-        "inspection": "Surviving showPlaybackHelp overlay explains cards/mic/octave/expand; global Help route exists but does not supply this overlay."
+        "inspection": "Playback help action opens the native 72% scrim with the surviving guidance; pointerdown/any key dismisses and swallows the gesture (browser test proves Play underneath stays stopped and mic stays off); focus returns to the action.",
+        "inspectionHead": "9e9765573df8b68bf748ed3f18fc5360b6cc63b8"
       },
       "tracking": {
         "tasks": [

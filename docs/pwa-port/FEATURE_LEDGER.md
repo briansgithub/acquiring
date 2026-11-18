@@ -8,19 +8,21 @@ new_current_gap records a concrete PWA omission newly itemized by the initial au
 
 ## Findings and use
 
-**58 behavior groups; 5 integration gaps discovered in the initial audit, 2 still open in the latest pinned rows.** This is not a count of all app features. Existing task IDs are broad packages; NEW rows do not create acceptance decisions or change their statuses.
+**58 behavior groups; 5 integration gaps discovered in the initial audit, 1 still open in the latest pinned rows.** This is not a count of all app features. Existing task IDs are broad packages; NEW rows do not create acceptance decisions or change their statuses.
 
 | Initial new gap | Surviving behavior | Existing package | Latest PWA status |
 |---|---|---|---|
 | [N01](#n01) | Root-only mode supports persistent SimpleRoot monitoring from the header, with target updates and a root gauge. | T12, T13 | implemented |
 | [N02](#n02) | Truncated Playback title opens a selectable full-title bottom sheet. | T12, T21 | implemented |
-| [N03](#n03) | Contextual Playback help scrim dismisses anywhere without activating covered controls. | T12, T21 | missing |
+| [N03](#n03) | Contextual Playback help scrim dismisses anywhere without activating covered controls. | T12, T21 | implemented |
 | [N04](#n04) | Tempo/arpeggio/mix rotary controls support angular drag and tap reset (100%, DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX, 0.5 mix). | T12 | partial |
 | [N05](#n05) | Singing tape note names use section-key relative-major signature preference for sharps/flats. | T03, T13 | implemented |
 
 **Bounded implementation follow-up:** N01 is **implemented** at [b1d3e637](https://github.com/briansgithub/acquiring/commit/b1d3e6375e13a23852cd247c110049fa0064345f). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete its parent packages or the port.
 
 **Bounded implementation follow-up:** N02 is **implemented** at [46c7452d](https://github.com/briansgithub/acquiring/commit/46c7452dab7f45bec471fe3aac02d35b163052cd). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete its parent packages or the port.
+
+**Bounded implementation follow-up:** N03 is **implemented** at [9e976557](https://github.com/briansgithub/acquiring/commit/9e9765573df8b68bf748ed3f18fc5360b6cc63b8). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete its parent packages or the port.
 
 **Bounded implementation follow-up:** S06 is **implemented** at [d30df565](https://github.com/briansgithub/acquiring/commit/d30df5659016dee6068f92dbdb83d44e069f8cbc). Only that row's PWA references advance. Its scoped test results and remaining gates are below and in HANDOFF; other audit rows keep their original frozen evidence. This does not complete its parent packages or the port.
 
@@ -162,8 +164,8 @@ Contextual Playback help scrim dismisses anywhere without activating covered con
 
 - Native: **surviving**. [PlaybackDestination.kt](https://github.com/briansgithub/acquiring/blob/801cf7984171d772afc4406ddb5c79c0cb7fd20a/android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt)
 - History: [877bb982](https://github.com/briansgithub/acquiring/commit/877bb982e61d93e244297a43a631cc768ab18c5b). Selectable expanded title sheet and dismissible contextual help.
-- PWA: **missing**. Surviving showPlaybackHelp overlay explains cards/mic/octave/expand; global Help route exists but does not supply this overlay.
-- Current code/tests: [PlaybackScreen.tsx](https://github.com/briansgithub/acquiring/blob/7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5/pwa/src/features/playback/PlaybackScreen.tsx); [HelpScreen.tsx](https://github.com/briansgithub/acquiring/blob/7b889f1c4b1cb55a7c807522e2a3aacfb4fb85d5/pwa/src/features/help/HelpScreen.tsx)
+- PWA: **implemented**. Playback help action opens the native 72% scrim with the surviving guidance; pointerdown/any key dismisses and swallows the gesture (browser test proves Play underneath stays stopped and mic stays off); focus returns to the action.
+- Current code/tests: [PlaybackHelpOverlay.tsx](https://github.com/briansgithub/acquiring/blob/9e9765573df8b68bf748ed3f18fc5360b6cc63b8/pwa/src/features/playback/PlaybackHelpOverlay.tsx); [PlaybackScreen.tsx](https://github.com/briansgithub/acquiring/blob/9e9765573df8b68bf748ed3f18fc5360b6cc63b8/pwa/src/features/playback/PlaybackScreen.tsx); [AppShell.tsx](https://github.com/briansgithub/acquiring/blob/9e9765573df8b68bf748ed3f18fc5360b6cc63b8/pwa/src/ui/shell/AppShell.tsx)
 - Tracking: **new_current_gap**; T12, T21. Priority **primary**; dependencies T03, T08.
 - Acceptance still required / boundary: NEW contextual-help gap: reachable help action, exact current guidance, dismissal eats activation, keyboard/accessibility contract without unintended mic/play.
 
