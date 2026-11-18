@@ -2,6 +2,16 @@
 
 Chronological per-slice receipts, newest first (formerly HANDOFF.md through 2026-11-07). Current state lives in [HANDOFF.md](HANDOFF.md).
 
+## 2026-11-18 Phase 1: N12 frame clock and N10 per-song settings
+
+- **N12 `0c466a0b`.** Settings Display section removed; `acquiring-display` is retired on startup. The controller publishes once per display frame (`playback-frame-rate.ts`). `PlaybackTimeline` repaints every requestAnimationFrame from the `PlaybackPlayhead` projection (native 50 ms clamp). Ported the native PlaybackFrameRateTest cases.
+- **N10 `fe00b790`.** `song-playback-settings.ts` ports SongPlaybackSettingsViewModel: 9 native cases plus a late-attach case. It is wired through a layout-effect `enterSong`, App-level store attach, and `clearSession` on Home. The browser tests now expect per-song persistence and a per-song instrument override.
+- **Windows-environment fixes (no assertion weakened).**
+  - `shell.spec` pins the clipboard fallback, because Windows Chrome exposes `navigator.share`.
+  - `source-accuracy.test.mjs` hashes LF-normalized fixtures, because the checkout uses `core.autocrlf=true`.
+  - Bash heredocs mangle `\r`/`\n` escapes in this environment, so use Edit/Write for code containing them.
+- **Checks.** vitest 1234/1234, parity 1/1, typecheck, build. `shell.spec` 3/3. `playback.spec` focused cases: 4/4 for N12 and 5/5 for N10, on system Chrome.
+
 ## 2026-11-18 Phase 0: re-pin to Android 3c887223
 
 Committed the owner's local Android edits on `main` as `3c887223` (voice ceiling 1.4 with a tanh soft limiter, compact Favorites rows). `PlaybackRootDegreeCueTest` passed 22/22 under the Android Studio JBR first. `codex/pwa-continuation` recut from it. All 100 pre-November `main` Android commits are patch-id identical to audited `801cf798`-lineage commits, and the Oct 2 `android/` tree equals `801cf798`. The 30 new commits and 11 delta features (N06–N16) are in `android-delta-2026-11.json`. `validate_audit.py` now honors `dependencyGates`, and T22 uses the `in_progress` enum. All three validators PASS. Added `native_drift.py`.

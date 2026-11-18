@@ -15,8 +15,8 @@ Keep this page short: current pin, branch, next slices, open gates and owner que
 Ordered phases. Each slice is one validated commit:
 
 0. **Records — done.** Re-pinned to Android `3c887223`; delta ledger, drift script, validator fixes; this page.
-1. N12: retire the Settings Display fps preference; the timeline always draws on requestAnimationFrame. N10: per-song playback settings in the T06 `records` store, replacing session transpose/waveform memory.
-2. Audio (T07/T08): Sonic port (`audio/synth/sonic.ts`, bit-exact); speech clip assets (exact bytes, SHA-256, fetched on first spoken-cue use, service-worker cached, Apache-2.0 notices); N06 pulses and Harmonic Distance; N07 spoken phrases, key-change window, voice gain, soft limiter; N11 Song-mode splice. Verify against native fixtures from `audio/synth/fixtures/generate-stream-native.py`, updating its pin.
+1. **Done.** N12 `0c466a0b`: retired the Display fps preference; the timeline draws on requestAnimationFrame from `playback-playhead.ts`. N10 `fe00b790`, partial: `song-playback-settings.ts` with the T06 `songPlaybackSettings` store, wired into Playback. Cue, voice volume and loop are stored but have no UI until N07/N09/N11.
+2. **NEXT — start here.** Audio (T07/T08): Sonic port (`audio/synth/sonic.ts`, bit-exact); speech clip assets (exact bytes, SHA-256, fetched on first spoken-cue use, service-worker cached, Apache-2.0 notices); N06 pulses and Harmonic Distance; N07 spoken phrases, key-change window, voice gain, soft limiter; N11 Song-mode splice. Verify against native fixtures from `audio/synth/fixtures/generate-stream-native.py`, updating its pin.
 3. N08 melody function (pure, native fixtures) and Playback UI: N09 voice dialog, N13 dial values plus N04, N16 root-only melody and scrub, N03 contextual help, melody Help article.
 4. N14 Library home relayout (rewrite `library.spec.ts:49` against inner-list scroll per the owner decision), then N15 example shuffle.
 5. Resume the earlier queue: T13/T08 gates, T22, then Aural last, then T23–T28.
