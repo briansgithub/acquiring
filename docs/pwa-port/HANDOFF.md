@@ -29,13 +29,16 @@ Ordered phases. Each slice is one validated commit:
    - Found: after Settings Back, the reopened catalog reader reports `error` while still showing the remembered rows. This is probably the old CI "Received 110" cause; open.
 5. **Done.** N11 Song mode `0f3074e2`: Loop/Song toggle, saved per song; Song mode continues into the next section.
 6. **Done.** N03 contextual help `9e976557`, marked in the feature ledger `89004057`. N15 example shuffle `a8b04d5f`: ported with native unit cases.
-7. **NEXT — start here.**
-   1. Run `cd pwa; npm run build; npx playwright test tests/browser/library.spec.ts --project chrome -g "example-song shuffle"`. This N15 test was committed but **not yet run**.
-   2. Re-run any failures from the full browser run in `C:/Users/user1/.claude/port-run/full-browser.log`. `dist` was rebuilt mid-run, so its late results are unreliable.
-   3. N15 browser proof against an installed Aural catalog. Extend `scripts/catalog/make-aural-statistics-browser-fixture.py` so `catalog_song` has title and artist.
-   4. Then N13 + N04 rotary dials with in-dial values.
-   5. Then wire the N11 in-block splice: transport continuation op, splitting PCM at `PlaybackSplice` frames, section-follow.
-   6. Saxophone icon; the Library Aural Quiz row (Aural is last).
+7. **Verified, `2ef98ae7`.**
+   - The full browser suite ran on Windows/system Chrome: 110 passed and 2 skipped. All 8 failures now pass: the catalog fixtures use short temp roots on Windows (MAX_PATH), and the control and store counts were updated.
+   - The N15 shuffle row test passes.
+   - `playback.spec` "singing owner switch" is a known flake.
+8. **NEXT — start here.**
+   1. N15 browser proof against an installed Aural catalog. Extend `scripts/catalog/make-aural-statistics-browser-fixture.py` so `catalog_song` has title and artist, then shuffle through to Playback opening on the chorus.
+   2. N13 + N04 rotary dials with in-dial values.
+   3. Wire the N11 in-block splice: transport continuation op, splitting PCM at `PlaybackSplice` frames, section-follow.
+   4. Saxophone icon; the Library Aural Quiz row (Aural is last).
+   5. Investigate the Library reader `error` phase after Settings Back.
 5. Resume the earlier queue: T13/T08 gates, T22, then Aural last, then T23–T28.
 
 ## Owner decisions in force
