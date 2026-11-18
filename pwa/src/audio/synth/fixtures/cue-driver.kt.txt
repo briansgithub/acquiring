@@ -1,0 +1,121 @@
+package com.acquiring.android
+// N06/N07/N11 native cue scenarios for generate-stream-native.py. Compiled with the pinned renderer,
+// SpokenRootDegrees (Android resource loading stripped), Sonic.java and the real bundled clips.
+import java.io.File
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.security.MessageDigest
+
+object CueClips {
+  fun read(dir: File, stem: String): ShortArray {
+    val bytes = File(dir, "$stem.pcm").readBytes()
+    val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+    return ShortArray(bytes.size / 2) { buffer.short }
+  }
+  fun pitched(dir: File, stem: String): List<ShortArray> {
+    val clip = read(dir, stem)
+    val count = SPOKEN_ROOT_DEGREE_PITCHES.count()
+    val frames = clip.size / count
+    return List(count) { clip.copyOfRange(it * frames, (it + 1) * frames) }
+  }
+  internal fun load(dir: File): SpokenRootDegreeClips = SpokenRootDegreeClips(
+    listOf("one", "two", "three", "four", "five", "six", "seven").map { pitched(dir, "root_degree_$it") },
+    SpokenChordSuffix.entries.associateWith { pitched(dir, "root_suffix_" + it.name.lowercase()) },
+    listOf("flat", "sharp").map { pitched(dir, "root_accidental_$it") },
+    SPOKEN_MELODY_FUNCTIONS.associate { (cue, _) -> cue to pitched(dir, "melody_fn_" + cue.replace(' ', '_')) },
+    SPOKEN_MODE_NAMES.associate { (name, _) -> name to read(dir, "mode_" + name.replace(' ', '_')) }
+  )
+}
+
+internal fun cueTimeline(completionKey: String?, offset: Double = 0.0): PlaybackTimeline {
+  fun chord(id: Long, start: Double, end: Double, notes: IntArray, degree: Int, alteration: Int,
+            suffix: SpokenChordSuffix?, fifthsKey: Int, fifthsMajor: Int, scale: String, tonic: Int,
+            relative: RelativeIonianDegree = RelativeIonianDegree(degree, alteration)) =
+    PlaybackTimelineEvent(id, start + offset, end + offset, PlaybackAudioLayer.CHORD, notes, notes[0], degree, alteration,
+      notes[0] + 12, suffix, relative, fifthsKey, fifthsMajor, scale, null, null, tonic)
+  fun melody(id: Long, start: Double, end: Double, note: Int, cue: String?) =
+    PlaybackTimelineEvent(id, start + offset, end + offset, PlaybackAudioLayer.MELODY, intArrayOf(note),
+      spokenMelodyCue = cue, melodyCueMidi = note)
+  return PlaybackTimeline(startBeat = 1.0 + offset, endBeat = 10.0 + offset, completionKey = completionKey, events = listOf(
+    chord(1, 1.0, 3.0, intArrayOf(48, 52, 55), 1, 0, null, 0, 0, "major", 48),
+    melody(2, 1.0, 2.0, 64, "third"),
+    chord(3, 3.0, 5.0, intArrayOf(53, 57, 60), 4, 0, null, 1, 1, "major", 48),
+    melody(4, 3.0, 3.5, 62, "passing"),
+    chord(5, 5.0, 7.0, intArrayOf(55, 59, 62, 65), 5, 0, SpokenChordSuffix.SEVEN, 1, 1, "major", 48),
+    chord(6, 7.0, 9.0, intArrayOf(58, 62, 65), 7, -1, null, 2, 3, "mixolydian", 48, RelativeIonianDegree(4, 0)),
+    melody(7, 7.0, 8.0, 65, "root"),
+    chord(8, 9.0, 10.0, intArrayOf(45, 48, 52), 6, 0, SpokenChordSuffix.MIN, 3, 0, "minor", 45, RelativeIonianDegree(1, 0))
+  ))
+}
+
+fun sha(samples: ShortArray): String {
+  val bytes = ByteBuffer.allocate(samples.size * 2).order(ByteOrder.LITTLE_ENDIAN)
+  samples.forEach { bytes.putShort(it) }
+  return MessageDigest.getInstance("SHA-256").digest(bytes.array()).joinToString("") { "%02x".format(it) }
+}
+
+fun main(args: Array<String>) {
+  val clips = CueClips.load(File(args[0]))
+  val out = StringBuilder("[")
+  var firstCase = true
+  val scenarios = listOf(
+    Triple(PlaybackRootDegreeCue.OFF, PlaybackChordMode.FULL, AudioEngine.Waveform.SAWTOOTH),
+    Triple(PlaybackRootDegreeCue.ROOT_PULSES, PlaybackChordMode.FULL, AudioEngine.Waveform.MARIMBA),
+    Triple(PlaybackRootDegreeCue.HARMONIC_DISTANCE, PlaybackChordMode.FULL, AudioEngine.Waveform.CLARINET),
+    Triple(PlaybackRootDegreeCue.SPOKEN_NUMBER, PlaybackChordMode.FULL, AudioEngine.Waveform.CLARINET),
+    Triple(PlaybackRootDegreeCue.SUNG_NUMBER_WITH_DETAILS, PlaybackChordMode.ROOT_ONLY, AudioEngine.Waveform.FLUTE),
+    Triple(PlaybackRootDegreeCue.MELODY_FUNCTION, PlaybackChordMode.FULL, AudioEngine.Waveform.CLARINET),
+    Triple(PlaybackRootDegreeCue.MELODY_CHORD_TONE, PlaybackChordMode.FULL, AudioEngine.Waveform.STRINGS)
+  )
+  for ((cue, mode, waveform) in scenarios) for (rate in listOf(24000, 44100)) {
+    NativeFixtureRandom.reset()
+    val loud = cue == PlaybackRootDegreeCue.OFF
+    var config = PlaybackConfig(240.0, 0, waveform, mode, if (loud) 1f else 0.6f, if (loud) 1f else 0.4f, 0.0, cue, false, 0.5f)
+    val renderer = PlaybackPcmRenderer(cueTimeline(null), config, rate, clips)
+    if (!firstCase) out.append(',')
+    firstCase = false
+    out.append("{\"cue\":\"${cue.name}\",\"mode\":\"${mode.name}\",\"waveform\":\"${waveform.name}\",\"sampleRate\":$rate,\"blocks\":[")
+    var firstBlock = true
+    fun capture(action: String, frames: Int) {
+      val samples = ShortArray(frames)
+      val block = renderer.renderInto(samples)
+      if (!firstBlock) out.append(',')
+      firstBlock = false
+      val starts = block.startedEvents.joinToString(",") { "[${it.id},${it.frameOffset}]" }
+      out.append("{\"action\":\"$action\",\"frames\":$frames,\"startBeat\":${block.startBeat},\"currentBeat\":${renderer.currentBeat},\"startedEvents\":[$starts],\"sha256\":\"${sha(samples)}\"}")
+    }
+    val beatFrames = rate * 60 / 240
+    capture("open", beatFrames * 3)
+    config = config.copy(transpose = 2, voiceVolume = 1f)
+    renderer.updateConfig(config)
+    capture("transpose_voice", beatFrames * 2)
+    renderer.seek(6.25, preserveVoiceProgress = true)
+    capture("seek", beatFrames)
+    config = config.copy(useRelativeIonianContext = true, bpm = 180.0)
+    renderer.updateConfig(config)
+    capture("lock_tempo", beatFrames * 4)
+    capture("wrap", beatFrames * 2)
+    out.append("]}")
+  }
+  out.append(']')
+  // Song-mode splice: a once-timeline continues into a queued section at another tempo.
+  NativeFixtureRandom.reset()
+  val splicer = PlaybackPcmRenderer(cueTimeline("song"), PlaybackConfig(240.0, 0, AudioEngine.Waveform.CLARINET,
+    PlaybackChordMode.FULL, 0.6f, 0.4f, 0.0, PlaybackRootDegreeCue.SPOKEN_NUMBER, false, 0.7f), 24000, clips)
+  splicer.continuation = java.util.ArrayDeque(listOf(
+    QueuedSection(cueTimeline("song", 20.0), 300.0, "second"),
+    QueuedSection(cueTimeline("song"), 240.0, "first")))
+  splicer.seek(9.5)
+  val spliceOut = StringBuilder("{\"blocks\":[")
+  for (index in 0 until 4) {
+    val samples = ShortArray(6000)
+    val block = splicer.renderInto(samples)
+    val splices = splicer.consumeSplices().joinToString(",") {
+      "{\"frame\":${it.frame},\"beat\":${it.beat},\"beatsPerFrame\":${it.beatsPerFrame},\"loopStart\":${it.loopStart},\"loopEnd\":${it.loopEnd},\"performanceId\":\"${it.performanceId}\"}"
+    }
+    if (index > 0) spliceOut.append(',')
+    spliceOut.append("{\"startBeat\":${block.startBeat},\"currentBeat\":${splicer.currentBeat},\"finished\":${splicer.finished},\"splices\":[$splices],\"sha256\":\"${sha(samples)}\"}")
+  }
+  spliceOut.append("]}")
+  print("{\"cases\":$out,\"splice\":$spliceOut}")
+}

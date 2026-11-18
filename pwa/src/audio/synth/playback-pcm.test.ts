@@ -36,7 +36,7 @@ function audio(r: PlaybackPcmRenderer, frames: number, blockSize = 256): Int16Ar
 
 describe('independent frozen native streaming scenarios', () => {
   it('matches26scripted scenarios/234blocks: PCM, onset offsets, beat clock and completion', () => {
-    expect(native.authority).toBe('801cf7984171d772afc4406ddb5c79c0cb7fd20a');
+    expect(native.authority).toBe('3c887223b2d06b4c3a1010d0f8a23ceaf8977d08');
     expect(native.cases).toHaveLength(26);
     for (const fixture of native.cases) {
       const waveform = fixture.waveform as Waveform;

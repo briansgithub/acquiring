@@ -1,0 +1,1337 @@
+{
+ "authority": "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08",
+ "clipsDirectory": "android/app/src/main/res/raw",
+ "rng": "same LCG as native-samples.json",
+ "timeline": "cue-driver.kt.txt cueTimeline",
+ "cases": [
+  {
+   "cue": "OFF",
+   "mode": "FULL",
+   "waveform": "SAWTOOTH",
+   "sampleRate": 24000,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 18000,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000002334,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       12000
+      ],
+      [
+       4,
+       12000
+      ]
+     ],
+     "sha256": "0f7ebf164ff1491a1e42cba710c2784fdec997986e1ecd50849d3842ac568f12"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 12000,
+     "startBeat": 4.000000000002334,
+     "currentBeat": 6.000000000004778,
+     "startedEvents": [
+      [
+       5,
+       6000
+      ]
+     ],
+     "sha256": "a5d79a363a9a2c4c58774e821f0c8a8d0a2ae3e8934e84618f019bff3086914a"
+    },
+    {
+     "action": "seek",
+     "frames": 6000,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000001222,
+     "startedEvents": [
+      [
+       6,
+       4500
+      ],
+      [
+       7,
+       4500
+      ]
+     ],
+     "sha256": "a42db595c450d5aa74d81b88609603fbd5bc108b219f51a196cac2a237d52054"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 24000,
+     "startBeat": 7.250000000001222,
+     "currentBeat": 1.2500000000088853,
+     "startedEvents": [
+      [
+       8,
+       14000
+      ],
+      [
+       1,
+       22000
+      ],
+      [
+       2,
+       22000
+      ]
+     ],
+     "sha256": "96625f18c71c864c3964fa84c5958840986e677e0a12168aa9e8ffe07fb69a05"
+    },
+    {
+     "action": "wrap",
+     "frames": 12000,
+     "startBeat": 1.2500000000088853,
+     "currentBeat": 2.7500000000093863,
+     "startedEvents": [],
+     "sha256": "e9420080591a88fb3d4ac173d374afadd4e440ad006deada8c9966e2a28b9aed"
+    }
+   ]
+  },
+  {
+   "cue": "OFF",
+   "mode": "FULL",
+   "waveform": "SAWTOOTH",
+   "sampleRate": 44100,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 33075,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000001668,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       22050
+      ],
+      [
+       4,
+       22050
+      ]
+     ],
+     "sha256": "3060fe03c4ec1761e16f95a9705559ddd1d0a98ae5b6dabd73249fa34212dd85"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 22050,
+     "startBeat": 4.000000000001668,
+     "currentBeat": 6.00000000000278,
+     "startedEvents": [
+      [
+       5,
+       11025
+      ]
+     ],
+     "sha256": "fe7f24643d55a1cf8bf79efb5612dec1cf3fe5b5d895653f9fd1afa32abd542b"
+    },
+    {
+     "action": "seek",
+     "frames": 11025,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000000556,
+     "startedEvents": [
+      [
+       6,
+       8269
+      ],
+      [
+       7,
+       8269
+      ]
+     ],
+     "sha256": "b69f8aaedf20f6c748d7d3f21c39f4c097acb24c32ca7234aa26184076504673"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 44100,
+     "startBeat": 7.250000000000556,
+     "currentBeat": 1.2500000000103832,
+     "startedEvents": [
+      [
+       8,
+       25725
+      ],
+      [
+       1,
+       40425
+      ],
+      [
+       2,
+       40425
+      ]
+     ],
+     "sha256": "e393bd802086d789f842d52742fa5eeea8be11dbe62cff28acc7c7a2e351ac8a"
+    },
+    {
+     "action": "wrap",
+     "frames": 22050,
+     "startBeat": 1.2500000000103832,
+     "currentBeat": 2.7500000000112172,
+     "startedEvents": [],
+     "sha256": "04f5e82e08fb639bf5031d406050fa2a7bb474b625971b5415e75717924d5392"
+    }
+   ]
+  },
+  {
+   "cue": "ROOT_PULSES",
+   "mode": "FULL",
+   "waveform": "MARIMBA",
+   "sampleRate": 24000,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 18000,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000002334,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       12000
+      ],
+      [
+       4,
+       12000
+      ]
+     ],
+     "sha256": "3271eef8ebe65a64a8180116274cef32f955fa5712e7ba90a1eef0d12df6ddaf"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 12000,
+     "startBeat": 4.000000000002334,
+     "currentBeat": 6.000000000004778,
+     "startedEvents": [
+      [
+       5,
+       6000
+      ]
+     ],
+     "sha256": "73b5751f043b5dfb04ef28efaabba6685a7be339f5646caf3d82183596046b7f"
+    },
+    {
+     "action": "seek",
+     "frames": 6000,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000001222,
+     "startedEvents": [
+      [
+       6,
+       4500
+      ],
+      [
+       7,
+       4500
+      ]
+     ],
+     "sha256": "f4df4dc01497259a6e59e7111c5279a97029622b12bc885c217896441106a268"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 24000,
+     "startBeat": 7.250000000001222,
+     "currentBeat": 1.2500000000088853,
+     "startedEvents": [
+      [
+       8,
+       14000
+      ],
+      [
+       1,
+       22000
+      ],
+      [
+       2,
+       22000
+      ]
+     ],
+     "sha256": "e373db3df66548c37d68ab9cb5f7665888a19ed8f1d9f4216f05094fdacf068a"
+    },
+    {
+     "action": "wrap",
+     "frames": 12000,
+     "startBeat": 1.2500000000088853,
+     "currentBeat": 2.7500000000093863,
+     "startedEvents": [],
+     "sha256": "65546bb03f1f651bfeb6fa4c59522c3f4bee66afba961df9a6b82548ff181fb6"
+    }
+   ]
+  },
+  {
+   "cue": "ROOT_PULSES",
+   "mode": "FULL",
+   "waveform": "MARIMBA",
+   "sampleRate": 44100,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 33075,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000001668,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       22050
+      ],
+      [
+       4,
+       22050
+      ]
+     ],
+     "sha256": "339fec06947965229b0dfe2a2e662b9f46b801142f61f592052e663e12c6cf93"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 22050,
+     "startBeat": 4.000000000001668,
+     "currentBeat": 6.00000000000278,
+     "startedEvents": [
+      [
+       5,
+       11025
+      ]
+     ],
+     "sha256": "568875f266a2b0ebbc26153cdae0b1b12b728f4e21134802247fc19dd8bbe67b"
+    },
+    {
+     "action": "seek",
+     "frames": 11025,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000000556,
+     "startedEvents": [
+      [
+       6,
+       8269
+      ],
+      [
+       7,
+       8269
+      ]
+     ],
+     "sha256": "db280903f99aad14c18977a5791921d709163455f8913596898c7a192d850ab6"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 44100,
+     "startBeat": 7.250000000000556,
+     "currentBeat": 1.2500000000103832,
+     "startedEvents": [
+      [
+       8,
+       25725
+      ],
+      [
+       1,
+       40425
+      ],
+      [
+       2,
+       40425
+      ]
+     ],
+     "sha256": "44e34abc4ec963e37077ca30a8fce8bc7b8de23a257b42a86804b3fb57dfd8e4"
+    },
+    {
+     "action": "wrap",
+     "frames": 22050,
+     "startBeat": 1.2500000000103832,
+     "currentBeat": 2.7500000000112172,
+     "startedEvents": [],
+     "sha256": "0249effff82ddbcf6a7159f9213c98c48135ee0d00f6374ef22ea1c1a5da34dc"
+    }
+   ]
+  },
+  {
+   "cue": "HARMONIC_DISTANCE",
+   "mode": "FULL",
+   "waveform": "CLARINET",
+   "sampleRate": 24000,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 18000,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000002334,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       12000
+      ],
+      [
+       4,
+       12000
+      ]
+     ],
+     "sha256": "2cdc5b308a0ce46dffb7aa68e09f24cdf067393a7a9d89cdb145aa8c4218b8aa"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 12000,
+     "startBeat": 4.000000000002334,
+     "currentBeat": 6.000000000004778,
+     "startedEvents": [
+      [
+       5,
+       6000
+      ]
+     ],
+     "sha256": "fbbe3859e243d202a6e58235a784d841d08c24e9848e80faa7e25b82e1e1e0c3"
+    },
+    {
+     "action": "seek",
+     "frames": 6000,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000001222,
+     "startedEvents": [
+      [
+       6,
+       4500
+      ],
+      [
+       7,
+       4500
+      ]
+     ],
+     "sha256": "2d22d76d533574818661d17b94b31c834d67e18722decaea96b54dc627ea213d"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 24000,
+     "startBeat": 7.250000000001222,
+     "currentBeat": 1.2500000000088853,
+     "startedEvents": [
+      [
+       8,
+       14000
+      ],
+      [
+       1,
+       22000
+      ],
+      [
+       2,
+       22000
+      ]
+     ],
+     "sha256": "5d2fe2d979f2d104285a8a9fdfa47d9849aedc5f8a5c17c5f4a4b61493a7407a"
+    },
+    {
+     "action": "wrap",
+     "frames": 12000,
+     "startBeat": 1.2500000000088853,
+     "currentBeat": 2.7500000000093863,
+     "startedEvents": [],
+     "sha256": "e7b1d07ec827bc6b14e1028b0c8cc69eff7a4e41aeb6cc192e25a5ab159ea5da"
+    }
+   ]
+  },
+  {
+   "cue": "HARMONIC_DISTANCE",
+   "mode": "FULL",
+   "waveform": "CLARINET",
+   "sampleRate": 44100,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 33075,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000001668,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       22050
+      ],
+      [
+       4,
+       22050
+      ]
+     ],
+     "sha256": "d76bfedfb5b2c4a57e189169d83b0fc5919e62f6c3dc480d5c6fa679293c989f"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 22050,
+     "startBeat": 4.000000000001668,
+     "currentBeat": 6.00000000000278,
+     "startedEvents": [
+      [
+       5,
+       11025
+      ]
+     ],
+     "sha256": "c745ab66984bb808e11215d64aed9ebee24f37a0b59baf064c00e0a28fcb7157"
+    },
+    {
+     "action": "seek",
+     "frames": 11025,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000000556,
+     "startedEvents": [
+      [
+       6,
+       8269
+      ],
+      [
+       7,
+       8269
+      ]
+     ],
+     "sha256": "47c26762940738ec45a6abc2fd652fc9eb3d8a506372748d8fb2113d55c2a8a3"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 44100,
+     "startBeat": 7.250000000000556,
+     "currentBeat": 1.2500000000103832,
+     "startedEvents": [
+      [
+       8,
+       25725
+      ],
+      [
+       1,
+       40425
+      ],
+      [
+       2,
+       40425
+      ]
+     ],
+     "sha256": "54fe005bfda9561b031eb45e05c3f3c90cfc569428d01db8ecfec2b9ed771e1f"
+    },
+    {
+     "action": "wrap",
+     "frames": 22050,
+     "startBeat": 1.2500000000103832,
+     "currentBeat": 2.7500000000112172,
+     "startedEvents": [],
+     "sha256": "96e52c9f5a7161b9a886f4a458b2e599a07c0fb06a276435125730dd57cb0bd0"
+    }
+   ]
+  },
+  {
+   "cue": "SPOKEN_NUMBER",
+   "mode": "FULL",
+   "waveform": "CLARINET",
+   "sampleRate": 24000,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 18000,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000002334,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       12000
+      ],
+      [
+       4,
+       12000
+      ]
+     ],
+     "sha256": "f40ca21c759a36fe9ce97e03cb17db63c3895c67e9802e7a5ff6548aa52fc207"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 12000,
+     "startBeat": 4.000000000002334,
+     "currentBeat": 6.000000000004778,
+     "startedEvents": [
+      [
+       5,
+       6000
+      ]
+     ],
+     "sha256": "128f04352b493c79eac9ca959948c470098347f273f1324b61c26ed21b46f1ec"
+    },
+    {
+     "action": "seek",
+     "frames": 6000,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000001222,
+     "startedEvents": [
+      [
+       6,
+       4500
+      ],
+      [
+       7,
+       4500
+      ]
+     ],
+     "sha256": "e13ee7fb43c1efb353f888fbdc17bf59947c47993ffe36bc073dadf36e0bd46d"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 24000,
+     "startBeat": 7.250000000001222,
+     "currentBeat": 1.2500000000088853,
+     "startedEvents": [
+      [
+       8,
+       14000
+      ],
+      [
+       1,
+       22000
+      ],
+      [
+       2,
+       22000
+      ]
+     ],
+     "sha256": "735822ace3a3ec39bb9c4a74af997cfbd238d43981bf8766ca446c7c8091d94a"
+    },
+    {
+     "action": "wrap",
+     "frames": 12000,
+     "startBeat": 1.2500000000088853,
+     "currentBeat": 2.7500000000093863,
+     "startedEvents": [],
+     "sha256": "ecd9cb015273a839fdf2aef91fbca7fb20cdff54dd83e31abc487e1d1b0c1429"
+    }
+   ]
+  },
+  {
+   "cue": "SPOKEN_NUMBER",
+   "mode": "FULL",
+   "waveform": "CLARINET",
+   "sampleRate": 44100,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 33075,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000001668,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       22050
+      ],
+      [
+       4,
+       22050
+      ]
+     ],
+     "sha256": "bade92deab58535e5d6eec562099e372f9d6ab3545b2a48fd11842a334b50a35"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 22050,
+     "startBeat": 4.000000000001668,
+     "currentBeat": 6.00000000000278,
+     "startedEvents": [
+      [
+       5,
+       11025
+      ]
+     ],
+     "sha256": "7017f575d8c4fccf9075b5cd4e85d942e435da61b4d2962b41e7f0bc5d2a5732"
+    },
+    {
+     "action": "seek",
+     "frames": 11025,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000000556,
+     "startedEvents": [
+      [
+       6,
+       8269
+      ],
+      [
+       7,
+       8269
+      ]
+     ],
+     "sha256": "a29aa2a94f9a8d50ead72534c0eb615a8cfe7da1596ef31470ffdd6d1ea6ebac"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 44100,
+     "startBeat": 7.250000000000556,
+     "currentBeat": 1.2500000000103832,
+     "startedEvents": [
+      [
+       8,
+       25725
+      ],
+      [
+       1,
+       40425
+      ],
+      [
+       2,
+       40425
+      ]
+     ],
+     "sha256": "21fa01c73e821aea59317ca69a356f16fda259fb5e7d5db91a9f5e4b3ea1d676"
+    },
+    {
+     "action": "wrap",
+     "frames": 22050,
+     "startBeat": 1.2500000000103832,
+     "currentBeat": 2.7500000000112172,
+     "startedEvents": [],
+     "sha256": "19ed1731170104b5f0eb0c983098dac741878d1442413f0ecc6bd29013e73077"
+    }
+   ]
+  },
+  {
+   "cue": "SUNG_NUMBER_WITH_DETAILS",
+   "mode": "ROOT_ONLY",
+   "waveform": "FLUTE",
+   "sampleRate": 24000,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 18000,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000002334,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       12000
+      ],
+      [
+       4,
+       12000
+      ]
+     ],
+     "sha256": "0c43fb110874ff62415edbe5d4a64913ee82b022d24bb776829193d48df0b716"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 12000,
+     "startBeat": 4.000000000002334,
+     "currentBeat": 6.000000000004778,
+     "startedEvents": [
+      [
+       5,
+       6000
+      ]
+     ],
+     "sha256": "b0c50442a37af2f57a858964a4357daa09c419b05341fb19f9f5ede91ae65a9b"
+    },
+    {
+     "action": "seek",
+     "frames": 6000,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000001222,
+     "startedEvents": [
+      [
+       6,
+       4500
+      ],
+      [
+       7,
+       4500
+      ]
+     ],
+     "sha256": "ed1a515747a059aea0928f94c5c77137ddb536e0d9571ce8d399fe54c5d600f2"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 24000,
+     "startBeat": 7.250000000001222,
+     "currentBeat": 1.2500000000088853,
+     "startedEvents": [
+      [
+       8,
+       14000
+      ],
+      [
+       1,
+       22000
+      ],
+      [
+       2,
+       22000
+      ]
+     ],
+     "sha256": "67f748012d9d55f25d7b61b259bcd3efc91f5b50bdb4796687a6e94b3fdb8c92"
+    },
+    {
+     "action": "wrap",
+     "frames": 12000,
+     "startBeat": 1.2500000000088853,
+     "currentBeat": 2.7500000000093863,
+     "startedEvents": [],
+     "sha256": "3c0acd12b3e497f43173af51136026ae65549012e2fca0baf872149cc97c8267"
+    }
+   ]
+  },
+  {
+   "cue": "SUNG_NUMBER_WITH_DETAILS",
+   "mode": "ROOT_ONLY",
+   "waveform": "FLUTE",
+   "sampleRate": 44100,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 33075,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000001668,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       22050
+      ],
+      [
+       4,
+       22050
+      ]
+     ],
+     "sha256": "cb57c2a9bccabf27f32fe4688e464a3e76493cf0d0604b5654fa6ceaa0515f1b"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 22050,
+     "startBeat": 4.000000000001668,
+     "currentBeat": 6.00000000000278,
+     "startedEvents": [
+      [
+       5,
+       11025
+      ]
+     ],
+     "sha256": "3836ac17139e05f8aa444846125a7b5be141f856ae60e06a357fceec495ef5d3"
+    },
+    {
+     "action": "seek",
+     "frames": 11025,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000000556,
+     "startedEvents": [
+      [
+       6,
+       8269
+      ],
+      [
+       7,
+       8269
+      ]
+     ],
+     "sha256": "67a93df7b3e9f574bdc7e253dc4830a5da01caedb20ac8ee53b594c5459d8549"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 44100,
+     "startBeat": 7.250000000000556,
+     "currentBeat": 1.2500000000103832,
+     "startedEvents": [
+      [
+       8,
+       25725
+      ],
+      [
+       1,
+       40425
+      ],
+      [
+       2,
+       40425
+      ]
+     ],
+     "sha256": "5530a106414d639150a4d4cf6cd7e45fec2371f1165142dafa00067fe1d2b2fe"
+    },
+    {
+     "action": "wrap",
+     "frames": 22050,
+     "startBeat": 1.2500000000103832,
+     "currentBeat": 2.7500000000112172,
+     "startedEvents": [],
+     "sha256": "69d4f0e00bdf310ef1279e3c858bd730d9091a43ab10ccafb07a630e0f176058"
+    }
+   ]
+  },
+  {
+   "cue": "MELODY_FUNCTION",
+   "mode": "FULL",
+   "waveform": "CLARINET",
+   "sampleRate": 24000,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 18000,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000002334,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       12000
+      ],
+      [
+       4,
+       12000
+      ]
+     ],
+     "sha256": "6b3846a8c5156029b69d08ebcff35ab2e0a9cae435eeddd209333eaa7cb54528"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 12000,
+     "startBeat": 4.000000000002334,
+     "currentBeat": 6.000000000004778,
+     "startedEvents": [
+      [
+       5,
+       6000
+      ]
+     ],
+     "sha256": "1f9a8333b763999e0ad6981ced5e2aaebad470149ae845eac79601445974ca40"
+    },
+    {
+     "action": "seek",
+     "frames": 6000,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000001222,
+     "startedEvents": [
+      [
+       6,
+       4500
+      ],
+      [
+       7,
+       4500
+      ]
+     ],
+     "sha256": "b75cd197030c9a23e421692af9c1986b3f752b19c20d088a1009260b03efc583"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 24000,
+     "startBeat": 7.250000000001222,
+     "currentBeat": 1.2500000000088853,
+     "startedEvents": [
+      [
+       8,
+       14000
+      ],
+      [
+       1,
+       22000
+      ],
+      [
+       2,
+       22000
+      ]
+     ],
+     "sha256": "40b126a73f995bd485188d5cf4942e7771529d2347bdcd0bbbebeb447aa59d09"
+    },
+    {
+     "action": "wrap",
+     "frames": 12000,
+     "startBeat": 1.2500000000088853,
+     "currentBeat": 2.7500000000093863,
+     "startedEvents": [],
+     "sha256": "060b129b094a18477b39908e74513a1f9d0d57c3492d2ab7f6258fe38dcb6d92"
+    }
+   ]
+  },
+  {
+   "cue": "MELODY_FUNCTION",
+   "mode": "FULL",
+   "waveform": "CLARINET",
+   "sampleRate": 44100,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 33075,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000001668,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       22050
+      ],
+      [
+       4,
+       22050
+      ]
+     ],
+     "sha256": "0499daa6c466f635d573999417013998ee0250a535d8544b9532030892dd7e0b"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 22050,
+     "startBeat": 4.000000000001668,
+     "currentBeat": 6.00000000000278,
+     "startedEvents": [
+      [
+       5,
+       11025
+      ]
+     ],
+     "sha256": "9cb0172514d5f12caa3a0fd836e6ac500b92825418ebb6a9c9736a89baf81380"
+    },
+    {
+     "action": "seek",
+     "frames": 11025,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000000556,
+     "startedEvents": [
+      [
+       6,
+       8269
+      ],
+      [
+       7,
+       8269
+      ]
+     ],
+     "sha256": "fd1953a8cfea7b8a348247251fe3b89fb0239456f8ac112e3cf392d4c8db66a1"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 44100,
+     "startBeat": 7.250000000000556,
+     "currentBeat": 1.2500000000103832,
+     "startedEvents": [
+      [
+       8,
+       25725
+      ],
+      [
+       1,
+       40425
+      ],
+      [
+       2,
+       40425
+      ]
+     ],
+     "sha256": "514673208930351d45237615c84b6977dccec57b25e0777b3bbb72fad905874a"
+    },
+    {
+     "action": "wrap",
+     "frames": 22050,
+     "startBeat": 1.2500000000103832,
+     "currentBeat": 2.7500000000112172,
+     "startedEvents": [],
+     "sha256": "59a1027e8d4596eaf9b6ddc0349581e64eb42a2b4b84c87c0ef9f8cf71a8b966"
+    }
+   ]
+  },
+  {
+   "cue": "MELODY_CHORD_TONE",
+   "mode": "FULL",
+   "waveform": "STRINGS",
+   "sampleRate": 24000,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 18000,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000002334,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       12000
+      ],
+      [
+       4,
+       12000
+      ]
+     ],
+     "sha256": "33362cd51bdcab53b5e2e5355ddc0057075b7c4a8256d5f8e60d333e3dbe89d1"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 12000,
+     "startBeat": 4.000000000002334,
+     "currentBeat": 6.000000000004778,
+     "startedEvents": [
+      [
+       5,
+       6000
+      ]
+     ],
+     "sha256": "77079e7f7046d9837c7098ed18aeca6d57f33185a445f1c57301746cc27f7c41"
+    },
+    {
+     "action": "seek",
+     "frames": 6000,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000001222,
+     "startedEvents": [
+      [
+       6,
+       4500
+      ],
+      [
+       7,
+       4500
+      ]
+     ],
+     "sha256": "be9021dfbe7567f41fa1dee15b02c54fedf1f40e39d4b989da6b380ad80dc68d"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 24000,
+     "startBeat": 7.250000000001222,
+     "currentBeat": 1.2500000000088853,
+     "startedEvents": [
+      [
+       8,
+       14000
+      ],
+      [
+       1,
+       22000
+      ],
+      [
+       2,
+       22000
+      ]
+     ],
+     "sha256": "c12ae48bf4f2a4a5a5f16c95ecc5b1af9e658aebdb6c0adf0b227cda1c897854"
+    },
+    {
+     "action": "wrap",
+     "frames": 12000,
+     "startBeat": 1.2500000000088853,
+     "currentBeat": 2.7500000000093863,
+     "startedEvents": [],
+     "sha256": "5dff02c2df18c8eef1ce6599f1226ecbdbed99a5b0921e4f92c15e0432085471"
+    }
+   ]
+  },
+  {
+   "cue": "MELODY_CHORD_TONE",
+   "mode": "FULL",
+   "waveform": "STRINGS",
+   "sampleRate": 44100,
+   "blocks": [
+    {
+     "action": "open",
+     "frames": 33075,
+     "startBeat": 1.0,
+     "currentBeat": 4.000000000001668,
+     "startedEvents": [
+      [
+       1,
+       0
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       22050
+      ],
+      [
+       4,
+       22050
+      ]
+     ],
+     "sha256": "d554d5cbe245a2983b620197c90092dec1e814b432b4797b29b53e3fe1080619"
+    },
+    {
+     "action": "transpose_voice",
+     "frames": 22050,
+     "startBeat": 4.000000000001668,
+     "currentBeat": 6.00000000000278,
+     "startedEvents": [
+      [
+       5,
+       11025
+      ]
+     ],
+     "sha256": "7d93d10b459a56bcba6d8ee088a16b43d18514c83a087c9e7b25e249219d39d2"
+    },
+    {
+     "action": "seek",
+     "frames": 11025,
+     "startBeat": 6.25,
+     "currentBeat": 7.250000000000556,
+     "startedEvents": [
+      [
+       6,
+       8269
+      ],
+      [
+       7,
+       8269
+      ]
+     ],
+     "sha256": "025cbfd2ce54cfdd40118ac3b1f77164f5e00bbf769f2c2cad4e91e60ef37545"
+    },
+    {
+     "action": "lock_tempo",
+     "frames": 44100,
+     "startBeat": 7.250000000000556,
+     "currentBeat": 1.2500000000103832,
+     "startedEvents": [
+      [
+       8,
+       25725
+      ],
+      [
+       1,
+       40425
+      ],
+      [
+       2,
+       40425
+      ]
+     ],
+     "sha256": "13d4bf827fab826750aace37b4f408705b63b84b80d73ae28b6ba697de2692c0"
+    },
+    {
+     "action": "wrap",
+     "frames": 22050,
+     "startBeat": 1.2500000000103832,
+     "currentBeat": 2.7500000000112172,
+     "startedEvents": [],
+     "sha256": "7f39db61252a2127685ac2859039de6a6d8a4efe5808d8c0c89a15dca56c98fc"
+    }
+   ]
+  }
+ ],
+ "splice": {
+  "blocks": [
+   {
+    "startBeat": 9.5,
+    "currentBeat": 21.625000000000043,
+    "finished": false,
+    "splices": [
+     {
+      "frame": 3000,
+      "beat": 21.00000000000061,
+      "beatsPerFrame": 0.00020833333333333335,
+      "loopStart": 21.0,
+      "loopEnd": 30.0,
+      "performanceId": "second"
+     }
+    ],
+    "sha256": "7f71562f4f43ca15ccb30172df59fbbab394946e8b11ce67abab8bd192655a57"
+   },
+   {
+    "startBeat": 21.625000000000043,
+    "currentBeat": 22.874999999998906,
+    "finished": false,
+    "splices": [],
+    "sha256": "7955cb0395fd7ff7da66f5b98f9d2c170ca2dd205bc94f40448ac610f9ab775c"
+   },
+   {
+    "startBeat": 22.874999999998906,
+    "currentBeat": 24.12499999999777,
+    "finished": false,
+    "splices": [],
+    "sha256": "cdf9ae11094c650d572c20201f7bd73d0074f82097cda9ef534693dc7d58b300"
+   },
+   {
+    "startBeat": 24.12499999999777,
+    "currentBeat": 25.374999999996632,
+    "finished": false,
+    "splices": [],
+    "sha256": "df4ce7b5183d3a6638288ce9a8a14663ca322cd969ddd764410de97a90a3ec95"
+   }
+  ]
+ }
+}

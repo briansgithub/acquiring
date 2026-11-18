@@ -47,7 +47,7 @@ describe('bounded PCM session', () => {
   });
 
   it('reuses first two unchanged native SINE blocks at1000/48000Hz without recapture', () => {
-    expect(native.authority).toBe('801cf7984171d772afc4406ddb5c79c0cb7fd20a');
+    expect(native.authority).toBe('3c887223b2d06b4c3a1010d0f8a23ceaf8977d08');
     for (const fixture of native.cases.filter(c => c.waveform === 'SINE')) {
       const t = { endBeat: 1.25, events: [
         { id: 1, startBeat: 1, endBeat: 1.24, layer: Layer.CHORD, fullMidiNotes: [48,52,55], rootMidiNote: 36 },
