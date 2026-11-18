@@ -33,8 +33,10 @@ Ordered phases. Each slice is one validated commit:
    - The full browser suite ran on Windows/system Chrome: 110 passed and 2 skipped. All 8 failures now pass: the catalog fixtures use short temp roots on Windows (MAX_PATH), and the control and store counts were updated.
    - The N15 shuffle row test passes.
    - `playback.spec` "singing owner switch" is a known flake.
-8. **NEXT — start here.**
-   1. N15 browser proof against an installed Aural catalog. Extend `scripts/catalog/make-aural-statistics-browser-fixture.py` so `catalog_song` has title and artist, then shuffle through to Playback opening on the chorus.
+8. **Done.** `daf11e0b`: the actual worker lists Aural example songs from an installed catalog (`aural-statistics.spec` 5/5).
+   - The autonomous run stopped here, 2026-11-18 12:45 local.
+9. **NEXT — start here.**
+   1. Add a product-level N15 browser test: install the Aural and song fixtures together, click Shuffle, and Playback should open the chorus and hold it.
    2. N13 + N04 rotary dials with in-dial values.
    3. Wire the N11 in-block splice: transport continuation op, splitting PCM at `PlaybackSplice` frames, section-follow.
    4. Saxophone icon; the Library Aural Quiz row (Aural is last).

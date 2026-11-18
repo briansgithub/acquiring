@@ -517,7 +517,7 @@
    "reopens": [
     "A08"
    ],
-   "acceptance": "chorusOrFirstSection and cutoff semantics match native tests; the queue holds each song until next/previous. Status 2026-11-18: worker auralExampleSongs (catalog_song + aural-popularity), shuffledExampleQueue, manualAdvance/preferChorus/rememberSection, chorusOrFirstSection and the Shuffle Songs row are ported with native unit cases; no browser run against an installed Aural catalog yet (fixture lacks catalog_song title/artist), and the new library.spec row/error test had not run at commit time."
+   "acceptance": "chorusOrFirstSection and cutoff semantics match native tests; the queue holds each song until next/previous. Status 2026-11-18: worker auralExampleSongs proven against an installed catalog in the real SQLite WASM worker (aural-statistics.spec); queue/chorus/hold logic proven by ported native unit cases; Library row and missing-catalog error proven in library.spec. Remaining: one product browser run that shuffles into Playback on the chorus."
   },
   {
    "id": "N16",
