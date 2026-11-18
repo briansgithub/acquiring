@@ -279,7 +279,7 @@ export class PlaybackPcmRenderer {
   private currentChordGain: number;
   private currentVoiceGain: number;
   private readonly crossfadeFrames: number;
-  private readonly phraseCache: SpokenPhraseCache;
+  private phraseCache: SpokenPhraseCache;
   private readonly preparedVoices = new Map<number, Int16Array>();
   private spokenNumber: SpokenNumber | null = null;
   private spokenMode: SpokenMode | null = null;
@@ -288,7 +288,7 @@ export class PlaybackPcmRenderer {
 
   constructor(timeline: PlaybackTimeline, initialConfig: PlaybackConfig,
     private readonly sampleRate: number, private readonly random: () => number = Math.random,
-    private readonly spokenRootDegrees: SpokenRootDegreeClips = new SpokenRootDegreeClips()) {
+    private spokenRootDegrees: SpokenRootDegreeClips = new SpokenRootDegreeClips()) {
     if (!Number.isInteger(sampleRate) || sampleRate < 1000 || sampleRate > 384_000) throw new RangeError('Streaming output rate must be1000..384000');
     this.timeline = snapshot(timeline);
     this.config = sanitized(initialConfig);
@@ -304,6 +304,14 @@ export class PlaybackPcmRenderer {
   get currentBeat(): number { return this.beat; }
   get finished(): boolean { return this.timeline.completionKey != null && this.beat >= this.timeline.endBeat; }
   get currentBeatsPerFrame(): number { return this.config.bpm / (60 * this.sampleRate); }
+
+  /** Install (or replace) the decoded speech clips without disturbing transport state. Speech already
+   * scheduled keeps its samples; later phrases use the new clips (PWA lazy-asset extension). */
+  setSpokenClips(clips: SpokenRootDegreeClips): void {
+    this.spokenRootDegrees = clips;
+    this.phraseCache = new SpokenPhraseCache(clips);
+    this.preparedVoices.clear();
+  }
 
   /** Native `continuation`: sections spliced in order (and rotated) when a once-timeline ends. */
   setContinuation(sections: readonly QueuedSection[] | null): void {

@@ -7,7 +7,9 @@ async function list(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   return (await Promise.all(entries.map(entry => entry.isDirectory() ? list(resolve(directory, entry.name)) : [resolve(directory, entry.name)]))).flat();
 }
-const files = (await list(dist)).filter(path => !['sw.js', 'asset-manifest.json', '_redirects', 'catalog-sources.json'].includes(relative(dist, path))).sort();
+// The speech pack (public/voice, ~49 MB) is not shell: the service worker caches it on first spoken-cue use.
+const files = (await list(dist)).filter(path => !['sw.js', 'asset-manifest.json', '_redirects', 'catalog-sources.json'].includes(relative(dist, path))
+  && !relative(dist, path).startsWith('voice' + sep)).sort();
 const digest = createHash('sha256');
 const assets = [];
 for (const file of files) {

@@ -1,4 +1,4 @@
-import { PlaybackPcmRenderer, PlaybackAudioLayer, PlaybackChordMode, STREAM_LIMITS, Waveform } from '../synth';
+import { PlaybackPcmRenderer, PlaybackAudioLayer, PlaybackChordMode, PlaybackRootDegreeCue, SPOKEN_CHORD_SUFFIXES, STREAM_LIMITS, SpokenRootDegreeClips, Waveform } from '../synth';
 import type { PlaybackConfig, PlaybackTimeline } from '../synth';
 import { PLAYBACK_WORKER_LIMITS as LIMITS } from './worker-contracts';
 import type { PlaybackWorkerOperation, PlaybackWorkerRequest, PlaybackWorkerResponse, PlaybackWorkerSession, PlaybackWorkerPosition, PlaybackWorkerErrorCode } from './worker-contracts';
@@ -11,13 +11,15 @@ export const validWorkerRevision = (value: number): boolean => Number.isSafeInte
 
 function configSnapshot(input: PlaybackConfig): PlaybackConfig {
   if (!input || typeof input !== 'object') fail('Missing config');
-  for (const value of [input.bpm, input.melodyGain, input.chordGain, input.arpeggiateCycles ?? 0]) finite(value, 'Config');
+  for (const value of [input.bpm, input.melodyGain, input.chordGain, input.arpeggiateCycles ?? 0, input.voiceVolume ?? 0.5]) finite(value, 'Config');
   nativeInt(input.transpose);
+  const rootDegreeCue = input.rootDegreeCue ?? PlaybackRootDegreeCue.OFF;
   if (input.bpm > STREAM_LIMITS.bpm || !Object.values(Waveform).includes(input.waveform) ||
-      !Object.values(PlaybackChordMode).includes(input.chordMode)) fail('Invalid config');
+      !Object.values(PlaybackChordMode).includes(input.chordMode) || !Object.values(PlaybackRootDegreeCue).includes(rootDegreeCue)) fail('Invalid config');
   return Object.freeze({ bpm: input.bpm, transpose: input.transpose, waveform: input.waveform,
     chordMode: input.chordMode, melodyGain: input.melodyGain, chordGain: input.chordGain,
-    arpeggiateCycles: input.arpeggiateCycles ?? 0 });
+    arpeggiateCycles: input.arpeggiateCycles ?? 0, rootDegreeCue,
+    useRelativeIonianContext: input.useRelativeIonianContext === true, voiceVolume: input.voiceVolume ?? 0.5 });
 }
 function timelineSnapshot(input: PlaybackTimeline): PlaybackTimeline {
   if (!input || typeof input !== 'object') fail('Missing timeline');
@@ -48,9 +50,24 @@ function timelineSnapshot(input: PlaybackTimeline): PlaybackTimeline {
       const note = callerNotes[noteIndex]; nativeInt(note); fullMidiNotes.push(note);
     }
     Object.freeze(fullMidiNotes);
-    if (event.rootMidiNote != null) nativeInt(event.rootMidiNote);
+    const optionalInt = (value: number | null | undefined): number | null => { if (value == null) return null; nativeInt(value); return value; };
+    const text = (value: string | null | undefined, limit: number): string | null => {
+      if (value == null) return null;
+      if (typeof value !== 'string' || value.length > limit) fail('Invalid event text');
+      return value;
+    };
+    const suffix = event.spokenChordSuffix ?? null;
+    if (suffix !== null && !(suffix in SPOKEN_CHORD_SUFFIXES)) fail('Invalid chord suffix');
+    const relative = event.relativeMajorRootDegree ?? null;
+    if (relative !== null) { nativeInt(relative.degree); nativeInt(relative.alteration); }
     events.push(Object.freeze({ id: event.id, startBeat: event.startBeat, endBeat: event.endBeat,
-      layer: event.layer, fullMidiNotes, rootMidiNote: event.rootMidiNote ?? null }));
+      layer: event.layer, fullMidiNotes, rootMidiNote: optionalInt(event.rootMidiNote),
+      rootDegree: optionalInt(event.rootDegree), rootDegreeAlteration: optionalInt(event.rootDegreeAlteration) ?? 0,
+      fullChordRootMidiNote: optionalInt(event.fullChordRootMidiNote), spokenChordSuffix: suffix,
+      relativeMajorRootDegree: relative ? Object.freeze({ degree: relative.degree, alteration: relative.alteration }) : null,
+      fifthsFromKeyTonic: optionalInt(event.fifthsFromKeyTonic) ?? 0, fifthsFromMajorTonic: optionalInt(event.fifthsFromMajorTonic) ?? 0,
+      keyScale: text(event.keyScale, LIMITS.keyScaleCharacters), spokenMelodyCue: text(event.spokenMelodyCue, LIMITS.melodyCueCharacters),
+      melodyCueMidi: optionalInt(event.melodyCueMidi), keyTonicMidi: optionalInt(event.keyTonicMidi) }));
   }
   return Object.freeze({ startBeat, endBeat: input.endBeat, events: Object.freeze(events), completionKey: input.completionKey ?? null });
 }
@@ -68,12 +85,27 @@ export function snapshotWorkerOperation(input: PlaybackWorkerOperation): Playbac
     case 'render':
       if (!Number.isInteger(input.frameCount) || input.frameCount < 1 || input.frameCount > LIMITS.batchFrames) fail('Invalid frame count');
       return Object.freeze({ kind: 'render', frameCount: input.frameCount });
+    case 'voices': {
+      const callerResources = input.resources;
+      if (!Array.isArray(callerResources) || callerResources.length > LIMITS.voiceResources) fail('Voice resource limit');
+      let total = 0;
+      const resources: (readonly [string, Int16Array])[] = [];
+      for (const entry of callerResources) {
+        const [stem, samples] = Array.isArray(entry) ? entry : [];
+        if (typeof stem !== 'string' || !/^[a-z_]+$/.test(stem) || stem.length > LIMITS.voiceStemCharacters || !(samples instanceof Int16Array)) fail('Invalid voice resource');
+        total += samples!.length;
+        if (total > LIMITS.voiceSamplesTotal) fail('Voice sample limit');
+        resources.push(Object.freeze([stem!, samples!.slice()] as const));
+      }
+      return Object.freeze({ kind: 'voices', resources: Object.freeze(resources) });
+    }
     default: return fail('Unknown operation');
   }
 }
 
 export class PcmWorkerSession implements PlaybackWorkerSession {
   private renderer: PlaybackPcmRenderer | null = null;
+  private clips = new SpokenRootDegreeClips();
   private sampleRate = 0;
   private revision = 0;
   private lastId = 0;
@@ -96,13 +128,22 @@ export class PcmWorkerSession implements PlaybackWorkerSession {
     let operation: PlaybackWorkerOperation;
     try { operation = snapshotWorkerOperation(request.operation); }
     catch { return failure('INVALID_INPUT', 'Invalid bounded operation'); }
+    if (operation.kind === 'voices') {
+      try {
+        const clips = SpokenRootDegreeClips.fromResources(new Map(operation.resources));
+        this.clips = clips; this.renderer?.setSpokenClips(clips);
+        if (revision > this.revision) this.revision = revision;
+      } catch { return failure('INVALID_INPUT', 'Invalid voice pack'); }
+      return Object.freeze({ version: 1, requestId: id, revision, ok: true, kind: 'ack',
+        position: this.renderer ? this.position() : Object.freeze({ sampleRate: 0, beat: 1, beatsPerFrame: 0, finished: false }) });
+    }
     if (operation.kind !== 'load' && !this.renderer) return failure('NOT_LOADED', 'Load required');
     if (operation.kind === 'render' ? revision !== this.revision : revision < this.revision)
       return failure('STALE_REVISION', 'Revision does not match applied state');
     if (operation.kind === 'load') {
       // Constructor validation is transactional: the previous renderer remains untouched.
       try {
-        const renderer = new PlaybackPcmRenderer(operation.timeline, operation.config, operation.sampleRate);
+        const renderer = new PlaybackPcmRenderer(operation.timeline, operation.config, operation.sampleRate, Math.random, this.clips);
         this.renderer = renderer; this.sampleRate = operation.sampleRate; this.revision = revision;
       } catch (error) {
         return error instanceof RangeError ? failure('INVALID_INPUT', 'Renderer domain or resource limit')

@@ -1,11 +1,14 @@
 import type {PlaybackConfig,PlaybackTimeline} from '../synth';
 
-export const PLAYBACK_WORKER_LIMITS=Object.freeze({version:1 as const,nativeBlockFrames:256,batchFrames:4096,timeoutMs:5000,completionKeyCharacters:512});
+export const PLAYBACK_WORKER_LIMITS=Object.freeze({version:1 as const,nativeBlockFrames:256,batchFrames:4096,timeoutMs:5000,completionKeyCharacters:512,
+  voiceResources:96,voiceSamplesTotal:32_000_000,voiceStemCharacters:64,keyScaleCharacters:64,melodyCueCharacters:32});
 export type PlaybackWorkerOperation=
   | {readonly kind:'load';readonly sampleRate:number;readonly timeline:PlaybackTimeline;readonly config:PlaybackConfig}
   | {readonly kind:'seek';readonly beat:number}
   | {readonly kind:'configure';readonly config:PlaybackConfig}
-  | {readonly kind:'render';readonly frameCount:number};
+  | {readonly kind:'render';readonly frameCount:number}
+  /** N07: decoded 24 kHz speech clips keyed by resource stem (e.g. root_degree_one). Replaces any earlier pack. */
+  | {readonly kind:'voices';readonly resources:readonly (readonly [string,Int16Array])[]};
 export interface PlaybackWorkerRequest {
   readonly version:1;
   /** Positive safe integer, strictly increasing within a worker session. Never replay a render. */

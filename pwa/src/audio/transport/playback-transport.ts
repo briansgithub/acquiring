@@ -11,11 +11,13 @@ import { PcmQueueSink } from './pcm-queue-sink';
 import { PcmSinkError } from './sink-contracts';
 import type { AudioPcmQueueSink, PcmSinkRun, PcmSinkPcm, PcmSinkClock } from './sink-contracts';
 import { PLAYBACK_TRANSPORT_LIMITS as LIMITS } from './transport-contracts';
+import { currentVoicePack, subscribeVoicePack, type VoicePack } from './voice-pack';
 import type { AudioPlaybackTransport, PlaybackTransportOptions, PlaybackTransportState } from './transport-contracts';
 
 function configCopy(input: PlaybackConfig): PlaybackConfig {
-  const { bpm, transpose, waveform, chordMode, melodyGain, chordGain, arpeggiateCycles } = input;
-  const operation = snapshotWorkerOperation({ kind:'configure',config:{ bpm,transpose,waveform,chordMode,melodyGain,chordGain,arpeggiateCycles } });
+  const { bpm, transpose, waveform, chordMode, melodyGain, chordGain, arpeggiateCycles, rootDegreeCue, useRelativeIonianContext, voiceVolume } = input;
+  const operation = snapshotWorkerOperation({ kind:'configure',config:{ bpm,transpose,waveform,chordMode,melodyGain,chordGain,arpeggiateCycles,
+    rootDegreeCue,useRelativeIonianContext,voiceVolume } });
   if (operation.kind!=='configure') throw new RangeError('Invalid config');
   return operation.config;
 }
@@ -26,13 +28,13 @@ function timelineCopy(input: PlaybackTimeline, config: PlaybackConfig): Playback
   if (!Number.isInteger(length) || length<0 || length>STREAM_LIMITS.events) throw new RangeError('Event limit');
   const events: PlaybackTimelineEvent[]=[];
   for (let i=0;i<length;i++) {
-    const { id,startBeat,endBeat,layer,fullMidiNotes:callerNotes,rootMidiNote }=callerEvents[i];
+    const { fullMidiNotes:callerNotes,...fields }=callerEvents[i];
     if (!Array.isArray(callerNotes)) throw new RangeError('Invalid notes');
     const count=callerNotes.length;
     if (!Number.isInteger(count) || count<0 || count>STREAM_LIMITS.notesPerEvent) throw new RangeError('Note limit');
     const fullMidiNotes:number[]=[];
     for (let n=0;n<count;n++) fullMidiNotes.push(callerNotes[n]);
-    events.push({ id,startBeat,endBeat,layer,fullMidiNotes,rootMidiNote });
+    events.push({ ...fields,fullMidiNotes });
   }
   // Structural helper only; the actual renderer rate is supplied after gesture permission.
   const operation=snapshotWorkerOperation({ kind:'load',sampleRate:1000,timeline:{startBeat,endBeat,completionKey,events},config });
@@ -44,6 +46,8 @@ interface AudioRun {
   readonly sinkRun:PcmSinkRun; readonly anchor:number;
   clock:PcmSinkClock|null; loaded:boolean; positioned:boolean; pending:PlaybackWorkerOperation['kind']|null;
   applied:PlaybackConfig|null; held:PcmSinkPcm|null; finished:boolean; finalEnqueued:boolean;
+  /** N07: the speech pack installed in this run's worker, and the one being installed. */
+  voices:VoicePack|null; voicesPending:VoicePack|null;
 }
 
 /** Bounded orchestration only. Native public intent is separate from audio run identity. */
@@ -74,7 +78,9 @@ export class PlaybackTransport implements AudioPlaybackTransport {
     this.workerFactory=options.createWorkerClient ?? (()=>new PcmWorkerClient());
     this.sinkFactory=options.createSink ?? (owner=>new PcmQueueSink({contextOwner:owner}));
     this.state=Object.freeze({...this.kernel.getSnapshot(),clock:null});
-    this.unsubscribe=this.owner.subscribeInvalidation(()=>this.invalidated());
+    const unsubscribeOwner=this.owner.subscribeInvalidation(()=>this.invalidated());
+    const unsubscribeVoices=subscribeVoicePack(()=>{ if(!this.released && this.run) this.schedule(); });
+    this.unsubscribe=()=>{ unsubscribeOwner(); unsubscribeVoices(); };
   }
   getSnapshot=():PlaybackTransportState=>this.state;
   subscribe(listener:()=>void):()=>void {
@@ -206,7 +212,7 @@ export class PlaybackTransport implements AudioPlaybackTransport {
         const client=this.workerFactory();
         if(!this.currentCommand(serial)) {client.release();return;}
         run={id,epoch:permission.epoch,rate:context.sampleRate,client,sinkRun,anchor,
-          clock:null,loaded:false,positioned:false,pending:null,applied:null,held:null,finished:false,finalEnqueued:false};
+          clock:null,loaded:false,positioned:false,pending:null,applied:null,held:null,finished:false,finalEnqueued:false,voices:null,voicesPending:null};
         this.run=run;
       }
       if(!this.valid(run)) return;
@@ -239,6 +245,8 @@ export class PlaybackTransport implements AudioPlaybackTransport {
         this.kernel.observePlayReady(this.guard(),run.finished); this.pendingPlay=false;
         if(run.finished) {this.stopAudio();this.publish();this.schedule();return;}
       }
+      const pack=currentVoicePack();
+      if(pack && run.voices!==pack) {run.voicesPending=pack;this.execute(run,{kind:'voices',resources:pack.resources});return;}
       if(run.applied!==this.config) {this.execute(run,{kind:'configure',config:this.config});return;}
       if((!run.finished || !run.finalEnqueued) && reading.queuedFrames<Math.ceil(run.rate*LIMITS.targetMs/1000)) {
         const frameCount=Math.min(LIMITS.batchMax,Math.max(LIMITS.batchMin,Math.ceil(run.rate*LIMITS.batchMs/1000/LIMITS.batchMin)*LIMITS.batchMin));
@@ -268,6 +276,7 @@ export class PlaybackTransport implements AudioPlaybackTransport {
       if(operation.kind==='load') {run.loaded=true;run.applied=operation.config;}
       if(operation.kind==='seek') run.positioned=true;
       if(operation.kind==='configure') run.applied=operation.config;
+      if(operation.kind==='voices') run.voices=run.voicesPending;
       if(response.kind==='pcm') {
         if(this.pendingPlay) {
           this.kernel.observePlayReady(this.guard(),run.finished); this.pendingPlay=false;
