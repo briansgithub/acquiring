@@ -1,0 +1,207 @@
+{
+ "authority": "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08",
+ "source": "android/app/src/main/java/sonic/Sonic.java",
+ "clip": {
+  "path": "android/app/src/main/res/raw/root_degree_one.pcm",
+  "firstClipFrames": 7920,
+  "sha256": "5dfbc6a6d3c82ff5ee7141296efd1894e79c0f3fa2f2067a5d295c1037a8207a"
+ },
+ "cases": [
+  {
+   "source": 0,
+   "targetPercent": 100,
+   "pitchExponent": 1,
+   "natural": 7200,
+   "target": 7200,
+   "head": [
+    -166,
+    374,
+    -8569,
+    141
+   ],
+   "sha256": "3ebb87320fdbb638f5e5801aff2e4b46aa11e0d6612cd1cd373a3ad708a7449b"
+  },
+  {
+   "source": 0,
+   "targetPercent": 100,
+   "pitchExponent": -1,
+   "natural": 7200,
+   "target": 7200,
+   "head": [
+    -193,
+    -281,
+    1525,
+    -478
+   ],
+   "sha256": "f39d68bf2e6d4726dc13a91a043845d5a0c2c37e43b8b1c9708a0dc8d23ece92"
+  },
+  {
+   "source": 0,
+   "targetPercent": 150,
+   "pitchExponent": 0,
+   "natural": 7200,
+   "target": 10800,
+   "head": [
+    -164,
+    -417,
+    755,
+    0
+   ],
+   "sha256": "35de97653d93762e17d5f2f80d52ed23ff0aa0883893d8edc74abebcb9f847c5"
+  },
+  {
+   "source": 0,
+   "targetPercent": 200,
+   "pitchExponent": 0,
+   "natural": 7200,
+   "target": 14400,
+   "head": [
+    -164,
+    -417,
+    -10145,
+    80
+   ],
+   "sha256": "b4d19c692283f2c34a239deb66f79a111a752ab71e8498372d9adabd9cab13b5"
+  },
+  {
+   "source": 0,
+   "targetPercent": 400,
+   "pitchExponent": 0,
+   "natural": 7200,
+   "target": 28800,
+   "head": [
+    -164,
+    -417,
+    -8660,
+    3
+   ],
+   "sha256": "5b781b3a3c7c58800de6d63777b11af103e60ac42d9c486f54e24ff1ed0be980"
+  },
+  {
+   "source": 0,
+   "targetPercent": 333,
+   "pitchExponent": 1,
+   "natural": 7200,
+   "target": 23976,
+   "head": [
+    -166,
+    374,
+    -6951,
+    0
+   ],
+   "sha256": "843fd8e0eba6dff55ca139088b2b8b19e617368f0e823c672d9b2c92e78c9fe8"
+  },
+  {
+   "source": 0,
+   "targetPercent": 250,
+   "pitchExponent": -1,
+   "natural": 7200,
+   "target": 18000,
+   "head": [
+    -166,
+    -256,
+    -7037,
+    0
+   ],
+   "sha256": "a4b8ae9dbf8b3da88cc76ceea085e05ce49577f37e46021ea0b070d8bb9e0b5f"
+  },
+  {
+   "source": 1,
+   "targetPercent": 120,
+   "pitchExponent": 0,
+   "natural": 12000,
+   "target": 14400,
+   "head": [
+    -330,
+    -44,
+    -11201,
+    0
+   ],
+   "sha256": "203bc99c0f736d049c5645a2957c30c19e87bbb927df745437f6885538c7bb4c"
+  },
+  {
+   "source": 1,
+   "targetPercent": 300,
+   "pitchExponent": 1,
+   "natural": 12000,
+   "target": 36000,
+   "head": [
+    305,
+    -389,
+    1215,
+    309
+   ],
+   "sha256": "c1c519d57b766caa4f6e8ec47f4e72e22568f889550694b1af8c9d2d27aaf68d"
+  },
+  {
+   "source": 1,
+   "targetPercent": 399,
+   "pitchExponent": -1,
+   "natural": 12000,
+   "target": 47880,
+   "head": [
+    305,
+    392,
+    11545,
+    -20
+   ],
+   "sha256": "2aa4c16be6f30a091e597092df03354ea5aba7cf069de96deadc48c7bf3de740"
+  },
+  {
+   "source": 2,
+   "targetPercent": 100,
+   "pitchExponent": 1,
+   "natural": 7920,
+   "target": 7920,
+   "head": [
+    -84,
+    -148,
+    4091,
+    0
+   ],
+   "sha256": "d2e71395f79d9f80d40ddd9a4fff28fadfd448f05e5407adaee8c58e2efc8404"
+  },
+  {
+   "source": 2,
+   "targetPercent": 175,
+   "pitchExponent": 0,
+   "natural": 7920,
+   "target": 13860,
+   "head": [
+    0,
+    4,
+    2640,
+    0
+   ],
+   "sha256": "5912766cb1789303db0c57d26041fb19aea40bec9cbc8d8d19674c82a6ec26d7"
+  },
+  {
+   "source": 2,
+   "targetPercent": 260,
+   "pitchExponent": -1,
+   "natural": 7920,
+   "target": 20592,
+   "head": [
+    -83,
+    -103,
+    -12440,
+    0
+   ],
+   "sha256": "be12f8bf8089705ec12a2a5db23028a1e84880a7463ae5c45436e3dcaf1aa17a"
+  },
+  {
+   "source": 2,
+   "targetPercent": 400,
+   "pitchExponent": 1,
+   "natural": 7920,
+   "target": 31680,
+   "head": [
+    -84,
+    -148,
+    5879,
+    84
+   ],
+   "sha256": "1b426c04c6674a56dcb25b928567f46c7126b4f13f6b9e052e2b1a1b679826db"
+  }
+ ]
+}
