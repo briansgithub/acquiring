@@ -38,8 +38,9 @@ def main():
     db.execute('INSERT INTO catalog_array VALUES (?,?)',('suffix_locations',struct.pack('<'+'i'*len(pairs),*pairs)))
     db.execute('CREATE TABLE catalog_run(id INTEGER PRIMARY KEY,song_id TEXT,section_id TEXT)')
     db.executemany('INSERT INTO catalog_run VALUES (?,?,?)',[(row['id'],row['songId'],row['sectionId'])for row in probe['runs']])
-    db.execute('CREATE TABLE catalog_song(id TEXT)')
-    db.executemany('INSERT INTO catalog_song VALUES (?)',[(id,)for id in probe['validSongIds']])
+    # N15: native catalog_song also carries title/artist for example-song shuffle.
+    db.execute('CREATE TABLE catalog_song(id TEXT,title TEXT,artist TEXT)')
+    db.executemany('INSERT INTO catalog_song VALUES (?,?,?)',[(id,'Title '+id,'Artist '+id)for id in probe['validSongIds']])
    elif name=='aural-popularity.db':
     db.execute('CREATE TABLE popularity(song_id TEXT,score REAL,confidence REAL,measured_at TEXT)')
     db.executemany('INSERT INTO popularity VALUES (?,?,?,?)',[(row['songId'],row['score'],'invalid'if args.variant and i==changed else row['confidence'],'2026-10-19T00:00:00Z')for i,row in enumerate(probe['popularity'])])

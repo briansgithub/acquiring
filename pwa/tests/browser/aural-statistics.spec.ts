@@ -68,3 +68,17 @@ test('statistics request-start termination recovers offline in a new owner and q
   expect(completed.done).toBe(true);expect(completed.code).toBeUndefined();matches(completed.value as AuralStatisticsResponse,f);await context.setOffline(false);
   await writeFile(info.outputPath('proof.json'),JSON.stringify({requestStartCut:true,pendingRejected:true,newOwnerOfflineNativeStats:true,queuedCloseWaited:true,usersOutboxPreserved:true}));
 });
+
+// N15 (Android 1b86ef6c AuralCatalog.exampleSongs): one candidate per catalog_song in id order, scored from
+// aural-popularity.db (finite 0..1 only), read from the actual installed catalog by the real worker.
+test('actual WASM worker lists Aural example songs with popularity scores',async({page})=>{
+  await call(page,'open',['owner']);await install(page,'threshold-None','11234567-1234-1234-1234-123456789012');
+  const result=await call<{songs:{slug:string;title:string;artist:string;score:number|null}[]}>(page,'auralExampleSongs',['owner']);
+  expect(result.songs.length).toBeGreaterThan(0);
+  expect(result.songs.map(song=>song.slug)).toEqual([...result.songs.map(song=>song.slug)].sort());
+  for(const song of result.songs){
+    expect(song.title).toBe('Title '+song.slug);expect(song.artist).toBe('Artist '+song.slug);
+    expect(song.score===null||(song.score>=0&&song.score<=1)).toBe(true);
+  }
+  await call(page,'close',['owner']);
+});
