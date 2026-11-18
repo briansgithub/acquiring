@@ -405,7 +405,9 @@ test('singing dock loads card targets without scores and octave persists per son
   const image=testInfo.outputPath('singing-dock-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
 
-test('playback remembers Info round-trip position and resets per-song defaults after leaving the song',async({page},testInfo)=>{
+// N10 (Android 9c1abe50): tempo, transpose, mix, instrument, arpeggio and Lock in Major are saved per song;
+// Root only and the section are not. A different song starts from defaults.
+test('playback remembers Info round-trip position and restores saved per-song controls',async({page},testInfo)=>{
   await instrument(page);await installAndOpen(page);
   const tempo=page.getByRole('slider',{name:'Tempo (%)',exact:true}),transpose=page.getByRole('slider',{name:'Transpose',exact:true});
   const mix=page.getByRole('slider',{name:'Melody mix',exact:true}),position=page.getByRole('slider',{name:'Position',exact:true});
@@ -421,10 +423,10 @@ test('playback remembers Info round-trip position and resets per-song defaults a
   await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Play song',exact:true}).click();
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
-  await expect(tempo).toHaveValue('125');await expect(transpose).toHaveValue('2');await expect(mix).toHaveValue('50');
+  await expect(tempo).toHaveValue('125');await expect(transpose).toHaveValue('2');await expect(mix).toHaveValue('20');
   await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('SINE');
   await expect(page.getByRole('combobox',{name:'Arpeggio',exact:true})).toHaveValue('4');
-  await expect(lock).not.toBeChecked();await expect(rootOnly).not.toBeChecked();
+  await expect(lock).toBeChecked();await expect(rootOnly).not.toBeChecked();
   await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(rememberedBeat,2);
   await page.getByRole('button',{name:'Back',exact:true}).click();
   await page.getByRole('button',{name:'Back',exact:true}).click();
@@ -432,9 +434,10 @@ test('playback remembers Info round-trip position and resets per-song defaults a
   await page.locator('[data-song-slug="detail-gzip"]').click();
   await page.getByRole('button',{name:'Play song',exact:true}).click();
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
-  await expect(tempo).toHaveValue('100');await expect(transpose).toHaveValue('2');
-  await expect(page.getByRole('combobox',{name:'Arpeggio',exact:true})).toHaveValue('3');
+  await expect(tempo).toHaveValue('125');await expect(transpose).toHaveValue('2');await expect(mix).toHaveValue('20');
+  await expect(page.getByRole('combobox',{name:'Arpeggio',exact:true})).toHaveValue('4');
   await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('SINE');
+  await expect(lock).toBeChecked();
   await expect.poll(async()=>Number(await position.inputValue())).toBeCloseTo(rememberedBeat,2);
   await page.getByRole('button',{name:'Back',exact:true}).click();
   await page.getByRole('button',{name:'Back',exact:true}).click();
@@ -443,9 +446,15 @@ test('playback remembers Info round-trip position and resets per-song defaults a
   await page.getByRole('button',{name:'Play song',exact:true}).click();
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
   await expect(page.getByRole('slider',{name:'Tempo (%)',exact:true})).toHaveValue('100');
-  await expect(page.getByRole('slider',{name:'Transpose',exact:true})).toHaveValue('2');
-  await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('SINE');
+  await expect(page.getByRole('slider',{name:'Transpose',exact:true})).toHaveValue('0');
+  await expect(page.getByRole('slider',{name:'Melody mix',exact:true})).toHaveValue('50');
+  await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('CLARINET');
+  await expect(page.getByRole('checkbox',{name:'Lock in Major',exact:true})).not.toBeChecked();
   await expect(page.getByRole('slider',{name:'Position',exact:true})).toHaveValue('1');
+  await page.goto('/playback/detail-gzip');
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect.poll(async()=>page.getByRole('slider',{name:'Tempo (%)',exact:true}).inputValue()).toBe('125');
+  await expect(page.getByRole('slider',{name:'Transpose',exact:true})).toHaveValue('2');
   const image=testInfo.outputPath('route-memory-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
 
@@ -555,7 +564,8 @@ test('Library Play/Shuffle opens saved queue chrome and Play queue starts playba
   await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
 
-test('settings default instrument persists and playback session does not overwrite it',async({page},testInfo)=>{
+// N10: a Playback instrument choice is that song's override; other songs follow the Settings default.
+test('settings default instrument persists and a playback choice overrides only that song',async({page},testInfo)=>{
   await instrument(page);await installAndOpen(page);
   await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('CLARINET');
   await page.getByRole('button',{name:'Back',exact:true}).click();
@@ -579,8 +589,11 @@ test('settings default instrument persists and playback session does not overwri
   await page.locator('[data-song-slug="detail-gzip"]').click();
   await page.getByRole('button',{name:'Play song',exact:true}).click();
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
-  await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('ELECTRIC_PIANO');
+  await expect(page.getByRole('combobox',{name:'Instrument',exact:true})).toHaveValue('FLUTE');
   await page.reload();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect.poll(async()=>page.getByRole('combobox',{name:'Instrument',exact:true}).inputValue()).toBe('FLUTE');
+  await page.goto('/playback/playback-context');
   await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
   await expect.poll(async()=>page.getByRole('combobox',{name:'Instrument',exact:true}).inputValue()).toBe('ELECTRIC_PIANO');
   const image=testInfo.outputPath('default-instrument-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});

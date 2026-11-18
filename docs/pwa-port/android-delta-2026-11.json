@@ -378,10 +378,11 @@
     "android/app/src/main/java/com/acquiring/android/UserDataDatabase.kt"
    ],
    "pwa": [
-    "pwa/src/features/playback/playback-route-memory.ts",
-    "pwa/src/storage/user/index.ts"
+    "pwa/src/features/playback/song-playback-settings.ts",
+    "pwa/src/features/playback/PlaybackScreen.tsx",
+    "pwa/src/app/App.tsx"
    ],
-   "pwaStatus": "missing",
+   "pwaStatus": "partial",
    "tasks": [
     "T06",
     "T12"
@@ -390,7 +391,7 @@
     "V02",
     "R01"
    ],
-   "acceptance": "Native SongPlaybackSettingsViewModelTest semantics; reload persists per song; bad stored fields fall back to defaults."
+   "acceptance": "Native SongPlaybackSettingsViewModelTest semantics; reload persists per song; bad stored fields fall back to defaults. Status 2026-11-18: store, session and Playback wiring for lock/tempo/arpeggio/mix/instrument/transpose done; cue, voice volume and loop are stored but have no UI until N07/N09/N11."
   },
   {
    "id": "N11",

@@ -1,5 +1,6 @@
 import {PlaybackScreen} from '../features/playback/PlaybackScreen';
 import {leavePlaybackSong} from '../features/playback/playback-route-memory';
+import {appSongPlaybackSettings,userSongPlaybackSettingsStore} from '../features/playback/song-playback-settings';
 import {SongScreen} from '../features/details/SongScreen';
 import {LibraryScreen,libraryRouteState,saveLibraryView} from '../features/library/LibraryScreen';
 import {mutateSongQueue,songQueueSession,songQueueVersion,subscribeSongQueue} from '../features/library/song-queue-host';
@@ -29,9 +30,9 @@ export function App() {
     let cancelled=false;
     void openGuestInstrumentPreferences().then(opened=>{
       if(cancelled){opened?.close();return;}
-      db=opened;if(opened)void hydrateAppInstrumentSession(opened);
+      db=opened;if(opened){void hydrateAppInstrumentSession(opened);appSongPlaybackSettings.attachStore(userSongPlaybackSettingsStore(opened));}
     });
-    return ()=>{cancelled=true;unbindDisplay();db?.close();};
+    return ()=>{cancelled=true;unbindDisplay();appSongPlaybackSettings.attachStore(null);db?.close();};
   },[]);
   const pathname = useSyncExternalStore(subscribeRoute, () => location.pathname, () => '/');
   const queueVersion = useSyncExternalStore(subscribeSongQueue, songQueueVersion, songQueueVersion);
@@ -41,6 +42,7 @@ export function App() {
   const home = () => {
     mutateSongQueue(session=>{if(session.active)session.dismiss();});
     leavePlaybackSong();
+    appSongPlaybackSettings.clearSession();
     navigate('/',libraryRouteState());
   };
   const backToLibrary = () => { if(history.state?.fromLibrary||history.state?.fromSong||history.state?.fromPlayback)history.back();else home(); };

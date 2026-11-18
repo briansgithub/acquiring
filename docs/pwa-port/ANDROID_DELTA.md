@@ -18,7 +18,7 @@ Every non-merge android/contracts commit in forkPoint..nativeAuthority is either
 | N07 | Spoken Number and Sung Number + Details cues: degree clips pitched to the root register, accidentals, chord suffixes from Roman/voicing, key-change mode speech in its own end-of-chord window at the new tonic (C3-B3, with transpose), independent voice volume, 1.4x ceiling and tanh soft limiter. | T07, T08 | - | missing |
 | N08 | Melody function: chord-member/non-chord-tone classification, sit/lean/move/outside colors, caption on the melody card and above the full-chord card (row reserved during rests), Melody function and Melody chord tones speech below C5, Help article. | T03, T12, T21 | V03 | missing |
 | N09 | Voice control beside Reset opening the Metadata Speak Aloud dialog (Off, then Melody/Chord/Pulses groups) with voice volume; saxophone instrument icon. | T12 | - | missing |
-| N10 | Per-song saved playback settings (lock, tempo, arpeggio, balance, instrument override or null = Settings default, transpose, cue, voice volume, loop), sanitized on load; a new song publishes defaults immediately. | T06, T12 | V02, R01 | missing |
+| N10 | Per-song saved playback settings (lock, tempo, arpeggio, balance, instrument override or null = Settings default, transpose, cue, voice volume, loop), sanitized on load; a new song publishes defaults immediately. | T06, T12 | V02, R01 | partial |
 | N11 | Song mode plays into the next section in song order (wrapping) with an in-block splice; Loop repeats the section; toggling does not move the playhead. | T08, T12 | P01, G01 | missing |
 | N12 | Playback timeline and playhead render on the display frame clock at maximum refresh; the Settings Display 60fps/Maximum preference is removed. | T12, T21 | V05, G03 | implemented |
 | N13 | Tempo/arpeggio/mix dials show their live value inside the dial. | T12 | N04 | missing |
@@ -32,7 +32,7 @@ Every non-merge android/contracts commit in forkPoint..nativeAuthority is either
 - **N07**: Byte-identical clip assets (SHA-256), bit-exact Sonic port and exact PCM equality with native fixtures for phrase scheduling, pitching, gain and limiter; clips download only when a spoken cue is enabled.
 - **N08**: Native MelodyFunctionTest and SingingMelodyRegisterTest cases reproduced exactly; product browser check of caption, colors and reserved row.
 - **N09**: Accessible dialog with native option order and titles; changing the cue does not restart transport.
-- **N10**: Native SongPlaybackSettingsViewModelTest semantics; reload persists per song; bad stored fields fall back to defaults.
+- **N10**: Native SongPlaybackSettingsViewModelTest semantics; reload persists per song; bad stored fields fall back to defaults. Status 2026-11-18: store, session and Playback wiring for lock/tempo/arpeggio/mix/instrument/transpose done; cue, voice volume and loop are stored but have no UI until N07/N09/N11.
 - **N11**: Exact PCM continuity across the splice versus a native fixture; section label and timeline follow the continuation.
 - **N12**: No Display section in Settings; the timeline redraws every animation frame from the playback clock.
 - **N13**: Value text matches native formatting; delivered together with N04 rotary drag and tap reset.

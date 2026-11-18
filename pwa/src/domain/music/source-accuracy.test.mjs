@@ -6,7 +6,7 @@ import { canonicalRoman, canonicalLetter, romanSignature, letterSignature, sourc
 import { evaluateHistoricalAccuracy, historicalInputFingerprint, sha256 } from '../../../../tooling/scripts/historicalAccuracy.mjs';
 import { interpret } from './index';
 
-const read = name => readFileSync(new URL(`../../../../contracts/fixtures/${name}.json`, import.meta.url), 'utf8');
+const read = name => readFileSync(new URL(`../../../../contracts/fixtures/${name}.json`, import.meta.url), 'utf8').replaceAll('\r\n', '\n'); // Hash committed LF bytes even under core.autocrlf.
 function observePwa(chord, key) {
   const result = interpret(chord, key);
   return { roman: result.roman, letter: result.letter,

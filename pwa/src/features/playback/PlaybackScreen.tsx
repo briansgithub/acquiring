@@ -13,13 +13,12 @@ import {SingingDock} from '../singing/SingingDock';
 import {openGuestSongOctaveOffsetStore,SongOctaveOffsetSession} from '../singing/song-octave-session';
 import type {UserDatabase} from '../../storage/user';
 import {singingTargetRequest,type SingingTargetRequest} from '../singing/singing-octave';
-import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
-import {
-  DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,DEFAULT_PLAYBACK_TEMPO_PERCENT,
-  type PlaybackSettings,type SectionPlaybackController,
-} from './controller';
+import {useEffect,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
+import {type PlaybackSettings,type SectionPlaybackController} from './controller';
+import type {Waveform} from '../../audio/synth';
 import {appInstrumentSession} from '../settings/instrument-session';
-import {enterPlayback,sessionTranspose} from './playback-route-memory';
+import {enterPlayback} from './playback-route-memory';
+import {appSongPlaybackSettings,type SongPlaybackSettingsSnapshot} from './song-playback-settings';
 import {emptyPlaybackState,playbackStatusCopy,rememberPlayback,startSectionPlayback} from './playback-screen-support';
 import {useQueuePlayback} from './queue-playback';
 import {resolveQueuedSection} from '../library/song-queue';
@@ -32,13 +31,23 @@ import './playback.css';
 import type {PlaybackScreenProps} from './view-contracts';
 
 const emptySubscribe=()=>()=>{};
+/** N10: transport settings derived from the per-song saved row; a null instrument follows the Settings default. */
+function savedTransportSettings(saved:SongPlaybackSettingsSnapshot,defaultInstrument:Waveform){
+  return {tempoPercent:Math.round(saved.tempoPercent),transpose:saved.transpose,arpeggioIndex:saved.arpeggioOptionIndex,
+    melodyPercent:Math.round(saved.melodyChordBalance*100),waveform:saved.instrument??defaultInstrument};
+}
 const emptySnapshot=()=>emptyPlaybackState;
 
 export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,autoStart=false,queueSectionId,queueSectionName,onSectionComplete,onSongUnavailable,onQueueSectionChange,queueNav}:PlaybackScreenProps){
   const [detailController,setDetailController]=useState(()=>new SongDetailController(slug));
   const detailState=useSyncExternalStore(detailController.subscribe,detailController.getSnapshot,detailController.getSnapshot);
   const [sectionId,setSectionId]=useState<string|null>(null);
-  const [majorLocked,setMajorLocked]=useState(false);
+  // N10: a layout effect enters the song before any passive effect reads its saved settings
+  // (defaults publish synchronously; a stored row replaces them when it loads).
+  useLayoutEffect(()=>{appSongPlaybackSettings.enterSong(slug);},[slug]);
+  const saved=useSyncExternalStore(appSongPlaybackSettings.subscribe,appSongPlaybackSettings.getSnapshot,appSongPlaybackSettings.getSnapshot);
+  const majorLocked=saved.songSlug===slug&&saved.lockInMajor;
+  const setMajorLocked=(value:boolean)=>appSongPlaybackSettings.updateLockInMajor(value);
   const [dockExpanded,setDockExpanded]=useState(false);
   const [singingTarget,setSingingTarget]=useState<SingingTargetRequest|null>(null);
   const singingRequestId=useRef(0);
@@ -106,14 +115,14 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
 
   useEffect(()=>{void octaveSession.enterSession(slug,`${slug}:${sectionKey}`);},[octaveSession,slug,sectionKey]);
   useEffect(()=>{void favoriteSession.enterSong(slug);},[favoriteSession,slug]);
-  useEffect(()=>{setMajorLocked(false);setDockExpanded(false);setSingingTarget(null);},[slug]);
+  useEffect(()=>{setDockExpanded(false);setSingingTarget(null);},[slug]);
 
   useEffect(()=>{
     if(!details)return;
     const named=details.sections.map(([id,section])=>({key:id,name:safeSectionName(section)}));
     let section:typeof details.sections[number]|undefined=details.sections[0];
-    let tempoPercent=DEFAULT_PLAYBACK_TEMPO_PERCENT,transpose=sessionTranspose();
-    let waveform=instrument.session,arpeggioIndex=DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,beat=1;
+    const initial=savedTransportSettings(appSongPlaybackSettings.getSnapshot(),appInstrumentSession.defaultInstrument);
+    let beat=1;
     if(playOnceKey){
       const resolved=resolveQueuedSection({
         sectionId:queueSectionId??'',sectionName:queueSectionName??'First section',
@@ -127,15 +136,14 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
       if(!section)return;
       const entry=enterPlayback(slug,section[0],details.sections.map(([id])=>id));
       section=details.sections.find(([id])=>id===entry.sectionId)??section;
-      tempoPercent=entry.tempoPercent;transpose=entry.transpose;waveform=entry.waveform;
-      arpeggioIndex=entry.arpeggioIndex;beat=entry.beat;
+      beat=entry.beat;
     }
     if(!section)return;
     intendedSection.current=section[0];
     setSectionId(section[0]);
     let owner:SectionPlaybackController|null=null;
     try{
-      owner=startSectionPlayback(section[1],playOnceKey,{tempoPercent,transpose,waveform,arpeggioIndex},beat);
+      owner=startSectionPlayback(section[1],playOnceKey,initial,beat);
       playbackOwner.current=owner;
       loadedSection.current=section[0];
       setPlayback(owner);
@@ -158,10 +166,19 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   },[details,slug,playOnceKey,queueSectionId,queueSectionName]);
 
   useEffect(()=>{
-    if(!playback||playback.closed||playback.getSnapshot().settings.waveform===instrument.session)return;
-    try{playback.updateSettings({waveform:instrument.session});}
+    if(saved.songSlug!==slug)return;
+    const waveform=saved.instrument??instrument.defaultInstrument;
+    if(instrument.session!==waveform)appInstrumentSession.selectForSession(waveform);
+  },[saved,slug,instrument.session,instrument.defaultInstrument]);
+
+  useEffect(()=>{
+    if(!playback||playback.closed||saved.songSlug!==slug)return;
+    const target=savedTransportSettings(saved,instrument.defaultInstrument),current=playback.getSnapshot().settings;
+    const patch=Object.fromEntries(Object.entries(target).filter(([key,value])=>current[key as keyof typeof target]!==value));
+    if(!Object.keys(patch).length)return;
+    try{playback.updateSettings(patch);}
     catch(error){setPlaybackError(error instanceof Error?error.message:'Playback settings could not be applied.');}
-  },[playback,instrument.session]);
+  },[playback,saved,slug,instrument.defaultInstrument]);
 
   useEffect(()=>{
     if(!playback||!selected||playbackError||loadedSection.current===selected[0])return;
@@ -185,7 +202,11 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
 
   function updateSettings(patch:Partial<PlaybackSettings>){
     try{
-      if(patch.waveform)appInstrumentSession.selectForSession(patch.waveform);
+      if(patch.waveform){appInstrumentSession.selectForSession(patch.waveform);appSongPlaybackSettings.updateInstrument(patch.waveform);}
+      if(patch.tempoPercent!==undefined)appSongPlaybackSettings.updateTempoPercent(patch.tempoPercent);
+      if(patch.transpose!==undefined)appSongPlaybackSettings.updateTranspose(patch.transpose);
+      if(patch.arpeggioIndex!==undefined)appSongPlaybackSettings.updateArpeggioOptionIndex(patch.arpeggioIndex);
+      if(patch.melodyPercent!==undefined)appSongPlaybackSettings.updateMelodyChordBalance(patch.melodyPercent/100);
       playback?.updateSettings(patch);
       if(loadedSection.current===selected?.[0])setPlaybackError(null);
     }catch(error){setPlaybackError(error instanceof Error?error.message:'Playback settings could not be applied.');}

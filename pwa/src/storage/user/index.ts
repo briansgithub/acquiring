@@ -2,7 +2,7 @@ import type { JsonValue } from '../../contracts';
 
 export const USER_DATABASE_NAME = 'acquiring-user';
 export const USER_SCHEMA_VERSION = 2;
-export const USER_STORES = ['preferences', 'playlists', 'playlistEntries', 'history', 'harvests', 'songOctaveOffsets', 'learningEvidence', 'learningSummaries', 'quizPreferences', 'learningProfiles'] as const;
+export const USER_STORES = ['preferences', 'playlists', 'playlistEntries', 'history', 'harvests', 'songOctaveOffsets', 'songPlaybackSettings', 'learningEvidence', 'learningSummaries', 'quizPreferences', 'learningProfiles'] as const;
 export type UserStore = typeof USER_STORES[number];
 export type UserNamespace = 'guest' | `account:${string}`;
 export interface Mutation {
