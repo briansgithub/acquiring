@@ -17,6 +17,7 @@ import {useEffect,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore} 
 import {SONG_MODE_COMPLETION_KEY,type PlaybackSettings,type SectionPlaybackController} from './controller';
 import type {PlaybackRootDegreeCue,Waveform} from '../../audio/synth';
 import {PlaybackVoiceControls} from './PlaybackVoiceControls';
+import {PlaybackHelpOverlay} from './PlaybackHelpOverlay';
 import {appInstrumentSession} from '../settings/instrument-session';
 import {enterPlayback} from './playback-route-memory';
 import {appSongPlaybackSettings,type SongPlaybackSettingsSnapshot} from './song-playback-settings';
@@ -216,6 +217,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
   const title=details?displayTitle(details.song.title):'Playback';
   const fullTitle=details?playbackFullTitle(details.song):null;
   const [titleSheetOpen,setTitleSheetOpen]=useState(false);
+  const [helpOpen,setHelpOpen]=useState(false);
   const headerTitle=fullTitle&&!settings.rootOnly?`Playback · ${fullTitle}`:'Playback';
 
   function updateSettings(patch:Partial<PlaybackSettings>){
@@ -267,7 +269,8 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
     majorLocked,transpose:settings.transpose,octaveOffset,
   });
 
-  return <AppShell title={headerTitle} onBack={onBack} titleActionLabel="Playback title" onTitleClick={fullTitle&&!settings.rootOnly?()=>setTitleSheetOpen(true):undefined}><div className="playback-screen" aria-busy={detailState.phase==='loading'} data-playback-phase={phase} data-playback-requested={String(active)} data-queue-section={queueSectionId??''}>
+  return <AppShell title={headerTitle} onBack={onBack} titleActionLabel="Playback title" onTitleClick={fullTitle&&!settings.rootOnly?()=>setTitleSheetOpen(true):undefined}
+    onHelp={()=>setHelpOpen(true)} helpLabel="Playback help">{helpOpen&&<PlaybackHelpOverlay onDismiss={()=>setHelpOpen(false)}/>}<div className="playback-screen" aria-busy={detailState.phase==='loading'} data-playback-phase={phase} data-playback-requested={String(active)} data-queue-section={queueSectionId??''}>
     {queueNav&&<div className="playback-queue-bar panel" data-song-queue-bar="">
       <span>{queueNav.label}</span>
       <button className="action" type="button" aria-label="Previous song" disabled={!queueNav.previousEnabled} onClick={queueNav.onPrevious}>Previous</button>

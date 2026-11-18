@@ -71,3 +71,10 @@
 /* N08 melody-function caption (native PlaybackMelodyFunctionCaption): bold 15px, row reserved during rests. */
 .melody-function-caption { min-height: 18px; margin: 0; font-size: 15px; font-weight: 700; line-height: 16px; text-align: center;
   text-shadow: 0 0 2px #000, 0 0 2px #000; }
+
+/* N03 contextual help scrim (native 72% scrim, 24dp padding). */
+.playback-help-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0, 0, 0, 0.72); color: #fff; outline: none; }
+.playback-help-overlay__body { padding: 24px; max-width: 40rem; }
+.playback-help-overlay h2 { margin: 0; font-size: 1.375rem; }
+.playback-help-overlay p { margin: 8px 0 0; }
+.playback-help-overlay h2 + p { margin-top: 12px; }

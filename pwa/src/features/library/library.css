@@ -160,3 +160,7 @@
 .library-compact-list .library-song-artist { font-size: 0.75rem; }
 .library-compact-list .library-playlist-unstar { width: 36px; height: 36px; font-size: 18px; }
 .library-home > .library-all-songs-open { flex: none; }
+/* Large text or narrow screens can make the header taller than the screen; keep the lists usable and let the
+   page scroll to them instead of collapsing them to zero height. */
+.library-scroll-region, .library-home > .library-playlists { min-height: min(14rem, 60dvh); }
+.library-favorites-box .library-playlist-songs { min-height: 6rem; }

@@ -1273,3 +1273,25 @@ test('Song mode continues into the next section and the Loop/Song choice persist
   await expect(page.locator('[data-playback-phase]')).not.toHaveAttribute('data-playback-phase','completed');
   await toggle.click();await expect(toggle).toHaveText('Loop');
 });
+
+// N03 (native showPlaybackHelp): a help action opens a scrim that any tap or key dismisses without activating
+// the control beneath it.
+test('Playback help overlay explains the controls and dismisses without activating what it covers',async({page})=>{
+  await instrument(page);await installAndOpen(page);
+  const help=page.getByRole('button',{name:'Playback help',exact:true});
+  const play=page.getByRole('button',{name:'Play',exact:true});
+  const box=(await play.boundingBox())!;
+  await help.click();
+  const overlay=page.getByRole('dialog',{name:'Playback help overlay'});
+  await expect(overlay).toBeVisible();
+  await expect(overlay).toContainText('Tap a card to hear it. Double-tap to sing it back. Use the microphone button for live pitch practice.');
+  await expect(overlay).toContainText('Tap anywhere to dismiss without activating a control.');
+  await page.mouse.click(box.x+box.width/2,box.y+box.height/2);
+  await expect(overlay).toHaveCount(0);
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-phase','stopped');
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('data-playback-requested','false');
+  await help.click();await expect(overlay).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(overlay).toHaveCount(0);await expect(help).toBeFocused();
+  await expect(page.getByRole('button',{name:'Pitch monitoring',exact:true})).toHaveAttribute('aria-pressed','false');
+});
