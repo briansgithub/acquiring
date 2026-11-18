@@ -66,8 +66,9 @@ def validate():
         assert task['status'] in {'planned','in_progress','validating','complete','blocked'}
         for dep in task['dependsOn']:
             visit(dep)
-            if task['status'] == 'complete':
-                assert by_id[dep]['status'] == 'complete'
+            # A recorded dependencyGates milestone lets a task complete on part of a dependency.
+            if task['status'] == 'complete' and dep not in task.get('dependencyGates', {}):
+                assert by_id[dep]['status'] == 'complete', f"{key} complete before {dep}"
         visiting.remove(key)
         done.add(key)
     for key in by_id:

@@ -1,0 +1,531 @@
+{
+ "schemaVersion": 1,
+ "previousAuthority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+ "nativeAuthority": "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08",
+ "forkPoint": "eada9b7d1fef83ed6763af0d9026b7a75ea7a54a",
+ "method": "Every non-merge android/contracts commit in forkPoint..nativeAuthority is either patch-id identical to a commit in the frozen 801cf798 history (a rehashed copy, already audited) or listed in commits[]. Subjects, bodies, new files and changed hunks were read. Android PlaybackRootDegreeCueTest passed 22/22 at nativeAuthority before pinning.",
+ "decisions": [
+  "2026-11-18 owner: commit the local Android edits, then pin that commit (3c887223).",
+  "2026-11-18 owner: ship the exact speech clips, downloaded on first spoken-cue use and cached.",
+  "2026-11-18 owner: port the new Library layout and rewrite the Settings Back test against it (replaces options A-E)."
+ ],
+ "commits": [
+  {
+   "sha": "b54e5aa01165d9c18be526533f94d3d9be006f1d",
+   "date": "2026-11-09",
+   "kind": "new",
+   "featureRows": [
+    "N06"
+   ],
+   "featureDelta": "Adds audible root-degree pulses under Playback chords."
+  },
+  {
+   "sha": "034243466e7897f7aab87c44e3e52b6f11816ba3",
+   "date": "2026-11-09",
+   "kind": "new",
+   "featureRows": [
+    "N07",
+    "N09"
+   ],
+   "featureDelta": "Adds spoken root-degree cue selection and bundled Kokoro degree clips."
+  },
+  {
+   "sha": "010547380fe5925502e131d10fefd9e98f0e6209",
+   "date": "2026-11-09",
+   "kind": "new",
+   "featureRows": [
+    "N07"
+   ],
+   "featureDelta": "Pitches spoken degrees to the chord root and adds concise chord-quality suffix clips."
+  },
+  {
+   "sha": "873072d17b5f4a9098080b09fb909de995016e63",
+   "date": "2026-11-09",
+   "kind": "refinement",
+   "featureRows": [
+    "N07"
+   ],
+   "featureDelta": "Separates the lower root-degree voice from Roman chord-detail speech."
+  },
+  {
+   "sha": "ca4b2efd73a99fa84878ed8a0a67cbeeccd6b82b",
+   "date": "2026-11-09",
+   "kind": "refinement",
+   "featureRows": [
+    "N07"
+   ],
+   "featureDelta": "Fits chord voice cues to playback tempo, transpose and key context."
+  },
+  {
+   "sha": "75511baa97c2d50c8bb9269a9cab49d52c547bd0",
+   "date": "2026-11-09",
+   "kind": "fix",
+   "featureRows": [
+    "N07"
+   ],
+   "featureDelta": "Distinguishes dominant-seventh and major-seventh spoken suffixes."
+  },
+  {
+   "sha": "29e1155c91df029b802698fc88e8f99dbabd9d01",
+   "date": "2026-11-09",
+   "kind": "new-and-fix",
+   "featureRows": [
+    "N07"
+   ],
+   "featureDelta": "Announces suspended chords and restores the af_heart voice for all clips."
+  },
+  {
+   "sha": "2813b39042c7a313b44036955a35b3b816b6ee8e",
+   "date": "2026-11-09",
+   "kind": "new",
+   "featureRows": [
+    "N07",
+    "N09"
+   ],
+   "featureDelta": "Adds an independent voice volume for spoken cues."
+  },
+  {
+   "sha": "38f5bec4e0a9f90cf93fa628517a8bfcbef29628",
+   "date": "2026-11-11",
+   "kind": "new",
+   "featureRows": [
+    "N08",
+    "N16"
+   ],
+   "featureDelta": "Describes the current melody note role and adds root-only melody plus scrub bar."
+  },
+  {
+   "sha": "2f14372d492860febdd9888f9c6755388bc73a96",
+   "date": "2026-11-12",
+   "kind": "new",
+   "featureRows": [
+    "N08"
+   ],
+   "featureDelta": "Colors melody roles: green sits, blue leans, amber moves, red outside the chord."
+  },
+  {
+   "sha": "b5febe0f6f336e9019fb4dd85436539912f56617",
+   "date": "2026-11-12",
+   "kind": "new",
+   "featureRows": [
+    "N08",
+    "N07"
+   ],
+   "featureDelta": "Shows and speaks one/two-word melody functions below C5 and adds a Help article; mode-change voice without tonic; full spoken suffix names."
+  },
+  {
+   "sha": "caf41a66a6e77b9d289d106051f183ffc58127de",
+   "date": "2026-11-12",
+   "kind": "new",
+   "featureRows": [
+    "N13"
+   ],
+   "featureDelta": "Shows the live value inside each playback dial."
+  },
+  {
+   "sha": "e79c67814a584e958ca5906dac02a6c142879dac",
+   "date": "2026-11-12",
+   "kind": "refinement",
+   "featureRows": [
+    "N08"
+   ],
+   "featureDelta": "Shows melody function above the full-chord card and reserves the caption row during rests."
+  },
+  {
+   "sha": "0c7f7a42a2cd8f9489c99b4b44c9ebc18711d805",
+   "date": "2026-11-12",
+   "kind": "new",
+   "featureRows": [
+    "N08"
+   ],
+   "featureDelta": "Adds the Melody chord tones cue: speaks only chord-member melody notes."
+  },
+  {
+   "sha": "aff64bd31fc8f7d5d71c0b8e1bb292fb8bb44c3d",
+   "date": "2026-11-12",
+   "kind": "new",
+   "featureRows": [
+    "N06"
+   ],
+   "featureDelta": "Adds Harmonic Distance: held tonic plus pulses per circle-of-fifths step; Lock in Major measures from the opening relative major."
+  },
+  {
+   "sha": "00b362fcefa24ceec62ac38994c2d5fc68a9566b",
+   "date": "2026-11-12",
+   "kind": "fix",
+   "featureRows": [
+    "N06"
+   ],
+   "featureDelta": "Adds one pulse to every non-tonic distance (distance 1 = 2 pulses, tritone = 7)."
+  },
+  {
+   "sha": "9ec04a87b8fda3a87b7d0d2f6aa64f1479596039",
+   "date": "2026-11-12",
+   "kind": "refinement",
+   "featureRows": [
+    "N09"
+   ],
+   "featureDelta": "Moves the say-aloud button beside Reset; the instrument button shows a saxophone."
+  },
+  {
+   "sha": "01b654b61a728969d2883d25537e2776dadcb9fd",
+   "date": "2026-11-12",
+   "kind": "new",
+   "featureRows": [
+    "N11"
+   ],
+   "featureDelta": "Song mode continues into the next section and wraps; Loop repeats the section; toggling keeps the playhead."
+  },
+  {
+   "sha": "4b93f35593fafb7769f9add5bff335193a16f3e5",
+   "date": "2026-11-12",
+   "kind": "refinement",
+   "featureRows": [
+    "N09"
+   ],
+   "featureDelta": "Groups voice choices under Melody/Chord/Pulses titled sections, Off first."
+  },
+  {
+   "sha": "6584afe76484a7c181edd6771f97bafad34f9042",
+   "date": "2026-11-12",
+   "kind": "refinement",
+   "featureRows": [
+    "N09"
+   ],
+   "featureDelta": "Renames the dialog Metadata Speak Aloud and tightens rows."
+  },
+  {
+   "sha": "4bb0972a0732d161b1913af8476c89bb18e6ec7c",
+   "date": "2026-11-12",
+   "kind": "refinement",
+   "featureRows": [
+    "N12"
+   ],
+   "featureDelta": "Renders Playback at the display maximum refresh rate instead of a 60 Hz vote."
+  },
+  {
+   "sha": "9c1abe5063d0b051e01fd9c212e99ef969471049",
+   "date": "2026-11-12",
+   "kind": "new",
+   "featureRows": [
+    "N10"
+   ],
+   "featureDelta": "Saves playback controls per song in Room schema v5 song_playback_settings."
+  },
+  {
+   "sha": "ec9f00372c0c57e764a7b3e41db5766f0779eb8b",
+   "date": "2026-11-12",
+   "kind": "refinement",
+   "featureRows": [
+    "N12"
+   ],
+   "featureDelta": "Draws the melody timeline on the display frame clock instead of recomposing per note."
+  },
+  {
+   "sha": "956878905ed3ef098ee9955453faf85aaa0a717f",
+   "date": "2026-11-12",
+   "kind": "new",
+   "featureRows": [
+    "N11"
+   ],
+   "featureDelta": "Splices the next queued section inside the audio block with no gap."
+  },
+  {
+   "sha": "25c3fee48ef13fd3092162de5dba26e13f84ae12",
+   "date": "2026-11-12",
+   "kind": "refinement",
+   "featureRows": [
+    "N14"
+   ],
+   "featureDelta": "Opens Favorites under the Library search buttons."
+  },
+  {
+   "sha": "1b86ef6ce5a253fb91cf0818953ee9d673604ff4",
+   "date": "2026-11-12",
+   "kind": "new",
+   "featureRows": [
+    "N15"
+   ],
+   "featureDelta": "Shuffles example songs from the Library by popularity cutoff, opening on the chorus and holding each song."
+  },
+  {
+   "sha": "c34651ce8ccf7e70af2f44ec804c18883f9170f4",
+   "date": "2026-11-12",
+   "kind": "refinement",
+   "featureRows": [
+    "N07"
+   ],
+   "featureDelta": "Pitches key-change mode speech to the new tonic including transpose."
+  },
+  {
+   "sha": "78eee8a83c13046a465fbd261e8ec8436f7d5f6f",
+   "date": "2026-11-13",
+   "kind": "refinement",
+   "featureRows": [
+    "N07"
+   ],
+   "featureDelta": "Schedules key-change mode speech in its own window at the end of the current chord, tonic in C3-B3."
+  },
+  {
+   "sha": "08280a4e6785f5508f8ca4d7bee2240eb5a13c6e",
+   "date": "2026-11-13",
+   "kind": "refinement",
+   "featureRows": [
+    "N15"
+   ],
+   "featureDelta": "Replaces the Any chip and free-text cutoff with a minimum-popularity menu."
+  },
+  {
+   "sha": "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08",
+   "date": "2026-11-18",
+   "kind": "refinement",
+   "featureRows": [
+    "N07",
+    "N14"
+   ],
+   "featureDelta": "Voice ceiling 1.4x with a tanh soft limiter above 0.85; compact Favorites rows."
+  }
+ ],
+ "features": [
+  {
+   "id": "N06",
+   "behavior": "Root Pulses and Harmonic Distance cues: tonic held, plus (circle-of-fifths distance + 1) decaying pulses per non-tonic chord root; Lock in Major measures from the opening relative major.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/PlaybackEngine.kt"
+   ],
+   "pwa": [
+    "pwa/src/audio/synth/playback-pcm.ts"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T07",
+    "T08",
+    "T12"
+   ],
+   "reopens": [],
+   "acceptance": "Exact PCM equality with native renderer fixtures for pulse onsets, decay, count, tonic hold and the Lock in Major reference."
+  },
+  {
+   "id": "N07",
+   "behavior": "Spoken Number and Sung Number + Details cues: degree clips pitched to the root register, accidentals, chord suffixes from Roman/voicing, key-change mode speech in its own end-of-chord window at the new tonic (C3-B3, with transpose), independent voice volume, 1.4x ceiling and tanh soft limiter.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/SpokenRootDegrees.kt",
+    "android/app/src/main/java/com/acquiring/android/PlaybackEngine.kt",
+    "android/app/src/main/java/sonic/Sonic.java",
+    "android/scripts/generate_spoken_degree_cues.py",
+    "android/app/src/main/res/raw"
+   ],
+   "pwa": [
+    "pwa/src/audio/synth/playback-pcm.ts"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T07",
+    "T08"
+   ],
+   "reopens": [],
+   "acceptance": "Byte-identical clip assets (SHA-256), bit-exact Sonic port and exact PCM equality with native fixtures for phrase scheduling, pitching, gain and limiter; clips download only when a spoken cue is enabled."
+  },
+  {
+   "id": "N08",
+   "behavior": "Melody function: chord-member/non-chord-tone classification, sit/lean/move/outside colors, caption on the melody card and above the full-chord card (row reserved during rests), Melody function and Melody chord tones speech below C5, Help article.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/MelodyFunction.kt",
+    "android/app/src/main/java/com/acquiring/android/PlaybackMelodyFunction.kt",
+    "android/app/src/main/java/com/acquiring/android/SingingMelodyRegister.kt",
+    "android/app/src/main/java/com/acquiring/android/HelpMelodyFunctionArticle.kt",
+    "android/app/src/main/java/com/acquiring/android/HelpContent.kt"
+   ],
+   "pwa": [
+    "pwa/src/domain/music",
+    "pwa/src/features/playback/PlaybackCards.tsx"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T03",
+    "T12",
+    "T21"
+   ],
+   "reopens": [
+    "V03"
+   ],
+   "acceptance": "Native MelodyFunctionTest and SingingMelodyRegisterTest cases reproduced exactly; product browser check of caption, colors and reserved row."
+  },
+  {
+   "id": "N09",
+   "behavior": "Voice control beside Reset opening the Metadata Speak Aloud dialog (Off, then Melody/Chord/Pulses groups) with voice volume; saxophone instrument icon.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/PlaybackTransportBar.kt",
+    "android/app/src/main/java/com/acquiring/android/PlaybackMenus.kt",
+    "android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
+   ],
+   "pwa": [
+    "pwa/src/features/playback/PlaybackScreen.tsx"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T12"
+   ],
+   "reopens": [],
+   "acceptance": "Accessible dialog with native option order and titles; changing the cue does not restart transport."
+  },
+  {
+   "id": "N10",
+   "behavior": "Per-song saved playback settings (lock, tempo, arpeggio, balance, instrument override or null = Settings default, transpose, cue, voice volume, loop), sanitized on load; a new song publishes defaults immediately.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/SongPlaybackSettings.kt",
+    "android/app/src/main/java/com/acquiring/android/SongPlaybackSettingsViewModel.kt",
+    "android/app/src/main/java/com/acquiring/android/UserDataDatabase.kt"
+   ],
+   "pwa": [
+    "pwa/src/features/playback/playback-route-memory.ts",
+    "pwa/src/storage/user/index.ts"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T06",
+    "T12"
+   ],
+   "reopens": [
+    "V02",
+    "R01"
+   ],
+   "acceptance": "Native SongPlaybackSettingsViewModelTest semantics; reload persists per song; bad stored fields fall back to defaults."
+  },
+  {
+   "id": "N11",
+   "behavior": "Song mode plays into the next section in song order (wrapping) with an in-block splice; Loop repeats the section; toggling does not move the playhead.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/SectionPlaybackFacts.kt",
+    "android/app/src/main/java/com/acquiring/android/PlaybackEngine.kt",
+    "android/app/src/main/java/com/acquiring/android/PlaybackController.kt",
+    "android/app/src/main/java/com/acquiring/android/SectionOrder.kt"
+   ],
+   "pwa": [
+    "pwa/src/audio/transport/pcm-worker-session.ts",
+    "pwa/src/features/playback/controller.ts"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T08",
+    "T12"
+   ],
+   "reopens": [
+    "P01",
+    "G01"
+   ],
+   "acceptance": "Exact PCM continuity across the splice versus a native fixture; section label and timeline follow the continuation."
+  },
+  {
+   "id": "N12",
+   "behavior": "Playback timeline and playhead render on the display frame clock at maximum refresh; the Settings Display 60fps/Maximum preference is removed.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/PlaybackFrameRate.kt",
+    "android/app/src/main/java/com/acquiring/android/PlaybackPlayhead.kt",
+    "android/app/src/main/java/com/acquiring/android/AppSettings.kt"
+   ],
+   "pwa": [
+    "pwa/src/features/settings/TimelineFrameRateControl.tsx",
+    "pwa/src/features/playback/PlaybackTimeline.tsx"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T12",
+    "T21"
+   ],
+   "reopens": [
+    "V05",
+    "G03"
+   ],
+   "acceptance": "No Display section in Settings; the timeline redraws every animation frame from the playback clock."
+  },
+  {
+   "id": "N13",
+   "behavior": "Tempo/arpeggio/mix dials show their live value inside the dial.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/PlaybackDial.kt"
+   ],
+   "pwa": [
+    "pwa/src/features/playback/PlaybackSettingsPanel.tsx"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T12"
+   ],
+   "reopens": [
+    "N04"
+   ],
+   "acceptance": "Value text matches native formatting; delivered together with N04 rotary drag and tap reset."
+  },
+  {
+   "id": "N14",
+   "behavior": "Library home relayout: search header and scope, Aural Quiz row, example-shuffle row, self-scrolling Favorites box under the search buttons, compact 48dp rows, All Songs row.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/LibraryHomeChrome.kt",
+    "android/app/src/main/java/com/acquiring/android/LibraryView.kt",
+    "android/app/src/main/java/com/acquiring/android/PlaylistsSection.kt",
+    "android/app/src/main/java/com/acquiring/android/LibraryPlaylistRows.kt",
+    "android/app/src/main/java/com/acquiring/android/LibrarySongRow.kt",
+    "android/app/src/main/java/com/acquiring/android/LibrarySearchSuggestions.kt"
+   ],
+   "pwa": [
+    "pwa/src/features/library/LibraryContent.tsx",
+    "pwa/src/features/library/PlaylistsSection.tsx"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T10"
+   ],
+   "reopens": [
+    "L02",
+    "L06"
+   ],
+   "acceptance": "Native order and sizing; Settings Back restores the Favorites/All Songs inner scroll, replacing the library.spec.ts:49 window.scrollY assertion per the 2026-11-18 owner decision."
+  },
+  {
+   "id": "N15",
+   "behavior": "Example-song shuffle: Aural catalog example songs filtered by a minimum-popularity menu, shuffled into the queue, each opening on its chorus (or first section) and held until the listener advances.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/LibraryExampleShuffle.kt",
+    "android/app/src/main/java/com/acquiring/android/AuralCatalog.kt",
+    "android/app/src/main/java/com/acquiring/android/SectionOrder.kt",
+    "android/app/src/main/java/com/acquiring/android/SongQueueViewModel.kt",
+    "android/app/src/main/java/com/acquiring/android/SongQueueControls.kt",
+    "android/app/src/main/java/com/acquiring/android/MainActivity.kt"
+   ],
+   "pwa": [
+    "pwa/src/features/library/song-queue.ts"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T10",
+    "T19"
+   ],
+   "reopens": [
+    "A08"
+   ],
+   "acceptance": "chorusOrFirstSection and cutoff semantics match native tests; the queue holds each song until next/previous."
+  },
+  {
+   "id": "N16",
+   "behavior": "Root-only Playback shows the current melody note, a timeline scrub bar and the melody-function description.",
+   "native": [
+    "android/app/src/main/java/com/acquiring/android/PlaybackRootOnlyRow.kt",
+    "android/app/src/main/java/com/acquiring/android/PlaybackMelodyFollow.kt",
+    "android/app/src/main/java/com/acquiring/android/PlaybackMelodyRow.kt"
+   ],
+   "pwa": [
+    "pwa/src/features/playback/PlaybackCards.tsx"
+   ],
+   "pwaStatus": "missing",
+   "tasks": [
+    "T12"
+   ],
+   "reopens": [
+    "N01",
+    "P05"
+   ],
+   "acceptance": "Root-only layout matches native rows; scrub seeks silently like the full timeline; N01 root gauge unchanged."
+  }
+ ]
+}

@@ -3305,7 +3305,11 @@
         },
         {
           "command": "npm exec -- vitest run src/domain/catalog/song-rank-eligibility.test.ts; npm run typecheck; npm run check",
-          "guards": ["T15-p2-unit-002", "T15-p2-typecheck-001", "T15-p2-check-001"],
+          "guards": [
+            "T15-p2-unit-002",
+            "T15-p2-typecheck-001",
+            "T15-p2-check-001"
+          ],
           "revision": "1a1c939cd40eb98f0cbe22e630fdc6cfe9f2fcac",
           "result": "FIRST PASS focused 19tests/1file 164ms (12 native groups/25 probes + 7 browser). typecheck exit0. Combined 960 unit/72 files 17.21s + 1 parity + strict types + production build shell 1a7e9ac45427, wrapper exit0. Unit-001 Vite JSON lone-surrogate load failed before tests; cycle1 test-only Node JSON.parse, oracle unchanged. No native recapture/SQL/UI/browser-app claim. Handoff 941 not re-claimed; actual this tree is 960."
         }
@@ -3330,7 +3334,11 @@
         {
           "at": "2026-11-07T09:12:34Z",
           "milestone": "Phase 2 local validation complete on dirty 1a1c939c tree: 19 focused, 960 unit, 1 parity, types, production shell 1a7e9ac45427. Direct push next.",
-          "guards": ["T15-p2-unit-002", "T15-p2-typecheck-001", "T15-p2-check-001"]
+          "guards": [
+            "T15-p2-unit-002",
+            "T15-p2-typecheck-001",
+            "T15-p2-check-001"
+          ]
         }
       ],
       "blocker": null,
@@ -4593,7 +4601,7 @@
         "pwa/src/domain/harvest/"
       ],
       "acceptance": "Multi-tab section extraction, bounded fetch, offline overlay and catalog-swap preservation",
-      "status": "in-progress",
+      "status": "in_progress",
       "owner": "codex",
       "branch": "codex/pwa-continuation",
       "worktree": "/workspace/acquiring",
@@ -4913,5 +4921,7 @@
       "weeklyResetsAt": 1792876816,
       "action": "Fivehour>=70: no new slice/worker/expensivecheck. Existingoracle integrated/verified, save recovery checkpoint thenyield. Weekly100override stillactive; recordedfutureweeklyresetdoesnotblockremainingordinaryallowance."
     }
-  }
+  },
+  "currentNativeAuthority": "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08",
+  "currentNativeAuthorityNote": "Frozen history audit stays at baseline 801cf798; post-baseline Android work is ledgered in android-delta-2026-11.json (validate_android_delta.py)."
 }
