@@ -1,4 +1,7 @@
 """Tiny native target fixtures plus explicit browser transport/refusal mutations."""
+import sys as _sys, pathlib as _pathlib
+_sys.path.insert(0,str(_pathlib.Path(__file__).resolve().parent))
+from fixture_root import fixture_root
 import argparse,base64,gzip,hashlib,importlib.util,json,re,sqlite3,struct,uuid
 from contextlib import closing
 from pathlib import Path
@@ -11,7 +14,7 @@ def main():
  if len(found)!=1 or not found[0]['supportsModeAnalysis']:parser.error('Expected modern accepted native probe')
  row=found[0]
  path=Path(__file__).with_name('package_catalog.py');spec=importlib.util.spec_from_file_location('producer',path);producer=importlib.util.module_from_spec(spec);spec.loader.exec_module(producer)
- root=Path.cwd()/'.artifacts/pwa-port/aural-target-fixture'/str(uuid.uuid4());source=root/'source';source.mkdir(parents=True);entries=[]
+ root=fixture_root('aural-target-fixture');source=root/'source';source.mkdir(parents=True);entries=[]
  for name in sorted(producer.REQUIRED['aural']):
   path=source/name;metadata=({'schema_version':'aural-catalog-3','snapshot_id':args.snapshot,'sequence_reduction_version':'unique-transitions-1'} if name=='aural-catalog.db' else {'catalog_snapshot':args.snapshot} if name=='aural-evidence.db' else {'snapshotId':'target-fixture-popularity','provider':'acceptance-fixture'})
   with closing(sqlite3.connect(path)) as db:

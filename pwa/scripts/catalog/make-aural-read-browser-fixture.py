@@ -1,4 +1,7 @@
 """Tiny actual SQLite header/array fixtures; no public catalogs or existing proof mutation."""
+import sys as _sys, pathlib as _pathlib
+_sys.path.insert(0,str(_pathlib.Path(__file__).resolve().parent))
+from fixture_root import fixture_root
 import argparse,gzip,hashlib,importlib.util,json,re,sqlite3,struct,uuid
 from contextlib import closing
 from pathlib import Path
@@ -7,7 +10,7 @@ def main():
  parser=argparse.ArgumentParser();parser.add_argument('--snapshot',default='d'*64);parser.add_argument('--suffix-count',type=int,default=2);parser.add_argument('--bad-array',action='store_true');args=parser.parse_args()
  if not re.fullmatch('[0-9a-f]{64}',args.snapshot) or not 0<=args.suffix_count<=16:parser.error('Expected bounded fixture arguments')
  path=Path(__file__).with_name('package_catalog.py');spec=importlib.util.spec_from_file_location('producer',path);producer=importlib.util.module_from_spec(spec);spec.loader.exec_module(producer)
- root=Path.cwd()/'.artifacts/pwa-port/aural-read-fixture'/str(uuid.uuid4());source=root/'source';source.mkdir(parents=True);entries=[]
+ root=fixture_root('aural-read-fixture');source=root/'source';source.mkdir(parents=True);entries=[]
  for name in sorted(producer.REQUIRED['aural']):
   path=source/name
   metadata=({'schema_version':'aural-catalog-3','snapshot_id':args.snapshot,'sequence_reduction_version':'unique-transitions-1'} if name=='aural-catalog.db' else {'catalog_snapshot':args.snapshot} if name=='aural-evidence.db' else {'snapshotId':'header-fixture-popularity','provider':'acceptance-fixture'})

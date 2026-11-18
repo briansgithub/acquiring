@@ -2,6 +2,9 @@
 --variant bad-confidence is browser refusal evidence only; expected remains native.
 No native capture, score/count arithmetic, SQL simulation or production worker.
 """
+import sys as _sys, pathlib as _pathlib
+_sys.path.insert(0,str(_pathlib.Path(__file__).resolve().parent))
+from fixture_root import fixture_root
 import argparse,gzip,hashlib,importlib.util,json,re,sqlite3,struct,uuid
 from contextlib import closing
 from pathlib import Path
@@ -21,7 +24,7 @@ def main():
  if args.variant and changed is None:parser.error('bad-confidence requires a nonnull native popularity score')
  path=Path(__file__).with_name('package_catalog.py');spec=importlib.util.spec_from_file_location('producer',path)
  producer=importlib.util.module_from_spec(spec);spec.loader.exec_module(producer)
- root=Path.cwd()/'.artifacts/pwa-port/aural-statistics-fixture'/str(uuid.uuid4())
+ root=fixture_root('aural-statistics-fixture')
  source=root/'source';source.mkdir(parents=True,exist_ok=False);entries=[]
  for name in sorted(producer.REQUIRED['aural']):
   path=source/name

@@ -1,4 +1,7 @@
 """Generate tiny real SQLite catalogs under ignored artifacts, never app public assets."""
+import sys as _sys, pathlib as _pathlib
+_sys.path.insert(0,str(_pathlib.Path(__file__).resolve().parent))
+from fixture_root import fixture_root
 import argparse
 import re
 from contextlib import closing
@@ -14,7 +17,7 @@ producer_path = Path(__file__).with_name('package_catalog.py')
 spec = importlib.util.spec_from_file_location('producer', producer_path)
 producer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(producer)
-root = Path.cwd() / '.artifacts' / 'pwa-port' / 'browser-catalog' / str(uuid.uuid4())
+root = fixture_root('browser-catalog')
 source, output = root / 'source', root / 'bundle'
 source.mkdir(parents=True)
 parser = argparse.ArgumentParser()

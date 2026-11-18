@@ -127,9 +127,10 @@ test('playback reloads offline without autoplay and fits narrow large text',asyn
   const view=page.locator('[data-playback-phase]');await expect(view).toHaveAttribute('aria-busy','false');await expect(page.getByRole('slider',{name:'Position',exact:true})).toBeEnabled();await expect(view).toHaveAttribute('data-playback-phase','stopped');await expect(view).toHaveAttribute('data-playback-requested','false');expect((await audio(page)).contexts).toHaveLength(0);
   await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  const controls=view.locator('.playback-transport button,.playback-field select,.playback-field input[type=range]');
-  // Favorites/Play/Mic/Reset, four ranges and three selects; checkbox uses its 44px label.
-  expect(await controls.count()).toBe(11);
+  const controls=view.locator('.playback-transport button:not(.playback-voice-dialog button),.playback-field select,.playback-field input[type=range]');
+  // Favorites/Play/Mic/Voice settings/Reset/Loop-Song, four ranges and three selects (N09/N11 add Voice and Loop);
+  // the closed voice dialog's buttons are excluded; checkbox uses its 44px label.
+  expect(await controls.count()).toBe(13);
   expect(await controls.evaluateAll(elements=>elements.every(element=>{const b=element.getBoundingClientRect();return b.width>=44&&b.height>=44;}))).toBe(true);
   const path=testInfo.outputPath('playback-narrow.png');await mkdir(resolve(path,'..'),{recursive:true});await page.screenshot({path,fullPage:true});
   await page.getByRole('button',{name:'Play',exact:true}).click();await expect.poll(async()=>(await audio(page)).items.some(item=>item.peak>.001)).toBe(true);

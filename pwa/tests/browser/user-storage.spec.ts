@@ -22,7 +22,7 @@ const command = (operationId: string, store: UserStore = 'preferences'): Mutatio
 test('records and outbox survive reload, namespace changes and isolated catalog replacement', async ({ page }) => {
   const name = 'test-user-restart';
   await call(page, 'open', [name]);
-  for (const store of ['preferences', 'playlists', 'playlistEntries', 'history', 'harvests', 'songOctaveOffsets', 'learningEvidence', 'learningSummaries', 'quizPreferences', 'learningProfiles'] as UserStore[]) {
+  for (const store of ['preferences', 'playlists', 'playlistEntries', 'history', 'harvests', 'songOctaveOffsets', 'songPlaybackSettings', 'learningEvidence', 'learningSummaries', 'quizPreferences', 'learningProfiles'] as UserStore[]) {
     await call(page, 'mutate', [command(`save-${store}`, store)]);
   }
   await page.reload(); await page.waitForFunction(() => !!window.storageHarness);
@@ -37,8 +37,9 @@ test('records and outbox survive reload, namespace changes and isolated catalog 
     return JSON.stringify({ guest: await Promise.all(h.stores.map(store => h.get('guest', store, 'example'))), account: await h.get(h.account, 'preferences', 'example'), pending: await h.pending('guest') });
   });
   const snapshot = JSON.parse(serialized) as { guest: unknown[]; account: unknown; pending: unknown[] };
-  expect(snapshot.guest).toHaveLength(10); expect(snapshot.guest.every(Boolean)).toBe(true);
-  expect(snapshot.account).toBeNull(); expect(snapshot.pending).toHaveLength(10);
+  // One record per USER_STORES entry (N10 added songPlaybackSettings).
+  expect(snapshot.guest).toHaveLength(11); expect(snapshot.guest.every(Boolean)).toBe(true);
+  expect(snapshot.account).toBeNull(); expect(snapshot.pending).toHaveLength(11);
 });
 
 test('one command commits atomically and replay cannot duplicate or overwrite an acknowledged operation', async ({ page }) => {
