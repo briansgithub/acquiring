@@ -80,3 +80,14 @@ export function ionianContextStaffDegree(sd: string, relativeOctave: number, sou
 export function relativeIonianStaffDegree(sd: string, relativeOctave: number, sourceKey: KeyInfo): number | null {
   return ionianContextStaffDegree(sd, relativeOctave, sourceKey, relativeIonianKey(sourceKey));
 }
+
+/** Native circleOfFifthsDistance (3c887223): shortest circle-of-fifths steps between two pitch classes, 0..6. */
+export function circleOfFifthsDistance(fromPitchClass: number, toPitchClass: number): number {
+  const fifths = floorMod((floorMod(toPitchClass, 12) - floorMod(fromPitchClass, 12)) * 7, 12);
+  return Math.min(fifths, 12 - fifths);
+}
+
+/** Native tonicPitchClass: pitch class of degree 1 in the key. */
+export function tonicPitchClass(key: KeyInfo): number {
+  return floorMod(getMidiNote('1', 0, key), 12);
+}

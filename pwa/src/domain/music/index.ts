@@ -3,7 +3,7 @@ export { NOTE_TO_PC, SCALE_INTERVALS, CHORD_QUALITIES, ROMAN_NUMERALS, MAJOR_LAB
 export { DIATONIC_LETTERS, SpelledPitch } from './spelled-pitch';
 export type { DiatonicLetter, LetterName, NoteNameAccidentalPreference } from './spelled-pitch';
 export { normalizeTonic, getModifierValue, getRawDegree, generateScaleLabels, getNoteLabel, resolveScaleDegreePitch, getDegreeLabelFromSpelling, getMidiNote, getDegreeLabelFromMidi, getRelativeDegreeLabel } from './theory';
-export { relativeIonianTonicDegree, canonicalScaleName, relativeIonianKey, noteNameAccidentalPreference, degreeInKey, relativeIonianDegree, ionianContextDegreeLabel, relativeIonianDegreeLabel, ionianContextPreviewAudioNote, ionianContextStaffDegree, relativeIonianStaffDegree } from './relative-ionian';
+export { relativeIonianTonicDegree, canonicalScaleName, relativeIonianKey, noteNameAccidentalPreference, degreeInKey, relativeIonianDegree, ionianContextDegreeLabel, relativeIonianDegreeLabel, ionianContextPreviewAudioNote, ionianContextStaffDegree, relativeIonianStaffDegree, circleOfFifthsDistance, tonicPitchClass } from './relative-ionian';
 export type { RelativeIonianDegree } from './relative-ionian';
 export { resolveChordRoot } from './chord-root';
 export type { ChordRootContext, ResolvedChordRoot } from './chord-root';
@@ -11,3 +11,6 @@ export { ChordTone, VoicedChord, buildChordVoicing, getChordNotes, getResolvedRo
 export { getRomanSymbol, getLetterName, getRelativeIonianRomanSymbol, interpret, getUniqueDisplayChords } from './chord-interpretation';
 export type { ChordInterpretation } from './chord-interpretation';
 export { IntervalDirection, NamedInterval, MeasuredInterval, calculateNamedInterval, calculateMeasuredInterval } from './interval';
+export { spokenSuffixForChord } from './spoken-chord-suffix';
+export type { SpokenChordSuffixName } from './spoken-chord-suffix';
+export * from './melody-function';

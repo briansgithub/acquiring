@@ -15,9 +15,9 @@ interface NativeCase {label:string;section:ExtractedSection;melody:MelodyNote[];
 
 describe('frozen native section-to-playback timeline',()=>{
   it('matches every complete native timeline without mutating source payloads',()=>{
-    expect(native.authority).toBe('801cf7984171d772afc4406ddb5c79c0cb7fd20a');
+    expect(native.authority).toBe('3c887223b2d06b4c3a1010d0f8a23ceaf8977d08');
     expect(native.builderSha256).toMatch(/^[0-9a-f]{64}$/);
-    expect(native.cases.length).toBe(22);
+    expect(native.cases.length).toBe(24);
     for(const row of native.cases as unknown as NativeCase[]){
       freeze(row.section);freeze(row.melody);
       const before=JSON.stringify([row.section,row.melody]);
@@ -33,10 +33,11 @@ describe('frozen native section-to-playback timeline',()=>{
   it('uses written simple-mode root independently of sounding inversion and keeps melody before a tied chord',()=>{
     const result=buildPlaybackTimeline({chords:[{root:1,type:5,inversion:1}]},
       [{sd:'1',beat:1,duration:1,octave:0,isRest:false}],4);
-    expect(result.events).toEqual([
-      {id:1,startBeat:1,endBeat:2,layer:'MELODY',fullMidiNotes:[60],rootMidiNote:null},
-      {id:2,startBeat:1,endBeat:2,layer:'CHORD',fullMidiNotes:[52,55,60],rootMidiNote:48},
-    ]);
+    expect(result.events).toHaveLength(2);
+    expect(result.events[0]).toMatchObject({id:1,startBeat:1,endBeat:2,layer:'MELODY',fullMidiNotes:[60],rootMidiNote:null,
+      spokenMelodyCue:'root',melodyCueMidi:48});
+    expect(result.events[1]).toMatchObject({id:2,startBeat:1,endBeat:2,layer:'CHORD',fullMidiNotes:[52,55,60],rootMidiNote:48,
+      rootDegree:1,rootDegreeAlteration:0,fullChordRootMidiNote:60,keyScale:'major',keyTonicMidi:60,fifthsFromKeyTonic:0});
     expect(result.completionKey).toBeNull();
   });
 

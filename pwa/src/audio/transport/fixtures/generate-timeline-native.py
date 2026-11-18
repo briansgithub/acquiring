@@ -5,11 +5,15 @@ Uses the existing cached Kotlin compiler and serialization JSON runtime; all com
 products/input staging are ignored. The portable regression fixture belongs in Git.
 """
 from pathlib import Path
-import hashlib,json,os,runpy,shutil,subprocess
+import hashlib,json,os,re,runpy,shutil,subprocess
 OUT=Path(__file__).resolve().parent
 CORE=runpy.run_path(str(OUT.parents[1]/'synth/fixtures/generate-native.py'))
 ROOT,CACHE=CORE['ROOT'],CORE['CACHE']
 WORK=ROOT/'.artifacts/pwa-port/t08-timeline-native'
+AUTHORITY='3c887223b2d06b4c3a1010d0f8a23ceaf8977d08'
+
+def show(name):
+    return subprocess.check_output(['git','show',f'{AUTHORITY}:android/app/src/main/java/com/acquiring/android/{name}.kt'],cwd=ROOT).decode('utf-8')
 
 def cases():
     rows=[]
@@ -47,6 +51,20 @@ def cases():
         [note('8'),note('bb7',2,1,-1)],dict(keys=[dict(tonic='Ab',scale='major')]))
     add('fractional-end-and-boundary',[dict(root=1,type=5,beat=1.25,duration=.5),dict(root=5,type=7,beat=2.5)],
         [note('1',1,.25),note('2',1.25,.5),note('3',1.5,.25)],end=1.5)
+    # 3c887223 (N06-N08): melody functions, singing-range fold, suffixes, fifths and modes.
+    add('melody-functions-and-fold',[
+        dict(root=1,type=5,beat=1,duration=2),dict(root=5,type=7,beat=3,duration=2),dict(root=1,type=5,beat=5,duration=1),
+        dict(root=4,type=5,beat=6,duration=1),dict(root=4,type=5,beat=7,duration=1),dict(root=1,type=5,beat=8,duration=1)],
+        [note('1',1,.5,2),note('2',1.5,.5,2),note('3',2,.5,2),note('1',2.5,1,2),note('7',3.5,.5,1),note('5',4,.25,2),
+         note('6',4.25,.25,2),note('5',4.5,.5,2),note('#4',5,.5,1),note('5',5.5,.5,1),note('1',6,3,-2)],
+        dict(keys=[dict(tonic='C',scale='major',beat=1)]),end=9)
+    add('suffixes-fifths-and-modes',[
+        dict(root=1,type=7,beat=1,duration=1),dict(root=4,type=5,suspensions=[4],beat=2,duration=1),
+        dict(root=5,type=7,suspensions=[2,4],beat=3,duration=1),dict(root=7,type=7,beat=4,duration=1),
+        dict(root=2,type=7,omits=[7],beat=5,duration=1),dict(root=3,type=5,borrowed='minor',beat=6,duration=1),
+        dict(root=6,type=7,applied=5,beat=7,duration=1),dict(root=4,type=5,beat=8,duration=1)],
+        [note('5',1,2),note('4',3,1),note('3',4,2),note('b7',6,1),note('1',7,2,1)],
+        dict(keys=[dict(tonic='D',scale='dorian',beat=1),dict(tonic='E',scale='mixolydian',beat=5),dict(tonic='A',scale='minor',beat=7)]),end=9)
     return rows
 
 DRIVER=r'''package com.acquiring.android
@@ -66,6 +84,11 @@ fun main(args:Array<String>) {
       putJsonArray("events") {for(e in timeline.events) add(buildJsonObject {
         put("id",e.id);put("startBeat",e.startBeat);put("endBeat",e.endBeat);put("layer",e.layer.name)
         put("fullMidiNotes",JsonArray(e.fullMidiNotes.map(::JsonPrimitive)));put("rootMidiNote",e.rootMidiNote)
+        put("rootDegree",e.rootDegree);put("rootDegreeAlteration",e.rootDegreeAlteration)
+        put("fullChordRootMidiNote",e.fullChordRootMidiNote);put("spokenChordSuffix",e.spokenChordSuffix?.name)
+        put("relativeMajorRootDegree",e.relativeMajorRootDegree?.let { d -> buildJsonObject { put("degree",d.degree);put("alteration",d.alteration) } } ?: JsonNull)
+        put("fifthsFromKeyTonic",e.fifthsFromKeyTonic);put("fifthsFromMajorTonic",e.fifthsFromMajorTonic)
+        put("keyScale",e.keyScale);put("spokenMelodyCue",e.spokenMelodyCue);put("melodyCueMidi",e.melodyCueMidi);put("keyTonicMidi",e.keyTonicMidi)
       })}
     })
   }
@@ -74,20 +97,26 @@ fun main(args:Array<String>) {
 
 def main():
     WORK.mkdir(parents=True,exist_ok=True)
+    # Re-pinned to Android 3c887223: the builder folds melody into the singing range and adds root-degree,
+    # spoken-suffix, circle-of-fifths, key and melody-function cue fields (N06-N08).
     names=['MusicTheory','HooktheoryModels','SpelledInterval','RelativeIonianContext','AudioPitchAdapter',
-        'ChordInterpreter','ChordLetterFormat','ChordVoicing']
-    source={name:CORE['source'](name) for name in names}
-    playback=CORE['source']('PlaybackEngine');timing=CORE['source']('PlaybackTiming')
+        'ChordInterpreter','ChordLetterFormat','ChordVoicing','MelodyFunction','SingingMelodyRegister','PlaybackIntervalState']
+    source={name:show(name) for name in names}
+    playback=show('PlaybackEngine');timing=show('PlaybackTiming');spoken=show('SpokenRootDegrees')
     models=playback[playback.index('internal enum class PlaybackAudioLayer'):playback.index('internal data class PlaybackConfig')]
     builder=playback[playback.index('internal fun buildPlaybackTimeline'):]
     normalization=timing[timing.index('internal fun normalizePlaybackBeat'):timing.index('internal fun playbackEventEndBeat')]
-    source['Timeline']='package com.acquiring.android\nimport kotlinx.serialization.json.*\nprivate const val FIRST_PLAYBACK_BEAT=1.0\n'+models+normalization+builder
+    suffix=spoken[spoken.index('internal enum class SpokenChordSuffix'):spoken.index('internal data class SpokenPhrase')]
+    ids=sorted(set(re.findall(r'R\.raw\.(\w+)',suffix)))
+    stub='object R { object raw {\n'+''.join(f'  const val {n} = {i+1}\n' for i,n in enumerate(ids))+'} }\n'
+    source['Timeline']=('package com.acquiring.android\nimport kotlinx.serialization.json.*\nimport kotlin.math.abs\nimport kotlin.math.tanh\n'
+        'private const val FIRST_PLAYBACK_BEAT=1.0\n'+stub+suffix+models+normalization+builder)
     for name,text in source.items():(WORK/(name+'.kt')).write_text(text,encoding='utf-8')
     (WORK/'Driver.kt').write_text(DRIVER,encoding='utf-8')
     rows=cases();(WORK/'input.json').write_text(json.dumps(rows,ensure_ascii=False),encoding='utf-8')
     cached=CORE['cached'];stdlib=cached('org.jetbrains.kotlin','kotlin-stdlib');annotations=cached('org.jetbrains','annotations')
     runtime=[stdlib,annotations,cached('org.jetbrains.kotlinx','kotlinx-serialization-json-jvm'),cached('org.jetbrains.kotlinx','kotlinx-serialization-core-jvm')]
-    compiler=[cached('org.jetbrains.kotlin',n) for n in ['kotlin-compiler-embeddable','kotlin-stdlib','kotlin-script-runtime','kotlin-daemon-embeddable']]
+    compiler=[cached('org.jetbrains.kotlin',n) for n in ['kotlin-compiler-embeddable','kotlin-stdlib','kotlin-script-runtime','kotlin-daemon-embeddable','kotlin-reflect']]
     compiler+=list((CACHE/'org.jetbrains.intellij.deps/trove4j').glob('**/*.jar'))+[cached('org.jetbrains.kotlinx','kotlinx-coroutines-core-jvm'),annotations]
     java=shutil.which('java')
     if not java:raise RuntimeError('Existing Java and cached Kotlin compiler/runtime required')
@@ -99,7 +128,7 @@ def main():
         'com.acquiring.android.DriverKt',str(WORK/'input.json')],cwd=ROOT).decode('utf-8').splitlines()
     assert len(lines)==len(rows)
     for row,line in zip(rows,lines):row['expected']=json.loads(line)
-    fixture={'authority':CORE['AUTHORITY'],'builderSha256':hashlib.sha256(builder.encode()).hexdigest(),
+    fixture={'authority':AUTHORITY,'builderSha256':hashlib.sha256(builder.encode()).hexdigest(),
         'dependencySha256':{n:hashlib.sha256(v.encode()).hexdigest() for n,v in source.items()},
         'adapter':'Unchanged frozen builder, timing normalization and real native theory/models; JSON-only input/output adapter; no TypeScript.',
         'cases':rows}
