@@ -28,7 +28,9 @@ async function install(page:Page,url='/'){
   await page.getByRole('button',{name:'Download song library',exact:true}).click();
   await expect(page.getByText('Downloaded and verified',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Back',exact:true}).click();
-  await expect(rows(page)).toHaveCount(20);
+  // N14 (Android 3c887223): the home shows the Favorites box; songs are listed only for a search.
+  await expect(page.locator('[data-favorites-box]')).toBeVisible();
+  await expect(rows(page)).toHaveCount(0);
 }
 test('actual Library installs,pages,opens a song route and restores search/page/scroll/focus on Back',async({page})=>{
   await install(page);
@@ -36,17 +38,19 @@ test('actual Library installs,pages,opens a song route and restores search/page/
   await search.fill('ZZ Filler');await expect(rows(page)).toHaveCount(20);
   await page.getByRole('button',{name:'Load more songs',exact:true}).click();await expect(rows(page)).toHaveCount(40);
   const selected=rows(page).nth(25);await selected.scrollIntoViewIfNeeded();const slug=await selected.getAttribute('data-song-slug');
-  const before=await page.evaluate(()=>scrollY);expect(before).toBeGreaterThan(0);
+  // N14: results scroll inside their own region (native LazyColumn); Back restores that region, not window.scrollY.
+  const region=page.locator('[data-library-scroll="results"]');
+  const before=await region.evaluate(node=>node.scrollTop);expect(before).toBeGreaterThan(0);
   await selected.click();await expect(page).toHaveURL(/\/songs\//);
   await page.getByRole('button',{name:'Back',exact:true}).click();
   await expect(search).toHaveValue('ZZ Filler');await expect(rows(page)).toHaveCount(40);
   await expect.poll(()=>page.evaluate(()=>document.activeElement?.getAttribute('data-song-slug'))).toBe(slug);
   await expect(page.locator('.library-content')).toHaveAttribute('aria-busy','false');
-  await expect.poll(async()=>Math.abs((await page.evaluate(()=>scrollY))-before)).toBeLessThan(3);
+  await expect.poll(async()=>Math.abs((await region.evaluate(node=>node.scrollTop))-before)).toBeLessThan(3);
   await page.getByRole('button',{name:'Settings',exact:true}).click();await expect(page.getByRole('heading',{name:'Settings',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Back',exact:true}).click();await expect(rows(page)).toHaveCount(40);await expect(search).toHaveValue('ZZ Filler');
   await expect(page.locator('.library-content')).toHaveAttribute('aria-busy','false');
-  await expect.poll(async()=>Math.abs((await page.evaluate(()=>scrollY))-before)).toBeLessThan(3);
+  await expect.poll(async()=>Math.abs((await region.evaluate(node=>node.scrollTop))-before)).toBeLessThan(3);
 });
 test('artist view and browser Back retain draft;unmatched search clears;second tab can retry ownership',async({page,context})=>{
   await install(page);const search=page.getByRole('searchbox',{name:'Search songs',exact:true});
@@ -56,15 +60,16 @@ test('artist view and browser Back retain draft;unmatched search clears;second t
   await expect(page.getByRole('heading',{name:'Artist-A',exact:true})).toBeVisible();await expect(rows(page)).toHaveCount(1);
   await page.goBack();await expect(search).toHaveValue('ALPHA');await expect(rows(page)).toHaveCount(6);
   await search.fill('No such song 938475');await expect(page.getByRole('heading',{name:'No matching songs.',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Clear search',exact:true}).click();await expect(rows(page)).toHaveCount(20);
+  await page.getByRole('button',{name:'Clear search',exact:true}).click();await expect(rows(page)).toHaveCount(0);await expect(page.locator('[data-favorites-box]')).toBeVisible();
   const second=await context.newPage();await second.goto('http://127.0.0.1:4173/');
   await expect(second.getByRole('alert')).toContainText('another tab');
-  await page.close();await second.getByRole('button',{name:'Retry',exact:true}).click();await expect(rows(second)).toHaveCount(20);
+  await page.close();await second.getByRole('button',{name:'Retry',exact:true}).click();await expect(second.locator('[data-favorites-box]')).toBeVisible();
+  await second.getByRole('searchbox',{name:'Search songs',exact:true}).fill('ALPHA');await expect(rows(second)).toHaveCount(6);
 });
 test('fresh offline reload can search installed songs at320px and200percent text',async({page,context})=>{
   await install(page);
   await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise<void>(resolve=>navigator.serviceWorker.addEventListener('controllerchange',()=>resolve(),{once:true}));});
-  chunkRequests=[];await context.setOffline(true);await page.reload();await expect(rows(page)).toHaveCount(20);
+  chunkRequests=[];await context.setOffline(true);await page.reload();await expect(page.locator('[data-favorites-box]')).toBeVisible();
   await page.setViewportSize({width:320,height:640});await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
   await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('ALPHA');await expect(rows(page)).toHaveCount(6);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -82,18 +87,19 @@ test('development StrictMode releases replayed readers and supports Library remo
   await page.getByRole('button',{name:'Back',exact:true}).click();
   await expect(search).toHaveValue('ALPHA');await expect(rows(page)).toHaveCount(6);
 });
-test('Playlists Favorites accordion is empty until a song is starred and hides while search is focused',async({page})=>{
+// N14 (Android 25c3fee4): Favorites opens under the search buttons by default; no Playlists accordion.
+test('Favorites box opens under search, is empty until a song is starred and hides while search is focused',async({page})=>{
   await install(page);
-  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Expand Favorites',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Expand Favorites',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Collapse Favorites',exact:true})).toBeVisible();
   await expect(page.getByText('No songs yet. Tap the star on the Playback tab to add one.',{exact:true})).toBeVisible();
   await expect(page.getByRole('button',{name:'Play playlist',exact:true})).toHaveCount(0);
-  await page.getByRole('searchbox',{name:'Search songs',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toHaveCount(0);
-  await expect(page.getByRole('button',{name:'Expand Favorites',exact:true})).toHaveCount(0);
+  const search=page.getByRole('searchbox',{name:'Search songs',exact:true});
+  expect(await search.evaluate((node,box)=>!!(node.compareDocumentPosition(box!)&Node.DOCUMENT_POSITION_FOLLOWING),await page.locator('[data-favorites-box]').elementHandle())).toBe(true);
+  await search.click();
+  await expect(page.locator('[data-favorites-box]')).toHaveCount(0);
   await page.getByRole('button',{name:'Clear search',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Collapse Favorites',exact:true})).toBeVisible();
 });
 test('focused empty search shows Recent Selections in HistoryManager order and not on launch',async({page})=>{
   await install(page);
@@ -171,6 +177,6 @@ test('All Songs groups expand one heading, filter in place, and hide while searc
   await page.getByRole('button',{name:'Clear song filter',exact:true}).click();
   await expect(page.locator('[data-all-songs] [data-song-slug="a-alpha"]')).toBeVisible();
   await page.getByRole('button',{name:'Back to Library',exact:true}).click();
-  await expect(rows(page)).toHaveCount(20);
+  await expect(page.locator('[data-favorites-box]')).toBeVisible();
   await expect(page.getByRole('button',{name:'All Songs',exact:true})).toBeVisible();
 });

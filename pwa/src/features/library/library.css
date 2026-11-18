@@ -143,3 +143,20 @@
   .library-song { align-items: stretch; flex-direction: column; }
   .library-artist-action { align-self: flex-start; }
 }
+
+/* N14 (Android 3c887223): the Library home is one screen tall. Search results or the Favorites box fill the
+   remaining height and scroll inside themselves (native LazyColumn weight 1f); All Songs stays below. */
+.library-home { display: flex; flex-direction: column; height: calc(100dvh - 64px - 40px); }
+@media (max-width: 480px) { .library-home { height: calc(100dvh - 56px - 36px); } }
+.library-home > .library-header { flex: none; }
+.library-scroll-region { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.library-home > .library-playlists { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.library-favorites-box { display: flex; flex-direction: column; min-height: 0; margin-top: 8px; padding: 0 4px 4px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.24); border-radius: 12px; }
+.library-favorites-box.library-playlist--open { flex: 1 1 auto; }
+.library-favorites-box .library-playlist-songs { flex: 1 1 auto; min-height: 0; overflow-y: auto; max-height: none; }
+.library-compact-list .library-song { min-height: 48px; padding-block: 4px; }
+.library-compact-list .library-song-title { font-size: 0.875rem; }
+.library-compact-list .library-song-artist { font-size: 0.75rem; }
+.library-compact-list .library-playlist-unstar { width: 36px; height: 36px; font-size: 18px; }
+.library-home > .library-all-songs-open { flex: none; }

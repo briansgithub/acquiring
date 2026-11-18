@@ -12,8 +12,9 @@ interface PlaylistsSectionProps {
 
 export function PlaylistsSection({browseBySlugs,onOpenSong}:PlaylistsSectionProps){
   const [store,setStore]=useState<PlaylistStore|null>(null);
-  const [sectionExpanded,setSectionExpanded]=useState(true);
-  const [expandedPlaylistId,setExpandedPlaylistId]=useState<string|null>(null);
+  // N14 (Android 25c3fee4): Favorites opens under the search buttons by default; there is no Playlists accordion.
+  const sectionExpanded=true;
+  const [expandedPlaylistId,setExpandedPlaylistId]=useState<string|null>(PLAYLIST_IDS.FAVORITES);
   const [summaries,setSummaries]=useState<PlaylistSummary[]>([]);
   const [songs,setSongs]=useState<SongBrowseRow[]>([]);
   const [loadingSongs,setLoadingSongs]=useState(false);
@@ -62,22 +63,13 @@ export function PlaylistsSection({browseBySlugs,onOpenSong}:PlaylistsSectionProp
     return ()=>{cancelled=true;};
   },[store,expandedPlaylistId,revision,browseBySlugs]);
 
-  const toggleSection=()=>{
-    setSectionExpanded(open=>!open);
-    if(sectionExpanded)setExpandedPlaylistId(null);
-  };
-
+  const ordered=[...summaries].sort((a,b)=>Number(b.id===PLAYLIST_IDS.FAVORITES)-Number(a.id===PLAYLIST_IDS.FAVORITES));
   return <div className="library-playlists" data-playlists-section="">
-    <button className="library-playlists-header" type="button" data-playlists-header=""
-      aria-expanded={sectionExpanded}
-      aria-label={sectionExpanded?'Collapse Playlists':'Expand Playlists'}
-      onClick={toggleSection}>
-      <span>Playlists</span>
-      <span aria-hidden="true">{sectionExpanded?'▴':'▾'}</span>
-    </button>
-    {sectionExpanded&&summaries.map(summary=>{
+    {ordered.map(summary=>{
       const expanded=expandedPlaylistId===summary.id;
-      return <div key={summary.id} className="library-playlist">
+      const favorites=summary.id===PLAYLIST_IDS.FAVORITES;
+      return <div key={summary.id} className={'library-playlist'+(favorites?' library-favorites-box':'')+(expanded?' library-playlist--open':'')}
+        data-favorites-box={favorites?'':undefined}>
         <button className="library-playlist-row" type="button" aria-expanded={expanded}
           aria-label={expanded?`Collapse ${summary.name}`:`Expand ${summary.name}`}
           onClick={()=>setExpandedPlaylistId(toggledExpandedGroup(expandedPlaylistId,summary.id))}>
@@ -99,7 +91,8 @@ export function PlaylistsSection({browseBySlugs,onOpenSong}:PlaylistsSectionProp
           {!loadingSongs&&!loadError&&songs.length===0&&
             <p className="library-playlist-empty">{PLAYLISTS_EMPTY_COPY}</p>}
           {!loadingSongs&&!loadError&&songs.length>0&&
-            <ul className="library-playlist-songs" aria-label={summary.name} style={{maxHeight:PLAYLIST_SONGS_MAX_HEIGHT_PX}}>
+            <ul className="library-playlist-songs library-compact-list" aria-label={summary.name} data-library-scroll={favorites?'favorites':undefined}
+              style={favorites?undefined:{maxHeight:PLAYLIST_SONGS_MAX_HEIGHT_PX}}>
               {songs.map(row=>{
                 const title=displayTitle(row.title);
                 return <li className="library-song" key={row.slug}>

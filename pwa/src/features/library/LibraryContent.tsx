@@ -73,10 +73,10 @@ export function LibraryContent({
     </section>;
   }
 
-  return <section className="library-content" aria-labelledby="library-heading" aria-busy={loading || state.loadingMore}>
-    {libraryChromeVisible(searchFocused) && !browsingArtist &&
-      <PlaylistsSection browseBySlugs={browseBySlugs} onOpenSong={onOpenSong} />}
-
+  // N14 (Android 3c887223 LibraryView): search header first, then search results or the Favorites box filling the
+  // remaining height with its own scroll, then All Songs. Each list scrolls inside the page, not the window.
+  const showResults = hasSearch || browsingArtist;
+  return <section className="library-content library-home" aria-labelledby="library-heading" aria-busy={loading || state.loadingMore}>
     <header className="library-header">
       {browsingArtist ? <>
         <button className="library-back" type="button" onClick={onClearArtist}>Back to search</button>
@@ -109,17 +109,21 @@ export function LibraryContent({
       <button className="library-primary-action" type="button" onClick={onDownload}>Download catalogs</button>
     </div>}
 
-    {state.rows.length > 0 && <ul className="library-song-list" aria-label="Songs">
-      {state.rows.map(renderSong)}
-    </ul>}
-
-    {state.phase === 'ready' && state.nextOffset !== null && <div className="library-pagination">
-      <button className="library-load-more" type="button" disabled={state.loadingMore}
-        onMouseDown={event => event.preventDefault()} onClick={onLoadMore}>
-        {state.loadingMore ? 'Loading more...' : 'Load more songs'}
-      </button>
-      {state.loadingMore && <p className="library-status" role="status" aria-live="polite">Loading more songs...</p>}
+    {showResults && state.rows.length > 0 && <div className="library-scroll-region" data-library-scroll="results">
+      <ul className="library-song-list" aria-label="Songs">
+        {state.rows.map(renderSong)}
+      </ul>
+      {state.phase === 'ready' && state.nextOffset !== null && <div className="library-pagination">
+        <button className="library-load-more" type="button" disabled={state.loadingMore}
+          onMouseDown={event => event.preventDefault()} onClick={onLoadMore}>
+          {state.loadingMore ? 'Loading more...' : 'Load more songs'}
+        </button>
+        {state.loadingMore && <p className="library-status" role="status" aria-live="polite">Loading more songs...</p>}
+      </div>}
     </div>}
+
+    {!showResults && libraryChromeVisible(searchFocused) &&
+      <PlaylistsSection browseBySlugs={browseBySlugs} onOpenSong={onOpenSong} />}
 
     {libraryChromeVisible(searchFocused) && !browsingArtist &&
       <button className="library-all-songs-open" type="button" data-all-songs-open=""

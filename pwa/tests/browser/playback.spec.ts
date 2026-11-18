@@ -502,23 +502,25 @@ test('playback favorite star persists on T06 Favorites and confirms only a succe
   const image=testInfo.outputPath('favorite-star-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
 });
 
-test('Library Playlists Favorites accordion lists starred songs and can unstar them',async({page},testInfo)=>{
+// N14 (Android 25c3fee4): Favorites is open under the search buttons; no Playlists accordion.
+test('Library Favorites box lists starred songs and can unstar them',async({page},testInfo)=>{
   await instrument(page);await installAndOpen(page);
   await page.getByRole('button',{name:'Add to Favorites',exact:true}).click();
   await expect(page.getByRole('button',{name:'Remove from Favorites',exact:true})).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'Back',exact:true}).click();
   await page.getByRole('button',{name:'Back',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Expand Favorites',exact:true}).click();
+  // Search results replace Favorites until the search is cleared (native LibraryView).
+  await page.getByRole('button',{name:'Clear search',exact:true}).click();
+  await expect(page.locator('[data-favorites-box]')).toBeVisible();
   await expect(page.locator('[data-playlists-section] [data-song-slug="detail-gzip"]')).toBeVisible();
   await expect(page.getByRole('button',{name:'Collapse Favorites',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Remove Detail_Gzip from Favorites',exact:true}).click();
   await expect(page.getByText('No songs yet. Tap the star on the Playback tab to add one.',{exact:true})).toBeVisible();
   await expect(page.locator('[data-playlists-section] [data-song-slug="detail-gzip"]')).toHaveCount(0);
   await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill('Detail_Gzip');
-  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toHaveCount(0);
+  await expect(page.locator('[data-favorites-box]')).toHaveCount(0);
   await page.getByRole('button',{name:'Clear search',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
+  await expect(page.locator('[data-favorites-box]')).toBeVisible();
   await page.setViewportSize({width:320,height:640});
   await page.evaluate(()=>{document.documentElement.style.fontSize='32px';scrollTo(0,0);});
   const image=testInfo.outputPath('library-favorites-accordion-narrow.png');await mkdir(resolve(image,'..'),{recursive:true});await page.screenshot({path:image,fullPage:true});
@@ -530,7 +532,9 @@ test('Library Play/Shuffle opens saved queue chrome and Play queue starts playba
   await expect(page.getByRole('button',{name:'Remove from Favorites',exact:true})).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'Back',exact:true}).click();
   await page.getByRole('button',{name:'Back',exact:true}).click();
-  await page.getByRole('button',{name:'Expand Favorites',exact:true}).click();
+  // Search results replace Favorites until the search is cleared (native LibraryView).
+  await page.getByRole('button',{name:'Clear search',exact:true}).click();
+  await expect(page.locator('[data-favorites-box]')).toBeVisible();
   await expect(page.getByRole('button',{name:'Play playlist',exact:true})).toBeVisible();
   await expect(page.getByRole('button',{name:'Shuffle play playlist',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Play playlist',exact:true}).click();
@@ -553,7 +557,7 @@ test('Library Play/Shuffle opens saved queue chrome and Play queue starts playba
   await expect(page.getByRole('button',{name:'Previous song',exact:true})).toBeDisabled();
   await expect(page.getByRole('button',{name:'Next song',exact:true})).toBeDisabled();
   await page.getByRole('button',{name:'Back',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Collapse Playlists',exact:true})).toBeVisible();
+  await expect(page.locator('[data-favorites-box]')).toBeVisible();
   await expect(page.locator('[data-song-queue-screen]')).toHaveCount(0);
   await expect(page.getByText('Practice queue',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Expand Practice queue',exact:true}).click();

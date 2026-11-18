@@ -476,9 +476,11 @@
    ],
    "pwa": [
     "pwa/src/features/library/LibraryContent.tsx",
-    "pwa/src/features/library/PlaylistsSection.tsx"
+    "pwa/src/features/library/PlaylistsSection.tsx",
+    "pwa/src/features/library/LibraryScreen.tsx",
+    "pwa/src/features/library/library.css"
    ],
-   "pwaStatus": "missing",
+   "pwaStatus": "partial",
    "tasks": [
     "T10"
    ],
@@ -486,7 +488,7 @@
     "L02",
     "L06"
    ],
-   "acceptance": "Native order and sizing; Settings Back restores the Favorites/All Songs inner scroll, replacing the library.spec.ts:49 window.scrollY assertion per the 2026-11-18 owner decision."
+   "acceptance": "Native order and sizing; Settings Back restores the Favorites/All Songs inner scroll, replacing the library.spec.ts:49 window.scrollY assertion per the 2026-11-18 owner decision. Status 2026-11-18: search header first, results or the open Favorites box scrolling inside a one-screen home, compact rows, All Songs below; Settings Back restores the inner list (library.spec passes). Aural Quiz row (Aural is last) and example-shuffle row (N15) not yet; the reopened reader reports error after Settings Back (pre-existing ownership issue, rows still shown)."
   },
   {
    "id": "N15",

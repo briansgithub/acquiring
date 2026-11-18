@@ -22,7 +22,7 @@ Every non-merge android/contracts commit in forkPoint..nativeAuthority is either
 | N11 | Song mode plays into the next section in song order (wrapping) with an in-block splice; Loop repeats the section; toggling does not move the playhead. | T08, T12 | P01, G01 | partial |
 | N12 | Playback timeline and playhead render on the display frame clock at maximum refresh; the Settings Display 60fps/Maximum preference is removed. | T12, T21 | V05, G03 | implemented |
 | N13 | Tempo/arpeggio/mix dials show their live value inside the dial. | T12 | N04 | missing |
-| N14 | Library home relayout: search header and scope, Aural Quiz row, example-shuffle row, self-scrolling Favorites box under the search buttons, compact 48dp rows, All Songs row. | T10 | L02, L06 | missing |
+| N14 | Library home relayout: search header and scope, Aural Quiz row, example-shuffle row, self-scrolling Favorites box under the search buttons, compact 48dp rows, All Songs row. | T10 | L02, L06 | partial |
 | N15 | Example-song shuffle: Aural catalog example songs filtered by a minimum-popularity menu, shuffled into the queue, each opening on its chorus (or first section) and held until the listener advances. | T10, T19 | A08 | missing |
 | N16 | Root-only Playback shows the current melody note, a timeline scrub bar and the melody-function description. | T12 | N01, P05 | partial |
 
@@ -36,7 +36,7 @@ Every non-merge android/contracts commit in forkPoint..nativeAuthority is either
 - **N11**: Exact PCM continuity across the splice versus a native fixture; section label and timeline follow the continuation. Status 2026-11-18: renderer splice/continuation is bit-exact with native; the Song/Loop toggle, transport continuation, splice clock mapping and section-follow UI are not yet ported.
 - **N12**: No Display section in Settings; the timeline redraws every animation frame from the playback clock.
 - **N13**: Value text matches native formatting; delivered together with N04 rotary drag and tap reset.
-- **N14**: Native order and sizing; Settings Back restores the Favorites/All Songs inner scroll, replacing the library.spec.ts:49 window.scrollY assertion per the 2026-11-18 owner decision.
+- **N14**: Native order and sizing; Settings Back restores the Favorites/All Songs inner scroll, replacing the library.spec.ts:49 window.scrollY assertion per the 2026-11-18 owner decision. Status 2026-11-18: search header first, results or the open Favorites box scrolling inside a one-screen home, compact rows, All Songs below; Settings Back restores the inner list (library.spec passes). Aural Quiz row (Aural is last) and example-shuffle row (N15) not yet; the reopened reader reports error after Settings Back (pre-existing ownership issue, rows still shown).
 - **N15**: chorusOrFirstSection and cutoff semantics match native tests; the queue holds each song until next/previous.
 - **N16**: Root-only layout matches native rows; scrub seeks silently like the full timeline; N01 root gauge unchanged. Status 2026-11-18: root-only shows the current melody card and function caption; the separate root scrub slider is covered by the existing Position slider, not a native-styled bar.
 
