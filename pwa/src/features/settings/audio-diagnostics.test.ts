@@ -4,7 +4,7 @@ import {
   audioDiagnostics,registerAudioEngine,
 } from './audio-diagnostics';
 import {INTRODUCTION_PREFS_KEY} from '../onboarding/introduction-prefs';
-import {DISPLAY_PREFS_KEY} from './timeline-frame-rate';
+const DISPLAY_PREFS_KEY='acquiring-settings-probe';
 
 describe('native AudioDiagnosticsTest.kt', () => {
   it('recordsOnlyAllowListedOperationsAndStateKeys', () => {
@@ -48,7 +48,7 @@ describe('engine-stop reset is not app-data destruction', () => {
   it('resetEngine records native stop order, stops playback, and leaves onboarding/catalog stores', () => {
     const store = new Map<string,string>([
       [INTRODUCTION_PREFS_KEY,JSON.stringify({hasCompletedIntroduction:true})],
-      [DISPLAY_PREFS_KEY,JSON.stringify({timelineFrameRate:'maximum'})],
+      [DISPLAY_PREFS_KEY,JSON.stringify({keep:'maximum'})],
       ['catalog','keep-me'],
     ]);
     const stopped:string[] = [];

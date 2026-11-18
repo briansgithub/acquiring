@@ -1,7 +1,7 @@
 import type {ExtractedSection} from '../../contracts';
 import {PlaybackTransport,type AudioPlaybackTransport,type PlaybackTransportState} from '../../audio/transport';
 import {audioDiagnostics,registerAudioEngine} from '../settings/audio-diagnostics';
-import {timelineFrameRateStore} from '../settings/timeline-frame-rate';
+import {displayRefreshStore} from '../settings/playback-frame-rate';
 import {PlaybackChordMode,Waveform,type PlaybackConfig} from '../../audio/synth';
 import {preparePlaybackSection,type PreparedPlaybackSection} from './section-model';
 
@@ -53,7 +53,7 @@ export class SectionPlaybackController {
   }
   private publish(force=true):void {
     const now=performance.now()*1e6;
-    if(!force&&now-this.lastStateUpdateNanos<timelineFrameRateStore.minStateUpdateNanos)return;
+    if(!force&&now-this.lastStateUpdateNanos<displayRefreshStore.minStateUpdateNanos)return;
     this.lastStateUpdateNanos=now;
     const state=this.state=this.snapshot();
     for(const listener of [...this.listeners]){if(this.state!==state)break;try{listener();}catch{/* Subscribers cannot prevent ownership cleanup. */}}

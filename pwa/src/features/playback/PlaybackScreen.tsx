@@ -273,6 +273,7 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
           previewOwner={cardPreviewOwner} rootGauge={pitch.rootGauge} majorLocked={majorLocked} onMajorLockedChange={setMajorLocked}
           onSing={request=>{cardPreviewStop.current?.();pitch.cancel();playback.pause();singingRequestId.current+=1;setSingingTarget(singingTargetRequest(request.first,request.second,singingRequestId.current));setDockExpanded(true);}}/>}
         {playback&&!playbackError&&<PlaybackTimeline section={selected[1]} beat={beat} rootOnly={settings.rootOnly} majorLocked={majorLocked}
+          playing={transport.phase==='playing'} beatsPerSecond={transport.bpm/60}
           scores={pitch.scores} monitoring={pitch.monitoring} live={pitch.live}
           onScrub={{tap:t=>{cardPreviewStop.current?.();playback.scrubTo(t);playback.finishScrub();},dragTo:t=>{cardPreviewStop.current?.();playback.scrubTo(t);},end:()=>playback.finishScrub()}}/>}
         <SingingDock octaveOffset={octaveOffset} onOctaveOffsetChange={offset=>octaveSession.updateOctaveOffset(offset)}

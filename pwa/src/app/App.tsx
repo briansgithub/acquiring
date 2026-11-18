@@ -9,12 +9,11 @@ import {IntroductionScreen} from '../features/onboarding/IntroductionScreen';
 import {hasCompletedIntroduction,markIntroductionCompleted} from '../features/onboarding/introduction-prefs';
 import {DefaultInstrumentControl} from '../features/settings/DefaultInstrumentControl';
 import {AudioDiagnosticsControl} from '../features/settings/AudioDiagnosticsControl';
-import {TimelineFrameRateControl} from '../features/settings/TimelineFrameRateControl';
 import {PrivacyPolicyLink} from '../features/settings/PrivacyPolicyLink';
 import {AppUpdateControl} from '../features/settings/AppUpdateControl';
 import {audioDiagnostics} from '../features/settings/audio-diagnostics';
 import {appVersionLabel} from '../features/settings/privacy-policy';
-import {bindTimelineFrameRateWindow} from '../features/settings/timeline-frame-rate';
+import {bindPlaybackFrameRateWindow} from '../features/settings/playback-frame-rate';
 import {hydrateAppInstrumentSession,openGuestInstrumentPreferences} from '../features/settings/instrument-session';
 import {useEffect,useState,useSyncExternalStore} from 'react';
 import { CatalogPanel } from '../features/catalog/CatalogPanel';
@@ -25,7 +24,7 @@ export function App() {
   const [introDone,setIntroDone]=useState(()=>hasCompletedIntroduction());
   useEffect(()=>{
     audioDiagnostics.record('app.audioInitialized');
-    const unbindDisplay=bindTimelineFrameRateWindow();
+    const unbindDisplay=bindPlaybackFrameRateWindow();
     let db:Awaited<ReturnType<typeof openGuestInstrumentPreferences>>;
     let cancelled=false;
     void openGuestInstrumentPreferences().then(opened=>{
@@ -58,10 +57,6 @@ export function App() {
       <button className="action" onClick={() => navigate('/help')}>Help</button>
       <section className="panel"><h2>Appearance</h2><p>Dark theme</p></section>
       <AppUpdateControl />
-      <section className="panel"><h2>Display</h2>
-        <p>Controls visual smoothness, not song tempo.</p>
-        <TimelineFrameRateControl />
-      </section>
       <section className="panel"><h2>Audio diagnostics</h2><AudioDiagnosticsControl /></section>
       <p data-app-version="true">{appVersionLabel()}</p>
       <section className="panel"><h2>Privacy</h2><PrivacyPolicyLink /></section>

@@ -20,7 +20,7 @@ Every non-merge android/contracts commit in forkPoint..nativeAuthority is either
 | N09 | Voice control beside Reset opening the Metadata Speak Aloud dialog (Off, then Melody/Chord/Pulses groups) with voice volume; saxophone instrument icon. | T12 | - | missing |
 | N10 | Per-song saved playback settings (lock, tempo, arpeggio, balance, instrument override or null = Settings default, transpose, cue, voice volume, loop), sanitized on load; a new song publishes defaults immediately. | T06, T12 | V02, R01 | missing |
 | N11 | Song mode plays into the next section in song order (wrapping) with an in-block splice; Loop repeats the section; toggling does not move the playhead. | T08, T12 | P01, G01 | missing |
-| N12 | Playback timeline and playhead render on the display frame clock at maximum refresh; the Settings Display 60fps/Maximum preference is removed. | T12, T21 | V05, G03 | missing |
+| N12 | Playback timeline and playhead render on the display frame clock at maximum refresh; the Settings Display 60fps/Maximum preference is removed. | T12, T21 | V05, G03 | implemented |
 | N13 | Tempo/arpeggio/mix dials show their live value inside the dial. | T12 | N04 | missing |
 | N14 | Library home relayout: search header and scope, Aural Quiz row, example-shuffle row, self-scrolling Favorites box under the search buttons, compact 48dp rows, All Songs row. | T10 | L02, L06 | missing |
 | N15 | Example-song shuffle: Aural catalog example songs filtered by a minimum-popularity menu, shuffled into the queue, each opening on its chorus (or first section) and held until the listener advances. | T10, T19 | A08 | missing |

@@ -425,10 +425,11 @@
     "android/app/src/main/java/com/acquiring/android/AppSettings.kt"
    ],
    "pwa": [
-    "pwa/src/features/settings/TimelineFrameRateControl.tsx",
+    "pwa/src/features/settings/playback-frame-rate.ts",
+    "pwa/src/features/playback/playback-playhead.ts",
     "pwa/src/features/playback/PlaybackTimeline.tsx"
    ],
-   "pwaStatus": "missing",
+   "pwaStatus": "implemented",
    "tasks": [
     "T12",
     "T21"

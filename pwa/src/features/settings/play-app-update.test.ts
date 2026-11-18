@@ -28,12 +28,12 @@ describe('Play Store is not this PWA',()=>{
     expect(appVersionLabel()).toBe('Version 0.1.0');
   });
 
-  it('Updates chrome is before Display, has no Open Play action, and version precedes Privacy',()=>{
+  it('Updates chrome is before audio diagnostics, has no Open Play action, and version precedes Privacy',()=>{
     const settings=readFileSync(resolve('src/app/App.tsx'),'utf8');
     const control=readFileSync(resolve('src/features/settings/AppUpdateControl.tsx'),'utf8');
     const updates=settings.lastIndexOf('<AppUpdateControl');
     expect(updates).toBeGreaterThan(-1);
-    expect(updates).toBeLessThan(settings.lastIndexOf('TimelineFrameRateControl'));
+    expect(updates).toBeLessThan(settings.lastIndexOf('<AudioDiagnosticsControl'));
     expect(settings.lastIndexOf('appVersionLabel')).toBeLessThan(settings.lastIndexOf('<PrivacyPolicyLink'));
     expect(control).not.toMatch(/<button|Open Play Store|requestAppUpdateCheck|playUpdateStatusFromRegistration/);
   });

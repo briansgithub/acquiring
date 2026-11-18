@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 test('Library, Settings, browser history and bookmarked screens', async ({ page }) => {
+  // Desktop Chrome on Windows/macOS exposes navigator.share; pin the clipboard fallback the CI browser uses.
+  await page.addInitScript(() => Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Library', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
@@ -9,25 +11,23 @@ test('Library, Settings, browser history and bookmarked screens', async ({ page 
   await expect(page.getByRole('button', { name: 'Share audio diagnostics', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Reset audio engine', exact: true })).toBeVisible();
   await expect(page.getByText('No song IDs or audio samples are included.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Display', exact: true })).toBeVisible();
-  await expect(page.getByText('Controls visual smoothness, not song tempo.', { exact: true })).toBeVisible();
-  await expect(page.getByRole('radio', { name: 'Timeline frame rate: 60 fps', exact: true })).toBeChecked();
-  await page.getByRole('radio', { name: 'Timeline frame rate: Maximum', exact: true }).check();
-  await expect(page.locator('[data-display-frame-rate]')).toHaveAttribute('data-display-frame-rate', 'maximum');
-  expect(JSON.parse(await page.evaluate(() => localStorage.getItem('acquiring-display') || '{}'))).toEqual({timelineFrameRate: 'maximum'});
+  // N12 (Android 3c887223): Playback always renders at the display maximum; the Display preference is retired.
+  await expect(page.getByRole('heading', { name: 'Display', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('radio', { name: /Timeline frame rate/ })).toHaveCount(0);
+  await page.evaluate(() => localStorage.setItem('acquiring-display', JSON.stringify({timelineFrameRate: 'maximum'})));
   await page.reload();
-  await expect(page.getByRole('radio', { name: 'Timeline frame rate: Maximum', exact: true })).toBeChecked();
+  expect(await page.evaluate(() => localStorage.getItem('acquiring-display'))).toBeNull();
   await expect(page.locator('[data-app-updates]')).toBeVisible();
   await expect(page.locator('[data-app-update-status]')).toHaveAttribute('data-app-update-status', 'UNAVAILABLE');
   await expect(page.getByText('Update status unavailable', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Open Play Store for updates' })).toHaveCount(0);
-  const updatesBeforeDisplay = await page.evaluate(() => {
+  const updatesBeforeDiagnostics = await page.evaluate(() => {
     const updates = document.querySelector('[data-app-updates]');
-    const display = [...document.querySelectorAll('h2')].find(node => node.textContent === 'Display');
-    if (!updates || !display) return false;
-    return !!(updates.compareDocumentPosition(display) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const diagnostics = document.querySelector('[data-audio-diagnostics]');
+    if (!updates || !diagnostics) return false;
+    return !!(updates.compareDocumentPosition(diagnostics) & Node.DOCUMENT_POSITION_FOLLOWING);
   });
-  expect(updatesBeforeDisplay).toBe(true);
+  expect(updatesBeforeDiagnostics).toBe(true);
   await expect(page.locator('[data-app-version]')).toHaveText('Version 0.1.0');
   const privacy = page.getByRole('link', { name: 'Privacy policy', exact: true });
   await expect(privacy).toHaveAttribute('href', 'https://bellsworth.dev/apps/acquiring/privacy/');
@@ -45,7 +45,6 @@ test('Library, Settings, browser history and bookmarked screens', async ({ page 
   expect(await page.evaluate(() => navigator.clipboard.readText())).not.toContain('pcm');
   await page.getByRole('button', { name: 'Reset audio engine', exact: true }).click();
   expect(await page.evaluate(() => localStorage.getItem('acquiring-onboarding'))).toContain('hasCompletedIntroduction');
-  expect(JSON.parse(await page.evaluate(() => localStorage.getItem('acquiring-display') || '{}'))).toEqual({timelineFrameRate: 'maximum'});
   await page.goBack();
   await expect(page.getByRole('heading', { name: 'Library', exact: true })).toBeVisible();
   await page.goto('/help');
