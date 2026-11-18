@@ -1,13 +1,14 @@
 /** Frozen 801cf798 HelpIndex / HelpArticleScreen. */
 import {useState} from 'react';
 import {
-  HELP_TOPIC_INSTRUCTIONS,HELP_TOPIC_INTERVALS,HELP_TOPIC_ROMAN,HELP_TOPIC_SCALE_DEGREES,
+  HELP_TOPIC_INSTRUCTIONS,HELP_TOPIC_INTERVALS,HELP_TOPIC_MELODY_FUNCTION,HELP_TOPIC_ROMAN,HELP_TOPIC_SCALE_DEGREES,
   HELP_TOPICS,type HelpTopic,
 } from './help-catalog';
 import {IntroductionArticle} from './IntroductionArticle';
 import {IntroductionCopy} from './introduction-copy';
 import {IntervalsHelpArticle,ScaleDegreesHelpArticle} from './notation-articles';
 import {RomanNumeralsHelpArticle} from './roman-article';
+import {MelodyFunctionHelpArticle} from './melody-function-article';
 import './help.css';
 
 export function HelpScreen(){
@@ -35,5 +36,6 @@ function HelpArticle({topic,onBack}:{topic:HelpTopic;onBack:()=>void}){
     {topic.id===HELP_TOPIC_SCALE_DEGREES&&<ScaleDegreesHelpArticle/>}
     {topic.id===HELP_TOPIC_INTERVALS&&<IntervalsHelpArticle/>}
     {topic.id===HELP_TOPIC_ROMAN&&<RomanNumeralsHelpArticle/>}
+    {topic.id===HELP_TOPIC_MELODY_FUNCTION&&<MelodyFunctionHelpArticle/>}
   </article>;
 }

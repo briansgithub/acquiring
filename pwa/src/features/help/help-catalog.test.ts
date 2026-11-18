@@ -10,10 +10,11 @@ import {HELP_ROMAN_DOMINANT_PROSE,HELP_ROMAN_ROOT,HELP_ROMAN_TRITONE_CALLOUT} fr
 describe('native HelpCatalog', () => {
   it('lists offline articles including introduction copy', () => {
     expect(HELP_TOPICS.map(topic=>topic.title)).toEqual([
-      'Instructions','Scale degrees','Intervals','Roman numerals',
+      'Instructions','Scale degrees','Intervals','Roman numerals','Melody function',
     ]);
     expect(IntroductionCopy.OCTAVE).toContain('octave');
-    expect(HELP_TOPICS.at(-1)?.id).toBe(HELP_TOPIC_ROMAN);
+    expect(HELP_TOPICS.at(-2)?.id).toBe(HELP_TOPIC_ROMAN);
+    expect(HELP_TOPICS.at(-1)?.id).toBe('help.topic.melodyFunction');
     expect(HELP_INTERVAL_ROWS).toHaveLength(14);
     expect(HELP_INTERVAL_ROWS[0]?.semitones).toBe(0);
     expect(HELP_INTERVAL_ROWS.at(-1)?.semitones).toBe(12);

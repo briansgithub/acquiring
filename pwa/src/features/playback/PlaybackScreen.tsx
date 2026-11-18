@@ -15,7 +15,8 @@ import type {UserDatabase} from '../../storage/user';
 import {singingTargetRequest,type SingingTargetRequest} from '../singing/singing-octave';
 import {useEffect,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
 import {type PlaybackSettings,type SectionPlaybackController} from './controller';
-import type {Waveform} from '../../audio/synth';
+import type {PlaybackRootDegreeCue,Waveform} from '../../audio/synth';
+import {PlaybackVoiceControls} from './PlaybackVoiceControls';
 import {appInstrumentSession} from '../settings/instrument-session';
 import {enterPlayback} from './playback-route-memory';
 import {appSongPlaybackSettings,type SongPlaybackSettingsSnapshot} from './song-playback-settings';
@@ -34,7 +35,8 @@ const emptySubscribe=()=>()=>{};
 /** N10: transport settings derived from the per-song saved row; a null instrument follows the Settings default. */
 function savedTransportSettings(saved:SongPlaybackSettingsSnapshot,defaultInstrument:Waveform){
   return {tempoPercent:Math.round(saved.tempoPercent),transpose:saved.transpose,arpeggioIndex:saved.arpeggioOptionIndex,
-    melodyPercent:Math.round(saved.melodyChordBalance*100),waveform:saved.instrument??defaultInstrument};
+    melodyPercent:Math.round(saved.melodyChordBalance*100),waveform:saved.instrument??defaultInstrument,
+    rootDegreeCue:saved.rootDegreeCue as PlaybackRootDegreeCue,voiceVolume:saved.voiceVolume,majorLocked:saved.lockInMajor};
 }
 const emptySnapshot=()=>emptyPlaybackState;
 
@@ -207,6 +209,8 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
       if(patch.transpose!==undefined)appSongPlaybackSettings.updateTranspose(patch.transpose);
       if(patch.arpeggioIndex!==undefined)appSongPlaybackSettings.updateArpeggioOptionIndex(patch.arpeggioIndex);
       if(patch.melodyPercent!==undefined)appSongPlaybackSettings.updateMelodyChordBalance(patch.melodyPercent/100);
+      if(patch.rootDegreeCue!==undefined)appSongPlaybackSettings.updateRootDegreeCue(patch.rootDegreeCue);
+      if(patch.voiceVolume!==undefined)appSongPlaybackSettings.updateVoiceVolume(patch.voiceVolume);
       playback?.updateSettings(patch);
       if(loadedSection.current===selected?.[0])setPlaybackError(null);
     }catch(error){setPlaybackError(error instanceof Error?error.message:'Playback settings could not be applied.');}
@@ -274,6 +278,8 @@ export function PlaybackScreen({slug,onBack,onHome,onDownload,playOnceKey=null,a
             <PlaybackFavoriteStar snapshot={favorite} onToggle={()=>favoriteSession.toggle()}/>
             <button className="action" onClick={()=>active?playback?.pause():playback?.play()} disabled={!playback||Boolean(playbackError)}>{active?'Pause':'Play'}</button>
             <button className="action" type="button" aria-label="Pitch monitoring" aria-pressed={pitch.monitoring} onClick={pitch.toggle} disabled={!playback||Boolean(playbackError)}>Mic</button>
+            <PlaybackVoiceControls cue={settings.rootDegreeCue} volume={settings.voiceVolume} disabled={!playback}
+              onCueChange={rootDegreeCue=>updateSettings({rootDegreeCue})} onVolumeChange={voiceVolume=>updateSettings({voiceVolume})}/>
             <button className="action" onClick={()=>{cardPreviewStop.current?.();pitch.clear();playback?.reset();}} disabled={!playback}>Reset</button>
           </div>
           <label className="playback-field playback-position">Position

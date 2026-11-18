@@ -2,7 +2,7 @@ import type {ExtractedSection} from '../../contracts';
 import {PlaybackTransport,type AudioPlaybackTransport,type PlaybackTransportState} from '../../audio/transport';
 import {audioDiagnostics,registerAudioEngine} from '../settings/audio-diagnostics';
 import {displayRefreshStore} from '../settings/playback-frame-rate';
-import {PlaybackChordMode,Waveform,type PlaybackConfig} from '../../audio/synth';
+import {PlaybackChordMode,PlaybackRootDegreeCue,Waveform,type PlaybackConfig} from '../../audio/synth';
 import {preparePlaybackSection,type PreparedPlaybackSection} from './section-model';
 
 export const PLAYBACK_ARPEGGIOS=Object.freeze([.25,1/3,.5,0,1,2,3,4]);
@@ -11,20 +11,26 @@ export const DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX=3;
 export interface PlaybackSettings {
   readonly tempoPercent:number;readonly transpose:number;readonly melodyPercent:number;
   readonly waveform:Waveform;readonly rootOnly:boolean;readonly arpeggioIndex:number;
+  /** N06/N07: spoken or pulsed root-degree cue, its voice volume (0..1) and Lock in Major (relative-major context). */
+  readonly rootDegreeCue:PlaybackRootDegreeCue;readonly voiceVolume:number;readonly majorLocked:boolean;
 }
 export interface SectionPlaybackState {
   readonly settings:PlaybackSettings;readonly transport:PlaybackTransportState;
   readonly endBeat:number;readonly baseBpm:number;readonly scrubbing:boolean;
 }
-const defaults:PlaybackSettings=Object.freeze({tempoPercent:DEFAULT_PLAYBACK_TEMPO_PERCENT,transpose:0,melodyPercent:50,waveform:Waveform.CLARINET,rootOnly:false,arpeggioIndex:DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX});
+const defaults:PlaybackSettings=Object.freeze({tempoPercent:DEFAULT_PLAYBACK_TEMPO_PERCENT,transpose:0,melodyPercent:50,waveform:Waveform.CLARINET,rootOnly:false,arpeggioIndex:DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,
+  rootDegreeCue:PlaybackRootDegreeCue.OFF,voiceVolume:0.5,majorLocked:false});
 function config(model:PreparedPlaybackSection,settings:PlaybackSettings):PlaybackConfig {
-  const {tempoPercent,transpose,melodyPercent,waveform,rootOnly,arpeggioIndex}=settings;
+  const {tempoPercent,transpose,melodyPercent,waveform,rootOnly,arpeggioIndex,rootDegreeCue,voiceVolume,majorLocked}=settings;
   for(const [value,min,max] of [[tempoPercent,0,200],[transpose,-12,12],[melodyPercent,0,100],[arpeggioIndex,0,7]])
     if(!Number.isInteger(value)||value<min||value>max)throw new RangeError('Invalid playback setting');
   if(!Object.values(Waveform).includes(waveform)||typeof rootOnly!=='boolean')throw new RangeError('Invalid playback setting');
+  if(!Object.values(PlaybackRootDegreeCue).includes(rootDegreeCue)||typeof majorLocked!=='boolean'||!Number.isFinite(voiceVolume)||voiceVolume<0||voiceVolume>1)
+    throw new RangeError('Invalid playback setting');
   const melodyGain=Math.fround(melodyPercent/100);
   return {bpm:Math.fround(Math.fround(model.baseBpm*tempoPercent)/100),transpose,waveform,
-    chordMode:rootOnly?PlaybackChordMode.ROOT_ONLY:PlaybackChordMode.FULL,melodyGain,chordGain:Math.fround(1-melodyGain),arpeggiateCycles:PLAYBACK_ARPEGGIOS[arpeggioIndex]};
+    chordMode:rootOnly?PlaybackChordMode.ROOT_ONLY:PlaybackChordMode.FULL,melodyGain,chordGain:Math.fround(1-melodyGain),arpeggiateCycles:PLAYBACK_ARPEGGIOS[arpeggioIndex],
+    rootDegreeCue,useRelativeIonianContext:majorLocked,voiceVolume};
 }
 /** Feature state only. Construction is pure; explicit start creates one borrowed transport. */
 export class SectionPlaybackController {
@@ -80,10 +86,12 @@ export class SectionPlaybackController {
   updateSettings(input:Partial<PlaybackSettings>):void {
     if(this.stopped)return;
     const revision=this.revision;
-    const {tempoPercent,transpose,melodyPercent,waveform,rootOnly,arpeggioIndex}=input;
-    const next=Object.freeze({tempoPercent:tempoPercent??this.settings.tempoPercent,transpose:transpose??this.settings.transpose,
+    const {tempoPercent,transpose,melodyPercent,waveform,rootOnly,arpeggioIndex,rootDegreeCue,voiceVolume,majorLocked}=input;
+    const next:PlaybackSettings=Object.freeze({tempoPercent:tempoPercent??this.settings.tempoPercent,transpose:transpose??this.settings.transpose,
       melodyPercent:melodyPercent??this.settings.melodyPercent,waveform:waveform??this.settings.waveform,
-      rootOnly:rootOnly??this.settings.rootOnly,arpeggioIndex:arpeggioIndex??this.settings.arpeggioIndex});
+      rootOnly:rootOnly??this.settings.rootOnly,arpeggioIndex:arpeggioIndex??this.settings.arpeggioIndex,
+      rootDegreeCue:rootDegreeCue??this.settings.rootDegreeCue,voiceVolume:voiceVolume??this.settings.voiceVolume,
+      majorLocked:majorLocked??this.settings.majorLocked});
     const updated=config(this.model,next);
     if(this.stopped||revision!==this.revision)throw new Error('Playback settings superseded');
     ++this.revision;this.settings=next;this.engine?.updateConfig(updated);this.publish();

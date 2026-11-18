@@ -22,3 +22,7 @@
 .help-roman-figures { display: grid; gap: 7px; }
 .help-roman-meaning,.help-roman-borrowed,.help-callout { color: #cac4d0; }
 .help-article section { display: grid; gap: .6rem; }
+.melody-function-table > div { padding: 8px 0; border-top: 1px solid rgba(255, 255, 255, 0.12); }
+.melody-function-table > div:first-child { border-top: none; }
+.melody-function-table dt { font-weight: 600; }
+.melody-function-table dd { margin: 0; }

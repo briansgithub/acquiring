@@ -14,31 +14,31 @@ Every non-merge android/contracts commit in forkPoint..nativeAuthority is either
 
 | ID | Behavior | Packages | Reopens | PWA status |
 | --- | --- | --- | --- | --- |
-| N06 | Root Pulses and Harmonic Distance cues: tonic held, plus (circle-of-fifths distance + 1) decaying pulses per non-tonic chord root; Lock in Major measures from the opening relative major. | T07, T08, T12 | - | missing |
-| N07 | Spoken Number and Sung Number + Details cues: degree clips pitched to the root register, accidentals, chord suffixes from Roman/voicing, key-change mode speech in its own end-of-chord window at the new tonic (C3-B3, with transpose), independent voice volume, 1.4x ceiling and tanh soft limiter. | T07, T08 | - | missing |
-| N08 | Melody function: chord-member/non-chord-tone classification, sit/lean/move/outside colors, caption on the melody card and above the full-chord card (row reserved during rests), Melody function and Melody chord tones speech below C5, Help article. | T03, T12, T21 | V03 | missing |
-| N09 | Voice control beside Reset opening the Metadata Speak Aloud dialog (Off, then Melody/Chord/Pulses groups) with voice volume; saxophone instrument icon. | T12 | - | missing |
-| N10 | Per-song saved playback settings (lock, tempo, arpeggio, balance, instrument override or null = Settings default, transpose, cue, voice volume, loop), sanitized on load; a new song publishes defaults immediately. | T06, T12 | V02, R01 | partial |
-| N11 | Song mode plays into the next section in song order (wrapping) with an in-block splice; Loop repeats the section; toggling does not move the playhead. | T08, T12 | P01, G01 | missing |
+| N06 | Root Pulses and Harmonic Distance cues: tonic held, plus (circle-of-fifths distance + 1) decaying pulses per non-tonic chord root; Lock in Major measures from the opening relative major. | T07, T08, T12 | - | implemented |
+| N07 | Spoken Number and Sung Number + Details cues: degree clips pitched to the root register, accidentals, chord suffixes from Roman/voicing, key-change mode speech in its own end-of-chord window at the new tonic (C3-B3, with transpose), independent voice volume, 1.4x ceiling and tanh soft limiter. | T07, T08 | - | implemented |
+| N08 | Melody function: chord-member/non-chord-tone classification, sit/lean/move/outside colors, caption on the melody card and above the full-chord card (row reserved during rests), Melody function and Melody chord tones speech below C5, Help article. | T03, T12, T21 | V03 | implemented |
+| N09 | Voice control beside Reset opening the Metadata Speak Aloud dialog (Off, then Melody/Chord/Pulses groups) with voice volume; saxophone instrument icon. | T12 | - | implemented |
+| N10 | Per-song saved playback settings (lock, tempo, arpeggio, balance, instrument override or null = Settings default, transpose, cue, voice volume, loop), sanitized on load; a new song publishes defaults immediately. | T06, T12 | V02, R01 | implemented |
+| N11 | Song mode plays into the next section in song order (wrapping) with an in-block splice; Loop repeats the section; toggling does not move the playhead. | T08, T12 | P01, G01 | partial |
 | N12 | Playback timeline and playhead render on the display frame clock at maximum refresh; the Settings Display 60fps/Maximum preference is removed. | T12, T21 | V05, G03 | implemented |
 | N13 | Tempo/arpeggio/mix dials show their live value inside the dial. | T12 | N04 | missing |
 | N14 | Library home relayout: search header and scope, Aural Quiz row, example-shuffle row, self-scrolling Favorites box under the search buttons, compact 48dp rows, All Songs row. | T10 | L02, L06 | missing |
 | N15 | Example-song shuffle: Aural catalog example songs filtered by a minimum-popularity menu, shuffled into the queue, each opening on its chorus (or first section) and held until the listener advances. | T10, T19 | A08 | missing |
-| N16 | Root-only Playback shows the current melody note, a timeline scrub bar and the melody-function description. | T12 | N01, P05 | missing |
+| N16 | Root-only Playback shows the current melody note, a timeline scrub bar and the melody-function description. | T12 | N01, P05 | partial |
 
 ## Acceptance
 
 - **N06**: Exact PCM equality with native renderer fixtures for pulse onsets, decay, count, tonic hold and the Lock in Major reference.
 - **N07**: Byte-identical clip assets (SHA-256), bit-exact Sonic port and exact PCM equality with native fixtures for phrase scheduling, pitching, gain and limiter; clips download only when a spoken cue is enabled.
 - **N08**: Native MelodyFunctionTest and SingingMelodyRegisterTest cases reproduced exactly; product browser check of caption, colors and reserved row.
-- **N09**: Accessible dialog with native option order and titles; changing the cue does not restart transport.
-- **N10**: Native SongPlaybackSettingsViewModelTest semantics; reload persists per song; bad stored fields fall back to defaults. Status 2026-11-18: store, session and Playback wiring for lock/tempo/arpeggio/mix/instrument/transpose done; cue, voice volume and loop are stored but have no UI until N07/N09/N11.
-- **N11**: Exact PCM continuity across the splice versus a native fixture; section label and timeline follow the continuation.
+- **N09**: Accessible dialog with native option order and titles; changing the cue does not restart transport. Status 2026-11-18: saxophone instrument icon not ported (instrument picker is a select).
+- **N10**: Native SongPlaybackSettingsViewModelTest semantics; reload persists per song; bad stored fields fall back to defaults. Status 2026-11-18: cue, voice volume and lock now persist and drive playback; loop is stored for N11.
+- **N11**: Exact PCM continuity across the splice versus a native fixture; section label and timeline follow the continuation. Status 2026-11-18: renderer splice/continuation is bit-exact with native; the Song/Loop toggle, transport continuation, splice clock mapping and section-follow UI are not yet ported.
 - **N12**: No Display section in Settings; the timeline redraws every animation frame from the playback clock.
 - **N13**: Value text matches native formatting; delivered together with N04 rotary drag and tap reset.
 - **N14**: Native order and sizing; Settings Back restores the Favorites/All Songs inner scroll, replacing the library.spec.ts:49 window.scrollY assertion per the 2026-11-18 owner decision.
 - **N15**: chorusOrFirstSection and cutoff semantics match native tests; the queue holds each song until next/previous.
-- **N16**: Root-only layout matches native rows; scrub seeks silently like the full timeline; N01 root gauge unchanged.
+- **N16**: Root-only layout matches native rows; scrub seeks silently like the full timeline; N01 root gauge unchanged. Status 2026-11-18: root-only shows the current melody card and function caption; the separate root scrub slider is covered by the existing Position slider, not a native-styled bar.
 
 ## New commits
 

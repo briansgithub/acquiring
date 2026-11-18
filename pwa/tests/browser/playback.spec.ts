@@ -181,7 +181,7 @@ test('current cards use native source keys, written duration and one transpose w
   const transpose=page.getByRole('slider',{name:'Transpose',exact:true});await transpose.focus();await transpose.press('End');await tones.first().click();await expect.poll(async()=>(await audio(page)).items.length).toBe(3);
   proof=await audio(page);expect(proof.items[2].hz/firstHz).toBeGreaterThan(1.95);expect(proof.items[2].hz/firstHz).toBeLessThan(2.05);expect(proof.contexts).toHaveLength(1);
   await expect(view).toHaveAttribute('data-playback-requested','false');
-  await page.getByRole('checkbox',{name:'Root only',exact:true}).check();await expect(band.getByRole('group',{name:'Chord cards',exact:true})).toHaveCount(0);await expect(band.getByRole('group',{name:'Melody cards',exact:true})).toHaveCount(0);
+  await page.getByRole('checkbox',{name:'Root only',exact:true}).check();await expect(band.getByRole('group',{name:'Chord cards',exact:true})).toHaveCount(0);await expect(band.getByRole('group',{name:'Melody cards',exact:true})).toHaveAttribute('data-root-only-melody','true');/* N16: root-only follows the melody (Android 38f5bec4). */
   await expect(band.getByRole('group',{name:'Root cards',exact:true}).getByRole('button')).toHaveCount(1);
   const position=page.getByRole('slider',{name:'Position',exact:true});await position.focus();await position.press('End');await expect.poll(async()=>(await audio(page)).items[2].stops).toBeGreaterThan(0);await expect(band.getByLabel('Source key',{exact:true})).toHaveText('D Minor');await expect(band.getByText('No sounding root',{exact:true})).toBeVisible();
   await position.press('Home');await page.getByRole('checkbox',{name:'Root only',exact:true}).uncheck();
@@ -292,7 +292,7 @@ test('previous pitch cards preserve event keys, written unison and rest barriers
   await expect(low).toBeVisible();await expect(high).toBeVisible();expect((await high.boundingBox())!.y).toBeLessThan((await low.boundingBox())!.y);
   await seek(4);await expect(melody.getByRole('button',{name:/Play previous melody/})).toHaveCount(0);await expect(melody.getByRole('button',{name:'Play melody 4̂',exact:true})).toBeVisible();
   await seek(6);await expect(melody.getByRole('button',{name:/Play previous melody/})).toHaveCount(0);await expect(melody.getByRole('button',{name:'Play melody ♭2̂',exact:true})).toBeVisible();
-  await seek(2);await page.getByRole('checkbox',{name:'Root only',exact:true}).check();await expect(band.getByRole('group',{name:'Melody cards',exact:true})).toHaveCount(0);
+  await seek(2);await page.getByRole('checkbox',{name:'Root only',exact:true}).check();await expect(band.getByRole('group',{name:'Melody cards',exact:true})).toHaveAttribute('data-root-only-melody','true');/* N16 */
   const roots=band.getByRole('group',{name:'Root cards',exact:true}),previousRoot=roots.getByRole('button',{name:'Play previous root 1̂',exact:true});await expect(previousRoot).toBeVisible();await previousRoot.click();await expect.poll(async()=>(await audio(page)).items.length).toBe(3);
   proof=await audio(page);expect(proof.items[2].hz).toBeGreaterThan(140);expect(proof.items[2].hz).toBeLessThan(155);
   await seek(3);await expect(roots.getByRole('button',{name:'Play previous root ♭7̂',exact:true})).toBeVisible();await expect(roots.getByRole('button',{name:'Play current root ♭7̂',exact:true})).toBeVisible();
@@ -1210,4 +1210,40 @@ test('N02 opening/closing title neither starts capture nor cancels an explicitly
  await page.keyboard.press('Escape');await expect(title).toBeFocused();await expect(mic).toHaveAttribute('aria-pressed','true');await page.getByRole('button',{name:'Stop persistent pitch practice',exact:true}).click();
  await expect.poll(async()=>(await captureDeparture(page)).tracks.every(state=>state==='ended')).toBe(true);await expect.poll(async()=>(await captureDeparture(page)).contexts.every(state=>state==='closed')).toBe(true);expect((await captureDeparture(page)).calls).toBe(1);
  await info.attach('N02-title-monitor-owner.json',{body:JSON.stringify(await captureDeparture(page)),contentType:'application/json'});
+});
+
+// N09/N07 (Android 3c887223): voice button beside Reset opens Metadata Speak Aloud; choices persist per song and
+// spoken options download the verified speech pack once.
+test('voice settings follow native order, persist per song and fetch the speech pack only for spoken cues',async({page})=>{
+  const voiceRequests:string[]=[];
+  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/voice/'))voiceRequests.push(path);});
+  await installAndOpen(page);
+  const button=page.getByRole('button',{name:'Voice settings',exact:true});
+  const reset=page.getByRole('button',{name:'Reset',exact:true});
+  expect(await button.evaluate((node,resetNode)=>!!(node.compareDocumentPosition(resetNode!)&Node.DOCUMENT_POSITION_FOLLOWING),await reset.elementHandle())).toBe(true);
+  await expect(button).toHaveAttribute('data-voice-cue','OFF');
+  await button.click();
+  const dialog=page.getByRole('dialog',{name:'Metadata Speak Aloud'});
+  await expect(dialog).toBeVisible();
+  expect(await dialog.locator('label.voice-option > span, h3').allTextContents()).toEqual(
+    ['Off','Melody','Melody function','Melody chord tones','Chord','Spoken Number','Sung Number + Details','Pulses','Root Pulses','Harmonic Distance']);
+  await expect(dialog.getByRole('radio',{name:'Off'})).toBeChecked();
+  await dialog.getByRole('radio',{name:'Root Pulses'}).check();
+  await expect(dialog).toBeHidden();
+  await expect(button).toHaveAttribute('data-voice-cue','ROOT_PULSES');
+  expect(voiceRequests).toEqual([]);
+  await button.click();
+  await dialog.getByRole('radio',{name:'Spoken Number'}).check();
+  await expect(button).toHaveAttribute('data-voice-cue','SPOKEN_NUMBER');
+  await expect.poll(()=>voiceRequests.length,{timeout:20_000}).toBeGreaterThanOrEqual(67);
+  expect(voiceRequests).toContain('/voice/manifest.json');
+  await button.click();
+  await dialog.getByRole('slider',{name:'Voice volume'}).fill('80');
+  await expect(dialog.getByText('Voice volume 80%',{exact:true})).toBeVisible();
+  await dialog.getByRole('button',{name:'Done',exact:true}).click();
+  await page.reload();
+  await expect(page.locator('[data-playback-phase]')).toHaveAttribute('aria-busy','false');
+  await expect.poll(async()=>button.getAttribute('data-voice-cue')).toBe('SPOKEN_NUMBER');
+  await button.click();
+  await expect(dialog.getByText('Voice volume 80%',{exact:true})).toBeVisible();
 });

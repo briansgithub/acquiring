@@ -294,9 +294,11 @@
     "android/app/src/main/java/com/acquiring/android/PlaybackEngine.kt"
    ],
    "pwa": [
-    "pwa/src/audio/synth/playback-pcm.ts"
+    "pwa/src/audio/synth/playback-pcm.ts",
+    "pwa/src/audio/transport/timeline-builder.ts",
+    "pwa/src/features/playback/PlaybackVoiceControls.tsx"
    ],
-   "pwaStatus": "missing",
+   "pwaStatus": "implemented",
    "tasks": [
     "T07",
     "T08",
@@ -316,9 +318,12 @@
     "android/app/src/main/res/raw"
    ],
    "pwa": [
-    "pwa/src/audio/synth/playback-pcm.ts"
+    "pwa/src/audio/synth/spoken-cues.ts",
+    "pwa/src/audio/synth/sonic.ts",
+    "pwa/src/audio/transport/voice-pack.ts",
+    "pwa/public/voice/manifest.json"
    ],
-   "pwaStatus": "missing",
+   "pwaStatus": "implemented",
    "tasks": [
     "T07",
     "T08"
@@ -337,10 +342,11 @@
     "android/app/src/main/java/com/acquiring/android/HelpContent.kt"
    ],
    "pwa": [
-    "pwa/src/domain/music",
-    "pwa/src/features/playback/PlaybackCards.tsx"
+    "pwa/src/domain/music/melody-function.ts",
+    "pwa/src/features/playback/PlaybackCards.tsx",
+    "pwa/src/features/help/melody-function-article.tsx"
    ],
-   "pwaStatus": "missing",
+   "pwaStatus": "implemented",
    "tasks": [
     "T03",
     "T12",
@@ -360,14 +366,14 @@
     "android/app/src/main/java/com/acquiring/android/PlaybackDestination.kt"
    ],
    "pwa": [
-    "pwa/src/features/playback/PlaybackScreen.tsx"
+    "pwa/src/features/playback/PlaybackVoiceControls.tsx"
    ],
-   "pwaStatus": "missing",
+   "pwaStatus": "implemented",
    "tasks": [
     "T12"
    ],
    "reopens": [],
-   "acceptance": "Accessible dialog with native option order and titles; changing the cue does not restart transport."
+   "acceptance": "Accessible dialog with native option order and titles; changing the cue does not restart transport. Status 2026-11-18: saxophone instrument icon not ported (instrument picker is a select)."
   },
   {
    "id": "N10",
@@ -379,10 +385,9 @@
    ],
    "pwa": [
     "pwa/src/features/playback/song-playback-settings.ts",
-    "pwa/src/features/playback/PlaybackScreen.tsx",
-    "pwa/src/app/App.tsx"
+    "pwa/src/features/playback/PlaybackScreen.tsx"
    ],
-   "pwaStatus": "partial",
+   "pwaStatus": "implemented",
    "tasks": [
     "T06",
     "T12"
@@ -391,7 +396,7 @@
     "V02",
     "R01"
    ],
-   "acceptance": "Native SongPlaybackSettingsViewModelTest semantics; reload persists per song; bad stored fields fall back to defaults. Status 2026-11-18: store, session and Playback wiring for lock/tempo/arpeggio/mix/instrument/transpose done; cue, voice volume and loop are stored but have no UI until N07/N09/N11."
+   "acceptance": "Native SongPlaybackSettingsViewModelTest semantics; reload persists per song; bad stored fields fall back to defaults. Status 2026-11-18: cue, voice volume and lock now persist and drive playback; loop is stored for N11."
   },
   {
    "id": "N11",
@@ -403,10 +408,9 @@
     "android/app/src/main/java/com/acquiring/android/SectionOrder.kt"
    ],
    "pwa": [
-    "pwa/src/audio/transport/pcm-worker-session.ts",
-    "pwa/src/features/playback/controller.ts"
+    "pwa/src/audio/synth/playback-pcm.ts"
    ],
-   "pwaStatus": "missing",
+   "pwaStatus": "partial",
    "tasks": [
     "T08",
     "T12"
@@ -415,7 +419,7 @@
     "P01",
     "G01"
    ],
-   "acceptance": "Exact PCM continuity across the splice versus a native fixture; section label and timeline follow the continuation."
+   "acceptance": "Exact PCM continuity across the splice versus a native fixture; section label and timeline follow the continuation. Status 2026-11-18: renderer splice/continuation is bit-exact with native; the Song/Loop toggle, transport continuation, splice clock mapping and section-follow UI are not yet ported."
   },
   {
    "id": "N12",
@@ -519,7 +523,7 @@
    "pwa": [
     "pwa/src/features/playback/PlaybackCards.tsx"
    ],
-   "pwaStatus": "missing",
+   "pwaStatus": "partial",
    "tasks": [
     "T12"
    ],
@@ -527,7 +531,7 @@
     "N01",
     "P05"
    ],
-   "acceptance": "Root-only layout matches native rows; scrub seeks silently like the full timeline; N01 root gauge unchanged."
+   "acceptance": "Root-only layout matches native rows; scrub seeks silently like the full timeline; N01 root gauge unchanged. Status 2026-11-18: root-only shows the current melody card and function caption; the separate root scrub slider is covered by the existing Position slider, not a native-styled bar."
   }
  ]
 }

@@ -1,11 +1,11 @@
 import {RootPitchGauge,type RootGaugeState} from './RootPitchGauge';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {ExtractedSection} from '../../contracts';
-import type {SpelledPitch} from '../../domain/music';
+import type {MelodyFunctionTone,SpelledPitch} from '../../domain/music';
 import {singingTargetNote,singingTargetRequest,type SingingTargetRequest} from '../singing/singing-octave';
 import {getKeys,keyAtBeat} from '../../domain/data';
 import {doubleOrUndefined} from '../../domain/data/primitives';
-import {canonicalScaleName,getChordNotes,getDegreeLabelFromSpelling,getMidiNote,getRelativeIonianRomanSymbol,interpret,ionianContextDegreeLabel,ionianContextPreviewAudioNote,relativeIonianKey,resolveChordRoot,resolveScaleDegreePitch} from '../../domain/music';
+import {buildMelodyFunctionInput,canonicalScaleName,describeMelodyFunction,melodyFunctionCardText,getChordNotes,getDegreeLabelFromSpelling,getMidiNote,getRelativeIonianRomanSymbol,interpret,ionianContextDegreeLabel,ionianContextPreviewAudioNote,relativeIonianKey,resolveChordRoot,resolveScaleDegreePitch} from '../../domain/music';
 import {nativeBooleanOrNull} from '../../domain/music/native-json';
 import {PreviewOwner,type PreviewState} from '../../audio/transport';
 import {RomanNumeral,ScaleDegree} from '../../ui/notation/Notation';
@@ -23,13 +23,17 @@ function cardDuration(duration:number,bpm:number):number|null {
 /** First current-card band. Native source pitches stay independent of manual audio transpose.
  * Full interval/relative-context/singing/timeline controls remain separate slices.
  */
+/** Native melodyFunctionColor: green sits, blue leans, amber moves, red is outside the chord. */
+const MELODY_FUNCTION_COLORS:Readonly<Record<MelodyFunctionTone,string>>=Object.freeze({
+  NEUTRAL:'currentColor',STABLE:'#4CAF50',LEANING:'#4FC3F7',MOVING:'#FFB74D',OUTSIDE:'#FF8A80',
+});
 export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,previewOwner,majorLocked,onMajorLockedChange,onSing,rootGauge=null}:{
   rootGauge?:RootGaugeState|null;
   section:ExtractedSection;beat:number;baseBpm:number;settings:PlaybackSettings;stopPreview:{current:(()=>void)|null};
   previewOwner?:{current:PreviewOwner|null};
   majorLocked:boolean;onMajorLockedChange:(locked:boolean)=>void;onSing:(request:SingingTargetRequest)=>void;
 }){
-  const model=useMemo(()=>{const prepared=preparePlaybackSection(section);return {index:new PlaybackActiveEventIndex(section,prepared.melody),keys:getKeys(section)};},[section]);
+  const model=useMemo(()=>{const prepared=preparePlaybackSection(section);return {index:new PlaybackActiveEventIndex(section,prepared.melody),keys:getKeys(section),melody:prepared.melody};},[section]);
   const ionianKey=useMemo(()=>relativeIonianKey(keyAtBeat(model.keys,1)),[model]);
   const owner=useRef<PreviewOwner|null>(null);
   const [preview,setPreview]=useState<PreviewState>({phase:'idle',revision:0,requestId:null});
@@ -50,12 +54,15 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,preview
   const chord=current&&!isRest(current)?current:null;
   const interpretation=useMemo(()=>chord?interpret(chord,key):null,[chord,key]);
   const root=useMemo(()=>{if(!current)return null;const onset=doubleOrUndefined(current.beat)??1;return model.index.chordRootIntervalAtBeat(onset===0?1:onset);},[current,model]);
-  const note=settings.rootOnly?null:model.index.melodyNoteAtBeat(beat);
+  // N16 (Android 38f5bec4): root-only Playback also follows the current melody note and its function.
+  const note=model.index.melodyNoteAtBeat(beat);
   const melody=useMemo(()=>{
     if(!note||note.isRest)return null;
     const sourceKey=keyAtBeat(model.keys,note.beat),pitch=resolveScaleDegreePitch(note.sd,note.octave,sourceKey);
     return pitch?{pitch,label:getDegreeLabelFromSpelling(pitch,sourceKey)}:null;
   },[note,model]);
+  // N08: native describeMelodyFunction over the active note and chord; caption text is the short spoken words.
+  const melodyFunction=useMemo(()=>describeMelodyFunction(buildMelodyFunctionInput(section,model.melody,note,current)),[section,model,note,current]);
   const melodyInterval=useMemo(()=>settings.rootOnly?null:model.index.melodyIntervalAtBeat(beat),[beat,model,settings.rootOnly]);
   const melodyMode=melodyPitchCardDisplayMode(melody?.pitch??null,melodyInterval);
   const melodyCards=useMemo(()=>{
@@ -99,7 +106,16 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,preview
       <button className="playback-card" aria-label="Play scale degree 1" onClick={()=>play('home-note',[home.note])}><ScaleDegree label={'1\u0302'} fontSizePx={28} maxWidthPx={66} maxHeightPx={60}/><span>Home note</span></button>
       <button className="playback-card" aria-label="Play home chord" onClick={()=>play('home-chord',home.chord)}><RomanNumeral display={romanNumeralDisplayFromChord('I',null)} fontSizePx={28} maxWidthPx={66} maxHeightPx={60}/><span>Home chord</span></button>
     </div>
-    {settings.rootOnly?<div role="group" aria-label="Root cards">
+    {settings.rootOnly?<>
+      <p className="melody-function-caption" data-melody-function-tone={melody?melodyFunction.tone:'NEUTRAL'}
+        style={{color:MELODY_FUNCTION_COLORS[melodyFunction.tone]}} aria-live="polite" title={melody?melodyFunction.detail:undefined}>
+        {melody?melodyFunctionCardText(melodyFunction):''}</p>
+      <div role="group" aria-label="Melody cards" data-root-only-melody="true"><h3>Current melody</h3>{melody?<div className="playback-melody-cards" data-melody-card-mode="SINGLE">
+        <button className="playback-card playback-melody-card playback-melody-card--center" data-card-role="current" aria-label={'Play melody '+melodyLabel}
+          onClick={()=>play('melody',[melodyMidi!])} onDoubleClick={()=>{if(melodyMidi!=null)onSing(singingTargetRequest(singingTargetNote(melodyMidi,melodyLabel),null,0));}}>
+          <ScaleDegree label={melodyLabel} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/>
+        </button></div>:<p>No sounding melody</p>}</div>
+      <div role="group" aria-label="Root cards">
       <h3>Current root</h3>{root?<div className="playback-root-cards">
         {showsRootOnlyPrevious(root.previousIntervalPitch)&&<button className="playback-card" aria-label={'Play previous root '+(majorLocked?ionianContextDegreeLabel(root.previousIntervalPitch!,ionianKey):root.previousDegreeLabel)} onClick={()=>play('previous-root',[root.previousIntervalPitch!.toAudioNoteNumber()])}>
           <ScaleDegree label={majorLocked?ionianContextDegreeLabel(root.previousIntervalPitch!,ionianKey):root.previousDegreeLabel!} fontSizePx={40} maxWidthPx={130} maxHeightPx={66}/><span>Previous</span>
@@ -116,7 +132,7 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,preview
           <span className="playback-interval-card__symbol">{root.interval.shorthand}</span><span>Interval</span>
         </button>}
       </div>:<p>No sounding root</p>}
-    </div>:<>
+    </div></>:<>
       <div role="group" aria-label="Chord cards"><h3>Current chord</h3>
         {chord&&interpretation?<button className="playback-card" aria-label={'Play current chord '+chordRoman} disabled={duration===null||interpretation.midi.length===0} onClick={()=>{if(duration!==null)play('chord',interpretation.midi,duration);}}>
           <RomanNumeral display={romanNumeralDisplayFromChord(chordRoman,chord.borrowed)} fontSizePx={32} maxWidthPx={160} maxHeightPx={80}/>
@@ -128,6 +144,9 @@ export function PlaybackCards({section,beat,baseBpm,settings,stopPreview,preview
           <ScaleDegree label={interpretation.toneLabels[index]??''} fontSizePx={30} maxWidthPx={66} maxHeightPx={60}/>
         </button>):null}
       </div></div>
+      <p className="melody-function-caption" data-melody-function-tone={melody?melodyFunction.tone:'NEUTRAL'}
+        style={{color:MELODY_FUNCTION_COLORS[melodyFunction.tone]}} aria-live="polite" title={melody?melodyFunction.detail:undefined}>
+        {melody?melodyFunctionCardText(melodyFunction):''}</p>
       <div role="group" aria-label="Melody cards"><h3>Current melody</h3>{melody?melodyMode==='INTERVAL'?<div className="playback-melody-cards" data-melody-card-mode="INTERVAL">
         {melodyCards.map(card=>{const label=card.role==='PREVIOUS'?'Play previous melody '+card.scaleDegreeLabel:'Play melody '+card.scaleDegreeLabel;const midi=card.pitch.toAudioNoteNumber();return <button key={card.role} className={'playback-card playback-melody-card playback-melody-card--'+card.verticalPosition.toLowerCase()} data-card-role={card.role.toLowerCase()} data-vertical-position={card.verticalPosition} aria-label={label} onClick={()=>play(card.role==='PREVIOUS'?'previous-melody':'melody',[midi])}
           onDoubleClick={()=>card.role!=='PREVIOUS'&&onSing(singingTargetRequest(singingTargetNote(midi,card.scaleDegreeLabel),null,0))}>
