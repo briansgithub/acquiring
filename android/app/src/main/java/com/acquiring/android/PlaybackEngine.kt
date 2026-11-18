@@ -17,15 +17,35 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
+import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.roundToInt
+import kotlin.math.tanh
 
 internal enum class PlaybackAudioLayer { MELODY, CHORD }
 
 internal enum class PlaybackChordMode { FULL, ROOT_ONLY }
 
 internal const val DEFAULT_PLAYBACK_VOICE_VOLUME = 0.5f
+
+/**
+ * Speech gain at a 100% voice slider. The old ceiling (0.8) now sits near 57%
+ * of the slider, leaving the top of the range for louder read-aloud cues.
+ */
+internal const val PLAYBACK_VOICE_MAX_GAIN = 1.4
+
+/** Mix level above which the output is softly limited instead of hard clipped. */
+private const val OUTPUT_SOFT_KNEE = 0.85
+
+/** Identity below the knee; smoothly saturates toward full scale above it. */
+internal fun softLimitPlaybackSample(sample: Double): Double {
+    val magnitude = abs(sample)
+    if (magnitude <= OUTPUT_SOFT_KNEE) return sample
+    val headroom = 1.0 - OUTPUT_SOFT_KNEE
+    val limited = OUTPUT_SOFT_KNEE + headroom * tanh((magnitude - OUTPUT_SOFT_KNEE) / headroom)
+    return if (sample < 0.0) -limited else limited
+}
 
 enum class PlaybackRootDegreeCue {
     OFF, ROOT_PULSES, HARMONIC_DISTANCE, SPOKEN_NUMBER, SUNG_NUMBER_WITH_DETAILS, MELODY_FUNCTION, MELODY_CHORD_TONE;
@@ -255,7 +275,7 @@ internal class PlaybackPcmRenderer(
     private var spokenMode: SpokenMode? = null
     private var currentMelodyGain = config.melodyGain.toDouble()
     private var currentChordGain = config.chordGain.toDouble()
-    private var currentVoiceGain = config.voiceVolume * 0.8
+    private var currentVoiceGain = config.voiceVolume * PLAYBACK_VOICE_MAX_GAIN
     private val crossfadeFrames = (sampleRate * 24 / 1_000.0).roundToInt().coerceAtLeast(1)
     internal var continuation: ArrayDeque<QueuedSection>? = null
     private val splices = ArrayList<PlaybackSplice>(2)
@@ -366,7 +386,7 @@ internal class PlaybackPcmRenderer(
         prepareVoicesForBlock(frameCount * beatsPerFrame)
         val targetMelodyGain = config.melodyGain.toDouble()
         val targetChordGain = config.chordGain.toDouble()
-        val targetVoiceGain = config.voiceVolume * 0.8
+        val targetVoiceGain = config.voiceVolume * PLAYBACK_VOICE_MAX_GAIN
         val melodyStep = (targetMelodyGain - currentMelodyGain) / frameCount.coerceAtLeast(1)
         val chordStep = (targetChordGain - currentChordGain) / frameCount.coerceAtLeast(1)
         val voiceStep = (targetVoiceGain - currentVoiceGain) / frameCount.coerceAtLeast(1)
@@ -441,7 +461,7 @@ internal class PlaybackPcmRenderer(
                 activeIndex++
             }
 
-            buffer[frame] = (mixed * Short.MAX_VALUE)
+            buffer[frame] = (softLimitPlaybackSample(mixed) * Short.MAX_VALUE)
                 .roundToInt()
                 .coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
                 .toShort()

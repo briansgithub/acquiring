@@ -93,7 +93,7 @@ fun PlaylistsSection(
                     name = PlaylistIds.FAVORITES_NAME,
                     count = null,
                     headerTag = PLAYLISTS_SECTION_HEADER_TEST_TAG,
-                    topPadding = 8.dp
+                    topPadding = 4.dp
                 )
                 Box(
                     modifier = Modifier.fillMaxWidth().weight(1f),
@@ -111,7 +111,7 @@ fun PlaylistsSection(
                     name = favorites?.name ?: PlaylistIds.FAVORITES_NAME,
                     count = favorites?.songCount,
                     headerTag = PLAYLISTS_SECTION_HEADER_TEST_TAG,
-                    topPadding = 8.dp,
+                    topPadding = 4.dp,
                     onPlay = favorites?.let { summary ->
                         if (summary.songCount > 0) {
                             { shuffle -> onPlayPlaylist(summary.id, shuffle) }

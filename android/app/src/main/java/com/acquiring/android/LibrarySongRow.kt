@@ -20,28 +20,29 @@ internal fun LibrarySongRow(
     subtitle: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    compact: Boolean = false,
     trailing: @Composable (() -> Unit)? = null
 ) {
     Row(
-        modifier = modifier.fillMaxWidth().heightIn(min = 64.dp),
+        modifier = modifier.fillMaxWidth().heightIn(min = if (compact) 48.dp else 64.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
                 .clickable(onClick = onClick)
-                .padding(vertical = 10.dp)
+                .padding(vertical = if (compact) 4.dp else 10.dp)
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge,
+                style = if (compact) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             if (!subtitle.isNullOrBlank()) {
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = if (compact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

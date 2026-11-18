@@ -263,11 +263,21 @@ class PlaybackRootDegreeCueTest {
                 cue = PlaybackRootDegreeCue.OFF, transpose = 2)
             val spoken = render(events, mode, arpeggiateCycles = 3.0,
                 cue = PlaybackRootDegreeCue.SPOKEN_NUMBER, spokenRootDegrees = clips, transpose = 2)
-            val expectedLevel = if (mode == PlaybackChordMode.FULL) 6_400 else 4_800
+            val expectedLevel = (if (mode == PlaybackChordMode.FULL) 16_000 else 12_000) *
+                DEFAULT_PLAYBACK_VOICE_VOLUME * PLAYBACK_VOICE_MAX_GAIN
             assertTrue("speaks degree five an octave below the transposed root in $mode",
                 abs(spoken[200] - backing[200] - expectedLevel) <= 2)
             assertArrayEquals(backing.copyOfRange(2_667, backing.size), spoken.copyOfRange(2_667, spoken.size))
         }
+    }
+
+    @Test
+    fun outputSoftLimitPassesNormalLevelsAndBoundsLoudPeaks() {
+        assertEquals(0.5, softLimitPlaybackSample(0.5), 0.0)
+        assertEquals(-0.85, softLimitPlaybackSample(-0.85), 0.0)
+        val loud = softLimitPlaybackSample(1.6)
+        assertTrue(loud > softLimitPlaybackSample(1.0) && loud < 1.0)
+        assertEquals(-loud, softLimitPlaybackSample(-1.6), 0.0)
     }
 
     @Test
@@ -283,9 +293,11 @@ class PlaybackRootDegreeCueTest {
         val voice = PlaybackPcmRenderer(timeline, settings, SAMPLE_RATE, clips)
         val backing = PlaybackPcmRenderer(timeline, settings.copy(voiceVolume = 0f), SAMPLE_RATE, clips)
         fun PlaybackPcmRenderer.renderBlock(frames: Int) = ShortArray(frames).also { renderAudioInto(it) }
-        assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() - 3_200) <= 1)
+        assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() -
+            8_000 * DEFAULT_PLAYBACK_VOICE_VOLUME * PLAYBACK_VOICE_MAX_GAIN) <= 1)
         voice.updateConfig(settings.copy(voiceVolume = 1f))
-        assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() - 6_400) <= 20)
+        assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() -
+            8_000 * PLAYBACK_VOICE_MAX_GAIN) <= 40)
         voice.updateConfig(settings.copy(voiceVolume = 0f))
         voice.renderBlock(200)
         backing.renderBlock(200)
