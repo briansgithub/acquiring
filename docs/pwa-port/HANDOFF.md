@@ -28,16 +28,14 @@ Ordered phases. Each slice is one validated commit:
    - Settings Back restores the inner list. `library.spec` 8/8, including the old `:49` test.
    - Found: after Settings Back, the reopened catalog reader reports `error` while still showing the remembered rows. This is probably the old CI "Received 110" cause; open.
 5. **Done.** N11 Song mode `0f3074e2`: Loop/Song toggle, saved per song; Song mode continues into the next section.
-6. **NEXT — start here.**
-   - N15 example shuffle:
-     - Catalog-worker query: `catalog_song` id/title/artist from the installed Aural catalog plus `aural-popularity` scores (see `storage/catalog/aural-popularity-query.ts`).
-     - `shuffledExampleQueue` cutoff semantics (`auralMeetsMinimumPopularity`).
-     - Queue model: `manualAdvance`, `preferChorus`, `rememberSection`, and the notice text "Playlist shuffled".
-     - `chorusOrFirstSection` (canonical rank 6000–6999, else 5000–5999, else first).
-     - Library row "Shuffle Songs" with a "Minimum Popularity" menu (100%..0%, then Any; default 80).
-   - Then N03 contextual help, then N13 + N04 rotary dials.
-   - Then wire the N11 in-block splice: transport continuation op, splitting PCM at `PlaybackSplice` frames, section-follow.
-   - Saxophone icon.
+6. **Done.** N03 contextual help `9e976557`, marked in the feature ledger `89004057`. N15 example shuffle `a8b04d5f`: ported with native unit cases.
+7. **NEXT — start here.**
+   1. Run `cd pwa; npm run build; npx playwright test tests/browser/library.spec.ts --project chrome -g "example-song shuffle"`. This N15 test was committed but **not yet run**.
+   2. Re-run any failures from the full browser run in `C:/Users/user1/.claude/port-run/full-browser.log`. `dist` was rebuilt mid-run, so its late results are unreliable.
+   3. N15 browser proof against an installed Aural catalog. Extend `scripts/catalog/make-aural-statistics-browser-fixture.py` so `catalog_song` has title and artist.
+   4. Then N13 + N04 rotary dials with in-dial values.
+   5. Then wire the N11 in-block splice: transport continuation op, splitting PCM at `PlaybackSplice` frames, section-follow.
+   6. Saxophone icon; the Library Aural Quiz row (Aural is last).
 5. Resume the earlier queue: T13/T08 gates, T22, then Aural last, then T23–T28.
 
 ## Owner decisions in force
