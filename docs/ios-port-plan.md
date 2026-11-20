@@ -147,7 +147,7 @@ and must be closed by B11 rather than silently treated as newly verified.
 | B00 contracts and retained history | none | Evidence pinned; legacy import/recovery review remains open |
 | B02 durable song playback settings | B00 evidence | In progress, Astra/high worker `Acquiring: iOS Song Settings` |
 | B01 octave persistence and older singing/navigation gaps | B00 evidence | Pending |
-| B03 melody classification and cue metadata | B00 evidence | Pending |
+| B03 melody classification and cue metadata | B00 evidence | In progress, independent Astra/high core-model worker |
 | B04 pulses, exact speech clips, Sonic and limiter | B02, B03 | Pending |
 | B05 gapless Song continuation and clock metadata | B02, B04 | Pending |
 | B06 playback controls, frame clock, captions | B01-B05 | Pending |
@@ -180,3 +180,27 @@ reports actual CI; the lead independently reviews before any merge. The worker
 must leave the PR open. Audit worker `Acquiring: iOS Delta Audit` is complete;
 its artifacts are committed and need not be recreated. Resume by reading B02's
 report/status, not by starting duplicate work.
+
+## B03 ownership and B00 follow-up, 2026-11-20
+
+`Acquiring: iOS Melody Function` owns branch `ios-port-melody-function` in
+`/mnt/c/Users/user1/Desktop/Projects/acquiring-ios-port-melody-function`, created
+clean from main `9d49782e`. B03 may proceed alongside B02 because it owns new
+AcquiringCore files, focused tests and uniquely named contract fixtures. It must
+not edit AudioContracts, AppEnvironment or SongViews. B04/B06 own eventual
+renderer/UI wiring. B02 received this boundary by thread message. Both workers
+must leave their PRs open for lead review.
+
+A bounded B00 inspection found existing repeated-section support in
+`HooktheoryHarvester.harvest`: API responses cache by ID, while repeated tabs
+receive distinct section keys. `CatalogCoordinator` already opens a separate
+HarvestLedger, replays on startup and restores only missing catalog entries.
+These are source findings, not runtime verification. Do not rebuild them.
+
+One remaining compatibility candidate is explicit: Android `DataExtractor`
+uses `Json { ignoreUnknownKeys = true; isLenient = true }`, whereas Swift's
+nested jsonData extraction uses `JSONDecoder`. Before closing I02, pin an actual
+accepted native nonstandard input and compare Swift behavior; do not broadly
+relax parsing or claim this is verified from source syntax alone. Existing
+catalog tests live in AcquiringCatalogTests.swift, CatalogRecoveryTests.swift
+and HarvestLedgerTests.swift. B00 import/recovery review remains open.
