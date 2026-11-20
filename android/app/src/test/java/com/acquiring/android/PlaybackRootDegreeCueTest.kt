@@ -367,6 +367,42 @@ class PlaybackRootDegreeCueTest {
     }
 
     @Test
+    fun spokenVoicePitchNeverExceedsB4() {
+        assertEquals(71, SPOKEN_VOICE_MAX_MIDI)
+        assertEquals(71, foldSpokenVoiceMidi(71))
+        assertEquals(60, foldSpokenVoiceMidi(60))
+        assertEquals(36, foldSpokenVoiceMidi(36))
+        assertEquals(61, foldSpokenVoiceMidi(73))
+        assertEquals(71, foldSpokenVoiceMidi(83))
+        assertEquals(67, foldSpokenVoiceMidi(91))
+        for (midi in 24..127) assertTrue(foldSpokenVoiceMidi(midi) <= 71)
+        for (midi in 72..127) assertEquals(0, Math.floorMod(midi - foldSpokenVoiceMidi(midi), 12))
+    }
+
+    @Test
+    fun highRequestedPitchesAreSungAnOctaveDownNotShiftedPastB4() {
+        val pitch = 200.0
+        val source = ShortArray(2400) { index ->
+            (12000 * kotlin.math.sin(2 * Math.PI * pitch * index / SPOKEN_ROOT_DEGREE_SAMPLE_RATE)).roundToInt().toShort()
+        }
+        val bank = List(SPOKEN_ROOT_DEGREE_PITCHES.count()) { source }
+        val cache = SpokenPhraseCache(SpokenRootDegreeClips(listOf(bank), functions = mapOf("cue" to bank)))
+        fun medianHz(samples: ShortArray): Double {
+            val rises = samples.indices.filter { it > 0 && samples[it - 1] <= 0 && samples[it] > 0 }
+            val periods = rises.zipWithNext { a, b -> b - a }.sorted()
+            return SPOKEN_ROOT_DEGREE_SAMPLE_RATE.toDouble() / periods[periods.size / 2]
+        }
+        val phrase = SpokenPhrase(RelativeIonianDegree(1, 0), 83, null)
+        val capped = requireNotNull(cache.prepare(phrase, 3.75, 60.0))
+        val atB4 = requireNotNull(cache.prepare(phrase.copy(midi = 71), 3.75, 60.0))
+        assertEquals(medianHz(atB4), medianHz(capped), 1.0)
+        assertTrue(medianHz(capped) < pitch * 2.0 * 1.02)
+        val cue = requireNotNull(cache.prepareFunction("cue", 85, 3.75, 60.0))
+        val cueAtC4Region = requireNotNull(cache.prepareFunction("cue", 73, 3.75, 60.0))
+        assertEquals(medianHz(cueAtC4Region), medianHz(cue), 1.0)
+    }
+
+    @Test
     fun durationTracksFractionalChordLengthAndTempoWithoutChangingPitch() {
         val pitch = 200.0
         val source = ShortArray(2400) { index ->

@@ -16,6 +16,13 @@ import kotlin.math.roundToInt
 internal const val SPOKEN_ROOT_DEGREE_SAMPLE_RATE = 24_000
 internal val SPOKEN_ROOT_DEGREE_PITCHES = 36..59
 
+/** Highest pitch (B4) the synthesized read-aloud voice may reach. */
+internal const val SPOKEN_VOICE_MAX_MIDI = 71
+
+/** Folds [midi] down by octaves until it is at or below [SPOKEN_VOICE_MAX_MIDI]. */
+internal fun foldSpokenVoiceMidi(midi: Int): Int =
+    if (midi <= SPOKEN_VOICE_MAX_MIDI) midi else SPOKEN_VOICE_MAX_MIDI - Math.floorMod(SPOKEN_VOICE_MAX_MIDI - midi, 12)
+
 internal enum class SpokenChordSuffix(val resourceId: Int, val spokenName: String) {
     MIN(R.raw.root_suffix_min, "minor"),
     SEVEN(R.raw.root_suffix_seven, "dominant seventh"),
@@ -130,8 +137,9 @@ internal class SpokenPhraseCache(private val clips: SpokenRootDegreeClips) {
     private val functionSamples = LinkedHashMap<FunctionKey, ShortArray>(16, 0.75f, true)
     private var cachedFrames = 0
 
-    fun prepare(phrase: SpokenPhrase, durationBeats: Double, bpm: Double): ShortArray? {
+    fun prepare(requested: SpokenPhrase, durationBeats: Double, bpm: Double): ShortArray? {
         if (bpm <= 0) return null
+        val phrase = requested.copy(midi = foldSpokenVoiceMidi(requested.midi))
         val parts = clips.parts(phrase) ?: return null
         val naturalFrames = parts.sumOf { it.size }
         val chordFrames = (durationBeats * 60 * SPOKEN_ROOT_DEGREE_SAMPLE_RATE / bpm).roundToInt()
@@ -170,7 +178,8 @@ internal class SpokenPhraseCache(private val clips: SpokenRootDegreeClips) {
         return output
     }
 
-    fun prepareFunction(cue: String, midi: Int, durationBeats: Double, bpm: Double): ShortArray? {
+    fun prepareFunction(cue: String, requestedMidi: Int, durationBeats: Double, bpm: Double): ShortArray? {
+        val midi = foldSpokenVoiceMidi(requestedMidi)
         val clip = clips.functionClip(cue, midi) ?: return null
         return stretchFunction(cue, midi, clip, durationBeats, bpm)
     }
