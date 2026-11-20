@@ -224,3 +224,11 @@ Workers received the correction; queued fan-out messages must be allowed to
 deliver normally. Verify actual session turn_context after the next follow-up,
 rather than treating stored selection as proof. Earlier medium runtime reports
 remain part of the record.
+
+Effort check receipt: latest saved turn_context at 2026-11-20T23:15Z confirms
+`gpt-6-astra` / `high` for B02 and B07. The lead's saved context from 23:13:50Z
+still records `medium`; the in-turn runtime update alone does not rewrite that
+record. Re-check the next lead turn. B03 was in T3 `error` state with correction
+message watch `54df1b57` queued for automatic delivery. Do not create a duplicate
+worker or bypass the queue. Its implementation status needs confirmation after
+that follow-up delivers. B07 correction watch is `e32e9d29`.
