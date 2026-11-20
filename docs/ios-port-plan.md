@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-2026-11-20: Phase 0 in progress. Owner thread is `Acquiring: Android To iOS Port`.
+2026-11-20: Phase 0 complete. Phase 1 source audit in progress. Owner thread is `Acquiring: Android To iOS Port`.
 Read this file on every resume. Do not repeat completed work.
 
 Brian authorized committing the PWA continuation onto main, then porting Android
@@ -27,9 +27,9 @@ feature workflow in ios/AGENTS.md; it does not authorize TestFlight delivery.
   an unavailable development server. Its original bytes are in the backup above.
 - [x] Run PWA unit/parity/build checks, Python port-ledger validators and shared
   chord contract tests. Record outcomes before merging.
-- [ ] Fast-forward main from `3c887223` to the verified PWA continuation tip,
+- [x] Fast-forward main from `3c887223` to the verified PWA continuation tip,
   then push main. Inspect remote state first; do not overwrite remote changes.
-- [ ] Report phase boundary to Boss with exact commits and exclusions.
+- [x] Report phase boundary to Boss with exact commits and exclusions.
 
 Other worktrees are untouched. Do not merge PR #52, `android-bg-media-voice`.
 Inventory its voice cap/volume/default-song/background media changes separately.
@@ -73,3 +73,17 @@ was necessary. Browser tests and Swift compilation were not run.
 Windows Node 24.18 and Windows Git/GitHub CLI supply the existing authenticated
 tooling. WSL Git identity now matches the existing Windows repository identity.
 Logs: `/tmp/acquiring-ios-phase0-*.log`; background job `604ee75d`.
+
+## Phase 0 completion and next resume
+
+Main was fast-forwarded and pushed to origin at `c58f9fcd`. Cleanup commit
+`3de43c69` added ignore rules and this ledger. `c58f9fcd` corrected the generated
+flat-symbol encoding and recorded verification. The PWA continuation history is
+preserved, not squashed. Other Android branches remain unmerged and untouched.
+
+Read-only worker `Acquiring: iOS Delta Audit`, Astra/high, is auditing history
+and existing Swift implementations. Expected outputs are
+`/tmp/acquiring-ios-audit.md` and `/tmp/acquiring-ios-commit-inventory.json`.
+On resume, inspect its report/status, independently review its proposed batches,
+and complete this plan before creating the implementation worktree. Do not
+start another audit worker. No Swift changes have been made yet.
