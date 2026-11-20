@@ -45,7 +45,7 @@ Leave `fix/android-timeline-scrub` to its existing owner.
   contract backward to the smallest change in the existing SwiftUI implementation.
 - [x] Record dependency-ordered batches with source commits, iOS files, procedural
   checks and explicit device/build limitations. Reuse shared fixtures and contracts.
-- [ ] Create `wt new ios-port-... --base main` only after main is updated and clean.
+- [x] Create `wt new ios-port-... --base main` only after main is updated and clean.
 - [ ] Implement batches, update this ledger in each commit and open/link batch PRs.
   Leave them open unless existing CI passes and the changes are contract-verified.
 
@@ -145,13 +145,13 @@ and must be closed by B11 rather than silently treated as newly verified.
 | Batch | Dependency | Current status |
 | --- | --- | --- |
 | B00 contracts and retained history | none | Evidence pinned; legacy import/recovery review remains open |
-| B02 durable song playback settings | B00 evidence | Implemented on ios-port-song-settings; [batch receipt](ios-port/b02-song-settings.md); targeted Swift tests unrun, PR review pending |
+| B02 durable song playback settings | B00 evidence | Implemented; [PR #53](https://github.com/briansgithub/acquiring/pull/53) open for lead review; [receipt](ios-port/b02-song-settings.md); Swift tests unrun |
 | B01 octave persistence and older singing/navigation gaps | B00 evidence | Pending |
-| B03 melody classification and cue metadata | B00 evidence | Pending |
+| B03 melody classification and cue metadata | B00 evidence | In progress, independent Astra/high core-model worker |
 | B04 pulses, exact speech clips, Sonic and limiter | B02, B03 | Pending |
 | B05 gapless Song continuation and clock metadata | B02, B04 | Pending |
 | B06 playback controls, frame clock, captions | B01-B05 | Pending |
-| B07 Aural reader, installer, ranking and query | B00 evidence | Pending; separate large subsystem |
+| B07 Aural reader, installer, ranking and query | B00 evidence | Package work in progress; app integration remains pending |
 | B08 song queues and Library | B02, B05, B07 | Pending |
 | B09 Aural learning, evidence and audio ownership | B01, B04, B07 | Pending |
 | B10 Aural browsing and practice UI | B06-B09 | Pending |
@@ -170,3 +170,65 @@ and update this ledger. Tests of fixture data alone cannot mark Swift behavior
 verified. Batch PRs remain open unless actual CI passes and contract evidence
 supports the change. The lead owns review and integration; no worker may merge
 without reporting those results. No TestFlight or broad final test run is implied.
+
+## Active implementation ownership
+
+B02 owns `/mnt/c/Users/user1/Desktop/Projects/acquiring-ios-port-song-settings`,
+branch `ios-port-song-settings`, created clean from `d430fc0c` with `wt new`.
+Worker `Acquiring: iOS Song Settings` implements, commits, opens/links its PR and
+reports actual CI; the lead independently reviews before any merge. The worker
+must leave the PR open. Audit worker `Acquiring: iOS Delta Audit` is complete;
+its artifacts are committed and need not be recreated. Resume by reading B02's
+report/status, not by starting duplicate work.
+
+## B03 ownership and B00 follow-up, 2026-11-20
+
+`Acquiring: iOS Melody Function` owns branch `ios-port-melody-function` in
+`/mnt/c/Users/user1/Desktop/Projects/acquiring-ios-port-melody-function`, created
+clean from main `9d49782e`. B03 may proceed alongside B02 because it owns new
+AcquiringCore files, focused tests and uniquely named contract fixtures. It must
+not edit AudioContracts, AppEnvironment or SongViews. B04/B06 own eventual
+renderer/UI wiring. B02 received this boundary by thread message. Both workers
+must leave their PRs open for lead review.
+
+A bounded B00 inspection found existing repeated-section support in
+`HooktheoryHarvester.harvest`: API responses cache by ID, while repeated tabs
+receive distinct section keys. `CatalogCoordinator` already opens a separate
+HarvestLedger, replays on startup and restores only missing catalog entries.
+These are source findings, not runtime verification. Do not rebuild them.
+
+One remaining compatibility candidate is explicit: Android `DataExtractor`
+uses `Json { ignoreUnknownKeys = true; isLenient = true }`, whereas Swift's
+nested jsonData extraction uses `JSONDecoder`. Before closing I02, pin an actual
+accepted native nonstandard input and compare Swift behavior; do not broadly
+relax parsing or claim this is verified from source syntax alone. Existing
+catalog tests live in AcquiringCatalogTests.swift, CatalogRecoveryTests.swift
+and HarvestLedgerTests.swift. B00 import/recovery review remains open.
+
+## B07 ownership and provider effort
+
+Worker `Acquiring: iOS Aural Catalog` owns the clean main-based branch
+`ios-port-aural-catalog` at
+`/mnt/c/Users/user1/Desktop/Projects/acquiring-ios-port-aural-catalog`.
+It may add only Aural-prefixed catalog package files, focused tests/contracts
+and its receipt until shared edits are coordinated. B02 owns app persistence;
+B03 owns pure melody types. B07 exposes a usable package service, while app
+bootstrap/Settings/UI integration remains explicitly pending. All three workers
+must report and leave PRs open for independent review.
+
+Boss diagnosed the medium-effort discrepancy: initial thread creation included
+Astra/high, but plain `t3thread send` omitted model options on follow-up turns.
+Every future message to a Codex thread must include `-m gpt-6-astra -e high`.
+Boss fixed supervisor nudges and this lead's current runtime reports high.
+Workers received the correction; queued fan-out messages must be allowed to
+deliver normally. Verify actual session turn_context after the next follow-up,
+rather than treating stored selection as proof. Earlier medium runtime reports
+remain part of the record.
+
+Effort check receipt: latest saved turn_context at 2026-11-20T23:15Z confirms
+`gpt-6-astra` / `high` for B02 and B07. The lead's saved context from 23:13:50Z
+still records `medium`; the in-turn runtime update alone does not rewrite that
+record. Re-check the next lead turn. B03 was in T3 `error` state with correction
+message watch `54df1b57` queued for automatic delivery. Do not create a duplicate
+worker or bypass the queue. Its implementation status needs confirmation after
+that follow-up delivers. B07 correction watch is `e32e9d29`.
