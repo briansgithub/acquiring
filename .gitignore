@@ -66,3 +66,7 @@ acquiring-asc.json
 /Attitude-android/
 /pwa/dist/
 /pwa/test-results/
+
+# Local PWA catalog packages and launch settings
+/pwa/public/dev-catalog/
+/.claude/launch.json
