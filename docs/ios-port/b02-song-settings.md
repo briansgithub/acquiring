@@ -26,7 +26,7 @@ available, so a compiled cross-platform sanitizer comparison was not run.
 
 | Behavior | Swift implementation | Targeted evidence |
 | --- | --- | --- |
-| Durable stable slug, all ten control fields | SongPlaybackSettings Codable payload in unique SongPlaybackSettingsRecord; SwiftDataSongPlaybackSettingsStore | Shared row round trips; fresh-context and disk-reopen SwiftData tests, unrun |
+| Durable stable slug, all nine control fields | SongPlaybackSettings Codable payload in unique SongPlaybackSettingsRecord; SwiftDataSongPlaybackSettingsStore | Shared row round trips; fresh-context and disk-reopen SwiftData tests, unrun |
 | Defaults immediately; same song retains section continuity | Session.enterSong; AppEnvironment.rememberQuizSection | Missing/default/same-song Swift test, unrun |
 | Old read and edit wins | Session generation and edited guard | Gated read tests including explicit default edit, unrun |
 | Coalesced serial writes without losing prior songs | One writer, retained in-flight head, adjacent waiting-tail replacement | Gated A/B/A test, unrun |
@@ -69,3 +69,21 @@ fallback container is introduced. Verify on macOS with only
 4. Open an older user database and confirm Favorites and new settings coexist.
 
 CI disposition and final commit receipt will be appended after PR creation.
+
+## Implementation receipt
+
+Contract commit `e5317838` pins source and fixtures. Implementation extends the
+existing AppEnvironment, instrument session, user container and SongViews callers.
+The app target explicitly includes the new source file in its Xcode project.
+Targeted tests are in the existing AcquiringTests.swift test seam, including
+shared fixture expectations, AppEnvironment integration and disk container reopen.
+
+Procedural review checked main-actor isolation, separate transaction context,
+load generation, edit protection, in-flight queue ownership, pending return,
+nullable instrument identifiers, mode-only no-write and source-time transport
+callers. `git diff --check` passed. SwiftData schema migration, compiler acceptance,
+UI error presentation and audio behavior remain unverified.
+
+Runtime initially reported GPT-6-Astra high, briefly reported medium during a
+follow-up, then explicitly reported high again. No worker or model handoff was
+created. Final work continues under the reported high effort.
