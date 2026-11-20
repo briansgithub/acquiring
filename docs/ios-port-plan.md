@@ -25,7 +25,7 @@ feature workflow in ios/AGENTS.md; it does not authorize TestFlight delivery.
 - [x] Restore portable empty catalog sources. The local change referred to
   `http://127.0.0.1:5180/manifest.json`; shipping it would bind other machines to
   an unavailable development server. Its original bytes are in the backup above.
-- [ ] Run PWA unit/parity/build checks, Python port-ledger validators and shared
+- [x] Run PWA unit/parity/build checks, Python port-ledger validators and shared
   chord contract tests. Record outcomes before merging.
 - [ ] Fast-forward main from `3c887223` to the verified PWA continuation tip,
   then push main. Inspect remote state first; do not overwrite remote changes.
@@ -58,3 +58,18 @@ Library reader recovery and other gates. Its earlier Windows browser result was
 If blocked on a decision from Brian, write the question to
 `~/agents/boss/ios-port.hold` and notify Boss. Remove it when answered.
 Create `~/agents/boss/ios-port.done` only when the whole port is finished.
+
+## Fresh verification, 2026-11-20
+
+PWA check passed: 1,291 unit tests, one parity test, typecheck and production build.
+SQLite compatibility, shared parity, chord interpretation, audit validator,
+Android delta validator and catalog packaging tests passed. Feature-ledger
+validation initially failed because the generated Markdown encoded B-flat as
+`Bâ™­4` while its JSON source correctly held `B♭4`. Regeneration changed only
+that text; the full validator then passed, including all 262 historical rows,
+575 evidence references and 50 reproducible patch hashes. No application fix
+was necessary. Browser tests and Swift compilation were not run.
+
+Windows Node 24.18 and Windows Git/GitHub CLI supply the existing authenticated
+tooling. WSL Git identity now matches the existing Windows repository identity.
+Logs: `/tmp/acquiring-ios-phase0-*.log`; background job `604ee75d`.
