@@ -1,0 +1,17 @@
+[
+  {"tokens":[],"redundant":false,"start":0,"length":0},
+  {"tokens":["I","V"],"redundant":false,"start":0,"length":2},
+  {"tokens":["I","V","I"],"redundant":false,"start":0,"length":3},
+  {"tokens":["I","V","I","V"],"redundant":true,"start":0,"length":3},
+  {"tokens":["I","V","I","V","I"],"redundant":true,"start":0,"length":3},
+  {"tokens":["I","V","vi","IV","I","V","vi","IV","I","V"],"redundant":true,"start":0,"length":5},
+  {"tokens":["X","I","V","I","V","Y"],"redundant":false,"start":0,"length":6},
+  {"tokens":["A","B","C","A","B"],"redundant":false,"start":0,"length":5},
+  {"tokens":["A","B","A","B","C","A","B","A","B","C"],"redundant":true,"start":1,"length":5},
+  {"tokens":["I","V7","I","V△7"],"redundant":false,"start":0,"length":4},
+  {"tokens":["I","V65","I","V43"],"redundant":false,"start":0,"length":4},
+  {"tokens":["I","♭VII","I","VII"],"redundant":false,"start":0,"length":4},
+  {"tokens":["I-major","V-major","I-minor","V-minor"],"redundant":false,"start":0,"length":4},
+  {"tokens":["a|b","c","a","b|c"],"redundant":false,"start":0,"length":4},
+  {"tokens":["A","A","A"],"redundant":true,"start":0,"length":2}
+]

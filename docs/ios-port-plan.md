@@ -204,3 +204,13 @@ accepted native nonstandard input and compare Swift behavior; do not broadly
 relax parsing or claim this is verified from source syntax alone. Existing
 catalog tests live in AcquiringCatalogTests.swift, CatalogRecoveryTests.swift
 and HarvestLedgerTests.swift. B00 import/recovery review remains open.
+
+## B07 package work, 2026-11-20
+
+`ios-port-aural-catalog`, based on `d574a8ad`, owns new Aural-prefixed
+AcquiringCatalog sources and dedicated tests/contracts. Initial commit adds
+native loop/query/grouping/identity algorithms and pins source hashes at
+`3c887223`. See [B07 receipt](ios-port/b07-aural-catalog.md). Reader, installer,
+ranking and verification are in progress. Swift tests remain unrun locally.
+App integration belongs to a subsequent lead-owned change; B07 app-visible
+completion is not claimed. All existing review statuses remain unchanged.
