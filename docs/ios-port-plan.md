@@ -145,7 +145,7 @@ and must be closed by B11 rather than silently treated as newly verified.
 | Batch | Dependency | Current status |
 | --- | --- | --- |
 | B00 contracts and retained history | none | Evidence pinned; legacy import/recovery review remains open |
-| B02 durable song playback settings | B00 evidence | In progress, Astra/high worker `Acquiring: iOS Song Settings` |
+| B02 durable song playback settings | B00 evidence | PR #53 open; independent source/portable review passed, iOS CI pending |
 | B01 octave persistence and older singing/navigation gaps | B00 evidence | Pending |
 | B03 melody classification and cue metadata | B00 evidence | In progress, independent Astra/high core-model worker |
 | B04 pulses, exact speech clips, Sonic and limiter | B02, B03 | Pending |
@@ -232,3 +232,23 @@ record. Re-check the next lead turn. B03 was in T3 `error` state with correction
 message watch `54df1b57` queued for automatic delivery. Do not create a duplicate
 worker or bypass the queue. Its implementation status needs confirmation after
 that follow-up delivers. B07 correction watch is `e32e9d29`.
+
+## Independent interim review, 2026-11-20
+
+B02 PR https://github.com/briansgithub/acquiring/pull/53 is linked to the lead.
+Reviewed head `3f35c404` store/load/write ownership, separate transaction context,
+Xcode target registration and AppEnvironment/SongViews integration. Independently
+ran `python3 contracts/scripts/check_song_playback_settings.py` and
+`git diff --check main...HEAD` in its worktree: eight sanitizer cases, six pinned
+hashes and whitespace check passed. Lifecycle cases remain specifications until
+Swift tests execute. iOS run `44835917107` is in progress; no merge authorized
+by this interim receipt. Worker is recording the actual CI disposition.
+
+B07 commit `7b8b8f1b` received bounded independent source review. Eight hashes
+match native `3c887223`; loop cases equal the pinned native fixture. Sent a
+mixed-case numeral canonicalization difference and missing identity/grouping
+test coverage to its owner. Reader/installer remain in progress.
+
+B03 recovered after its queued follow-up and is running. Latest saved
+turn_context records confirm Astra/high for B02 at 23:15:03Z, B03 at 23:15:32Z,
+B07 at 23:15:02Z and this lead at 23:18:42Z. Earlier medium turns are not relabeled.
