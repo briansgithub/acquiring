@@ -151,7 +151,7 @@ and must be closed by B11 rather than silently treated as newly verified.
 | B04 pulses, exact speech clips, Sonic and limiter | B02, B03 | Pending |
 | B05 gapless Song continuation and clock metadata | B02, B04 | Pending |
 | B06 playback controls, frame clock, captions | B01-B05 | Pending |
-| B07 Aural reader, installer, ranking and query | B00 evidence | Pending; separate large subsystem |
+| B07 Aural reader, installer, ranking and query | B00 evidence | Package work in progress; app integration remains pending |
 | B08 song queues and Library | B02, B05, B07 | Pending |
 | B09 Aural learning, evidence and audio ownership | B01, B04, B07 | Pending |
 | B10 Aural browsing and practice UI | B06-B09 | Pending |
@@ -204,3 +204,23 @@ accepted native nonstandard input and compare Swift behavior; do not broadly
 relax parsing or claim this is verified from source syntax alone. Existing
 catalog tests live in AcquiringCatalogTests.swift, CatalogRecoveryTests.swift
 and HarvestLedgerTests.swift. B00 import/recovery review remains open.
+
+## B07 ownership and provider effort
+
+Worker `Acquiring: iOS Aural Catalog` owns the clean main-based branch
+`ios-port-aural-catalog` at
+`/mnt/c/Users/user1/Desktop/Projects/acquiring-ios-port-aural-catalog`.
+It may add only Aural-prefixed catalog package files, focused tests/contracts
+and its receipt until shared edits are coordinated. B02 owns app persistence;
+B03 owns pure melody types. B07 exposes a usable package service, while app
+bootstrap/Settings/UI integration remains explicitly pending. All three workers
+must report and leave PRs open for independent review.
+
+Boss diagnosed the medium-effort discrepancy: initial thread creation included
+Astra/high, but plain `t3thread send` omitted model options on follow-up turns.
+Every future message to a Codex thread must include `-m gpt-6-astra -e high`.
+Boss fixed supervisor nudges and this lead's current runtime reports high.
+Workers received the correction; queued fan-out messages must be allowed to
+deliver normally. Verify actual session turn_context after the next follow-up,
+rather than treating stored selection as proof. Earlier medium runtime reports
+remain part of the record.
