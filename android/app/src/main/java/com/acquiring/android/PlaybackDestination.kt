@@ -83,7 +83,7 @@ internal fun PlaybackDestination(
     var localLockInMajor by rememberSaveable(song.slug) { mutableStateOf(false) }
     var playbackKeyDisplay by remember { mutableStateOf<PlaybackKeyDisplay?>(null) }
     var localVoiceVolume by rememberSaveable(song.slug) { mutableStateOf(DEFAULT_PLAYBACK_VOICE_VOLUME) }
-    var localLoopSection by rememberSaveable(song.slug) { mutableStateOf(true) }
+    var localLoopSection by rememberSaveable(song.slug) { mutableStateOf(DEFAULT_LOOP_SECTION) }
     var localMelodyChordBalance by remember(song.slug) { mutableStateOf(DEFAULT_MELODY_CHORD_BALANCE) }
     val useRelativeIonianContext = playbackSettings?.lockInMajor ?: localLockInMajor
     val voiceVolume = playbackSettings?.voiceVolume ?: localVoiceVolume

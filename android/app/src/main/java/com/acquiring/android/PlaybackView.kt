@@ -208,7 +208,7 @@ internal fun PlaybackTab(
     rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF,
     onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit = {},
     voiceVolume: Float = DEFAULT_PLAYBACK_VOICE_VOLUME,
-    loopSection: Boolean = true,
+    loopSection: Boolean = DEFAULT_LOOP_SECTION,
     melodyChordBalance: Float = DEFAULT_MELODY_CHORD_BALANCE,
     onMelodyChordBalanceChange: (Float) -> Unit = {},
     onSectionFinished: () -> Unit = {},
