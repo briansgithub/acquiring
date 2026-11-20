@@ -145,7 +145,7 @@ and must be closed by B11 rather than silently treated as newly verified.
 | Batch | Dependency | Current status |
 | --- | --- | --- |
 | B00 contracts and retained history | none | Evidence pinned; legacy import/recovery review remains open |
-| B02 durable song playback settings | B00 evidence | Next; preserve mainline defaults and nullable instrument |
+| B02 durable song playback settings | B00 evidence | In progress on ios-port-song-settings; [batch receipt](ios-port/b02-song-settings.md); native checks unrun |
 | B01 octave persistence and older singing/navigation gaps | B00 evidence | Pending |
 | B03 melody classification and cue metadata | B00 evidence | Pending |
 | B04 pulses, exact speech clips, Sonic and limiter | B02, B03 | Pending |

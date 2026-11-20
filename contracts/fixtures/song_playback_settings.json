@@ -1,0 +1,267 @@
+{
+  "authority": "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08",
+  "sourceSHA256": {
+    "android/app/src/main/java/com/acquiring/android/SongPlaybackSettings.kt": "7b14f8b4a980715793af7d0c93189ea3c0e681c708f19cd4da64637f685c84b7",
+    "android/app/src/main/java/com/acquiring/android/SongPlaybackSettingsViewModel.kt": "005dc411df20f59700556ca2572eac5568d31a9401fc5ce3a43de30559d9c976",
+    "android/app/src/main/java/com/acquiring/android/PlaybackView.kt": "af80c7b91d6a55f701082d5d2266b427fdf04e8e1c2a06cd8ebe1753bc5c3bda",
+    "android/app/src/main/java/com/acquiring/android/PlaybackMenus.kt": "6fb07693239e46df6d67ffd9b7e7dbb8d6f332fea584f499baa8ad8739cfc3d0",
+    "android/app/src/main/java/com/acquiring/android/PlaybackEngine.kt": "82d26b02157bb65b5c84903256b65c747a61c967ec914bd27549c27781e57a9b",
+    "android/app/src/main/java/com/acquiring/android/AudioEngine.kt": "bd785ac1ac523ff8f57f8cef9eb7b626793d38eab771ea58b365bdc8fbcb155f"
+  },
+  "sanitizerCases": [
+    {
+      "id": "defaults",
+      "input": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 100,
+        "arpeggioOptionIndex": 3,
+        "melodyChordBalance": 0.5,
+        "instrument": null,
+        "transpose": 0,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 0.5,
+        "loopSection": true
+      },
+      "expected": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 100,
+        "arpeggioOptionIndex": 3,
+        "melodyChordBalance": 0.5,
+        "instrument": null,
+        "transpose": 0,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 0.5,
+        "loopSection": true
+      }
+    },
+    {
+      "id": "lower-boundary",
+      "input": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 0,
+        "arpeggioOptionIndex": 0,
+        "melodyChordBalance": 0,
+        "instrument": null,
+        "transpose": -12,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 0,
+        "loopSection": true
+      },
+      "expected": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 0,
+        "arpeggioOptionIndex": 0,
+        "melodyChordBalance": 0,
+        "instrument": null,
+        "transpose": -12,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 0,
+        "loopSection": true
+      }
+    },
+    {
+      "id": "upper-boundary",
+      "input": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 200,
+        "arpeggioOptionIndex": 7,
+        "melodyChordBalance": 1,
+        "instrument": null,
+        "transpose": 12,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 1,
+        "loopSection": true
+      },
+      "expected": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 200,
+        "arpeggioOptionIndex": 7,
+        "melodyChordBalance": 1,
+        "instrument": null,
+        "transpose": 12,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 1,
+        "loopSection": true
+      }
+    },
+    {
+      "id": "invalid-fields",
+      "input": {
+        "slug": "song-a",
+        "lockInMajor": true,
+        "tempoPercent": 500,
+        "arpeggioOptionIndex": 99,
+        "melodyChordBalance": -0.1,
+        "instrument": "BANJO",
+        "transpose": 13,
+        "rootDegreeCue": "NOPE",
+        "voiceVolume": 1.01,
+        "loopSection": false
+      },
+      "expected": {
+        "slug": "song-a",
+        "lockInMajor": true,
+        "tempoPercent": 100,
+        "arpeggioOptionIndex": 3,
+        "melodyChordBalance": 0.5,
+        "instrument": null,
+        "transpose": 0,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 0.5,
+        "loopSection": false
+      }
+    },
+    {
+      "id": "nonfinite",
+      "input": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": "NaN",
+        "arpeggioOptionIndex": 3,
+        "melodyChordBalance": "Infinity",
+        "instrument": null,
+        "transpose": 0,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": "-Infinity",
+        "loopSection": true
+      },
+      "expected": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 100,
+        "arpeggioOptionIndex": 3,
+        "melodyChordBalance": 0.5,
+        "instrument": null,
+        "transpose": 0,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 0.5,
+        "loopSection": true
+      }
+    },
+    {
+      "id": "round-trip",
+      "input": {
+        "slug": "song-a",
+        "lockInMajor": true,
+        "tempoPercent": 90,
+        "arpeggioOptionIndex": 1,
+        "melodyChordBalance": 0.25,
+        "instrument": "FLUTE",
+        "transpose": 12,
+        "rootDegreeCue": "SPOKEN_NUMBER",
+        "voiceVolume": 0.8,
+        "loopSection": false
+      },
+      "expected": {
+        "slug": "song-a",
+        "lockInMajor": true,
+        "tempoPercent": 90,
+        "arpeggioOptionIndex": 1,
+        "melodyChordBalance": 0.25,
+        "instrument": "FLUTE",
+        "transpose": 12,
+        "rootDegreeCue": "SPOKEN_NUMBER",
+        "voiceVolume": 0.8,
+        "loopSection": false
+      }
+    },
+    {
+      "id": "nullable-default",
+      "input": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 90,
+        "arpeggioOptionIndex": 3,
+        "melodyChordBalance": 0.5,
+        "instrument": null,
+        "transpose": 0,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 0.5,
+        "loopSection": true
+      },
+      "expected": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 90,
+        "arpeggioOptionIndex": 3,
+        "melodyChordBalance": 0.5,
+        "instrument": null,
+        "transpose": 0,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 0.5,
+        "loopSection": true
+      }
+    },
+    {
+      "id": "reed-organ-mapping",
+      "input": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 100,
+        "arpeggioOptionIndex": 3,
+        "melodyChordBalance": 0.5,
+        "instrument": "REED_ORGAN",
+        "transpose": 0,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 0.5,
+        "loopSection": true
+      },
+      "expected": {
+        "slug": "song-a",
+        "lockInMajor": false,
+        "tempoPercent": 100,
+        "arpeggioOptionIndex": 3,
+        "melodyChordBalance": 0.5,
+        "instrument": "REED_ORGAN",
+        "transpose": 0,
+        "rootDegreeCue": "OFF",
+        "voiceVolume": 0.5,
+        "loopSection": true
+      }
+    }
+  ],
+  "lifecycleCases": [
+    {
+      "id": "missing-row",
+      "expectedWrites": 0,
+      "expectedTempo": 100
+    },
+    {
+      "id": "immediate-defaults",
+      "expectedTempo": 100
+    },
+    {
+      "id": "same-song",
+      "expectedGets": 1,
+      "expectedTempo": 80
+    },
+    {
+      "id": "edit-wins",
+      "expectedTempo": 80
+    },
+    {
+      "id": "old-song-read",
+      "expectedSlug": "song-b",
+      "expectedTempo": 100
+    },
+    {
+      "id": "coalesced-ticks",
+      "expectedWrites": 2,
+      "expectedTempo": 30
+    },
+    {
+      "id": "pending-song-return",
+      "expectedTempo": 80
+    },
+    {
+      "id": "failed-save-retry",
+      "expectedTempo": 80
+    }
+  ]
+}
