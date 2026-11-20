@@ -1,5 +1,11 @@
 package com.acquiring.android
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +20,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +32,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 
 internal const val PLAYBACK_SCREEN_TEST_TAG = "PlaybackScreen"
 
@@ -149,6 +157,31 @@ internal fun PlaybackDestination(
             append(playbackArtistLabel)
         }
     }
+    val backgroundPlayback by PlaybackController.backgroundPlayback.collectAsState()
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        // Playback still works in the background without it; only the controls are hidden.
+        if (!granted) {
+            Toast.makeText(context, R.string.playback_background_notifications_off, Toast.LENGTH_LONG).show()
+        }
+    }
+    val onBackgroundPlaybackChange: (Boolean) -> Unit = { enabled ->
+        PlaybackController.setBackgroundPlayback(context, enabled)
+        if (enabled && Build.VERSION.SDK_INT >= 33 &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+    LaunchedEffect(playbackTitleText, song.displayTitle, playbackArtistLabel) {
+        PlaybackController.setNowPlaying(song.displayTitle, playbackArtistLabel)
+    }
+    // Start while the app is visible; Android 12+ refuses foreground starts from the background.
+    LaunchedEffect(backgroundPlayback, isPlaying) {
+        if (backgroundPlayback && isPlaying) PlaybackMediaService.start(context)
+    }
     LaunchedEffect(isPersistentMonitoring) {
         onPersistentMonitoringChange(isPersistentMonitoring)
         if (isPersistentMonitoring) onRequestCollapseDock()
@@ -180,7 +213,9 @@ internal fun PlaybackDestination(
             onJumpToPassage = initialPassage?.let { passage ->
                 { PlaybackController.seek(passage.first, resume = false) }
             },
-            onShowHelp = { showPlaybackHelp = true }
+            onShowHelp = { showPlaybackHelp = true },
+            backgroundPlayback = backgroundPlayback,
+            onBackgroundPlaybackChange = onBackgroundPlaybackChange
         )
 
         PlaybackTab(
