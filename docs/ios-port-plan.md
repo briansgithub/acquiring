@@ -37,7 +37,7 @@ Leave `fix/android-timeline-scrub` to its existing owner.
 
 ## Review and implementation queue
 
-- [ ] Audit `docs/pwa-port/`, its implementation history and `contracts/`.
+- [x] Audit `docs/pwa-port/`, its implementation history and `contracts/`.
 - [ ] Inventory Android history against the last iOS change `4d847e27`, including
   earlier gaps against `docs/porting-plan.md` and `docs/feature-parity.md`.
   Do not assume the last iOS commit proves all earlier features are complete.
@@ -87,3 +87,43 @@ and existing Swift implementations. Expected outputs are
 On resume, inspect its report/status, independently review its proposed batches,
 and complete this plan before creating the implementation worktree. Do not
 start another audit worker. No Swift changes have been made yet.
+
+## PWA review and reusable evidence
+
+Reviewed the 14 PWA-touching commits between Android `3c887223` and handoff
+`f8b554cc`. The sequence established saved song controls (`fe00b790`), native
+Sonic fixtures (`653dccba`, verified in `0129c77f`), cue/limiter/splice rendering
+(`f7fdd086`), timeline and melody roles (`48f89cad`), exact speech clips and
+worker loading (`dbc52498`), voice/caption/root-only controls (`dbd6d703`),
+Library layout (`34ca9ffa`), Song continuation (`0f3074e2`), contextual help
+(`9e976557`), example shuffle (`a8b04d5f`) and browser evidence (`2ef98ae7`,
+`daf11e0b`). This is a useful dependency order, not proof that the PWA is done.
+
+`pwa/tests/parity/corpus-contract.test.ts` checks the shared corpus structure,
+unique IDs and valid expected values. It does not execute either native app.
+Behavioral native comparisons belong to the unit suites and their captured
+fixtures. `pwa/src/audio/synth/fixtures/generate-stream-native.py` pins Android
+`3c887223b2d06b4c3a1010d0f8a23ceaf8977d08`, extracts the renderer before its
+platform sink, supplies explicit sample rates and seeds random synthesis only
+for fixtures. Its cue driver uses the bundled clips. Retain this provenance
+when promoting reusable cases into `contracts/fixtures/`; do not invent expected
+Swift output by copying the Swift implementation.
+
+Existing iOS `ChordParityTests.swift` already reads `corpus_parity.json` through
+`ChordContractFixtures`. Preserve that contract loader and the existing audio,
+pitch, timing and historical parity tests. New cross-platform cases should live
+under `contracts/` with source authority and expected behavior documented. A
+Python/Node check of fixture consistency is procedural evidence only; it cannot
+replace execution of the corresponding Swift test.
+
+PWA song settings show the required lifecycle seam: stable song slug, defaults
+published on song entry, same-song section changes preserve controls, late reads
+cannot replace listener edits, writes serialize, and an absent instrument means
+the Settings default. Full/Root mode and selected section are not persisted.
+Derive Swift persistence from the final Android settings/sanitizer and existing
+iOS storage, rather than copying IndexedDB infrastructure.
+
+Existing `.github/workflows/ios.yml` runs Swift package tests and app tests on
+macOS iPhone/iPad simulators for iOS/contracts PR changes. Observe actual CI
+results per batch; do not infer availability or success from the workflow file.
+The local machine still cannot compile Swift or exercise iOS audio/UI lifecycle.
