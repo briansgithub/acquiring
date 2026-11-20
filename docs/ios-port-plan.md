@@ -45,7 +45,7 @@ Leave `fix/android-timeline-scrub` to its existing owner.
   contract backward to the smallest change in the existing SwiftUI implementation.
 - [x] Record dependency-ordered batches with source commits, iOS files, procedural
   checks and explicit device/build limitations. Reuse shared fixtures and contracts.
-- [ ] Create `wt new ios-port-... --base main` only after main is updated and clean.
+- [x] Create `wt new ios-port-... --base main` only after main is updated and clean.
 - [ ] Implement batches, update this ledger in each commit and open/link batch PRs.
   Leave them open unless existing CI passes and the changes are contract-verified.
 
@@ -145,7 +145,7 @@ and must be closed by B11 rather than silently treated as newly verified.
 | Batch | Dependency | Current status |
 | --- | --- | --- |
 | B00 contracts and retained history | none | Evidence pinned; legacy import/recovery review remains open |
-| B02 durable song playback settings | B00 evidence | Next; preserve mainline defaults and nullable instrument |
+| B02 durable song playback settings | B00 evidence | In progress, Astra/high worker `Acquiring: iOS Song Settings` |
 | B01 octave persistence and older singing/navigation gaps | B00 evidence | Pending |
 | B03 melody classification and cue metadata | B00 evidence | Pending |
 | B04 pulses, exact speech clips, Sonic and limiter | B02, B03 | Pending |
@@ -170,3 +170,13 @@ and update this ledger. Tests of fixture data alone cannot mark Swift behavior
 verified. Batch PRs remain open unless actual CI passes and contract evidence
 supports the change. The lead owns review and integration; no worker may merge
 without reporting those results. No TestFlight or broad final test run is implied.
+
+## Active implementation ownership
+
+B02 owns `/mnt/c/Users/user1/Desktop/Projects/acquiring-ios-port-song-settings`,
+branch `ios-port-song-settings`, created clean from `d430fc0c` with `wt new`.
+Worker `Acquiring: iOS Song Settings` implements, commits, opens/links its PR and
+reports actual CI; the lead independently reviews before any merge. The worker
+must leave the PR open. Audit worker `Acquiring: iOS Delta Audit` is complete;
+its artifacts are committed and need not be recreated. Resume by reading B02's
+report/status, not by starting duplicate work.
