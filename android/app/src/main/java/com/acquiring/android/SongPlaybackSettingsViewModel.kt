@@ -44,7 +44,7 @@ internal class SongPlaybackSettingsViewModel : ViewModel() {
     var voiceVolume by mutableStateOf(DEFAULT_PLAYBACK_VOICE_VOLUME)
         private set
 
-    var loopSection by mutableStateOf(true)
+    var loopSection by mutableStateOf(DEFAULT_LOOP_SECTION)
         private set
 
     private var dao: SongPlaybackSettingsDao? = null
@@ -156,7 +156,7 @@ internal class SongPlaybackSettingsViewModel : ViewModel() {
         transpose = 0
         rootDegreeCue = PlaybackRootDegreeCue.OFF
         voiceVolume = DEFAULT_PLAYBACK_VOICE_VOLUME
-        loopSection = true
+        loopSection = DEFAULT_LOOP_SECTION
     }
 
     private fun apply(row: SongPlaybackSettings) {

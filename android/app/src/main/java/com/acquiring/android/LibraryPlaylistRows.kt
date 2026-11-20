@@ -47,9 +47,9 @@ internal fun ColumnScope.FavoritesBox(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 12.dp)
+            .padding(top = 8.dp)
             .border(1.dp, outline, RoundedCornerShape(12.dp))
-            .padding(start = 12.dp, end = 12.dp, bottom = 8.dp),
+            .padding(start = 12.dp, end = 4.dp, bottom = 4.dp),
         content = content
     )
 }
@@ -65,7 +65,7 @@ internal fun PlaylistTitleRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = topPadding, bottom = 4.dp)
+            .padding(top = topPadding, bottom = 2.dp)
             .then(if (headerTag != null) Modifier.testTag(headerTag) else Modifier),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -191,16 +191,17 @@ internal fun ColumnScope.PlaylistSongBody(
                     title = song.displayTitle,
                     subtitle = song.displayArtist,
                     onClick = { onSongClick(song) },
+                    compact = true,
                     trailing = {
                         IconButton(
                             onClick = { onRemove(song.slug) },
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Star,
                                 contentDescription = "Remove ${song.displayTitle} from $playlistName",
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }

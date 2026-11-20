@@ -263,11 +263,21 @@ class PlaybackRootDegreeCueTest {
                 cue = PlaybackRootDegreeCue.OFF, transpose = 2)
             val spoken = render(events, mode, arpeggiateCycles = 3.0,
                 cue = PlaybackRootDegreeCue.SPOKEN_NUMBER, spokenRootDegrees = clips, transpose = 2)
-            val expectedLevel = if (mode == PlaybackChordMode.FULL) 6_400 else 4_800
+            val expectedLevel = (if (mode == PlaybackChordMode.FULL) 16_000 else 12_000) *
+                DEFAULT_PLAYBACK_VOICE_VOLUME * PLAYBACK_VOICE_MAX_GAIN
             assertTrue("speaks degree five an octave below the transposed root in $mode",
                 abs(spoken[200] - backing[200] - expectedLevel) <= 2)
             assertArrayEquals(backing.copyOfRange(2_667, backing.size), spoken.copyOfRange(2_667, spoken.size))
         }
+    }
+
+    @Test
+    fun outputSoftLimitPassesNormalLevelsAndBoundsLoudPeaks() {
+        assertEquals(0.5, softLimitPlaybackSample(0.5), 0.0)
+        assertEquals(-0.85, softLimitPlaybackSample(-0.85), 0.0)
+        val loud = softLimitPlaybackSample(1.6)
+        assertTrue(loud > softLimitPlaybackSample(1.0) && loud < 1.0)
+        assertEquals(-loud, softLimitPlaybackSample(-1.6), 0.0)
     }
 
     @Test
@@ -283,9 +293,21 @@ class PlaybackRootDegreeCueTest {
         val voice = PlaybackPcmRenderer(timeline, settings, SAMPLE_RATE, clips)
         val backing = PlaybackPcmRenderer(timeline, settings.copy(voiceVolume = 0f), SAMPLE_RATE, clips)
         fun PlaybackPcmRenderer.renderBlock(frames: Int) = ShortArray(frames).also { renderAudioInto(it) }
-        assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() - 3_200) <= 1)
+        assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() -
+            8_000 * DEFAULT_PLAYBACK_VOICE_VOLUME * PLAYBACK_VOICE_MAX_GAIN) <= 1)
+        // The slider's old 100% (1.4x speech gain) now sits at 50%.
+        voice.updateConfig(settings.copy(voiceVolume = 0.5f))
+        val atHalf = voice.renderBlock(200).last() - backing.renderBlock(200).last()
+        assertTrue(abs(atHalf - 8_000 * 1.4) <= 40)
+        // The new 100% doubles that gain; the soft limiter bounds the mix instead of clipping it.
         voice.updateConfig(settings.copy(voiceVolume = 1f))
-        assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() - 6_400) <= 20)
+        val loudMix = voice.renderBlock(200).last()
+        val backingMix = backing.renderBlock(200).last()
+        val expectedMix = softLimitPlaybackSample((backingMix + 8_000 * PLAYBACK_VOICE_MAX_GAIN) / Short.MAX_VALUE) *
+            Short.MAX_VALUE
+        assertTrue(loudMix - backingMix > atHalf)
+        assertTrue(abs(loudMix - expectedMix) <= 150)
+        assertTrue(loudMix < Short.MAX_VALUE)
         voice.updateConfig(settings.copy(voiceVolume = 0f))
         voice.renderBlock(200)
         backing.renderBlock(200)
@@ -322,6 +344,42 @@ class PlaybackRootDegreeCueTest {
             val end = (duration * SAMPLE_RATE).roundToInt()
             assertArrayEquals(backing.copyOfRange(end, backing.size), sung.copyOfRange(end, sung.size))
         }
+    }
+
+    @Test
+    fun spokenVoicePitchNeverExceedsB4() {
+        assertEquals(71, SPOKEN_VOICE_MAX_MIDI)
+        assertEquals(71, foldSpokenVoiceMidi(71))
+        assertEquals(60, foldSpokenVoiceMidi(60))
+        assertEquals(36, foldSpokenVoiceMidi(36))
+        assertEquals(61, foldSpokenVoiceMidi(73))
+        assertEquals(71, foldSpokenVoiceMidi(83))
+        assertEquals(67, foldSpokenVoiceMidi(91))
+        for (midi in 24..127) assertTrue(foldSpokenVoiceMidi(midi) <= 71)
+        for (midi in 72..127) assertEquals(0, Math.floorMod(midi - foldSpokenVoiceMidi(midi), 12))
+    }
+
+    @Test
+    fun highRequestedPitchesAreSungAnOctaveDownNotShiftedPastB4() {
+        val pitch = 200.0
+        val source = ShortArray(2400) { index ->
+            (12000 * kotlin.math.sin(2 * Math.PI * pitch * index / SPOKEN_ROOT_DEGREE_SAMPLE_RATE)).roundToInt().toShort()
+        }
+        val bank = List(SPOKEN_ROOT_DEGREE_PITCHES.count()) { source }
+        val cache = SpokenPhraseCache(SpokenRootDegreeClips(listOf(bank), functions = mapOf("cue" to bank)))
+        fun medianHz(samples: ShortArray): Double {
+            val rises = samples.indices.filter { it > 0 && samples[it - 1] <= 0 && samples[it] > 0 }
+            val periods = rises.zipWithNext { a, b -> b - a }.sorted()
+            return SPOKEN_ROOT_DEGREE_SAMPLE_RATE.toDouble() / periods[periods.size / 2]
+        }
+        val phrase = SpokenPhrase(RelativeIonianDegree(1, 0), 83, null)
+        val capped = requireNotNull(cache.prepare(phrase, 3.75, 60.0))
+        val atB4 = requireNotNull(cache.prepare(phrase.copy(midi = 71), 3.75, 60.0))
+        assertEquals(medianHz(atB4), medianHz(capped), 1.0)
+        assertTrue(medianHz(capped) < pitch * 2.0 * 1.02)
+        val cue = requireNotNull(cache.prepareFunction("cue", 85, 3.75, 60.0))
+        val cueAtC4Region = requireNotNull(cache.prepareFunction("cue", 73, 3.75, 60.0))
+        assertEquals(medianHz(cueAtC4Region), medianHz(cue), 1.0)
     }
 
     @Test

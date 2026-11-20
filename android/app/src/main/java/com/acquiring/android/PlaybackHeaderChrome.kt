@@ -17,14 +17,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -38,6 +41,7 @@ import androidx.compose.ui.unit.sp
 internal const val PLAYBACK_MONITOR_PITCH_TEST_TAG = "playback.monitorPitch"
 internal const val PLAYBACK_HELP_BUTTON_TEST_TAG = "playback.help"
 internal const val PLAYBACK_LOCK_IN_MAJOR_TEST_TAG = "playback.lockInMajor"
+internal const val PLAYBACK_BACKGROUND_TOGGLE_TEST_TAG = "playback.backgroundPlayback"
 
 @Composable
 internal fun PlaybackScreenHeader(
@@ -52,7 +56,9 @@ internal fun PlaybackScreenHeader(
     isMonitoring: Boolean,
     onToggleMonitoring: () -> Unit,
     onJumpToPassage: (() -> Unit)? = null,
-    onShowHelp: () -> Unit
+    onShowHelp: () -> Unit,
+    backgroundPlayback: Boolean = false,
+    onBackgroundPlaybackChange: (Boolean) -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Box(
@@ -71,12 +77,18 @@ internal fun PlaybackScreenHeader(
                     text = titleText?.let { "Playback · $it" } ?: "Playback",
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .padding(horizontal = 56.dp)
+                        .padding(start = 64.dp, end = 72.dp)
                         .clickable(enabled = titleText != null) { onTitleClick() }
                         .semantics { contentDescription = if (titleText != null) "Playback title" else "Playback" }
                 )
+            BackgroundPlaybackToggle(
+                checked = backgroundPlayback,
+                onCheckedChange = onBackgroundPlaybackChange,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
         }
         Row(
             modifier = Modifier
@@ -214,5 +226,42 @@ internal fun PlaybackScreenHeader(
                 }
             }
         }
+    }
+}
+
+/**
+ * Plays song and voice as a regular media stream: it keeps playing when the app is
+ * minimized or the phone is locked, with a media notification to pause or resume.
+ */
+@Composable
+internal fun BackgroundPlaybackToggle(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val description = stringResource(R.string.playback_background_description)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier.height(48.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.playback_background_label),
+            fontSize = 9.sp,
+            lineHeight = 10.sp,
+            maxLines = 1,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            modifier = Modifier
+                .scale(0.7f)
+                .testTag(PLAYBACK_BACKGROUND_TOGGLE_TEST_TAG)
+                .semantics {
+                    contentDescription = description
+                    stateDescription = if (checked) "On" else "Off"
+                }
+        )
     }
 }
