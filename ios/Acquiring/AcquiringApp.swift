@@ -10,7 +10,7 @@ struct AcquiringApp: App {
     init() {
         do {
             let uiTestSession = UITestSession.current()
-            let schema = Schema([PlaylistRecord.self, PlaylistEntryRecord.self])
+            let schema = Schema([PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self])
             let configuration = if uiTestSession == nil {
                 ModelConfiguration("UserDataV1", schema: schema)
             } else {

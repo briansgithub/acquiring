@@ -1058,8 +1058,21 @@ struct QuizView: View {
             else { return }
             _ = setSoundConfiguration(
                 soundConfiguration.replacing(waveform: waveform),
-                sectionID: sectionID
+                sectionID: sectionID,
+                persistsSettings: false
             )
+        }
+        .safeAreaInset(edge: .top) {
+            if let message = environment.songSettings.writeError ?? environment.songSettings.readError {
+                VStack {
+                    Text(message).font(.caption)
+                    if environment.songSettings.writeError != nil {
+                        Button("Retry saving") { environment.songSettings.retryWrites() }
+                    }
+                }
+                .padding(8)
+                .accessibilityIdentifier("quiz.settings.persistenceError")
+            }
         }
         .onChange(of: transportPhase) { _, _ in updatePracticeContext() }
         // Scrub start and end have to reach the practice model the moment they happen: a drag
@@ -1652,7 +1665,8 @@ struct QuizView: View {
 
     private func setSoundConfiguration(
         _ configuration: QuizSoundConfiguration,
-        sectionID: String
+        sectionID: String,
+        persistsSettings: Bool = true
     ) -> Bool {
         guard soundConfiguration != configuration else { return true }
         cancelQuizCardPreview()
@@ -1672,7 +1686,9 @@ struct QuizView: View {
         }
         soundConfiguration = configuration
         activeQuizRevision = updatedRevision
-        environment.rememberQuizSettings(songID: songID, soundConfiguration: configuration)
+        if persistsSettings {
+            environment.rememberQuizSettings(songID: songID, soundConfiguration: configuration)
+        }
         return true
     }
 
@@ -2051,10 +2067,10 @@ struct QuizView: View {
             let remembered = environment.quizContinuity(for: songID)
             let restored = document.orderedSections.first { $0.key == remembered?.sectionID }
                 ?? selected
-            let continuity = environment.rememberQuizSection(
-                songID: songID,
-                sectionID: restored.key
-            )
+            environment.rememberQuizSection(songID: songID, sectionID: restored.key)
+            await environment.songSettings.waitForLoad()
+            guard !Task.isCancelled,
+                  let continuity = environment.quizContinuity(for: songID) else { return }
             selectedSectionID = restored.key
             environment.vocalPractice.enterSong(
                 songID: songID,

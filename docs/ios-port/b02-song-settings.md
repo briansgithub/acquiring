@@ -26,13 +26,13 @@ available, so a compiled cross-platform sanitizer comparison was not run.
 
 | Behavior | Swift implementation | Targeted evidence |
 | --- | --- | --- |
-| Durable stable slug, all ten control fields | SongPlaybackSettings Codable payload in unique SongPlaybackSettingsRecord; SwiftDataSongPlaybackSettingsStore | Shared row round trips; fresh-context SwiftData test, unrun |
+| Durable stable slug, all ten control fields | SongPlaybackSettings Codable payload in unique SongPlaybackSettingsRecord; SwiftDataSongPlaybackSettingsStore | Shared row round trips; fresh-context and disk-reopen SwiftData tests, unrun |
 | Defaults immediately; same song retains section continuity | Session.enterSong; AppEnvironment.rememberQuizSection | Missing/default/same-song Swift test, unrun |
 | Old read and edit wins | Session generation and edited guard | Gated read tests including explicit default edit, unrun |
 | Coalesced serial writes without losing prior songs | One writer, retained in-flight head, adjacent waiting-tail replacement | Gated A/B/A test, unrun |
 | Pending values win when revisiting before save | enterSong checks pending snapshots | Same A/B/A test and failed-save test, unrun |
 | Bad fields reset independently, nullable instrument preserved | SongPlaybackSettings.sanitized | Eight source-derived portable cases passed; shared-fixture Swift test unrun |
-| Default-following vs explicit instrument | Android identifier map, including REED_ORGAN to existing oboe; AppEnvironment applies override or savedDefault | Integration Swift test pending |
+| Default-following vs explicit instrument | Android identifier map, including REED_ORGAN to existing oboe; AppEnvironment applies override or savedDefault | AppEnvironment integration Swift test, unrun |
 | Read/save failures remain visible | Separate readError/writeError; SongViews message and save retry; failed writes retained | Failure/retry Swift tests, unrun |
 | Favorite transactions isolated | Separate ModelContext from existing container, autosave disabled, rollback on failure | Procedural source inspection only |
 | Existing controls restored before audio configuration | SongViews.load waits for guarded load, then uses continuity | Procedural caller trace only |
