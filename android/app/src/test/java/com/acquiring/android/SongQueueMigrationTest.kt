@@ -30,7 +30,7 @@ class SongQueueMigrationTest {
             old.version=3
         }
         val db=Room.databaseBuilder(context,UserDataDatabase::class.java,databaseName)
-            .addMigrations(UserDataDatabase.MIGRATION_1_2,UserDataDatabase.MIGRATION_2_3,UserDataDatabase.MIGRATION_3_4,UserDataDatabase.MIGRATION_4_5)
+            .addMigrations(UserDataDatabase.MIGRATION_1_2,UserDataDatabase.MIGRATION_2_3,UserDataDatabase.MIGRATION_3_4,UserDataDatabase.MIGRATION_4_5, UserDataDatabase.MIGRATION_5_6)
             .allowMainThreadQueries().build()
         try {
             val dao=db.playlistDao()
@@ -61,11 +61,45 @@ class SongQueueMigrationTest {
         }
         val db = Room.databaseBuilder(context, UserDataDatabase::class.java, databaseName)
             .addMigrations(UserDataDatabase.MIGRATION_1_2, UserDataDatabase.MIGRATION_2_3,
-                UserDataDatabase.MIGRATION_3_4, UserDataDatabase.MIGRATION_4_5)
+                UserDataDatabase.MIGRATION_3_4, UserDataDatabase.MIGRATION_4_5, UserDataDatabase.MIGRATION_5_6)
             .allowMainThreadQueries().build()
         try {
             assertEquals(listOf("old-song"), db.playlistDao().getSlugsIn("favorites"))
             assertEquals(null, db.songPlaybackSettingsDao().get("old-song"))
+        } finally {
+            db.close()
+            context.deleteDatabase(databaseName)
+        }
+    }
+
+    @Test fun versionFiveHalvesStoredVoiceVolumeToKeepTheSameLoudness() = runBlocking {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val databaseName = "voice-volume-rescale-migration-test.db"
+        context.deleteDatabase(databaseName)
+        SQLiteDatabase.openOrCreateDatabase(context.getDatabasePath(databaseName), null).use { old ->
+            old.execSQL("CREATE TABLE IF NOT EXISTS `playlists` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `isBuiltIn` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+            old.execSQL("CREATE TABLE IF NOT EXISTS `playlist_entries` (`playlistId` TEXT NOT NULL, `slug` TEXT NOT NULL, `addedAt` INTEGER NOT NULL, `position` INTEGER, `sectionId` TEXT, `sectionName` TEXT, PRIMARY KEY(`playlistId`, `slug`), FOREIGN KEY(`playlistId`) REFERENCES `playlists`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+            old.execSQL("CREATE INDEX IF NOT EXISTS `index_playlist_entries_playlistId` ON `playlist_entries` (`playlistId`)")
+            old.execSQL("CREATE TABLE IF NOT EXISTS `harvested_songs` (`slug` TEXT NOT NULL, `artist` TEXT, `title` TEXT, `url` TEXT NOT NULL, `status` TEXT NOT NULL, `dataBlob` BLOB NOT NULL, `alphaGroup` TEXT NOT NULL, `modes` TEXT NOT NULL, `harvestedAt` INTEGER NOT NULL, PRIMARY KEY(`slug`))")
+            old.execSQL("CREATE TABLE IF NOT EXISTS `harvest_ledger_meta` (`key` TEXT NOT NULL, `value` TEXT NOT NULL, PRIMARY KEY(`key`))")
+            old.execSQL("CREATE TABLE IF NOT EXISTS `song_octave_offsets` (`slug` TEXT NOT NULL, `offset` INTEGER NOT NULL, PRIMARY KEY(`slug`))")
+            old.execSQL("CREATE TABLE IF NOT EXISTS `song_playback_settings` (`slug` TEXT NOT NULL, `lockInMajor` INTEGER NOT NULL, `tempoPercent` REAL NOT NULL, `arpeggioOptionIndex` INTEGER NOT NULL, `melodyChordBalance` REAL NOT NULL, `instrument` TEXT, `transpose` INTEGER NOT NULL, `rootDegreeCue` TEXT NOT NULL, `voiceVolume` REAL NOT NULL, `loopSection` INTEGER NOT NULL, PRIMARY KEY(`slug`))")
+            old.execSQL("INSERT INTO song_playback_settings VALUES ('loud',0,100.0,0,0.5,NULL,0,'OFF',1.0,0)")
+            old.execSQL("INSERT INTO song_playback_settings VALUES ('quiet',0,100.0,0,0.5,NULL,0,'OFF',0.5,1)")
+            old.execSQL("INSERT INTO song_playback_settings VALUES ('muted',0,100.0,0,0.5,NULL,0,'OFF',0.0,1)")
+            old.version = 5
+        }
+        val db = Room.databaseBuilder(context, UserDataDatabase::class.java, databaseName)
+            .addMigrations(UserDataDatabase.MIGRATION_1_2, UserDataDatabase.MIGRATION_2_3,
+                UserDataDatabase.MIGRATION_3_4, UserDataDatabase.MIGRATION_4_5, UserDataDatabase.MIGRATION_5_6)
+            .allowMainThreadQueries().build()
+        try {
+            val dao = db.songPlaybackSettingsDao()
+            assertEquals(0.5f, dao.get("loud")!!.voiceVolume, 0f)
+            assertEquals(0.25f, dao.get("quiet")!!.voiceVolume, 0f)
+            assertEquals(0f, dao.get("muted")!!.voiceVolume, 0f)
+            assertEquals(false, dao.get("loud")!!.loopSection)
+            assertEquals(true, dao.get("quiet")!!.loopSection)
         } finally {
             db.close()
             context.deleteDatabase(databaseName)

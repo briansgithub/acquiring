@@ -39,7 +39,7 @@ abstract class UserDataDatabase : RoomDatabase() {
     abstract fun songPlaybackSettingsDao(): SongPlaybackSettingsDao
 
     companion object {
-        const val SCHEMA_VERSION = 5
+        const val SCHEMA_VERSION = 6
 
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -49,7 +49,7 @@ abstract class UserDataDatabase : RoomDatabase() {
             }
         }
 
-        val MIGRATION_4_5 = object : Migration(4, SCHEMA_VERSION) {
+        val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
                     """
@@ -68,6 +68,16 @@ abstract class UserDataDatabase : RoomDatabase() {
                     )
                     """
                 )
+            }
+        }
+
+        /**
+         * The voice slider's range doubled, so the old 100% is now 50%. Halving
+         * each stored value keeps every song at the loudness it already had.
+         */
+        val MIGRATION_5_6 = object : Migration(5, SCHEMA_VERSION) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("UPDATE song_playback_settings SET voiceVolume = voiceVolume / 2.0")
             }
         }
 

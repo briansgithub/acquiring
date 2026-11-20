@@ -27,13 +27,19 @@ internal enum class PlaybackAudioLayer { MELODY, CHORD }
 
 internal enum class PlaybackChordMode { FULL, ROOT_ONLY }
 
-internal const val DEFAULT_PLAYBACK_VOICE_VOLUME = 0.5f
+/**
+ * Slider position that plays at the pre-rescale default loudness. The slider
+ * was doubled in range (see [PLAYBACK_VOICE_MAX_GAIN]), so the old 50% default
+ * is now 25%.
+ */
+internal const val DEFAULT_PLAYBACK_VOICE_VOLUME = 0.25f
 
 /**
- * Speech gain at a 100% voice slider. The old ceiling (0.8) now sits near 57%
- * of the slider, leaving the top of the range for louder read-aloud cues.
+ * Speech gain at a 100% voice slider. The previous ceiling (1.4, the slider's
+ * old 100%) is now the 50% position, so the new top is twice as loud. Output
+ * peaks above full scale are softly limited, never hard clipped.
  */
-internal const val PLAYBACK_VOICE_MAX_GAIN = 1.4
+internal const val PLAYBACK_VOICE_MAX_GAIN = 2.8
 
 /** Mix level above which the output is softly limited instead of hard clipped. */
 private const val OUTPUT_SOFT_KNEE = 0.85
