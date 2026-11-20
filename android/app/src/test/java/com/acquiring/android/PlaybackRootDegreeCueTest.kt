@@ -325,9 +325,19 @@ class PlaybackRootDegreeCueTest {
         fun PlaybackPcmRenderer.renderBlock(frames: Int) = ShortArray(frames).also { renderAudioInto(it) }
         assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() -
             8_000 * DEFAULT_PLAYBACK_VOICE_VOLUME * PLAYBACK_VOICE_MAX_GAIN) <= 1)
+        // The slider's old 100% (1.4x speech gain) now sits at 50%.
+        voice.updateConfig(settings.copy(voiceVolume = 0.5f))
+        val atHalf = voice.renderBlock(200).last() - backing.renderBlock(200).last()
+        assertTrue(abs(atHalf - 8_000 * 1.4) <= 40)
+        // The new 100% doubles that gain; the soft limiter bounds the mix instead of clipping it.
         voice.updateConfig(settings.copy(voiceVolume = 1f))
-        assertTrue(abs(voice.renderBlock(200).last() - backing.renderBlock(200).last() -
-            8_000 * PLAYBACK_VOICE_MAX_GAIN) <= 40)
+        val loudMix = voice.renderBlock(200).last()
+        val backingMix = backing.renderBlock(200).last()
+        val expectedMix = softLimitPlaybackSample((backingMix + 8_000 * PLAYBACK_VOICE_MAX_GAIN) / Short.MAX_VALUE) *
+            Short.MAX_VALUE
+        assertTrue(loudMix - backingMix > atHalf)
+        assertTrue(abs(loudMix - expectedMix) <= 150)
+        assertTrue(loudMix < Short.MAX_VALUE)
         voice.updateConfig(settings.copy(voiceVolume = 0f))
         voice.renderBlock(200)
         backing.renderBlock(200)
