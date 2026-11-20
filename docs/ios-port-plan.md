@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-2026-11-20: Phase 0 complete. Phase 1 source audit in progress. Owner thread is `Acquiring: Android To iOS Port`.
+2026-11-20: Phase 0 complete. Phase 1 complete. Phase 2 starts with B02 settings persistence. Owner thread is `Acquiring: Android To iOS Port`.
 Read this file on every resume. Do not repeat completed work.
 
 Brian authorized committing the PWA continuation onto main, then porting Android
@@ -38,12 +38,12 @@ Leave `fix/android-timeline-scrub` to its existing owner.
 ## Review and implementation queue
 
 - [x] Audit `docs/pwa-port/`, its implementation history and `contracts/`.
-- [ ] Inventory Android history against the last iOS change `4d847e27`, including
+- [x] Inventory Android history against the last iOS change `4d847e27`, including
   earlier gaps against `docs/porting-plan.md` and `docs/feature-parity.md`.
   Do not assume the last iOS commit proves all earlier features are complete.
-- [ ] For each behavior, trace final Android caller, state/data model, tests and
+- [x] For each behavior, trace final Android caller, state/data model, tests and
   contract backward to the smallest change in the existing SwiftUI implementation.
-- [ ] Record dependency-ordered batches with source commits, iOS files, procedural
+- [x] Record dependency-ordered batches with source commits, iOS files, procedural
   checks and explicit device/build limitations. Reuse shared fixtures and contracts.
 - [ ] Create `wt new ios-port-... --base main` only after main is updated and clean.
 - [ ] Implement batches, update this ledger in each commit and open/link batch PRs.
@@ -127,3 +127,46 @@ Existing `.github/workflows/ios.yml` runs Swift package tests and app tests on
 macOS iPhone/iPad simulators for iOS/contracts PR changes. Observe actual CI
 results per batch; do not infer availability or success from the workflow file.
 The local machine still cannot compile Swift or exercise iOS audio/UI lifecycle.
+
+## Accepted execution order and ledger
+
+The [source audit](ios-port/source-audit.md) and [commit inventory](ios-port/commit-inventory.json)
+are frozen evidence at `c58f9fcd`, not continuously updated status. The lead
+independently verified all 430 commit IDs against Git and inspected the first
+settings integration against Android and AppEnvironment. The audit's old
+phase-0 checkbox observation is superseded by this ledger. All 55 historical
+capability rows and 262 historical records remain preserved.
+
+The batch IDs below link to detailed source/test/Swift paths and acceptance
+procedures in the audit. Execute B02 first, then B01 and B03 before audio work.
+B00 pins evidence now; its older import/recovery candidates remain review items
+and must be closed by B11 rather than silently treated as newly verified.
+
+| Batch | Dependency | Current status |
+| --- | --- | --- |
+| B00 contracts and retained history | none | Evidence pinned; legacy import/recovery review remains open |
+| B02 durable song playback settings | B00 evidence | Next; preserve mainline defaults and nullable instrument |
+| B01 octave persistence and older singing/navigation gaps | B00 evidence | Pending |
+| B03 melody classification and cue metadata | B00 evidence | Pending |
+| B04 pulses, exact speech clips, Sonic and limiter | B02, B03 | Pending |
+| B05 gapless Song continuation and clock metadata | B02, B04 | Pending |
+| B06 playback controls, frame clock, captions | B01-B05 | Pending |
+| B07 Aural reader, installer, ranking and query | B00 evidence | Pending; separate large subsystem |
+| B08 song queues and Library | B02, B05, B07 | Pending |
+| B09 Aural learning, evidence and audio ownership | B01, B04, B07 | Pending |
+| B10 Aural browsing and practice UI | B06-B09 | Pending |
+| B11 remaining coverage and verification disposition | B06, B08, B10 | Pending; preserve separate full-app/release gate |
+| P52 B4 ceiling, gain migration, Song default, background media | B02, B04-B06 | Conditional on Brian's pending Android review; do not merge #52 |
+
+Mainline defaults remain Loop, voice volume 0.5 and gain ceiling 1.4.
+Foreground-only playback remains authoritative. Explicit section selection
+retains the accepted paused-at-start iOS override. Automatic Song continuation
+is distinct. Removed tessitura, calibration and unreachable chord-tone monitoring
+stay removed. PWA-only auth/service-worker scope is excluded.
+
+Each implementation PR must map behaviors to Swift code and portable contract
+checks, state unrun Swift/device checks, preserve historical review statuses,
+and update this ledger. Tests of fixture data alone cannot mark Swift behavior
+verified. Batch PRs remain open unless actual CI passes and contract evidence
+supports the change. The lead owns review and integration; no worker may merge
+without reporting those results. No TestFlight or broad final test run is implied.
