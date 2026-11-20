@@ -2,4 +2,12 @@
     <string name="app_name">Acquiring</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="privacy_policy_url" translatable="false">https://bellsworth.dev/apps/acquiring/privacy/</string>
+    <string name="playback_channel_name">Playback</string>
+    <string name="playback_channel_description">Controls for music playing in the background</string>
+    <string name="playback_action_play">Play</string>
+    <string name="playback_action_pause">Pause</string>
+    <string name="playback_action_stop">Stop</string>
+    <string name="playback_background_label">Background</string>
+    <string name="playback_background_description">Background playback</string>
+    <string name="playback_background_notifications_off">Notifications are off, so there are no lock-screen controls. Background playback still works.</string>
 </resources>
