@@ -191,7 +191,7 @@ internal fun PlaybackTransportBar(
     onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit = {},
     voiceVolume: Float = DEFAULT_PLAYBACK_VOICE_VOLUME,
     onVoiceVolumeChange: (Float) -> Unit = {},
-    loopSection: Boolean = true,
+    loopSection: Boolean = DEFAULT_LOOP_SECTION,
     onLoopSectionChange: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
     onPreviousSong: (() -> Unit)? = null,

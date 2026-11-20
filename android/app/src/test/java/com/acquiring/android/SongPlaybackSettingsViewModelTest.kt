@@ -24,7 +24,7 @@ class SongPlaybackSettingsViewModelTest {
         assertEquals(DEFAULT_PLAYBACK_VOICE_VOLUME, state.voiceVolume)
         assertEquals(0, state.transpose)
         assertFalse(state.lockInMajor)
-        assertTrue(state.loopSection)
+        assertFalse(state.loopSection)
         assertNull(state.instrumentName)
         assertEquals(0, dao.upserts)
         assertTrue(dao.rows.isEmpty())

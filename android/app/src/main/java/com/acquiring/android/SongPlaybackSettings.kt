@@ -10,6 +10,9 @@ import androidx.room.Query
 internal const val DEFAULT_PLAYBACK_TEMPO_PERCENT = 100f
 internal const val DEFAULT_MELODY_CHORD_BALANCE = 0.5f
 
+/** New songs play through once ("Song"); a stored per-song choice still wins. */
+internal const val DEFAULT_LOOP_SECTION = false
+
 @Entity(tableName = "song_playback_settings")
 data class SongPlaybackSettings(
     @PrimaryKey val slug: String,
