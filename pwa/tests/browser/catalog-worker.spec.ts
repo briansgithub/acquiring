@@ -4,6 +4,7 @@ import { resolve, sep } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import type { CatalogInfo, CatalogInspection, ActiveCatalog, InstallStatus } from '../../src/storage/catalog/protocol';
 import type { CatalogManifest } from '../../src/storage/catalog/manifest';
+import { USER_STORES, type UserRecord } from '../../src/storage/user';
 
 let fixture: { directory: string; manifest: CatalogManifest };
 let update: typeof fixture;
@@ -110,10 +111,11 @@ test('cut during a later file resumes receipts and confirms activation in a cold
   await call(page, 'close', ['cold']);
 });
 
-test('real catalog update and missing-target recovery preserve all ten user stores and outbox', async ({ page }) => {
+test('real catalog update and missing-target recovery preserve all declared user stores and outbox', async ({ page }) => {
   await call(page, 'seedUsers');
-  const users = await call<{ rows: unknown[]; pending: unknown[] }>(page, 'users');
-  expect(users.rows).toHaveLength(10); expect(users.rows.every(Boolean)).toBe(true); expect(users.pending).toHaveLength(10);
+  const users = await call<{ rows: (UserRecord | null)[]; pending: unknown[] }>(page, 'users');
+  expect(users.rows.map(row => row?.store)).toEqual([...USER_STORES]);
+  expect(users.pending).toHaveLength(USER_STORES.length);
   await call(page, 'open', ['owner']);
   const first = '52345678-1234-1234-1234-123456789012', second = '62345678-1234-1234-1234-123456789012';
   await call(page, 'prepare', ['owner', first, fixture.manifest, base + 'v1/']);
