@@ -265,10 +265,13 @@ enum TimelineFrameRatePreference: String, CaseIterable, Identifiable {
 }
 
 extension TimelineFrameRatePreference {
+    @MainActor
     func displayFrameRateRange(
-        displayMaximum: Int = UIScreen.main.maximumFramesPerSecond
+        displayMaximum: Int? = nil
     ) -> CAFrameRateRange {
-        let preferred = framesPerSecond(displayMaximum: displayMaximum)
+        let preferred = framesPerSecond(
+            displayMaximum: displayMaximum ?? UIScreen.main.maximumFramesPerSecond
+        )
         return CAFrameRateRange(
             minimum: Float(min(preferred, 30)),
             maximum: Float(preferred),

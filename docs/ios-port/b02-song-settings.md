@@ -147,3 +147,16 @@ with no blocking source issue found. That review is not Swift runtime acceptance
 Local `turn_context` at `2026-11-20T23:15:03.103Z` explicitly records
 `model: gpt-6-astra`, `effort: high`; this is observed session evidence rather than
 an inference from stored thread selection.
+
+## Authorized frame-rate compilation prerequisite
+
+After the initial CI receipt, the lead authorized a separate prerequisite fix.
+`displayFrameRateRange` is now MainActor-isolated and accepts a nil default;
+`UIScreen.main.maximumFramesPerSecond` is evaluated inside its isolated body.
+The existing supplied-maximum path and range calculation remain unchanged.
+All three call sites were inspected: HostView.apply and didMoveToWindow inherit
+UIView's MainActor isolation, and QuizTimelineDisplayModel.configureFrameRate
+belongs to an explicitly MainActor class. No caller or test isolation change was
+needed. Existing framesPerSecond tests remain pure and unchanged. This repairs
+the reported compiler error without changing B06 frame-rate policy or suppressing
+concurrency checking. Remote CI for this prerequisite is recorded below when done.
