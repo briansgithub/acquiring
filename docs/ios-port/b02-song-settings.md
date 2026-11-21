@@ -215,3 +215,27 @@ Merge `403c6987` brings main `da752342` and PR #58's PWA test-count repair into 
 no B01 receipt was copied. Fresh remote validation remains pending. The local
 `pr-gate` command is unavailable on PATH; the exact-head GitHub run watcher is
 used instead, with explicit thread ownership and Astra/high completion delivery.
+
+## Post-repair native evidence and scoped UI expectation
+
+[iOS run 44940517818](https://github.com/briansgithub/acquiring/actions/runs/44940517818)
+at `3f33ecd2ae6938b929425dabf94b142050c1ee87` compiled the app and passed all
+11 SongPlaybackSettingsTests, including the environment exclusivity regression.
+The AcquiringTests.xctest collection passed. Package tests passed. This is remote
+iPhone simulator evidence, not a local build or device result. The iPad stage was
+skipped after UI failures, and upgrading an old user database remains untested.
+
+The same run failed the UI instrument lifecycle test at line 581 because it
+expected 500 Miles' Sine override to carry into fresh Bad Romance. That assertion
+contradicts B02's Android per-song contract. The scoped test repair expects the
+saved Flute default for Bad Romance, returns to 500 Miles and asserts Sine, then
+checks that Settings still holds Flute. Playback advancement, foreground pause,
+retained beat and explicit-resume assertions remain unchanged. Relaunch still
+expects Flute because the UI-test app deliberately creates an in-memory SwiftData
+database per process; this does not claim durable override relaunch coverage.
+The passing disk-reopen unit test supplies new-schema persistence evidence.
+
+Other UI failures in the run remain unresolved, including Library, accessibility,
+layout, catalog recovery and singing interactions. They are not classified as
+proven baseline failures. This patch changes only the confirmed B02 expectation;
+fresh CI is required for the revised UI flow.
