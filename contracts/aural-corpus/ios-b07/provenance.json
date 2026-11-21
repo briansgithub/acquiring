@@ -1,0 +1,15 @@
+{
+  "authority": "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08",
+  "sha256": {
+    "android/app/src/main/java/com/acquiring/android/AuralCatalog.kt": "daad2fccce160a75726fbf2541c0063b9ef5c572ff8ef015f047f58c56950a80",
+    "android/app/src/main/java/com/acquiring/android/AuralCatalogStore.kt": "dcc757f82ac146fcd29613e7b48083994c5555d484edbf934375213ac7e1adf1",
+    "android/app/src/main/java/com/acquiring/android/AuralCatalogDownloader.kt": "59727560924225619485f092746e419ac4b06e4fc7301fe3d72d0daa72f00d1d",
+    "android/app/src/main/java/com/acquiring/android/AuralLoopReduction.kt": "74c2691e14b62cba789fea293b997821f81bd1505750cc700f3cec29f081bd43",
+    "android/app/src/main/java/com/acquiring/android/AuralRankEligibility.kt": "c488eadefc416e70bfeaaf1d21a1127df3dda547cdd591d3d721da3a8396c5a4",
+    "android/app/src/main/java/com/acquiring/android/AuralProgressionQuery.kt": "bcf448a2408dd474950c9da9fac3721de1242a174f16389c04a6237ac6bc7bd8",
+    "android/app/src/main/java/com/acquiring/android/AuralPatternSongs.kt": "7c503fcc844a32f15094cf0d66ad45678786ebc93064c4d3461e932955492457",
+    "android/app/src/main/java/com/acquiring/android/AuralCorpus.kt": "69c9676196c0bfe0b8e28a419810d56a7a63d2bb6a9181deec7d982c001e368f"
+  },
+  "loopFixture": "tooling/aural-corpus/fixtures/loop-reduction.json",
+  "note": "Expected loop cases used by Android AuralLoopReductionTest; no Swift execution claimed."
+}

@@ -205,6 +205,27 @@ relax parsing or claim this is verified from source syntax alone. Existing
 catalog tests live in AcquiringCatalogTests.swift, CatalogRecoveryTests.swift
 and HarvestLedgerTests.swift. B00 import/recovery review remains open.
 
+## B07 package work, 2026-11-20
+
+`ios-port-aural-catalog`, based on `d574a8ad`, owns new Aural-prefixed
+AcquiringCatalog sources and dedicated tests/contracts. Initial commit adds
+native loop/query/grouping/identity algorithms and pins source hashes at
+`3c887223`. See [B07 receipt](ios-port/b07-aural-catalog.md). Reader, installer,
+ranking and verification are in progress. Swift tests remain unrun locally.
+App integration belongs to a subsequent lead-owned change; B07 app-visible
+completion is not claimed. All existing review statuses remain unchanged.
+
+B07 reader/install slice now includes independent GRDB reading, physical
+occurrences, ranking/grouping and a real staged gzip/hash installer with
+lease-drained generation activation. Lead's mixed-case grouping correction
+and captured identity tests are included. Focused executable fixture checks
+and PR/CI inspection remain pending; no app-visible completion is claimed.
+
+B07 focused portable verification passes for pinned sources, 55 captured native
+identity cases and nine small real gzip/SQLite fixture databases across v1-v3.
+Swift reader/install tests are added but unrun locally. The receipt records
+resource budgets, generation retention and unmeasured full-catalog latency.
+
 ## B07 ownership and provider effort
 
 Worker `Acquiring: iOS Aural Catalog` owns the clean main-based branch
@@ -278,3 +299,21 @@ eight register sequences and five native timelines pass against the PWA port.
 Swift execution remains unverified for B03. Its owner is preparing the PR and
 CI receipt. Source review compared register folding to pinned Android behavior;
 no app integration is claimed.
+
+## Lead continuation, 2026-11-21
+
+The lead completed B07's interrupted main merge after its worker hit quota.
+Only the append-only ledger was conflicted; both records were retained and
+package sources are unchanged. PR #55 must be mergeable before expecting PR CI.
+Prior zero-job push workflow failures were not evidence of Swift execution.
+
+PR #57 adds B01a song-octave persistence, stacked on #53, at `f3d38c39`.
+Ten source-derived octave cases pass; four app tests await CI. PR #58 at
+`7465f451` fixes the stale PWA browser assertion to verify every declared user
+store. CI watches `4811ef22` and `eae3b5d9` are active; no merge is claimed.
+
+Existing draft PR #51 at `3ad590eb` contains prior AcquiringAural package and
+app/learning code, absent from the main-only inventory. B07's receipt now
+compares it. B09/B10 must evaluate reusable code from that branch before new
+implementation, retain pending reviews and avoid two active catalog services.
+Do not downgrade current GRDB or merge #51 without resolving its failed UI gates.

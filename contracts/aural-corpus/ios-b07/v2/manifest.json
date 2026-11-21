@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "aural-catalog-2",
+  "snapshotId": "b07-v2",
+  "files": [
+    {
+      "name": "aural-catalog.db",
+      "url": "https://fixture.invalid/aural-catalog.db.gz",
+      "checksum": "4a6fcc10e28929ae00d27914fae7b3f7dcc3ac04c33a567bda5eef712f497d75",
+      "byteSize": 45056
+    },
+    {
+      "name": "aural-evidence.db",
+      "url": "https://fixture.invalid/aural-evidence.db.gz",
+      "checksum": "32e37b72531210d05a416d5a94b65301c998c2192286c646e507771673c71aeb",
+      "byteSize": 12288
+    },
+    {
+      "name": "aural-popularity.db",
+      "url": "https://fixture.invalid/aural-popularity.db.gz",
+      "checksum": "19272939b2f4f7c112e1904ed39dcc167231542e976e4ffeb1bb771d59d16c21",
+      "byteSize": 16384
+    }
+  ]
+}
