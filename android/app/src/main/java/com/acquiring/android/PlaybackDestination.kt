@@ -69,8 +69,11 @@ internal fun PlaybackDestination(
     playbackSettings: SongPlaybackSettingsViewModel? = null
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
-    val sectionFacts = remember(sectionsInSongOrder) {
-        sectionsInSongOrder.map { (id, section) -> id to sectionPlaybackFacts(section) }
+    val songIonianKey = remember(sectionsInSongOrder) {
+        songRelativeIonianKey(sectionsInSongOrder.map { it.value })
+    }
+    val sectionFacts = remember(sectionsInSongOrder, songIonianKey) {
+        sectionsInSongOrder.map { (id, section) -> id to sectionPlaybackFacts(section, songIonianKey) }
     }
     val selectedSectionKey = selectedSectionId
         ?.takeIf { selectedId -> sectionsInSongOrder.any { it.key == selectedId } }
@@ -122,7 +125,7 @@ internal fun PlaybackDestination(
         }
     }
     val selectedFacts = sectionFacts.firstOrNull { it.first == selectedSectionKey }?.second
-        ?: sectionPlaybackFacts(selectedSection)
+        ?: sectionPlaybackFacts(selectedSection, songIonianKey)
     val context = LocalContext.current
     LaunchedEffect(context, selectedSectionKey, useRelativeIonianContext) {
         PlaybackFrameRate.apply(context)
@@ -200,6 +203,7 @@ internal fun PlaybackDestination(
             isSimpleMode = isSimpleMode,
             onSimpleModeChange = { isSimpleMode = it },
             useRelativeIonianContext = useRelativeIonianContext,
+            songIonianKey = songIonianKey,
             currentWaveform = currentWaveform,
             onWaveformChange = onWaveformChange,
             onKeyDisplayChange = { playbackKeyDisplay = it },

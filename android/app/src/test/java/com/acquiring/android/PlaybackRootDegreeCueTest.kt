@@ -182,6 +182,35 @@ class PlaybackRootDegreeCueTest {
     }
 
     @Test
+    fun lockInMajorUsesTheSongsOpeningKeyInEverySection() {
+        // The Zelda prologue shape: a G major verse, then a G dorian chorus. A section's
+        // own reference would lock the chorus to F major; the song's stays G major.
+        val verse = Json.decodeFromString<ExtractedSection>(
+            """
+            {"chords":[{"beat":1,"root":1,"duration":1}],
+             "metadata":{"keys":[{"beat":1,"tonic":"G","scale":"major"}]}}
+            """.trimIndent()
+        )
+        val chorus = Json.decodeFromString<ExtractedSection>(
+            """
+            {"chords":[{"beat":1,"root":1,"duration":1},{"beat":2,"root":7,"duration":1}],
+             "metadata":{"keys":[{"beat":1,"tonic":"G","scale":"dorian"}]}}
+            """.trimIndent()
+        )
+        val songKey = songRelativeIonianKey(listOf(verse, chorus))
+        assertEquals(KeyInfo("G", "major"), songKey)
+
+        val (tonic, subtonic) = sectionPlaybackFacts(chorus, songKey).timeline.events
+        assertEquals(RelativeIonianDegree(1, 0), tonic.relativeMajorRootDegree)
+        assertEquals(RelativeIonianDegree(7, -1), subtonic.relativeMajorRootDegree)
+        assertEquals(0, tonic.fifthsFromMajorTonic)
+
+        // Without a song reference the chorus still falls back to its own relative major.
+        val (sectionTonic) = sectionPlaybackFacts(chorus).timeline.events
+        assertEquals(RelativeIonianDegree(2, 0), sectionTonic.relativeMajorRootDegree)
+    }
+
+    @Test
     fun relativeMajorVoiceUsesTheSectionContextThroughLocalKeyChanges() {
         val section = Json.decodeFromString<ExtractedSection>(
             """

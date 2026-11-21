@@ -15,7 +15,10 @@ internal data class SectionPlaybackFacts(
     val baseBpm: Float
 )
 
-internal fun sectionPlaybackFacts(section: ExtractedSection): SectionPlaybackFacts {
+internal fun sectionPlaybackFacts(
+    section: ExtractedSection,
+    songIonianKey: KeyInfo? = null
+): SectionPlaybackFacts {
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
     val notesJson = when (val rawNotes = section.notes) {
         is JsonArray -> rawNotes
@@ -51,7 +54,7 @@ internal fun sectionPlaybackFacts(section: ExtractedSection): SectionPlaybackFac
     return SectionPlaybackFacts(
         melody = melody,
         endBeat = endBeat,
-        timeline = buildPlaybackTimeline(section, melody, endBeat),
+        timeline = buildPlaybackTimeline(section, melody, endBeat, songIonianKey),
         baseBpm = baseBpm
     )
 }
