@@ -1,0 +1,17 @@
+{
+  "authority": "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08",
+  "sourceSha256": {
+    "android/app/src/main/java/com/acquiring/android/PlaybackEngine.kt": "82d26b02157bb65b5c84903256b65c747a61c967ec914bd27549c27781e57a9b",
+    "android/app/src/main/java/com/acquiring/android/SpokenRootDegrees.kt": "4408a118af4b9acad11abb93433c8de43307d05efbb393e3d590433b53229eb2",
+    "android/app/src/main/java/com/acquiring/android/PlaybackController.kt": "1ed50fe7b2275abf9d19629bbd24424e6f866e57ee0e2ea282adf07836d2c7e2",
+    "android/app/src/main/java/com/acquiring/android/SynthVoice.kt": "abfc31f864d8c7ac92715a7058788c502d2e4255587c9ef41e639ea5e16ee073",
+    "android/app/src/main/java/sonic/Sonic.java": "c23fb313fafa9cdab4c9aa291bfdc2426f33a42d0e19e3e8d1cfd3f85258d7df"
+  },
+  "supplementalAuthority": "2728f3f326d4a889d5d1b96d2557bdb57afc95f1",
+  "supplementalTest": "PlaybackRootDegreeCueTest.lockInMajorUsesTheSongsOpeningKeyInEverySection",
+  "fixtures": {
+    "native-sonic": "bf07254a807ae7877a80e93f888d5e0f43dc8cb900a56506134e9131b0641796",
+    "native-cue-stream": "f3730a3c241f5f7aa4cc6e750fc2a89f72ac9e84658e498ca84781db7875c30a",
+    "native-stream": "33d9e16d8f138ccd35378035b30228556c319c0f9a9dc1c2a56360ebd6c447b6"
+  }
+}

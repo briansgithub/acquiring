@@ -338,3 +338,8 @@ melody retention, counts and mode-window math; they are written but unrun.
 Speech assets/Sonic and caller wiring remain in progress. See
 [ios-port/b04-spoken-cues.md](ios-port/b04-spoken-cues.md). No app-visible or
 native PCM parity completion is claimed. Saved turn_context confirms Astra/high.
+
+B04 merged B03 integration head `821d7b5e` after the pulse commit `ff522ff2`.
+Added exact offline clip delivery and portable Sonic preparation in a separate
+slice. Node checked 66 asset hashes and 14 existing PWA/JVM Sonic cases.
+Swift/C compilation, speech scheduling and caller wiring remain pending.

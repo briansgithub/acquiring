@@ -27,3 +27,23 @@ claim follows from these pulse semantics. Graph conversion remains a separate
 48 kHz concern.
 
 Saved turn_context at `2026-11-21T22:11:02.581Z` records `gpt-6-astra` and `high`.
+
+## Speech preparation slice
+
+Added a mono PCM16 Sonic subset as an AcquiringSonic C target and Swift phrase
+preparation. Java wrapping operations and Float arithmetic are explicit; this
+is a port requiring execution against the frozen native hashes. The local
+machine also lacks a C compiler, so compilation remains a remote CI check.
+No Swift or C runtime parity is claimed from source inspection.
+
+SwiftPM bundles 66 exact PCM banks, 47 MiB, with the original PWA SHA manifest.
+The loader reads a single pitch slice per request and performs no network I/O.
+No voice assets were generated. Playback installation and asynchronous preparation
+outside the renderer lock are still pending.
+
+`node contracts/fixtures/check-b04-cues.cjs` passed with Windows Node 24.18:
+66 assets match both Android and PWA SHA/lengths; all 14 existing PWA Sonic cases
+match JVM PCM16 hashes; native-sonic/native-cue-stream/native-stream hashes are
+pinned. The latter two are provenance checks, not new render executions.
+Focused Swift tests will compare the C preparation output against the 14 frozen
+Sonic hashes. Resource loading also has a focused package test, still unrun.

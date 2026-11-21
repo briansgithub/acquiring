@@ -19,6 +19,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "AcquiringCore"),
+        .target(name: "AcquiringSonic", exclude: ["LICENSE"]),
         .target(
             name: "AcquiringCatalog",
             dependencies: [
@@ -30,7 +31,8 @@ let package = Package(
         ),
         .target(
             name: "AcquiringAudio",
-            dependencies: ["AcquiringCore"]
+            dependencies: ["AcquiringCore", "AcquiringSonic"],
+            resources: [.copy("Resources/Voice")]
         ),
         .testTarget(
             name: "AcquiringCoreTests",
