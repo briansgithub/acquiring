@@ -68,7 +68,7 @@ fallback container is introduced. Verify on macOS with only
    preserved pending values when switching A to B to A.
 4. Open an older user database and confirm Favorites and new settings coexist.
 
-CI disposition and final commit receipt will be appended after PR creation.
+PR #53 remains open for the lead. See the CI disposition below.
 
 ## Implementation receipt
 
@@ -87,3 +87,63 @@ UI error presentation and audio behavior remain unverified.
 Runtime initially reported GPT-6-Astra high, briefly reported medium during a
 follow-up, then explicitly reported high again. No worker or model handoff was
 created. Final work continues under the reported high effort.
+
+## Final CI disposition and handoff
+
+PR: https://github.com/briansgithub/acquiring/pull/53, registered with T3.
+Implementation/test head inspected by CI is
+`3f35c40453e4b3cc81b63846091445baf2247c1f`. The final receipt commit changes only
+documentation; results below belong to that exact earlier head, not a later rerun.
+
+Commits are `e5317838` contracts, `f2491f03` implementation, `442c16ab` targeted
+tests, and `3f35c404` integration of main's ledger ownership. The merge preserved
+B03/B07 ownership and historical dispositions. No main checkout edits, worker
+creation, releases or PR merges occurred.
+
+[iOS run 44835917107](https://github.com/briansgithub/acquiring/actions/runs/44835917107)
+completed with failure. Its Swift package parity step passed. The iPhone app build
+failed with exit 65 at `AppEnvironment.swift:269`, before app tests executed:
+`main actor-isolated default value in a nonisolated context`, on
+`displayMaximum: Int = UIScreen.main.maximumFramesPerSecond`.
+The runner used Xcode 26.6. The line and enclosing function are unchanged by B02,
+present in base `d430fc0c`, and attributed by git blame to `1a494fcc9`.
+This establishes a pre-existing source/toolchain incompatibility, not a package
+test failure or successful B02 build. No base app build was rerun here, and the
+failure may hide further diagnostics. The iPad app-test stage was skipped.
+
+Other actual checks at that head: Android test/release-logic, Web, PWA recovery,
+and all three chord interpreters passed. PWA app CI failed with 136 browser tests
+passed, two skipped and two failed: `catalog-worker.spec.ts:113` user-store
+recovery and `playback.spec.ts:1258` Song continuation/persistence. B02 changes no
+PWA code or tests; these failures were inspected, not repaired or independently
+reproduced. The push-only external-beta workflow also failed before any jobs;
+GitHub CLI reports a likely workflow-file issue. No release was initiated.
+
+The final targeted collection is **11 tests** in
+`AcquiringTests/SongPlaybackSettingsTests`, all unrun:
+
+- `testSharedCoalescedTicksExpectation`
+- `testEnvironmentKeepsDefaultFollowingAndTransientModeSeparate`
+- `testDiskContainerReopenRetainsSettings`
+- `testSharedAndroidSanitizerCasesAndRoundTrips`
+- `testMissingRowImmediateDefaultsAndSameSongContinuity`
+- `testDelayedReadCannotReplaceEditIncludingExplicitDefault`
+- `testOldReadCannotReplaceNewSong`
+- `testCoalescingKeepsOtherSongsAndPendingReturn`
+- `testSaveFailureRetainsEditsAndRetryPersists`
+- `testReadFailureDoesNotWriteDefaults`
+- `testSwiftDataRoundTripWithFreshContextPreservesAllFields`
+
+Disk reopen tests the new schema only. It does **not** test upgrading an existing
+Favorites database to the additive schema. That upgrade, all 11 app tests,
+simulator/UI behavior and device/audio behavior remain unverified. The lead owns
+resolution of the baseline compiler blocker, native acceptance and merge. B01 can
+continue against this stable implementation; B04-B06 still need to integrate the
+stored cue, voice-volume and Loop/Song fields with actual behavior.
+
+The lead independently reran the portable contract checker and diff check and
+reviewed the store guards, rollback isolation, target registration and callers,
+with no blocking source issue found. That review is not Swift runtime acceptance.
+Local `turn_context` at `2026-11-20T23:15:03.103Z` explicitly records
+`model: gpt-6-astra`, `effort: high`; this is observed session evidence rather than
+an inference from stored thread selection.
