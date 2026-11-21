@@ -12,6 +12,9 @@ public final class QuizPCMRenderer: @unchecked Sendable {
         let frequenciesHz: [Double]
         let rootFrequencyHz: Double?
         let waveform: SynthWaveform
+        let cueContext: PlaybackCueContext
+        var pulseVoices: [SynthVoice] = []
+        var outgoingPulseVoices: [SynthVoice] = []
         var voices: [SynthVoice]
         var arpeggioOption: QuizArpeggioOption
         var outgoingVoices: [SynthVoice] = []
@@ -62,7 +65,7 @@ public final class QuizPCMRenderer: @unchecked Sendable {
                 channel: event.channel,
                 frequenciesHz: frequencies,
                 rootFrequencyHz: rootFrequency,
-                chordMode: soundConfiguration?.chordMode ?? .full
+                chordMode: soundConfiguration?.cue.pulsesRoots == true ? .rootOnly : (soundConfiguration?.chordMode ?? .full)
             )
             return PreparedEvent(
                 onsetFrame: max(Int64((event.onsetSeconds * sampleRate).rounded()), 0),
@@ -73,11 +76,16 @@ public final class QuizPCMRenderer: @unchecked Sendable {
                 frequenciesHz: frequencies,
                 rootFrequencyHz: rootFrequency,
                 waveform: event.waveform,
+                cueContext: event.cueContext,
                 voices: selectedFrequencies.map {
                     SynthVoice(frequencyHz: $0 * pitchMultiplier, waveform: waveform, sampleRate: sampleRate)
                 },
                 arpeggioOption: soundConfiguration?.arpeggioOption ?? .off
             )
+        }
+        if let configuration = soundConfiguration {
+            soundConfiguration = nil
+            setSoundConfiguration(configuration)
         }
         snapLayerGainsToTargets()
         timelineFrame = 0
@@ -112,17 +120,19 @@ public final class QuizPCMRenderer: @unchecked Sendable {
             let waveformOrPitchChanged = previousWaveform != configuration.waveform ||
                 previousTranspose != configuration.transposeSemitones
             let arpeggioChanged = events[index].channel == .chord &&
-                events[index].arpeggioOption != configuration.arpeggioOption
+                events[index].arpeggioOption != (configuration.cue.pulsesRoots ? .off : configuration.arpeggioOption)
             let chordModeChanged = events[index].channel == .chord &&
                 previousConfiguration?.chordMode != configuration.chordMode
-            guard waveformOrPitchChanged || arpeggioChanged || chordModeChanged else { continue }
+            let pulsesChanged = previousConfiguration?.cue != configuration.cue ||
+                previousConfiguration?.majorLocked != configuration.majorLocked
+            guard waveformOrPitchChanged || arpeggioChanged || chordModeChanged || pulsesChanged else { continue }
 
             let multiplier = Self.pitchMultiplier(for: configuration.transposeSemitones)
             let frequencies = Self.selectedFrequencies(
                 channel: events[index].channel,
                 frequenciesHz: events[index].frequenciesHz,
                 rootFrequencyHz: events[index].rootFrequencyHz,
-                chordMode: configuration.chordMode
+                chordMode: configuration.cue.pulsesRoots ? .rootOnly : configuration.chordMode
             ).map { $0 * multiplier }
             let replacementVoices = replacementVoices(
                 for: frequencies,
@@ -130,16 +140,27 @@ public final class QuizPCMRenderer: @unchecked Sendable {
                 preserving: events[index].voices
             )
             if events[index].isActive {
+                events[index].outgoingPulseVoices = events[index].pulseVoices
                 events[index].outgoingVoices = events[index].voices
                 events[index].outgoingArpeggioOption = events[index].arpeggioOption
                 events[index].soundTransitionFramesRemaining = soundTransitionFrames
             } else {
+                events[index].outgoingPulseVoices.removeAll(keepingCapacity: true)
                 events[index].outgoingVoices.removeAll(keepingCapacity: true)
                 events[index].outgoingArpeggioOption = .off
                 events[index].soundTransitionFramesRemaining = 0
             }
-            events[index].voices = replacementVoices
-            events[index].arpeggioOption = configuration.arpeggioOption
+            let count = events[index].channel == .chord
+                ? events[index].cueContext.pulseCount(cue: configuration.cue, majorLocked: configuration.majorLocked) : 0
+            let previousPulses = events[index].pulseVoices
+            events[index].pulseVoices = (0..<count).compactMap { pulse in
+                guard let frequency = frequencies.first else { return nil }
+                return previousPulses.indices.contains(pulse)
+                    ? previousPulses[pulse].replacing(frequencyHz: frequency, waveform: configuration.waveform)
+                    : SynthVoice(frequencyHz: frequency, waveform: configuration.waveform, sampleRate: sampleRate)
+            }
+            events[index].voices = count > 0 ? [] : replacementVoices
+            events[index].arpeggioOption = configuration.cue.pulsesRoots ? .off : configuration.arpeggioOption
         }
     }
 
@@ -213,7 +234,8 @@ public final class QuizPCMRenderer: @unchecked Sendable {
                     (self.timelineFrame / sampleRate - events[eventIndex].onsetSeconds) * nativeBeatsPerSecond,
                     0
                 )
-                let incoming = sampleSum(
+                let incoming = pulseSample(events[eventIndex].pulseVoices, relativeFrame: relativeFrame,
+                    durationFrames: events[eventIndex].durationFrames, envelope: envelope) + sampleSum(
                     events[eventIndex].voices,
                     envelope: envelope,
                     elapsedSeconds: elapsed,
@@ -225,7 +247,8 @@ public final class QuizPCMRenderer: @unchecked Sendable {
                 if events[eventIndex].soundTransitionFramesRemaining > 0 {
                     let remaining = events[eventIndex].soundTransitionFramesRemaining
                     let incomingWeight = 1 - Double(remaining) / Double(soundTransitionFrames)
-                    let outgoing = sampleSum(
+                    let outgoing = pulseSample(events[eventIndex].outgoingPulseVoices, relativeFrame: relativeFrame,
+                        durationFrames: events[eventIndex].durationFrames, envelope: envelope) + sampleSum(
                         events[eventIndex].outgoingVoices,
                         envelope: envelope,
                         elapsedSeconds: elapsed,
@@ -236,6 +259,7 @@ public final class QuizPCMRenderer: @unchecked Sendable {
                     transitioned = outgoing * (1 - incomingWeight) + incoming * incomingWeight
                     events[eventIndex].soundTransitionFramesRemaining -= 1
                     if events[eventIndex].soundTransitionFramesRemaining == 0 {
+                        events[eventIndex].outgoingPulseVoices.removeAll(keepingCapacity: true)
                         events[eventIndex].outgoingVoices.removeAll(keepingCapacity: true)
                     }
                 } else {
@@ -248,7 +272,7 @@ public final class QuizPCMRenderer: @unchecked Sendable {
                     events[eventIndex].releaseGain = max(events[eventIndex].releaseGain - releaseStep, 0)
                 }
             }
-            output[outputIndex] = Float(min(max(mixed, -1), 1))
+            output[outputIndex] = Float(PlaybackCueMath.softLimit(mixed))
             advanceLayerGainTransition()
             self.timelineFrame += playbackRate
             if self.timelineFrame >= Double(loopFrames) {
@@ -259,11 +283,25 @@ public final class QuizPCMRenderer: @unchecked Sendable {
         }
     }
 
+    private func pulseSample(_ voices: [SynthVoice], relativeFrame: Int64,
+                             durationFrames: Int64, envelope: Double) -> Double {
+        guard !voices.isEmpty else { return 0 }
+        let slot = min(Double(relativeFrame) / Double(durationFrames) * Double(voices.count),
+                       Double(voices.count).nextDown)
+        let index = Int(slot), progress = slot - Double(index)
+        guard progress < 0.8 else { return 0 }
+        let pulseEnvelope = max(0, min(progress / 0.08, (0.8 - progress) / 0.12, 1))
+        let elapsed = progress * Double(durationFrames) / (Double(voices.count) * sampleRate * playbackRate)
+        return voices[index].nextSample(envelope: envelope * pulseEnvelope,
+                                        elapsedSeconds: elapsed) * pulseEnvelope
+    }
+
     private func resetEventActivity() {
         for index in events.indices {
             events[index].isActive = false
             events[index].ageFrames = 0
             events[index].releaseGain = 1
+            events[index].outgoingPulseVoices.removeAll(keepingCapacity: true)
             events[index].outgoingVoices.removeAll(keepingCapacity: true)
             events[index].outgoingArpeggioOption = .off
             events[index].soundTransitionFramesRemaining = 0

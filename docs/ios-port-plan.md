@@ -329,3 +329,12 @@ includes two Android changes that extend the behavior the port must cover:
 
 Use the new Android PlaybackRootDegreeCueTest and PlaybackEngineTest cases
 when extending the corresponding contracts.
+
+## B04 first implementation slice
+
+B04 adds portable cue context, pulse rendering in QuizPCMRenderer and the
+mainline soft limiter. Focused Swift tests cover pulse tails, chord replacement,
+melody retention, counts and mode-window math; they are written but unrun.
+Speech assets/Sonic and caller wiring remain in progress. See
+[ios-port/b04-spoken-cues.md](ios-port/b04-spoken-cues.md). No app-visible or
+native PCM parity completion is claimed. Saved turn_context confirms Astra/high.

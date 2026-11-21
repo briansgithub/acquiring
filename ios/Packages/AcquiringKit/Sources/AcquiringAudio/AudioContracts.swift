@@ -124,13 +124,19 @@ public struct QuizSoundConfiguration: Equatable, Sendable {
     public let transposeSemitones: Int
     public let arpeggioOption: QuizArpeggioOption
     public let chordMode: QuizChordMode
+    public let cue: PlaybackCue
+    public let voiceVolume: Double
+    public let majorLocked: Bool
 
     public init(
         waveform: SynthWaveform = .clarinet,
         melodyChordBalance: Double = 0.5,
         transposeSemitones: Int = 0,
         arpeggioOption: QuizArpeggioOption = .off,
-        chordMode: QuizChordMode = .full
+        chordMode: QuizChordMode = .full,
+        cue: PlaybackCue = .off,
+        voiceVolume: Double = 0.5,
+        majorLocked: Bool = false
     ) {
         self.waveform = waveform
         self.melodyChordBalance = melodyChordBalance.isFinite
@@ -139,6 +145,9 @@ public struct QuizSoundConfiguration: Equatable, Sendable {
         self.transposeSemitones = min(max(transposeSemitones, -12), 12)
         self.arpeggioOption = arpeggioOption
         self.chordMode = chordMode
+        self.cue = cue
+        self.voiceVolume = voiceVolume.isFinite ? min(max(voiceVolume, 0), 1) : 0.5
+        self.majorLocked = majorLocked
     }
 
     public var melodyGain: Double { melodyChordBalance }
@@ -211,6 +220,7 @@ public struct QuizEvent: Equatable, Sendable {
     public let gain: Float
     public let channel: AudioPlaybackChannel
     public let rootFrequencyHz: Double?
+    public let cueContext: PlaybackCueContext
 
     public init(
         onsetSeconds: Double,
@@ -219,7 +229,8 @@ public struct QuizEvent: Equatable, Sendable {
         waveform: SynthWaveform,
         gain: Float = 1,
         channel: AudioPlaybackChannel = .melody,
-        rootFrequencyHz: Double? = nil
+        rootFrequencyHz: Double? = nil,
+        cueContext: PlaybackCueContext = .init()
     ) {
         self.onsetSeconds = onsetSeconds
         self.durationSeconds = durationSeconds
@@ -228,6 +239,7 @@ public struct QuizEvent: Equatable, Sendable {
         self.gain = gain
         self.channel = channel
         self.rootFrequencyHz = rootFrequencyHz
+        self.cueContext = cueContext
     }
 }
 
