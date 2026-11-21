@@ -13,6 +13,15 @@ class LibrarySearchTest {
     }
 
     @Test
+    fun searchResultsAreDismissedWhenTheQueryIsEmptied() {
+        assertFalse(libraryResultsShown(0))
+        assertTrue(libraryResultsShown(1))
+        assertTrue(libraryQueryExitsResults("", resultsShown = true))
+        assertFalse(libraryQueryExitsResults("a", resultsShown = true))
+        assertFalse(libraryQueryExitsResults("", resultsShown = false))
+    }
+
+    @Test
     fun catalogSearchKeyMatchesIosAlphanumericFold() {
         assertEquals("500miles", catalogSearchKey("500 Miles"))
         assertEquals("500miles", catalogSearchKey("500-miles"))
