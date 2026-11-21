@@ -121,3 +121,42 @@ Remaining integration work includes application bootstrap, Settings/download
 progress, navigation, full-catalog latency validation, storage reclamation and
 coordination with prior PR #51. This package slice does not complete the
 app-visible B07 feature. No pending historical review was promoted to accepted.
+
+## Bounded comparison with prior PR #51
+
+Compared PR #51 at `3ad590eb68074720d3b8a2e32f900261abc121ab` with B07 at
+`9b8335ac20f6337d505b170674a122edead882fd`. Read its AuralCatalogReader,
+AuralBundleInstaller, AuralAPI, relevant AuralQuizStore replacement callers and
+catalog data/ranking/installer tests. This was source review, not execution.
+Its reported UI failures do not establish a defect in its pure models.
+
+| Concern | Prior AcquiringAural package | B07 AcquiringCatalog package |
+| --- | --- | --- |
+| Schema and provenance | Accepts v1-v3; requires 64-character snapshots. `run` selects only key_json and omits source_key_json. | Accepts v1-v3 with explicit capabilities; preserves source_key_json separately, falling back only for v1. |
+| Reader memory | Int32 suffix storage is compact, but initial suffix blob and all run identity rows load at once. FIFO cache is 64 runs; blob inflation has no decoded-size cap. | Suffix input pages are 1 MiB and identities 2,048 rows; explicit payload/cache limits. Int suffix storage costs twice as much as Int32 and remains a follow-up optimization. |
+| Query/grouping/ranking | Versioned chord queries, compact bucket existence queries, rank eligibility prefix cache and priority-frontier ranking with 256-row SQL batches. Ranking SQL uses OFFSET. Broader exact-inversion/mode/range-batch tests exist. | Versioned queries and native grouping fallback; global ranks versus filtered counts. Keyset range reads, but full rescans per result page and statistics per candidate. Fixed candidate memory, unmeasured latency. It lacks the prior package's chord-variant and passage/evidence convenience APIs. |
+| Leases and replacement | Reader exposes explicit leases and begin/endReplacement. Installer is separate; AuralQuizStore manually coordinates both. Backup/rollback recovery is implemented and tested by injected move failures. Cancelled continuation waiters are checked after being resumed. | Store couples staged preparation with closure leases and atomic generation publication. Cancellation can resume an activation wait before consumers release. Concurrent installs/new leases during activation return busy. Old directories remain for recovery; reclamation is missing. |
+| Corruption checks/tests | Integrity and mixed-evidence checks, endian decoding, rollback and interrupted-backup tests. Blob inflater accepts plain input and has no expansion limit. | Strict bounded gzip, negative/misaligned coordinate refusal, snapshot/sidecar/hash checks; small real v1-v3 bundle cases, failed fetch/reopen/downgrade and lease cancellation tests. Injected move/publication failure coverage remains weaker than the prior tests. |
+| Public API fit | Wider app/learning-facing API, already called by the prior UI; dedicated AcquiringAural module and AcquiringCore models. Its Package.swift pins GRDB 7.8.0. | Narrow independent storage service, auto-discovered in existing AcquiringCatalog with current GRDB 7.11.1. No app wiring or shared model edits. Several names overlap if both modules are imported. |
+
+Recommendation: use one B07 AcquiringCatalogStore as the eventual ownership
+and activation service, after successful Swift validation. Do not activate both
+installers or both readers. Before full-catalog B09/B10 integration, selectively
+port the prior reader's frontier ranking and compact bucket-query approach into
+that service, with its exact-inversion, ineligible-range and global-count tests.
+Preserve B07's source-key provenance, bounded decoding and cancellation checks.
+Measure latency and memory against a representative catalog before choosing a
+production paging budget. This recommendation is about the storage boundary;
+it does not claim current full-scan ranking is production-ready.
+
+Reuse the prior package's passage/source-section/evidence API designs and
+learning model tests through a reviewed adapter to the selected service.
+The lead should decide whether its higher-level AcquiringAural module becomes
+that adapter while the old storage classes are excluded. Retain one canonical
+set of pattern/query types to avoid ambiguous imports. Its move-failure tests
+are useful additions for B07 publication-failure coverage. Do not copy its
+Package.swift, downgrade GRDB, or adopt its app/UI code in this batch. The lead
+owns old app/learning code adoption. Neither PR has been merged or discarded.
+
+At B07 head `9b8335ac`, Actions run `44888968676` also failed with zero jobs;
+the check-runs API returned total_count 0. No Swift verification is available.
