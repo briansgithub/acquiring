@@ -1,0 +1,138 @@
+import Foundation
+import XCTest
+@testable import AcquiringCore
+
+final class B03MelodyFunctionTests: XCTestCase {
+    private struct Corpus: Decodable {
+        var authority: String
+        var roles: [Role]
+        var registers: [Register]
+        var timelines: [Timeline]
+        var chordRoles: [ChordRole]
+    }
+    private struct ChordRole: Decodable {
+        var id: String; var key: KeyInfo; var chord: [String: JSONValue]; var expectedToneLabels: [String]
+    }
+    private struct Role: Decodable {
+        struct Expected: Decodable { var title: String; var cue: String?; var tone: MelodyFunctionTone }
+        var id: String; var current: String?; var previous: String?; var next: String?
+        var scaleDegreeLabel: String; var chordTones: [MelodyFunctionChordTone]?
+        var previousIsCurrentChordTone: Bool?; var nextIsCurrentChordTone: Bool?
+        var currentWasPreviousChordTone: Bool?; var currentWillBeNextChordTone: Bool?
+        var arrivedBeforeNextChord: Bool?; var heldAcrossChordChange: Bool?; var chordChangesDuringNote: Int?
+        var expected: Expected
+    }
+    private struct Register: Decodable { var id: String; var mode: String; var input: [Int?]; var expected: [Int?] }
+    private struct Timeline: Decodable {
+        var id: String; var section: ExtractedSection; var melody: [MelodyNote]; var expected: [MelodyCueEvent]
+    }
+    private func corpus() throws -> Corpus {
+        var directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        while directory.path != "/" {
+            let file = directory.appendingPathComponent("contracts/fixtures/b03-melody-function.json")
+            if FileManager.default.fileExists(atPath: file.path) {
+                return try JSONDecoder().decode(Corpus.self, from: Data(contentsOf: file))
+            }
+            directory.deleteLastPathComponent()
+        }
+        throw NSError(domain: "Missing B03 source fixture", code: 1)
+    }
+    func testFrozenRolesAndRegisters() throws {
+        let data = try corpus()
+        XCTAssertEqual(data.authority, "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08")
+        func pitch(_ name: String?) -> SpelledPitch? { name.flatMap { SpelledPitch.parse(noteName: $0, octave: 4) } }
+        for c in data.roles {
+            var input = MelodyFunctionInput(currentPitch: pitch(c.current), scaleDegreeLabel: c.scaleDegreeLabel,
+                                            key: KeyInfo(tonic: "C", scale: "major"), chordTones: c.chordTones)
+            input.previousPitch = pitch(c.previous); input.nextPitch = pitch(c.next)
+            input.previousIsCurrentChordTone = c.previousIsCurrentChordTone ?? false
+            input.nextIsCurrentChordTone = c.nextIsCurrentChordTone ?? false
+            input.currentWasPreviousChordTone = c.currentWasPreviousChordTone ?? false
+            input.currentWillBeNextChordTone = c.currentWillBeNextChordTone ?? false
+            input.arrivedBeforeNextChord = c.arrivedBeforeNextChord ?? false
+            input.heldAcrossChordChange = c.heldAcrossChordChange ?? false
+            input.chordChangesDuringNote = c.chordChangesDuringNote ?? 0
+            let actual = MelodyFunction.describe(input)
+            XCTAssertEqual(actual.title, c.expected.title, c.id)
+            XCTAssertEqual(actual.tone, c.expected.tone, c.id)
+            XCTAssertEqual(MelodyFunction.spokenCue(actual), c.expected.cue, c.id)
+            if c.id == "b03-leading-member" { XCTAssertTrue(actual.detail.contains("The next note does.")) }
+        }
+        for c in data.registers {
+            XCTAssertEqual(c.mode == "singing" ? SingingMelodyRegister.singing(c.input) : SingingMelodyRegister.spoken(c.input), c.expected, c.id)
+        }
+        XCTAssertEqual(SingingMelodyRegister.placeSpoken(72, previousSounding: 71, previousSpoken: 71), 72)
+        XCTAssertEqual(SingingMelodyRegister.placeSpoken(72, previousSounding: 71, previousSpoken: 59), 60)
+    }
+    func testChordRoleLabelsReachTheClassifier() throws {
+        let names = [1: "root", 2: "second", 3: "third", 4: "fourth", 5: "fifth", 6: "sixth",
+                     7: "seventh", 8: "octave", 9: "ninth", 10: "tenth", 11: "eleventh", 13: "thirteenth"]
+        for c in try corpus().chordRoles {
+            let chord = ChordInterpreter.interpret(c.chord, key: c.key)
+            XCTAssertEqual(chord.toneLabels, c.expectedToneLabels, c.id)
+            XCTAssertEqual(chord.midi.count, c.expectedToneLabels.count, c.id)
+            let tones = zip(chord.midi, chord.toneLabels).map {
+                MelodyFunctionChordTone(pitchClass: ($0.0 % 12 + 12) % 12, label: $0.1)
+            }
+            for (midi, label) in zip(chord.midi, c.expectedToneLabels) {
+                let pitch = SpelledPitch.fromMIDI(midi)
+                // The first label wins when enharmonic members share a pitch class, as on Android.
+                let firstLabel = tones.first { $0.pitchClass == (midi % 12 + 12) % 12 }?.label ?? label
+                let member = names[Int(firstLabel.replacingOccurrences(of: "\u{0302}", with: "").filter(\.isNumber)) ?? 0] ?? "tone"
+                let input = MelodyFunctionInput(currentPitch: pitch, scaleDegreeLabel: "", key: c.key, chordTones: tones)
+                XCTAssertEqual(MelodyFunction.describe(input).title, "Chord " + member, c.id)
+            }
+        }
+    }
+    func testFrozenNativeTimelineAnnotations() throws {
+        for c in try corpus().timelines {
+            let inputs = c.expected.map { MelodyCueEvent(layer: $0.layer, startBeat: $0.startBeat, fullMidiNotes: $0.fullMidiNotes) }
+            XCTAssertEqual(MelodyCueAnnotation.annotate(section: c.section, melody: c.melody, events: inputs), c.expected, c.id)
+            XCTAssertTrue(inputs.allSatisfy { $0.spokenMelodyCue == nil })
+        }
+    }
+    func testRestBreaksNeighborsAndSourceKeyDoesNotFollowSoundingTranspose() {
+        let chord: [String: JSONValue] = ["root": .number(1), "type": .number(5), "beat": .number(1), "duration": .number(4)]
+        let section = ExtractedSection(chords: [chord])
+        let melody = [MelodyNote(sd: "1", beat: 1, duration: 1), MelodyNote(sd: "1", beat: 2, duration: 1, isRest: true), MelodyNote(sd: "2", beat: 3, duration: 1)]
+        let input = MelodyCueAnnotation.input(section: section, melody: melody, noteIndex: 2, chordIndex: 0)
+        XCTAssertNil(input.previousPitch)
+        XCTAssertFalse(input.previousIsCurrentChordTone)
+        let shifted = [MelodyCueEvent(layer: .melody, startBeat: 1, fullMidiNotes: [62])]
+        let output = MelodyCueAnnotation.annotate(section: section, melody: melody, events: shifted)
+        XCTAssertEqual(output[0].spokenMelodyCue, "root")
+        XCTAssertEqual(output[0].melodyCueMidi, 50)
+        let minor = KeyInfo(tonic: "C", scale: "minor")
+        let major = KeyInfo(tonic: "C", scale: "major")
+        let third = [MelodyNote(sd: "3", beat: 1, duration: 1)]
+        XCTAssertEqual(SingingMelodyRegister.pitches(third, keyAt: { _ in minor })[0]?.midiNote, 63)
+        XCTAssertEqual(SingingMelodyRegister.pitches(third, keyAt: { _ in major })[0]?.midiNote, 64)
+    }
+    func testRestContextAndEqualOnsetIdentity() {
+        let section = ExtractedSection(metadata: ["keys": .array([
+            .object(["tonic": .string("C"), "scale": .string("major"), "beat": .number(1)]),
+            .object(["tonic": .string("D"), "scale": .string("minor"), "beat": .number(2)])
+        ])])
+        let rest = MelodyNote(sd: "1", beat: 3, duration: 1, isRest: true)
+        let restInput = MelodyCueAnnotation.input(section: section, melody: [rest], noteIndex: 0, chordIndex: nil)
+        XCTAssertEqual(restInput.key, KeyInfo(tonic: "C", scale: "major"))
+        XCTAssertNil(restInput.currentPitch)
+        let repeated = MelodyNote(sd: "1", beat: 1, duration: 1)
+        let melody = [repeated, repeated, MelodyNote(sd: "2", beat: 1, duration: 1)]
+        let second = MelodyCueAnnotation.input(section: section, melody: melody, noteIndex: 1, chordIndex: nil)
+        XCTAssertEqual(second.previousPitch?.noteName, "C")
+        XCTAssertEqual(second.nextPitch?.noteName, "D")
+        let invalid = MelodyCueAnnotation.input(section: section, melody: melody, noteIndex: -1, chordIndex: nil)
+        XCTAssertNil(invalid.currentPitch)
+    }
+    func testCueAliasesAndSemanticColors() {
+        for (title, cue) in [("Chord octave", "root"), ("Chord tenth", "third"), ("Chromatic upper neighbor", "upper neighbor")] {
+            let description = MelodyFunctionDescription(title: title, detail: "", tone: .moving)
+            XCTAssertEqual(MelodyFunction.spokenCue(description), cue)
+        }
+        XCTAssertTrue(MelodyFunction.isSpokenChordTone("seventh"))
+        XCTAssertFalse(MelodyFunction.isSpokenChordTone("one"))
+        XCTAssertEqual(MelodyFunctionTone.stable.rgb, 0x4CAF50)
+        XCTAssertNil(MelodyFunctionTone.neutral.rgb)
+    }
+}
