@@ -343,3 +343,8 @@ B04 merged B03 integration head `821d7b5e` after the pulse commit `ff522ff2`.
 Added exact offline clip delivery and portable Sonic preparation in a separate
 slice. Node checked 66 asset hashes and 14 existing PWA/JVM Sonic cases.
 Swift/C compilation, speech scheduling and caller wiring remain pending.
+
+B04 draft PR #61 is open against `ios-port-melody-function`, with all three stack
+layers linked. AppEnvironment now carries saved cue/voice volume into the audio
+configuration. Existing control reconstruction, metadata and speech scheduling
+remain unfinished. Remote iOS run `44956183588` targets `9411bd7d`; no result yet.

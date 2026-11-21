@@ -320,7 +320,8 @@ extension QuizSoundConfiguration {
             melodyChordBalance: melodyChordBalance,
             transposeSemitones: transposeSemitones,
             arpeggioOption: arpeggioOption,
-            chordMode: chordMode
+            chordMode: chordMode,
+            cue: cue, voiceVolume: voiceVolume, majorLocked: majorLocked
         )
     }
 }
@@ -564,6 +565,8 @@ final class AppEnvironment {
             if let soundConfiguration {
                 row.melodyChordBalance = soundConfiguration.melodyChordBalance
                 row.transpose = soundConfiguration.transposeSemitones
+                row.rootDegreeCue = soundConfiguration.cue.rawValue
+                row.voiceVolume = soundConfiguration.voiceVolume
                 row.arpeggioOptionIndex = QuizArpeggioOption.allCases.firstIndex(of: soundConfiguration.arpeggioOption) ?? 3
             }
         }
@@ -580,7 +583,9 @@ final class AppEnvironment {
             waveform: waveform, melodyChordBalance: row.melodyChordBalance,
             transposeSemitones: row.transpose,
             arpeggioOption: QuizArpeggioOption.allCases[row.arpeggioOptionIndex],
-            chordMode: quizContinuity?.mode == .rootOnly ? .rootOnly : .full
+            chordMode: quizContinuity?.mode == .rootOnly ? .rootOnly : .full,
+            cue: PlaybackCue(rawValue: row.rootDegreeCue) ?? .off,
+            voiceVolume: row.voiceVolume, majorLocked: row.lockInMajor
         )
         quizContinuity?.playbackConfiguration.soundConfiguration = configuration
     }

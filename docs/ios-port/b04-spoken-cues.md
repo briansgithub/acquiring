@@ -47,3 +47,13 @@ match JVM PCM16 hashes; native-sonic/native-cue-stream/native-stream hashes are
 pinned. The latter two are provenance checks, not new render executions.
 Focused Swift tests will compare the C preparation output against the 14 frozen
 Sonic hashes. Resource loading also has a focused package test, still unrun.
+
+The AppEnvironment settings handoff now carries persisted cue, voice volume and
+Lock in Major into QuizSoundConfiguration and preserves them when replacing the
+instrument. The parent read-before-write exclusivity fix is retained. Existing
+SongViews control reconstruction and timeline speech metadata still need updates
+before claiming that saved cues reach audible playback.
+
+Draft [PR61](https://github.com/briansgithub/acquiring/pull/61) targets
+`ios-port-melody-function`. PR54 head/base was confirmed as `821d7b5e` /
+`ios-port-song-settings` immediately before opening. All three layers are linked.
