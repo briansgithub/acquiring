@@ -200,3 +200,18 @@ construct the QuizSoundConfiguration local, including all reads, before assignin
 it through quizContinuity. The B01 receipt from that commit is excluded. The
 existing environment XCTest is the regression; fresh CI is required. No new
 behavior or weakening of exclusivity checks is introduced.
+
+Direct inspection also confirms B02 run
+[44888885288](https://github.com/briansgithub/acquiring/actions/runs/44888885288)
+at `38daf1da0ea0d79b4884f5100516c837473a5be2` compiled the app and executed settings
+tests. Ten tests logged individual passes, including new-schema disk reopen;
+the environment integration test crashed with `Fatal access conflict detected`.
+A later suite-passed log after test-runner restart does not override that crash.
+This supersedes earlier unrun labels for those exact executions, but establishes
+no pass for the complete B02 collection or old-database schema upgrade.
+
+Repair `c47373de` contains only the requested AppEnvironment hunk plus this receipt.
+Merge `403c6987` brings main `da752342` and PR #58's PWA test-count repair into B02;
+no B01 receipt was copied. Fresh remote validation remains pending. The local
+`pr-gate` command is unavailable on PATH; the exact-head GitHub run watcher is
+used instead, with explicit thread ownership and Astra/high completion delivery.
