@@ -1,9 +1,14 @@
 # B03 melody function receipt
 
 Implementation uses Android authority `3c887223b2d06b4c3a1010d0f8a23ceaf8977d08`.
+Status: complete for the scoped pure model, ready for lead integration.
+PR https://github.com/briansgithub/acquiring/pull/54 remains open.
+Verified code head: `b251c517dcfd2f293079376f2f0a6581a63ba231`.
+Remote Swift package proof is recorded below; earlier unrun entries are historical.
+
 Model and effort evidence: this worker's Codex session `turn_context` records
 `gpt-6-astra`, `effort: high`, with the assigned worktree path on both recorded
-turns. Implementation is ready for independent review, not Swift runtime proof.
+turns. Implementation is ready for independent review; remote package tests now pass.
 
 ## Behavior and caller map
 
@@ -106,3 +111,44 @@ PWA run `44865799128` failed only catalog-worker.spec.ts:116, which expects ten
 stores and receives eleven. Its Song-mode test passed in this run. No PWA or
 app files are modified by B03. Main documentation is frozen per the lead's
 latest instruction; subsequent batch status is recorded here.
+
+
+## Final CI receipt and handoff
+
+At exact code head `b251c517dcfd2f293079376f2f0a6581a63ba231`:
+
+- [iOS run 44888861680](https://github.com/briansgithub/acquiring/actions/runs/44888861680)
+  compiled the package. All six `B03MelodyFunctionTests` passed, including the
+  frozen roles/registers, native timeline annotations, actual chord labels,
+  source/sounding distinction, rest context and duplicate identity. All 248
+  package tests passed with zero failures. This is actual remote Swift runtime
+  evidence, distinct from the local Node contract checks.
+- The same run failed subsequent app compilation at
+  `ios/Acquiring/Infrastructure/AppEnvironment.swift:269:9` with
+  `main actor-isolated default value in a nonisolated context`. Blame identifies
+  unchanged baseline `1a494fcc9`, the `UIScreen.main.maximumFramesPerSecond`
+  default argument. No app test ran; iPad tests were skipped. B03 does not own
+  that app file and the lead has accepted this as an integration prerequisite.
+- [Chord parity run 44888861632](https://github.com/briansgithub/acquiring/actions/runs/44888861632)
+  passed web, Android, iOS and the all-three-interpreters gate at the same head.
+- [PWA run 44888861727](https://github.com/briansgithub/acquiring/actions/runs/44888861727)
+  failed two browser assertions in unchanged PWA files. Catalog-worker line 116
+  expected 10 stores and received 11. Library line 67 expected six song buttons
+  after second-tab ownership retry/search and received zero after 5 seconds.
+  These remain outside B03. The lead reports PR58's store-count fix merged on
+  main `da752342`; this branch intentionally does not update that dependency.
+
+No scoped B03 failure remains in the inspected runs. No manual CI rerun, broad
+local suite, toolchain installation, app change, merge or release was performed
+for this handoff. The final receipt-only commit skips CI as requested, so the
+verified code head remains the one above. Local Swift, simulator/device testing,
+perceptual UI and speech/audio integration remain unrun. B04 may consume these
+pure types; B04/B06 caller wiring in the map above remains pending. Earlier human
+review statuses are unchanged. Shared main documentation remains frozen.
+
+Commits: `2b5b9f24` implementation/contracts, `153b9be7` source/chord-role
+provenance, `2eb92114` main ledger merge, `a85db1e8` rest/source-order review,
+`b251c517` combining-hat digit repair. Worktree:
+`/mnt/c/Users/user1/Desktop/Projects/acquiring-ios-port-melody-function`.
+Latest saved `turn_context` at `2026-11-21T19:23:14.696Z` records
+`gpt-6-astra`, `effort: high`. Final receipt whitespace check passed.
