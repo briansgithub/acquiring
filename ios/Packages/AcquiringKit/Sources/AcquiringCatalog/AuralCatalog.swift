@@ -10,6 +10,8 @@ public actor AuralCatalog {
     private var closed = false
     private var runs: [Int: AuralCatalogRun] = [:]
     private var runOrder: [Int] = []
+    private var runBytes: [Int: Int] = [:]
+    private var cachedBytes = 0
     private let suffix: [Int]
     private let runSongs: [String]
     private let runSections: [String]
@@ -52,12 +54,16 @@ public actor AuralCatalog {
         for index in stride(from: 0, to: suffix.count, by: 2) {
             guard suffix[index] < runSongs.count, suffix[index + 1] < 4096 else { throw AuralCatalogError.invalid("suffix location") }
         }
-        validSongs = try db.read { Set(try String.fetchAll($0, sql: "SELECT id FROM catalog_song")) }
+        validSongs = try db.read { db in
+            guard try Int.fetchOne(db, sql: "SELECT count(*) FROM catalog_song") ?? 0 <= 500_000 else { throw AuralCatalogError.budget("songs") }
+            return Set(try String.fetchAll(db, sql: "SELECT id FROM catalog_song"))
+        }
         let pop = try DatabaseQueue(path: directory.appendingPathComponent("aural-popularity.db").path, configuration: configuration)
         popularity = try pop.read { db in
             var result: [String: (Double, Double)] = [:]
             let cursor = try Row.fetchCursor(db, sql: "SELECT song_id,score,confidence FROM popularity")
             while let row = try cursor.next() {
+                guard result.count < 500_000 else { throw AuralCatalogError.budget("popularity songs") }
                 let score: Double? = row["score"], confidence: Double? = row["confidence"]
                 if let score, score.isFinite, (0...1).contains(score) { result[row["song_id"]] = (score, min(1, max(0, confidence?.isFinite == true ? confidence! : 0))) }
             }
@@ -77,13 +83,18 @@ public actor AuralCatalog {
         let result = try database.read { db -> AuralCatalogRun in
             guard let row = try Row.fetchOne(db, sql: "SELECT *,\(source) AS source_key FROM catalog_run WHERE id=?", arguments: [id]) else { throw AuralCatalogError.invalid("missing run") }
             let decoder = JSONDecoder()
-            let tokens = try decoder.decode([String].self, from: AuralBinary.inflate(row["tokens"]))
-            let positions = try decoder.decode([AuralCatalogPosition].self, from: AuralBinary.inflate(row["positions"]))
+            let tokens = try decoder.decode([String].self, from: AuralBinary.inflate(row["tokens"], limit: 2 * 1024 * 1024))
+            let positions = try decoder.decode([AuralCatalogPosition].self, from: AuralBinary.inflate(row["positions"], limit: 2 * 1024 * 1024))
             guard tokens.count <= 4096, tokens.count == positions.count, tokens.allSatisfy({ $0.utf8.count <= 4096 }), positions.allSatisfy({ $0.startIndex >= 0 && $0.endIndex >= $0.startIndex && $0.startBeat.isFinite && $0.endBeat.isFinite && $0.endBeat > $0.startBeat && $0.notes.count <= 128 }) else { throw AuralCatalogError.invalid("run contents") }
             let key: String = row["key_json"], sourceKey: String = row["source_key"]
             return AuralCatalogRun(id: id, stableId: row["stable_id"], view: row["view"], song: row["song_id"], section: row["section_id"], revision: row["revision"], tokens: tokens, positions: positions, key: try decoder.decode(AuralCatalogKey.self, from: Data(key.utf8)), sourceKey: try decoder.decode(AuralCatalogKey.self, from: Data(sourceKey.utf8)))
         }
-        if runOrder.count >= 64 { runs.removeValue(forKey: runOrder.removeFirst()) }
+        let cost = result.tokens.reduce(0) { $0 + $1.utf8.count + 32 } + result.positions.reduce(0) { $0 + $1.degree.utf8.count + $1.roman.utf8.count + $1.notes.count * 8 + 128 }
+        while !runOrder.isEmpty && (runOrder.count >= 64 || cachedBytes + cost > 32 * 1024 * 1024) {
+            let removed = runOrder.removeFirst(); runs.removeValue(forKey: removed)
+            cachedBytes -= runBytes.removeValue(forKey: removed) ?? 0
+        }
+        runBytes[id] = cost; cachedBytes += cost
         runs[id] = result; runOrder.append(id)
         return result
     }
@@ -124,23 +135,28 @@ public actor AuralCatalog {
     }
     public func statistics(_ target: AuralPatternTarget, options: AuralRankingOptions = AuralRankingOptions()) throws -> AuralCatalogRow? {
         try validate(target)
-        var allSongs = Set<String>(), grouped: [String: [(Int, Int)]] = [:], global = 0, occurrences = 0
-        for rank in target.start...target.end {
-            try Task.checkCancellation()
-            let id = suffix[rank * 2], song = runSongs[id]
-            guard validSongs.contains(song) else { continue }
-            global += 1; allSongs.insert(song)
-            if try eligible(song, percent: options.minimumPopularityPercent) { grouped[song, default: []].append((id, suffix[rank * 2 + 1])); occurrences += 1 }
+        var allSongs = Set<String>(), grouped: [String: Int] = [:], global = 0, occurrences = 0
+        var effective = 0, sections = Set<String>(), weight = 0.0
+        try database.read { db in
+            let cursor = try Row.fetchCursor(db, sql: "SELECT run_id,offset FROM catalog_suffix WHERE rank BETWEEN ? AND ? ORDER BY run_id,offset", arguments: [target.start, target.end])
+            var prior = -1, end = -1
+            while let row = try cursor.next() {
+                try Task.checkCancellation()
+                let id: Int = row["run_id"], start: Int = row["offset"]
+                guard id >= 0, id < runSongs.count else { throw AuralCatalogError.invalid("occurrence run") }
+                let song = runSongs[id]
+                guard validSongs.contains(song) else { continue }
+                global += 1; allSongs.insert(song)
+                guard try eligible(song, percent: options.minimumPopularityPercent) else { continue }
+                occurrences += 1; sections.insert(runSections[id])
+                let count = grouped[song, default: 0]
+                if count < 4 && (id != prior || start > end) {
+                    grouped[song] = count + 1; effective += 1; prior = id; end = start + target.tokens.count - 1
+                } else { grouped[song] = count }
+            }
         }
         guard !grouped.isEmpty else { return nil }
-        var effective = 0, sections = Set<String>(), weight = 0.0
-        for (song, matches) in grouped {
-            var prior = -1, end = -1, count = 0
-            for (id, start) in matches.sorted(by: { $0.0 == $1.0 ? $0.1 < $1.1 : $0.0 < $1.0 }) {
-                sections.insert(runSections[id])
-                if count < 4 && (id != prior || start > end) { count += 1; prior = id; end = start + target.tokens.count - 1 }
-            }
-            effective += count
+        for song in grouped.keys {
             let pop = popularity[song]
             var factor = options.popularity ? 1 + (pop?.confidence ?? 0) * ((pop?.score ?? 0.5) - 0.5) : 1
             if options.variety, let index = options.recentSongs.firstIndex(of: song), index < 10 { factor *= index < 3 ? 0.25 : 0.6 }
@@ -168,6 +184,7 @@ public actor AuralCatalog {
     public func occurrences(_ target: AuralPatternTarget, afterRank: Int? = nil, limit: Int = 100) throws -> (items: [AuralOccurrence], nextRank: Int?) {
         try validate(target)
         guard (1...2048).contains(limit) else { throw AuralCatalogError.budget("occurrence page") }
+        if let afterRank, afterRank >= target.end { return ([], nil) }
         let start = max(target.start, (afterRank ?? (target.start - 1)) + 1)
         if start > target.end { return ([], nil) }
         let end = min(target.end, start + limit - 1)

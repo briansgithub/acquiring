@@ -59,3 +59,35 @@ Focused tests now consume captured native identity outputs and native grouping
 quality/seventh cases. These tests remain unrun, not verified Swift parity.
 The resumed session's actual `turn_context` at 2026-11-21T04:16:06.222Z reports
 `gpt-6-astra`, `effort: high`, and this worktree's cwd.
+
+## Resource limits and focused checks
+
+Encoded suffix arrays are limited to 256 MiB, read in 1 MiB blocks. The current
+Swift Int representation can use 512 MiB for decoded coordinates. Run metadata
+is capped at two million rows; song/popularity dictionaries at 500,000 entries.
+Run gzip payloads are limited to 2 MiB each, decoded tokens to 4,096 per run and
+4,096 UTF-8 bytes per token. The FIFO run cache admits at most 64 runs and an
+estimated 32 MiB of decoded payload. Swift object overhead is additional.
+Statistics stream SQL occurrences ordered by run/offset instead of retaining
+one tuple per occurrence. Song and section distinct-count sets remain bounded
+by catalog identities. Occurrence pages contain at most 2,048 entries. Ranking
+pages contain at most 100 rows. SQLite may use temporary storage for sorts.
+
+Each installed database is limited to 8 GiB uncompressed, with 64 KiB gzip/hash
+buffers. Staging temporarily needs both bundles plus the compressed download.
+Old generations are retained, so storage reclamation remains required before
+repeated production updates. Atomic pointer publication provides process-crash
+consistency; hardware power-loss durability beyond Foundation's atomic write
+has not been verified. Blob decoding uses explicit little-endian byte assembly,
+not unaligned pointer loads. Negative/truncated coordinates and corrupt gzip
+fail with typed errors. Unknown future schemas and version downgrades fail.
+Same-schema snapshots are opaque IDs with no chronological ordering; a manifest
+is authoritative within a schema, as on Android.
+
+`python3 scripts/ios-port/verify-b07.py` passes: eight pinned source hashes,
+55 captured native identities, nine hashed gzip/SQLite files, v1-v3 columns,
+and native matching-test occurrence expectations. `git diff --check` passes.
+Focused Swift tests cover schema fallback/provenance, occurrence paging,
+filtered/global counts, query pages, corruption, mixed evidence snapshots,
+real installation, failed fetch preservation, reopen and schema downgrade.
+All Swift tests remain unrun locally. No full catalogs or toolchains downloaded.

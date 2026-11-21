@@ -19,7 +19,12 @@ public struct AuralCatalogPosition: Decodable, Sendable {
     public let notes: [Int]
     public let rootMidi: Int
     public let bassMidi: Int
-    public let varyingBass: Bool?
+    private let varyingBassValue: Bool?
+    public var varyingBass: Bool { varyingBassValue ?? false }
+    private enum CodingKeys: String, CodingKey {
+        case startIndex, endIndex, startBeat, endBeat, degree, roman, notes, rootMidi, bassMidi
+        case varyingBassValue = "varyingBass"
+    }
 }
 public struct AuralCatalogKey: Codable, Equatable, Sendable {
     public let tonic: String

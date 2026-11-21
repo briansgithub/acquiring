@@ -27,6 +27,7 @@ public actor AuralCatalogStore {
     private var installing = false
     private var draining = false
     private var drain: CheckedContinuation<Void, Error>?
+    private var drainID: UUID?
     private struct Pointer: Codable { let generation: String; let schema: Int; let snapshot: String }
     private static let names = ["aural-catalog.db", "aural-evidence.db", "aural-popularity.db"]
 
@@ -68,13 +69,15 @@ public actor AuralCatalogStore {
         }
         return try await body(reader)
     }
-    private func cancelDrain() { drain?.resume(throwing: CancellationError()); drain = nil }
+    private func cancelDrain(_ id: UUID) { if drainID == id { drain?.resume(throwing: CancellationError()); drain = nil } }
     private func waitForUsers() async throws {
+        let id = UUID(); drainID = id
+        defer { drainID = nil }
         try await withTaskCancellationHandler {
             try Task.checkCancellation()
             if users > 0 { try await withCheckedThrowingContinuation { drain = $0 } }
             try Task.checkCancellation()
-        } onCancel: { Task { await self.cancelDrain() } }
+        } onCancel: { Task { await self.cancelDrain(id) } }
     }
 
     /// A concurrent install receives busy and may retry. Staging does not block

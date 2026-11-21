@@ -220,3 +220,8 @@ occurrences, ranking/grouping and a real staged gzip/hash installer with
 lease-drained generation activation. Lead's mixed-case grouping correction
 and captured identity tests are included. Focused executable fixture checks
 and PR/CI inspection remain pending; no app-visible completion is claimed.
+
+B07 focused portable verification passes for pinned sources, 55 captured native
+identity cases and nine small real gzip/SQLite fixture databases across v1-v3.
+Swift reader/install tests are added but unrun locally. The receipt records
+resource budgets, generation retention and unmeasured full-catalog latency.
