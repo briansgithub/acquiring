@@ -63,3 +63,19 @@ cue aliases and color checks. Swift tests, package build, simulator and device
 checks are UNRUN because no iOS/Swift toolchain is available. No toolchains were
 installed and no broad suites ran. Actual CI disposition will be recorded at PR
 handoff. Prior pending human reviews remain pending.
+
+## Source review follow-up
+
+Added 22 unchanged chord-role contract cases, verified against PWA interpretation
+and consumed by focused Swift tests to carry actual labels through classification.
+The Node checker now verifies unique B03 IDs, exact native timeline projection,
+unchanged chord-role cases and SHA-256 hashes for the three frozen Android
+source files. `git diff 3c887223 --` for those sources was empty.
+The complete focused Node check passes: 21 roles, 8 register sequences, 5 native
+timelines, 22 chord-role cases and provenance checks. `git diff --check` passed.
+
+The resumed session `turn_context` at `2026-11-21T04:16:05.689Z` again records
+`gpt-6-astra`, `effort: high`. This addresses the lead's effort correction using
+runtime evidence. No additional code-review findings were present in this
+worker's available messages. All Codex thread messages include explicit model
+and effort flags.

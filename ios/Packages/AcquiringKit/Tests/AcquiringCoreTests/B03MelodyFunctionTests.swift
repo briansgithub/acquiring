@@ -8,6 +8,10 @@ final class B03MelodyFunctionTests: XCTestCase {
         var roles: [Role]
         var registers: [Register]
         var timelines: [Timeline]
+        var chordRoles: [ChordRole]
+    }
+    private struct ChordRole: Decodable {
+        var id: String; var key: KeyInfo; var chord: [String: JSONValue]; var expectedToneLabels: [String]
     }
     private struct Role: Decodable {
         struct Expected: Decodable { var title: String; var cue: String?; var tone: MelodyFunctionTone }
@@ -59,6 +63,26 @@ final class B03MelodyFunctionTests: XCTestCase {
         }
         XCTAssertEqual(SingingMelodyRegister.placeSpoken(72, previousSounding: 71, previousSpoken: 71), 72)
         XCTAssertEqual(SingingMelodyRegister.placeSpoken(72, previousSounding: 71, previousSpoken: 59), 60)
+    }
+    func testChordRoleLabelsReachTheClassifier() throws {
+        let names = [1: "root", 2: "second", 3: "third", 4: "fourth", 5: "fifth", 6: "sixth",
+                     7: "seventh", 8: "octave", 9: "ninth", 10: "tenth", 11: "eleventh", 13: "thirteenth"]
+        for c in try corpus().chordRoles {
+            let chord = ChordInterpreter.interpret(c.chord, key: c.key)
+            XCTAssertEqual(chord.toneLabels, c.expectedToneLabels, c.id)
+            XCTAssertEqual(chord.midi.count, c.expectedToneLabels.count, c.id)
+            let tones = zip(chord.midi, chord.toneLabels).map {
+                MelodyFunctionChordTone(pitchClass: ($0.0 % 12 + 12) % 12, label: $0.1)
+            }
+            for (midi, label) in zip(chord.midi, c.expectedToneLabels) {
+                let pitch = SpelledPitch.fromMIDI(midi)
+                // The first label wins when enharmonic members share a pitch class, as on Android.
+                let firstLabel = tones.first { $0.pitchClass == (midi % 12 + 12) % 12 }?.label ?? label
+                let member = names[Int(firstLabel.filter(\.isNumber)) ?? 0] ?? "tone"
+                let input = MelodyFunctionInput(currentPitch: pitch, scaleDegreeLabel: "", key: c.key, chordTones: tones)
+                XCTAssertEqual(MelodyFunction.describe(input).title, "Chord " + member, c.id)
+            }
+        }
     }
     func testFrozenNativeTimelineAnnotations() throws {
         for c in try corpus().timelines {

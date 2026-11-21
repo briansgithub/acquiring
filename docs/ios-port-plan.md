@@ -192,3 +192,8 @@ with Node 24: 21 roles, 8 registers, 5 native timelines. Focused Swift tests are
 written but unrun; no Swift toolchain is available. Independent lead review and
 actual PR CI disposition remain pending. Receipt: `ios-port/b03-melody-function.md`.
 B04/B06 caller integration and earlier human reviews remain pending.
+
+B03 source-review follow-up adds 22 chord-role cases and exact fixture/source
+provenance checks. All focused Node cases pass; Swift remains unrun. Actual
+runtime evidence on resume confirms Astra/high. PR creation and CI inspection
+are next; no app integration or prior human review status changed.
