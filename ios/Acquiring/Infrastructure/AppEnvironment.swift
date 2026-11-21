@@ -575,12 +575,14 @@ final class AppEnvironment {
         quizInstrument.select(waveform)
         quizContinuity?.tempoPercent = row.tempoPercent
         quizContinuity?.usesRelativeIonianContext = row.lockInMajor
-        quizContinuity?.playbackConfiguration.soundConfiguration = QuizSoundConfiguration(
+        // Evaluate reads before the nested writeback opens an exclusive access.
+        let configuration = QuizSoundConfiguration(
             waveform: waveform, melodyChordBalance: row.melodyChordBalance,
             transposeSemitones: row.transpose,
             arpeggioOption: QuizArpeggioOption.allCases[row.arpeggioOptionIndex],
             chordMode: quizContinuity?.mode == .rootOnly ? .rootOnly : .full
         )
+        quizContinuity?.playbackConfiguration.soundConfiguration = configuration
     }
 
     func prepare() async throws {

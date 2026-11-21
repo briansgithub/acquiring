@@ -183,3 +183,20 @@ at the API that actually owns cadence.
 Apple's [CADisplayLink documentation](https://developer.apple.com/documentation/quartzcore/cadisplaylink/preferredframeraterange)
 describes a best-effort callback timing range. It does not promise a global UIKit
 layer refresh cap. Physical cadence still requires native review.
+
+## Exclusivity regression exposed by child CI
+
+Child PR #57 run [44913289042](https://github.com/briansgithub/acquiring/actions/runs/44913289042)
+tested exact head `f3d38c39edf1a9c638751292f29f2951ae4c24c0`. The lead reported
+successful app compilation and four passing SongOctavePersistenceTests, followed
+by a real B02 exclusivity crash in
+`testEnvironmentKeepsDefaultFollowingAndTransientModeSeparate`.
+The nested quizContinuity writeback in applySongSettings overlapped its getter
+while computing chordMode. Later UI failures reporting an app that is not running
+cannot be classified as baseline failures without a fresh run after this repair.
+
+Only the AppEnvironment.swift hunk from child commit `0c55fd3b` is adopted here:
+construct the QuizSoundConfiguration local, including all reads, before assigning
+it through quizContinuity. The B01 receipt from that commit is excluded. The
+existing environment XCTest is the regression; fresh CI is required. No new
+behavior or weakening of exclusivity checks is introduced.
