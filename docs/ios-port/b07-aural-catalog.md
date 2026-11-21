@@ -91,3 +91,33 @@ Focused Swift tests cover schema fallback/provenance, occurrence paging,
 filtered/global counts, query pages, corruption, mixed evidence snapshots,
 real installation, failed fetch preservation, reopen and schema downgrade.
 All Swift tests remain unrun locally. No full catalogs or toolchains downloaded.
+
+## PR and resumed review, 2026-11-21
+
+PR #55: https://github.com/briansgithub/acquiring/pull/55, open and linked to
+this thread. At head `ab23f94b2b399e6d3cd7e012bb9703603f61f3c7`, GitHub
+reported zero check runs and zero commit statuses. Actions run `44865750898`
+for `.github/workflows/ios-external-beta.yml` failed on push with zero jobs.
+No Swift package, simulator or device test ran. This is an infrastructure
+failure observation, not a Swift failure or passing build. Shared workflows
+and main documentation were not changed in response.
+
+The subsequent repair adds a focused lease-drain cancellation/retry test,
+limits compressed staged inputs to 2 GiB after download, and preserves native
+v1/v2 bucket capability fallback to `All starting chords`. The compressed
+limit is enforced after URLSession finishes its temporary download, so it is
+not a network transfer or temporary-download disk quota. Swift tests remain
+unrun. A resume `turn_context` at 2026-11-21T09:16:18.439Z independently confirms
+`gpt-6-astra` with `effort: high` in this worktree.
+
+Read-only review of PR #51 at `3ad590eb68074720d3b8a2e32f900261abc121ab`
+found a prior AcquiringAural package with a 1,299-line reader, frontier ranking,
+compact bucket queries, leases, passage/evidence APIs and a 389-line installer.
+It is not merged or adopted here. B07's separate AcquiringCatalog API and that
+prior package must be reconciled by the lead before B09/B10 wiring. The prior
+code is relevant source reuse evidence, not proof that either package builds.
+
+Remaining integration work includes application bootstrap, Settings/download
+progress, navigation, full-catalog latency validation, storage reclamation and
+coordination with prior PR #51. This package slice does not complete the
+app-visible B07 feature. No pending historical review was promoted to accepted.

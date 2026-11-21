@@ -55,6 +55,44 @@ final class AuralCatalogTests: XCTestCase, @unchecked Sendable {
             do { _ = try await reader.run(0); XCTFail("closed reader accepted work") } catch AuralCatalogError.closed {} 
         }
     }
+    func testLeaseDrainCancellationAndRetry() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = try AuralCatalogStore(directory: root)
+        let fixture = fixtures(3)
+        let manifest = try JSONDecoder().decode(AuralBundleManifest.self, from: Data(contentsOf: fixture.appendingPathComponent("manifest.json")))
+        let fetch: AuralCatalogStore.Fetch = { url in
+            let copy = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+            try FileManager.default.copyItem(at: fixture.appendingPathComponent(url.lastPathComponent), to: copy)
+            return copy
+        }
+        try await store.install(manifest, fetch: fetch)
+        let entered = AuralTestGate(), release = AuralTestGate()
+        let lease = Task {
+            try await store.withCatalog { reader in
+                await entered.open()
+                await release.wait()
+                return try await reader.run(0).sourceKey.tonic
+            }
+        }
+        await entered.wait()
+        let oldPointer = try Data(contentsOf: root.appendingPathComponent("current.json"))
+        let replacement = Task { try await store.install(manifest, fetch: fetch) }
+        await store.waitForActivation()
+        XCTAssertEqual(try Data(contentsOf: root.appendingPathComponent("current.json")), oldPointer)
+        do { _ = try await store.withCatalog { $0.snapshotId }; XCTFail("acquired while draining") } catch AuralCatalogStore.StateError.busy {}
+        replacement.cancel()
+        do { try await replacement.value; XCTFail("cancelled replacement published") } catch is CancellationError {}
+        XCTAssertEqual(try Data(contentsOf: root.appendingPathComponent("current.json")), oldPointer)
+        let stillReady = try await store.withCatalog { $0.snapshotId }
+        XCTAssertEqual(stillReady, "b07-v3")
+        await release.open()
+        let source = try await lease.value
+        XCTAssertEqual(source, "D")
+        try await store.install(manifest, fetch: fetch)
+        XCTAssertNotEqual(try Data(contentsOf: root.appendingPathComponent("current.json")), oldPointer)
+    }
+
     func testBinaryCorruptionAndMixedBundle() throws {
         XCTAssertThrowsError(try AuralBinary.integers(Data([1,2,3])))
         XCTAssertThrowsError(try AuralBinary.integers(Data([255,255,255,255])))
@@ -95,5 +133,19 @@ final class AuralCatalogTests: XCTestCase, @unchecked Sendable {
         XCTAssertEqual(restored, snapshot)
         let old = try JSONDecoder().decode(AuralBundleManifest.self, from: Data(contentsOf: fixtures(1).appendingPathComponent("manifest.json")))
         do { try await store.install(old, fetch: fetch); XCTFail("downgrade accepted") } catch AuralCatalogStore.StateError.downgrade {}
+    }
+}
+
+private actor AuralTestGate {
+    private var opened = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+    func wait() async {
+        if opened { return }
+        await withCheckedContinuation { waiters.append($0) }
+    }
+    func open() {
+        opened = true
+        let pending = waiters; waiters.removeAll()
+        for waiter in pending { waiter.resume() }
     }
 }

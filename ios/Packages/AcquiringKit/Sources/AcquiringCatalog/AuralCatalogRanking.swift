@@ -86,7 +86,8 @@ extension AuralCatalog {
     public func matchingBuckets(options: AuralRankingOptions = AuralRankingOptions()) throws -> [Int: [AuralStartGroup]] {
         var groups: [Int: Set<AuralStartGroup>] = [:]
         try scan(options: options) { row in
-            if let group = AuralStartGroup.parse(row.target.labels.first ?? "") { groups[row.target.tokens.count, default: []].insert(group) }
+            let group = capabilities.startGrouping ? AuralStartGroup.parse(row.target.labels.first ?? "") : AuralStartGroup(id: "", label: "All starting chords", degree: 0, accidental: "", quality: "major", seventhQuality: "none")
+            if let group { groups[row.target.tokens.count, default: []].insert(group) }
         }
         return groups.mapValues { $0.sorted(by: AuralStartGroup.ordered) }
     }

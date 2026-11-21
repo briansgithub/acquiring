@@ -39,6 +39,12 @@ public actor AuralCatalogStore {
         root = directory; fs = fileSystem
         try fs.createDirectory(at: directory)
     }
+    // Internal observation for deterministic lifecycle regression tests.
+    private var activationObservers: [CheckedContinuation<Void, Never>] = []
+    func waitForActivation() async {
+        if draining { return }
+        await withCheckedContinuation { activationObservers.append($0) }
+    }
     private func pointer() throws -> Pointer? {
         let url = root.appendingPathComponent("current.json")
         guard fs.fileExists(at: url) else { return nil }
@@ -104,6 +110,8 @@ public actor AuralCatalogStore {
             try Task.checkCancellation()
             let archive = try await fetch(entry.url)
             defer { try? FileManager.default.removeItem(at: archive) }
+            let compressedSize = try archive.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+            guard compressedSize > 0, compressedSize <= 2 * 1024 * 1024 * 1024 else { throw AuralCatalogError.budget("compressed database") }
             let output = stage.appendingPathComponent(entry.name)
             // Stream gzip and SHA off the actor executor. Cancellation propagates
             // explicitly to the detached I/O task, and is checked every 64 KiB.
@@ -116,6 +124,8 @@ public actor AuralCatalogStore {
         let next = try AuralCatalog(directory: destination)
         do {
             draining = true
+            let observers = activationObservers; activationObservers.removeAll()
+            for observer in observers { observer.resume() }
             try await waitForUsers()
             try Task.checkCancellation()
             let pointer = Pointer(generation: generation, schema: version + 1, snapshot: manifest.snapshotId)
