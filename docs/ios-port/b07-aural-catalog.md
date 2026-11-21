@@ -1,5 +1,41 @@
 # B07 Aural catalog package
 
+## Current verification status
+
+Remote Swift package validation passed at merge head
+`7b62c629fc72176ce63d879db449e652cd60e239` in
+[iOS run 44914149687](https://github.com/briansgithub/acquiring/actions/runs/44914149687).
+The earlier statements below that Swift was unrun describe earlier checkpoints
+and are superseded by this remote evidence. Local Swift/device execution is
+still unavailable.
+
+The job API independently inspected by this worker reports the Swift package
+parity step succeeded, the iPhone app build/test step failed, and the iPad step
+was skipped. The lead's supplied independent log review reports all 250 package
+tests passed, including AuralAlgorithmsTests 4/4 and AuralCatalogTests 4/4.
+That same lead review identifies the later app compilation failure as the
+baseline actor-isolated default at `AppEnvironment.swift:269`. This worker did
+not independently read the raw log contents. No B07 package Swift failure was
+reported in that run; the overall workflow did not pass.
+
+A raw-log request through `gh api actions/jobs/136876054783/logs` was refused
+with: "the response contains terminal escape sequences; pass
+--allow-escape-sequences to output it anyway". The worker stopped, reported the
+refusal and used neither the override nor another route to those logs. The
+lead then authorized this documentation update using the existing job API
+status and the lead's previously supplied evidence. No further log request,
+CI rerun, workflow edit, app source repair or PR merge was performed.
+
+The lead-owned merge commit preserved the ledger records and allowed PR CI to
+start. GitHub then reported the PR mergeable. This receipt-only follow-up uses
+`[skip ci]` to honor the instruction not to trigger another broad run. Evidence
+remains attributed to the tested merge head, not to a newly executed run.
+
+Package test success does not resolve full-catalog ranking latency/resource
+validation, old-generation reclamation, app bootstrap/Settings/navigation,
+physical-device behavior or reconciliation with PR #51. The PR remains open
+for independent review; app-visible B07 completion is not claimed.
+
 Work in progress on `ios-port-aural-catalog`, based on `d574a8ad`.
 Native authority is `3c887223b2d06b4c3a1010d0f8a23ceaf8977d08`.
 The source hashes in `contracts/aural-corpus/ios-b07/provenance.json` were
