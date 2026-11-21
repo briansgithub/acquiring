@@ -523,6 +523,71 @@ class PlaybackEngineTest {
         fullMidiNotes = notes
     )
 
+    // 1 kHz at 60 BPM: one beat is 1000 frames. Section A runs 200 frames; the
+    // 256-frame prime renders A's end and the splice into B before anything is heard.
+    private val sectionA = PlaybackTimeline(
+        endBeat = 1.2,
+        events = listOf(event(31, 1.0, 1.2, PlaybackAudioLayer.MELODY, 60)),
+        completionKey = SECTION_PLAY_THROUGH_KEY
+    )
+    private val sectionB = PlaybackTimeline(
+        endBeat = 1.1,
+        events = listOf(event(32, 1.0, 1.1, PlaybackAudioLayer.MELODY, 67)),
+        completionKey = SECTION_PLAY_THROUGH_KEY
+    )
+
+    private fun startSongModeHandoff(sink: FakeSink): PlaybackEngine {
+        val engine = PlaybackEngine(config(), sampleRate = 1_000) { sink }
+        sink.holdPlaybackHeadAt(0)
+        engine.load(sectionA, continuePlaying = false, performanceId = "song:a")
+        engine.setSectionContinuation(
+            "song:a",
+            listOf(QueuedSection(sectionB, bpm = 60.0, performanceId = "song:b"))
+        )
+        engine.play()
+        awaitPhase(engine, PlaybackPhase.PLAYING)
+        return engine
+    }
+
+    @Test
+    fun engine_publishesTheSectionBeingHeardNotTheOneRenderedAhead() {
+        val sink = FakeSink(blockAfterPlay = true)
+        val engine = startSongModeHandoff(sink)
+        try {
+            // B is already written into the buffer, but the head is still at A's start.
+            assertEquals("song:a", engine.state.value.performanceId)
+            assertEquals(1.0, engine.state.value.beat, 1e-9)
+
+            sink.holdPlaybackHeadAt(220)
+            sink.unblockWrites()
+            awaitCondition { engine.state.value.performanceId == "song:b" }
+            assertEquals(1.02, engine.state.value.beat, 1e-6)
+        } finally {
+            sink.unblockWrites()
+            engine.release()
+        }
+    }
+
+    @Test
+    fun engine_pauseBeforeAWrittenSpliceIsHeardDoesNotPinTheNextSectionAtItsEnd() {
+        val sink = FakeSink(blockAfterPlay = true)
+        val engine = startSongModeHandoff(sink)
+        try {
+            // A is heard at beat 1.15, past B's 1.1 end; the splice at frame 200 is queued.
+            sink.holdPlaybackHeadAt(150)
+            engine.pause()
+            sink.unblockWrites()
+            awaitPhase(engine, PlaybackPhase.PAUSED)
+
+            val paused = engine.state.value
+            assertEquals("song:b", paused.performanceId)
+            assertEquals(sectionB.startBeat, paused.beat, 1e-9)
+        } finally {
+            sink.unblockWrites()
+            engine.release()
+        }
+    }
+
     private fun awaitPhase(engine: PlaybackEngine, phase: PlaybackPhase) {
         awaitCondition { engine.state.value.phase == phase }
     }
@@ -565,7 +630,7 @@ class PlaybackEngineTest {
             if (writeDelayMs > 0) Thread.sleep(writeDelayMs)
             val written = minOf(size, maxWriteFrames)
             writtenFrames.addAndGet(written.toLong())
-            if (playing) playedFrames.addAndGet(written.toLong())
+            if (playing && !headHeld) playedFrames.addAndGet(written.toLong())
             return written
         }
 
@@ -585,6 +650,14 @@ class PlaybackEngineTest {
         override fun release() {
             released = true
             unblockWrites()
+        }
+
+        /** Pins the playback head, as a deep output buffer does while blocks queue ahead of it. */
+        @Volatile var headHeld = false
+
+        fun holdPlaybackHeadAt(frames: Long) {
+            headHeld = true
+            playedFrames.set(frames)
         }
 
         fun unblockWrites() = writeGate.countDown()

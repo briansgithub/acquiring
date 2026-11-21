@@ -419,7 +419,11 @@ internal fun PlaybackTab(
             latestSectionFinished()
         }
     }
-    LaunchedEffect(playbackState.performanceId) {
+    // Keyed on the phase too: a section handoff seen while buffering or paused (a
+    // focus loss, a resume right at the boundary) must still be followed once the
+    // audio plays. Keyed on the id alone, that one missed edge left the screen on
+    // the old section with its playhead pinned at the end while the next one played.
+    LaunchedEffect(playbackState.performanceId, playbackState.phase) {
         val id = playbackState.performanceId ?: return@LaunchedEffect
         if (latestLoopSection || playOnceKey != null) return@LaunchedEffect
         if (playbackState.phase != PlaybackPhase.PLAYING) return@LaunchedEffect
