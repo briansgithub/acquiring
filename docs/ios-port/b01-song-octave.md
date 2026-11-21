@@ -50,3 +50,14 @@ calibration, chord-tone activation or background playback. No release occurred.
 Future review: choose different offsets for two songs, change sections, relaunch,
 and confirm each song restores its value while transport pitch is unchanged.
 Exercise read/save failures and retry through the focused tests on macOS.
+
+## Remote execution receipt
+
+At head `f3d38c39`, iOS run `44913289042` compiled the app and passed all four
+SongOctavePersistenceTests on the iPhone simulator, including disk reopen and
+failure retry. B02's environment test crashed with simultaneous read/write
+access to quizContinuity in applySongSettings. This branch now computes the
+sound configuration before its nested writeback. The existing failing test
+covers that path; the correction still needs a fresh CI result. Numerous later
+UI failures reported the application was not running. Their individual causes
+are not yet established, and iPad coverage remains unverified. PR #57 stays open.
