@@ -42,6 +42,15 @@ internal fun circleOfFifthsDistance(fromPitchClass: Int, toPitchClass: Int): Int
 internal fun tonicPitchClass(key: KeyInfo): Int =
     Math.floorMod(MusicTheory.getMidiNote("1", 0, key), 12)
 
+/**
+ * Lock in Major's one reference for a whole song: the relative major of the key the
+ * song opens in. Each section used to take its own opening key, so a section in a
+ * different mode (a G dorian chorus after a G major verse) re-labelled the song
+ * against another tonic.
+ */
+internal fun songRelativeIonianKey(sectionsInSongOrder: List<ExtractedSection>): KeyInfo? =
+    sectionsInSongOrder.firstOrNull()?.getKeys()?.keyAtBeat(1.0)?.let(::relativeIonianKey)
+
 internal fun relativeIonianKey(key: KeyInfo): KeyInfo {
     val sourceScale = canonicalScaleName(key.scale)
     val tonic = MusicTheory.getNoteLabel(

@@ -185,6 +185,8 @@ internal fun PlaybackTab(
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit,
     useRelativeIonianContext: Boolean,
+    /** Lock in Major's song-wide reference; null falls back to this section's opening key. */
+    songIonianKey: KeyInfo? = null,
     currentWaveform: AudioEngine.Waveform,
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     onKeyDisplayChange: (PlaybackKeyDisplay?) -> Unit,
@@ -486,7 +488,9 @@ internal fun PlaybackTab(
     }
 
     val ionianSourceKey = remember(sectionKeys) { sectionKeys.keyAtBeat(1.0) }
-    val ionianContextKey = remember(ionianSourceKey) { relativeIonianKey(ionianSourceKey) }
+    val ionianContextKey = remember(ionianSourceKey, songIonianKey) {
+        songIonianKey ?: relativeIonianKey(ionianSourceKey)
+    }
     val sungMelodyPitches = remember(melody, sectionKeys) {
         singingMelodyPitches(melody) { note ->
             sectionKeys.keyAtBeat(normalizePlaybackBeat(note.beat))

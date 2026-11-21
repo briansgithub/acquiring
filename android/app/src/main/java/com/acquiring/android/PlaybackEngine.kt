@@ -1429,10 +1429,11 @@ internal class PlaybackEngine(
 internal fun buildPlaybackTimeline(
     section: ExtractedSection,
     melody: List<MelodyNote>,
-    endBeat: Double
+    endBeat: Double,
+    songIonianKey: KeyInfo? = null
 ): PlaybackTimeline {
     var nextId = 1L
-    val relativeMajorKey = relativeIonianKey(section.getKeys().keyAtBeat(1.0))
+    val relativeMajorKey = songIonianKey ?: relativeIonianKey(section.getKeys().keyAtBeat(1.0))
     val sungMelodyMidis = foldMelodyIntoSingingRange(melody.map { note ->
         if (note.isRest || note.duration <= 0.0) null
         else MusicTheory.getMidiNote(note.sd, note.octave, section.getKeyAtBeat(note.beat)).takeIf { it > 0 }
