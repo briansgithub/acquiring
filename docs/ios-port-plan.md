@@ -145,7 +145,7 @@ and must be closed by B11 rather than silently treated as newly verified.
 | Batch | Dependency | Current status |
 | --- | --- | --- |
 | B00 contracts and retained history | none | Evidence pinned; legacy import/recovery review remains open |
-| B02 durable song playback settings | B00 evidence | PR #53 open; portable review passed; app CI blocked by existing actor isolation |
+| B02 durable song playback settings | B00 evidence | Implemented; [PR #53](https://github.com/briansgithub/acquiring/pull/53) open; independent source/portable review passed; [receipt](ios-port/b02-song-settings.md); 11 app tests unrun; actor-isolation prerequisite added, remote app validation pending |
 | B01 octave persistence and older singing/navigation gaps | B00 evidence | Pending |
 | B03 melody classification and cue metadata | B00 evidence | In progress, independent Astra/high core-model worker |
 | B04 pulses, exact speech clips, Sonic and limiter | B02, B03 | Pending |

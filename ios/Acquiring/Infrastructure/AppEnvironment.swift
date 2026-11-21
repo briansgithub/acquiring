@@ -265,10 +265,13 @@ enum TimelineFrameRatePreference: String, CaseIterable, Identifiable {
 }
 
 extension TimelineFrameRatePreference {
+    @MainActor
     func displayFrameRateRange(
-        displayMaximum: Int = UIScreen.main.maximumFramesPerSecond
+        displayMaximum: Int? = nil
     ) -> CAFrameRateRange {
-        let preferred = framesPerSecond(displayMaximum: displayMaximum)
+        let preferred = framesPerSecond(
+            displayMaximum: displayMaximum ?? UIScreen.main.maximumFramesPerSecond
+        )
         return CAFrameRateRange(
             minimum: Float(min(preferred, 30)),
             maximum: Float(preferred),
@@ -388,6 +391,7 @@ final class AppEnvironment {
     let catalogAssetMetadata: any CatalogAssetMetadataService
     let externalBetaUpdates: any ExternalBetaUpdateService
     let history: HistoryStore
+    let songSettings: SongPlaybackSettingsSession
     let userLibrary: UserLibraryStore
     let audio: AppAudioSystem
     let quizInstrument: QuizInstrumentSession
@@ -482,6 +486,7 @@ final class AppEnvironment {
         maintenance = ExclusiveCatalogMaintenanceService(base: selectedMaintenance)
         history = HistoryStore(suiteName: uiTestSession?.historySuiteName)
         userLibrary = try UserLibraryStore(context: modelContext)
+        songSettings = SongPlaybackSettingsSession(store: SwiftDataSongPlaybackSettingsStore(container: modelContext.container))
         let audioSystem = AppAudioSystem()
         audio = audioSystem
         let instrumentDefaults = quizInstrumentDefaults
@@ -494,6 +499,7 @@ final class AppEnvironment {
             }
         )
         vocalPractice = VocalPracticeModel(audio: audioSystem)
+        songSettings.didApply = { [weak self] row in self?.applySongSettings(row) }
     }
 
     func quizContinuity(for songID: String) -> QuizContinuityState? {
@@ -507,6 +513,7 @@ final class AppEnvironment {
             quizContinuity?.sectionID = sectionID
         } else {
             quizContinuity = QuizContinuityState(songID: songID, sectionID: sectionID)
+            songSettings.enterSong(songID)
         }
         if let configuration = quizContinuity?.playbackConfiguration.soundConfiguration {
             quizContinuity?.playbackConfiguration.soundConfiguration = configuration.replacing(
@@ -518,6 +525,7 @@ final class AppEnvironment {
 
     func selectQuizInstrument(_ waveform: SynthWaveform) {
         quizInstrument.select(waveform)
+        songSettings.edit { $0.instrument = SongPlaybackSettings.instruments.first { $0.value == waveform }?.key }
         if let configuration = quizContinuity?.playbackConfiguration.soundConfiguration {
             quizContinuity?.playbackConfiguration.soundConfiguration = configuration.replacing(
                 waveform: waveform
@@ -550,6 +558,29 @@ final class AppEnvironment {
         if let usesRelativeIonianContext {
             quizContinuity?.usesRelativeIonianContext = usesRelativeIonianContext
         }
+        songSettings.edit(markUnchanged: false) { row in
+            if let tempoPercent { row.tempoPercent = QuizPlaybackConfiguration.normalizedTempoPercent(tempoPercent) }
+            if let usesRelativeIonianContext { row.lockInMajor = usesRelativeIonianContext }
+            if let soundConfiguration {
+                row.melodyChordBalance = soundConfiguration.melodyChordBalance
+                row.transpose = soundConfiguration.transposeSemitones
+                row.arpeggioOptionIndex = QuizArpeggioOption.allCases.firstIndex(of: soundConfiguration.arpeggioOption) ?? 3
+            }
+        }
+    }
+
+    private func applySongSettings(_ row: SongPlaybackSettings) {
+        guard quizContinuity?.songID == row.slug else { return }
+        let waveform = row.instrument.flatMap { SongPlaybackSettings.instruments[$0] } ?? quizInstrument.savedDefault
+        quizInstrument.select(waveform)
+        quizContinuity?.tempoPercent = row.tempoPercent
+        quizContinuity?.usesRelativeIonianContext = row.lockInMajor
+        quizContinuity?.playbackConfiguration.soundConfiguration = QuizSoundConfiguration(
+            waveform: waveform, melodyChordBalance: row.melodyChordBalance,
+            transposeSemitones: row.transpose,
+            arpeggioOption: QuizArpeggioOption.allCases[row.arpeggioOptionIndex],
+            chordMode: quizContinuity?.mode == .rootOnly ? .rootOnly : .full
+        )
     }
 
     func prepare() async throws {
