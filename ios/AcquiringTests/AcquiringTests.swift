@@ -246,7 +246,7 @@ final class AcquiringTests: XCTestCase {
     func testFavoritesMembershipIsUniqueAndNewestFirst() throws {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
-            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self,
+            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self, SongOctaveOffsetRecord.self,
             configurations: configuration
         )
         let store = try UserLibraryStore(context: container.mainContext)
@@ -262,7 +262,7 @@ final class AcquiringTests: XCTestCase {
     func testDeletingCustomPlaylistCascadesEntries() throws {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
-            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self,
+            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self, SongOctaveOffsetRecord.self,
             configurations: configuration
         )
         let playlist = PlaylistRecord(id: "custom", name: "Custom")
@@ -1735,7 +1735,7 @@ final class AcquiringTests: XCTestCase {
         )
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
-            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self,
+            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self, SongOctaveOffsetRecord.self,
             configurations: configuration
         )
         let historySuite = "AcquiringTests.\(UUID().uuidString)"
@@ -2239,7 +2239,7 @@ final class SongPlaybackSettingsTests: XCTestCase {
 
     func testEnvironmentKeepsDefaultFollowingAndTransientModeSeparate() async throws {
         let container = try ModelContainer(
-            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self,
+            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self, SongOctaveOffsetRecord.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true))
         let name = "B02Tests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: name))
@@ -2474,5 +2474,119 @@ private final class SettingsTestStore: SongPlaybackSettingsStore {
         await writeGate?.wait()
         if failWrite { throw Failure.unavailable }
         rows[row.slug] = row
+    }
+}
+
+
+@MainActor
+final class SongOctavePersistenceTests: XCTestCase {
+    private enum Failure: Error { case unavailable }
+    private final class Store: SongOctaveOffsetStore {
+        var rows: [String: Int] = [:]
+        var reads = 0
+        var writes = 0
+        var failsRead = false
+        var failsWrite = false
+        func offset(for slug: String) throws -> Int? {
+            reads += 1
+            if failsRead { throw Failure.unavailable }
+            return rows[slug]
+        }
+        func save(offset: Int, for slug: String) throws {
+            if failsWrite { throw Failure.unavailable }
+            writes += 1
+            rows[slug] = offset
+        }
+    }
+
+    func testMissingRowSectionContinuityAndReturn() {
+        let store = Store()
+        let model = VocalPracticeModel(audio: AppAudioSystem(), octaveStore: store)
+        model.enterSong(songID: "a", sectionID: "verse")
+        XCTAssertEqual(model.octaveOffset, 0)
+        XCTAssertEqual(store.writes, 0)
+        model.setOctaveOffset(-1)
+        model.enterSong(songID: "a", sectionID: "chorus")
+        XCTAssertEqual(store.reads, 1)
+        XCTAssertEqual(model.octaveOffset, -1)
+        model.enterSong(songID: "b", sectionID: "verse")
+        XCTAssertEqual(model.octaveOffset, 0)
+        model.setOctaveOffset(3)
+        model.enterSong(songID: "a", sectionID: "verse")
+        XCTAssertEqual(model.octaveOffset, -1)
+        model.leaveSong()
+        XCTAssertEqual(model.octaveOffset, 0)
+        model.enterSong(songID: "b", sectionID: "verse")
+        XCTAssertEqual(model.octaveOffset, 3)
+    }
+
+    func testFailedWritesKeepLatestOffsetsAcrossSongsAndRetry() {
+        let store = Store()
+        store.failsWrite = true
+        let model = VocalPracticeModel(audio: AppAudioSystem(), octaveStore: store)
+        model.enterSong(songID: "a", sectionID: "verse")
+        model.setOctaveOffset(-1)
+        model.setOctaveOffset(-2)
+        model.enterSong(songID: "b", sectionID: "verse")
+        model.setOctaveOffset(2)
+        model.enterSong(songID: "a", sectionID: "chorus")
+        XCTAssertEqual(model.octaveOffset, -2)
+        XCTAssertNotNil(model.octaveWriteError)
+        store.failsWrite = false
+        model.retryOctavePersistence()
+        XCTAssertNil(model.octaveWriteError)
+        XCTAssertEqual(store.rows, ["a": -2, "b": 2])
+        XCTAssertEqual(store.writes, 2)
+    }
+
+    func testReadFailureRetryAndExplicitEditWins() {
+        let store = Store()
+        store.rows["a"] = 2
+        store.failsRead = true
+        let model = VocalPracticeModel(audio: AppAudioSystem(), octaveStore: store)
+        model.enterSong(songID: "a", sectionID: "verse")
+        XCTAssertEqual(model.octaveOffset, 0)
+        XCTAssertNotNil(model.octaveReadError)
+        store.failsRead = false
+        model.retryOctavePersistence()
+        XCTAssertEqual(model.octaveOffset, 2)
+        XCTAssertNil(model.octaveReadError)
+        model.setOctaveOffset(-1)
+        model.retryOctavePersistence()
+        XCTAssertEqual(model.octaveOffset, -1)
+        model.enterSong(songID: "b", sectionID: "verse")
+        store.failsRead = true
+        model.enterSong(songID: "a", sectionID: "verse")
+        model.setOctaveOffset(0)
+        XCTAssertNil(model.octaveReadError)
+        XCTAssertEqual(store.rows["a"], 0)
+    }
+
+    func testSharedClampCasesAndReopen() throws {
+        struct Fixture: Decodable {
+            struct Case: Decodable { let input: Int; let expected: Int }
+            let cases: [Case]
+        }
+        var root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        while root.path != "/" && !FileManager.default.fileExists(atPath: root.appendingPathComponent("contracts").path) { root.deleteLastPathComponent() }
+        let fixture = try JSONDecoder().decode(Fixture.self, from: Data(contentsOf: root.appendingPathComponent("contracts/fixtures/song_octave_offsets.json")))
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let config = ModelConfiguration(url: directory.appendingPathComponent("octaves.store"))
+        do {
+            let container = try ModelContainer(for: SongOctaveOffsetRecord.self, configurations: config)
+            let store = SwiftDataSongOctaveOffsetStore(container: container)
+            for (index, c) in fixture.cases.enumerated() {
+                try store.save(offset: c.input, for: "song-\(index)")
+                XCTAssertEqual(try store.offset(for: "song-\(index)"), c.expected)
+            }
+        }
+        let container = try ModelContainer(for: SongOctaveOffsetRecord.self, configurations: config)
+        let store = SwiftDataSongOctaveOffsetStore(container: container)
+        for (index, c) in fixture.cases.enumerated() {
+            XCTAssertEqual(try store.offset(for: "song-\(index)"), c.expected)
+        }
+        XCTAssertNil(try store.offset(for: "missing"))
     }
 }

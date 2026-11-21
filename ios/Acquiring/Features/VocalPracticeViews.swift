@@ -92,6 +92,13 @@ struct IntervalSingingTool: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
+            if let message = model.octaveWriteError ?? model.octaveReadError {
+                VStack(alignment: .leading) {
+                    Text(message).font(.caption)
+                    Button("Retry octave storage") { model.retryOctavePersistence() }
+                }
+                .accessibilityIdentifier("vocal.octave.persistenceError")
+            }
             if !model.isExpanded, model.errorMessage != nil {
                 Text("Practice error — expand for details")
                     .font(.caption).foregroundStyle(.red)

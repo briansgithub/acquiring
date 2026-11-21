@@ -278,3 +278,13 @@ eight register sequences and five native timelines pass against the PWA port.
 Swift execution remains unverified for B03. Its owner is preparing the PR and
 CI receipt. Source review compared register folding to pinned Android behavior;
 no app integration is claimed.
+
+## B01a stacked implementation
+
+Lead worktree `/mnt/c/Users/user1/Desktop/Projects/acquiring-ios-port-song-octave`,
+branch `ios-port-song-octave`, starts from B02. Durable singing octave is
+implemented with a separate SwiftData row and synchronous main-actor storage.
+Ten portable source-derived boundary cases pass; four app tests are added but
+unrun locally. See [receipt](ios-port/b01-song-octave.md). Remaining B01
+navigation/gesture candidates are still open. PR and CI disposition follow;
+no B02/B01 merge or runtime acceptance is claimed. Main ledger remains frozen.

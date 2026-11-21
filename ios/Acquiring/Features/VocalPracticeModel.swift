@@ -39,6 +39,11 @@ final class VocalPracticeModel {
         case flipFlop
     }
 
+    @ObservationIgnored private let octaveStore: (any SongOctaveOffsetStore)?
+    @ObservationIgnored private var pendingOctaveOffsets: [String: Int] = [:]
+    private(set) var octaveReadError: String?
+    private(set) var octaveWriteError: String?
+
     private let audio: AppAudioSystem
     private let clock = ContinuousClock()
 
@@ -98,7 +103,8 @@ final class VocalPracticeModel {
     @ObservationIgnored private var livePercentageSampler = LivePitchErrorSampler()
     @ObservationIgnored private var lifecycleTasks: [Task<Void, Never>] = []
 
-    init(audio: AppAudioSystem) {
+    init(audio: AppAudioSystem, octaveStore: (any SongOctaveOffsetStore)? = nil) {
+        self.octaveStore = octaveStore
         self.audio = audio
         observeApplicationLifecycle()
     }
@@ -397,12 +403,50 @@ final class VocalPracticeModel {
     ///
     /// Song-scoped on purpose: the register a melody sits in is a property of that song, so
     /// carrying an offset into the next one would silently move its targets. Entering a
-    /// different song returns it to zero.
+    /// different song restores its saved offset, or zero when it has none.
     func setOctaveOffset(_ offset: Int) {
         let clamped = SingingOctaveOffset.clamped(offset)
-        guard clamped != octaveOffset else { return }
+        let changed = clamped != octaveOffset
         octaveOffset = clamped
-        refreshPersistentTarget(resetScoreForCurrentRun: true)
+        if let songID, octaveStore != nil {
+            pendingOctaveOffsets[songID] = clamped
+            octaveReadError = nil
+            retryOctavePersistence()
+        }
+        if changed { refreshPersistentTarget(resetScoreForCurrentRun: true) }
+    }
+
+    /// Main-actor synchronous storage cannot deliver an obsolete read after a song switch.
+    private func restoreOctaveOffset(for slug: String) {
+        octaveReadError = nil
+        if let pending = pendingOctaveOffsets[slug] {
+            octaveOffset = pending
+            return
+        }
+        octaveOffset = 0
+        do {
+            octaveOffset = SingingOctaveOffset.clamped(try octaveStore?.offset(for: slug) ?? 0)
+        } catch {
+            octaveReadError = "The saved singing octave could not be loaded. Zero is in use."
+        }
+    }
+
+    func retryOctavePersistence() {
+        guard let octaveStore else { return }
+        for (slug, offset) in pendingOctaveOffsets {
+            do {
+                try octaveStore.save(offset: offset, for: slug)
+                pendingOctaveOffsets.removeValue(forKey: slug)
+            } catch {
+                octaveWriteError = "Singing octave changes have not been saved. Retry before closing the app."
+                return
+            }
+        }
+        octaveWriteError = nil
+        if octaveReadError != nil, let songID {
+            restoreOctaveOffset(for: songID)
+            refreshPersistentTarget(resetScoreForCurrentRun: true)
+        }
     }
 
     func adjustOctaveOffset(by delta: Int) {
@@ -574,12 +618,10 @@ final class VocalPracticeModel {
         }
         if self.songID != songID {
             if self.songID != nil {
-                // The octave a melody sits in belongs to its song, so the offset does not
-                // travel to the next one. Section changes inside a song keep it.
-                octaveOffset = 0
                 melodyRunScores.removeAll()
             }
             self.songID = songID
+            restoreOctaveOffset(for: songID)
         }
         if self.sectionID != sectionID {
             self.sectionID = sectionID
@@ -628,6 +670,7 @@ final class VocalPracticeModel {
         melodyRunScores.removeAll()
         discardActiveScore()
         octaveOffset = 0
+        octaveReadError = nil
         noteNameAccidentalPreference = nil
         songID = nil
         sectionID = nil
