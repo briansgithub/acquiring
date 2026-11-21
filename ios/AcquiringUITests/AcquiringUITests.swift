@@ -579,11 +579,23 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars[Fixture.badRomanceQuizTitle].waitForExistence(timeout: 5))
         let nextSongInstrument = app.buttons["quiz.instrument"]
         XCTAssertTrue(
-            waitForValue(nextSongInstrument, equalTo: "Sine", timeout: 5),
-            "A Quiz selection must survive a song change in the current session"
+            waitForValue(nextSongInstrument, equalTo: "Synth Flute", timeout: 5),
+            "A fresh song must follow the Settings default, not another song's override"
         )
 
         app.navigationBars[Fixture.badRomanceQuizTitle].buttons.element(boundBy: 0).tap()
+        if clear.exists { clear.tap() }
+        openQuiz(
+            app,
+            searchText: "500 Miles",
+            songButton: Fixture.fiveHundredMiles,
+            navigationTitle: Fixture.fiveHundredMilesQuizTitle
+        )
+        XCTAssertTrue(
+            waitForValue(app.buttons["quiz.instrument"], equalTo: "Sine", timeout: 5),
+            "Returning to the original song must restore its instrument override"
+        )
+        app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
         openCatalogSettings(app)
         let unchangedDefault = app.descendants(matching: .any)["settings.defaultInstrument"]
         XCTAssertTrue(
@@ -609,7 +621,7 @@ final class AcquiringUITests: XCTestCase {
         )
         XCTAssertTrue(
             waitForValue(app.buttons["quiz.instrument"], equalTo: "Synth Flute", timeout: 5),
-            "A new session must initialize from the saved default"
+            "The fresh in-memory UI-test database must follow the saved default"
         )
     }
 
