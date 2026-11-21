@@ -837,7 +837,9 @@ internal class PlaybackEngine(
         val startBeat: Double,
         val beatsPerFrame: Double,
         val loopStart: Double,
-        val loopEnd: Double
+        val loopEnd: Double,
+        /** Section heard from [startFrame]; a song-mode splice is written ahead of the head. */
+        val performanceId: String?
     )
 
     private class AudioWriteException(val code: Int) : Exception("AudioTrack write failed: $code")
@@ -1047,6 +1049,10 @@ internal class PlaybackEngine(
             // Never let completion of an older pause/seek overwrite that position.
             if (activeTransportRevision < transportRevision.get()) return
             val beat = audibleBeat()
+            // audibleBeat() dropped segments the head has passed, so the first one is
+            // the section being heard. Publishing the rendered-ahead section instead
+            // would pair the next section's id with the previous section's beat.
+            val heardPerformanceId = clockSegments.firstOrNull()?.performanceId ?: performanceId
             // Audio blocks are shorter than a 120 Hz frame, so each one is a new
             // playhead sample. The display refresh rate is the frame clock.
             mutableState.value = PlaybackState(
@@ -1056,7 +1062,7 @@ internal class PlaybackEngine(
                 error = error,
                 completionKey = if (phase == PlaybackPhase.COMPLETED) timeline?.completionKey else null,
                 transportRevision = activeTransportRevision,
-                performanceId = performanceId
+                performanceId = heardPerformanceId
             )
         }
 
@@ -1072,8 +1078,20 @@ internal class PlaybackEngine(
             resetClock()
         }
 
+        /**
+         * The renderer may already be inside the next section while the head still
+         * plays the previous one. Re-anchoring that heard beat onto the next
+         * section's timeline would clamp it to the wrong place (often its end), so a
+         * pending splice restarts from the top of the section the renderer is in.
+         */
+        fun reanchorBeat(heardBeat: Double): Double {
+            val heard = clockSegments.firstOrNull()?.performanceId ?: return heardBeat
+            val active = timeline ?: return heardBeat
+            return if (heard != performanceId) active.startBeat else heardBeat
+        }
+
         fun pauseAndReanchor(): Double {
-            val anchoredBeat = audibleBeat()
+            val anchoredBeat = reanchorBeat(audibleBeat())
             try {
                 sink?.pause()
                 sink?.flush()
@@ -1116,7 +1134,8 @@ internal class PlaybackEngine(
                         startBeat = blockStartBeat,
                         beatsPerFrame = beatsPerFrame,
                         loopStart = timeline!!.startBeat,
-                        loopEnd = timeline!!.endBeat
+                        loopEnd = timeline!!.endBeat,
+                        performanceId = performanceId
                     )
                 )
             }
@@ -1132,7 +1151,8 @@ internal class PlaybackEngine(
                         startBeat = splice.beat,
                         beatsPerFrame = splice.beatsPerFrame,
                         loopStart = splice.loopStart,
-                        loopEnd = splice.loopEnd
+                        loopEnd = splice.loopEnd,
+                        performanceId = splice.performanceId
                     )
                 )
             }
@@ -1155,7 +1175,7 @@ internal class PlaybackEngine(
                     sink?.flush()
                 } catch (_: Exception) {
                 }
-                activeRenderer.seek(primeStartBeat, preserveVoiceProgress = true)
+                activeRenderer.seek(reanchorBeat(primeStartBeat), preserveVoiceProgress = true)
                 resetClock()
                 return false
             }
@@ -1252,7 +1272,8 @@ internal class PlaybackEngine(
                                 startBeat = preservedBeat,
                                 beatsPerFrame = activeRenderer.currentBeatsPerFrame,
                                 loopStart = command.timeline.startBeat,
-                                loopEnd = command.timeline.endBeat
+                                loopEnd = command.timeline.endBeat,
+                                performanceId = performanceId
                             )
                         )
                     }
@@ -1333,7 +1354,7 @@ internal class PlaybackEngine(
                     publish(PlaybackPhase.PLAYING)
                 } catch (writeError: AudioWriteException) {
                     val canRecover = writeError.code == AudioTrack.ERROR_DEAD_OBJECT && deadObjectRecoveries < 1
-                    val restartBeat = audibleBeat()
+                    val restartBeat = reanchorBeat(audibleBeat())
                     closeSink()
                     activeRenderer.seek(restartBeat)
                     if (canRecover) {
