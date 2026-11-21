@@ -252,3 +252,29 @@ test coverage to its owner. Reader/installer remain in progress.
 B03 recovered after its queued follow-up and is running. Latest saved
 turn_context records confirm Astra/high for B02 at 23:15:03Z, B03 at 23:15:32Z,
 B07 at 23:15:02Z and this lead at 23:18:42Z. Earlier medium turns are not relabeled.
+
+## CI disposition and resumed work
+
+All three workers stopped in error state during the interruption and were
+resumed in their existing threads with explicit Astra/high options. Do not
+start duplicates. B02 PR #53 at `3f35c404` passed remote Swift package tests,
+but iOS run `44835917107` failed app module compilation at
+AppEnvironment.swift:269. The UIScreen.main default argument is actor-isolated
+in a nonisolated method; blame identifies unchanged commit `1a494fcc9`.
+No B02 app test executed and iPad tests were skipped. The lead requested a
+separate minimal prerequisite fix on B02 so CI can reach its targeted tests.
+Frame-rate product behavior must stay unchanged until B06. PR remains open.
+
+PWA run `44835917063` failed two browser cases: catalog-worker.spec.ts:116
+expects ten stores but receives eleven; playback.spec.ts:1265 expects Song
+after reload but receives Loop. These were not exercised in Phase 0's local
+unit/parity/build checks. Record them as outstanding PWA CI failures, not
+Swift regression evidence. Local logs are `/tmp/acquiring-ios53-failed.log`
+and `/tmp/acquiring-pwa53-failed.log`.
+
+B03 commit `2b5b9f24` adds pure classifier, register and cue projection without
+shared app edits. The lead independently ran its Node checker: 21 role cases,
+eight register sequences and five native timelines pass against the PWA port.
+Swift execution remains unverified for B03. Its owner is preparing the PR and
+CI receipt. Source review compared register folding to pinned Android behavior;
+no app integration is claimed.
