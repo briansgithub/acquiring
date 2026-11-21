@@ -29,6 +29,24 @@ final class AuralAlgorithmsTests: XCTestCase {
         XCTAssertThrowsError(try JSONDecoder().decode(AuralProgressionQuery.self, from: Data("{\"version\":2}".utf8)))
         XCTAssertThrowsError(try JSONDecoder().decode(AuralChordConstraint.self, from: Data("{\"degree\":8}".utf8)))
     }
+    func testCapturedNativeIdentitiesAndGrouping() throws {
+        var root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        while !FileManager.default.fileExists(atPath: root.appendingPathComponent("contracts").path), root.path != "/" { root.deleteLastPathComponent() }
+        struct Case: Decodable { let tokens: [String]; let view: String; let expected: String }
+        struct Fixture: Decodable { let cases: [Case] }
+        let fixture = try JSONDecoder().decode(Fixture.self, from: Data(contentsOf: root.appendingPathComponent("contracts/aural-corpus/ios-b07/identity.json")))
+        for c in fixture.cases { XCTAssertEqual(AuralIdentity.pattern(tokens: c.tokens, view: c.view), c.expected) }
+        for label in ["V65", "V43", "V42", "V9/ii", "V11", "V13sus4"] {
+            XCTAssertEqual(AuralStartGroup.parse(label), AuralStartGroup.parse("V7"))
+        }
+        XCTAssertEqual(AuralStartGroup.parse("bVII9(mix)"), AuralStartGroup.parse("♭VII7"))
+        XCTAssertEqual(AuralStartGroup.parse("Iadd9sus4"), AuralStartGroup.parse("I"))
+        XCTAssertEqual(AuralStartGroup.parse("iV")?.label, "iv")
+        let labels = ["I", "i", "I7", "I△7", "ii°", "iiø7", "III+"]
+        XCTAssertEqual(Set(labels.compactMap { AuralStartGroup.parse($0)?.id }).count, labels.count)
+        XCTAssertEqual(["I△7", "i", "I7", "I"].compactMap(AuralStartGroup.parse).sorted(by: AuralStartGroup.ordered).map(\.label), ["I", "I7", "I△7", "i"])
+    }
+
     func testEligibilityWordBoundariesAndEmptySuffix() {
         let bits = AuralRankEligibility(words: [1 << 63, 0, 1, 0])
         XCTAssertTrue(bits.hasAny(start: 63, end: 63))

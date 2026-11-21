@@ -1,0 +1,536 @@
+{
+  "source": "pwa/src/domain/catalog/fixtures/native-identity.json",
+  "sourceSha256": "fd6086518c9b139a9bc07f6039e7f6cafa550f0678933b5fc8c476e2864b8b73",
+  "captureAuthority": "801cf7984171d772afc4406ddb5c79c0cb7fd20a",
+  "nativeAuthority": "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08",
+  "cases": [
+    {
+      "tokens": [],
+      "view": "",
+      "expected": "p_2a50fd68ddc0_0_00000000000000000000000000000000"
+    },
+    {
+      "tokens": [],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_0_00000000000000000000000000000000"
+    },
+    {
+      "tokens": [],
+      "view": "inversion",
+      "expected": "p_d32f007e1c90_0_00000000000000000000000000000000"
+    },
+    {
+      "tokens": [
+        "I"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_ccd03da8d039febf7d31cc71f5976edf"
+    },
+    {
+      "tokens": [
+        "i"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_721b7dde32061e1aed04cfb78e2c03f5"
+    },
+    {
+      "tokens": [
+        "I "
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_b688a44d6cca7a9b685ff38e1f6538ae"
+    },
+    {
+      "tokens": [
+        "I",
+        "V",
+        "I"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_3_ec37a30a29036a15aec8f0256c28e875"
+    },
+    {
+      "tokens": [
+        "I",
+        "I",
+        "V"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_3_365bc43ed8536649e6d8443d3b740a89"
+    },
+    {
+      "tokens": [
+        "I",
+        "V"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_2_8c406a5605178eda57c181c4c97ae24a"
+    },
+    {
+      "tokens": [
+        "ab",
+        "c"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_2_e56d924f823d060bd87b15c1d1740f7f"
+    },
+    {
+      "tokens": [
+        "a",
+        "bc"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_2_58befe1c3ae3ba4e8a394d4a4f05c434"
+    },
+    {
+      "tokens": [
+        "abc"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_bf1678baeacf018fde4041412322ae5d"
+    },
+    {
+      "tokens": [
+        ""
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_42c4b0e3141cfc98c8f4fb9a24b96f99"
+    },
+    {
+      "tokens": [
+        "I",
+        ""
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_2_5695c05bb66a1d613f59808707f97f8a"
+    },
+    {
+      "tokens": [
+        "",
+        "I"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_2_cb72b301e08b596787a86c23a6c85ef6"
+    },
+    {
+      "tokens": [
+        "",
+        ""
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_2_4167263c246e5740d36b9b4cd5ea5fb0"
+    },
+    {
+      "tokens": [
+        "I"
+      ],
+      "view": "Root",
+      "expected": "p_761ca1887bae_1_ccd03da8d039febf7d31cc71f5976edf"
+    },
+    {
+      "tokens": [
+        "I"
+      ],
+      "view": "root ",
+      "expected": "p_67e6b0ac8fc3_1_ccd03da8d039febf7d31cc71f5976edf"
+    },
+    {
+      "tokens": [
+        "I"
+      ],
+      "view": "",
+      "expected": "p_2a50fd68ddc0_1_ccd03da8d039febf7d31cc71f5976edf"
+    },
+    {
+      "tokens": [
+        "I\u0000V"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_aa78ab18074a335465d9ac2e142e9b34"
+    },
+    {
+      "tokens": [
+        "I",
+        "\u0000",
+        "V"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_3_362e3df09f2c270955d73d7c82cfcded"
+    },
+    {
+      "tokens": [
+        "I"
+      ],
+      "view": "root\u0000mode",
+      "expected": "p_abc87c2534f0_1_ccd03da8d039febf7d31cc71f5976edf"
+    },
+    {
+      "tokens": [
+        "I"
+      ],
+      "view": "rootmode",
+      "expected": "p_269cd88a2628_1_ccd03da8d039febf7d31cc71f5976edf"
+    },
+    {
+      "tokens": [
+        "I\r\nV",
+        "\tI  "
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_2_9b811b47e00b52d13c13c21c11d1b818"
+    },
+    {
+      "tokens": [
+        "♭VII",
+        "V△7",
+        "iiø7",
+        "𝄫VII",
+        "𝄪IV"
+      ],
+      "view": "音楽",
+      "expected": "p_4df141705c6a_5_48aa36138b81b335cea23b52f436b156"
+    },
+    {
+      "tokens": [
+        "😀",
+        "a😀b",
+        "𝄞"
+      ],
+      "view": "😀",
+      "expected": "p_dcd6f7e4a46c_3_97f63d11c33d4d63aae1e34f4ebd95c3"
+    },
+    {
+      "tokens": [
+        "é"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_7e55994a53c3334065ebe29dca172047"
+    },
+    {
+      "tokens": [
+        "é"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_7b7612bfb2562a0fba750019659f16e8"
+    },
+    {
+      "tokens": [
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII",
+        "I",
+        "V7",
+        "iiø7",
+        "♭VII"
+      ],
+      "view": "inversion",
+      "expected": "p_d32f007e1c90_128_7d122a801b818fc0b26ff5000bd34f00"
+    },
+    {
+      "tokens": [
+        "0"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_66ebec5f386fc8ff6c7852d9796c696d"
+    },
+    {
+      "tokens": [
+        "1"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_73b2866be1fc34ff4e806b9d573f5aff"
+    },
+    {
+      "tokens": [
+        "2"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_3a5e73d4ee165e2671593fe0035d9b8b"
+    },
+    {
+      "tokens": [
+        "3"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_8540074e8bdbbe62c105ce60ade3cfde"
+    },
+    {
+      "tokens": [
+        "4"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_7777224bc61fddd44f886f1c021d6448"
+    },
+    {
+      "tokens": [
+        "5"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_7d122def2b947be34561d0aa610c4be5"
+    },
+    {
+      "tokens": [
+        "6"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_11c0f6e7b78d6e77540b33cd6fd74f17"
+    },
+    {
+      "tokens": [
+        "7"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_9b6902798e8a2ce445bbfb4617657201"
+    },
+    {
+      "tokens": [
+        "8"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_3242622c7721d2cdbbdf941200ca0a31"
+    },
+    {
+      "tokens": [
+        "9"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_271e581900ed7cde0be51cffa5e74720"
+    },
+    {
+      "tokens": [
+        "10"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_15dc444aa8044236900ee80fc15c4539"
+    },
+    {
+      "tokens": [
+        "11"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_262bc84fd247cbaefb4e8c86321758e3"
+    },
+    {
+      "tokens": [
+        "12"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_31d4516b147f5ddfcccebe1c3ddf9ef7"
+    },
+    {
+      "tokens": [
+        "13"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_5fa3db3f468cdc0492c986295475f8bc"
+    },
+    {
+      "tokens": [
+        "14"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_91a82785691324e2ca32ff50bc452b21"
+    },
+    {
+      "tokens": [
+        "15"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_65fa29e67632d7986b727c8f8512624b"
+    },
+    {
+      "tokens": [
+        "16"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_d1f67eb11e5b7a9c7c903be8dc265559"
+    },
+    {
+      "tokens": [
+        "17"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_0f54234517cd041535480c10ef7e5be8"
+    },
+    {
+      "tokens": [
+        "18"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_9f59c94e76d103c26c5301a3191a092e"
+    },
+    {
+      "tokens": [
+        "19"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_b2f10094d727b51cab3e3dfa7a5593ba"
+    },
+    {
+      "tokens": [
+        "20"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_f738caf5ead6a148a4b826f7c375b52f"
+    },
+    {
+      "tokens": [
+        "21"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_12664b6fa0b35f1279d2ecda9c6cfd9d"
+    },
+    {
+      "tokens": [
+        "22"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_c73e5f780bf332ebcf0fcd9088d35736"
+    },
+    {
+      "tokens": [
+        "23"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_1_0da35f538add257e6753f149c84e7379"
+    },
+    {
+      "tokens": [
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+      ],
+      "view": "root",
+      "expected": "p_e9a2c8769b68_2_60d302625a32a11910d2f6b730f97295"
+    },
+    {
+      "tokens": [
+        "{\"degree\":1}",
+        "{ \"degree\": 1 }",
+        "{\"degree\":\"1\"}"
+      ],
+      "view": "mode",
+      "expected": "p_bb5d6df67077_3_e90b04739d955614d4b9c5579a617058"
+    }
+  ]
+}

@@ -24,7 +24,7 @@ public struct AuralStartGroup: Equatable, Hashable, Sendable {
         let seventhQuality = !seventh ? "none" : (detail.contains("△") || detail.contains("Δ")) ? "major" : quality == "diminished" ? "diminished" : "minor"
         let symbol = quality == "halfDiminished" ? "ø" : quality == "diminished" ? "°" : quality == "augmented" ? "+" : ""
         return Self(id: "\(accidental.isEmpty ? "natural" : accidental):\(index + 1):\(major ? "upper" : "lower"):\(quality):\(seventhQuality)",
-                    label: accidental + numeral + symbol + (seventhQuality == "major" ? "△" : "") + (seventh ? "7" : ""),
+                    label: accidental + (major ? numeral.uppercased() : numeral.lowercased()) + symbol + (seventhQuality == "major" ? "△" : "") + (seventh ? "7" : ""),
                     degree: index + 1, accidental: accidental, quality: quality, seventhQuality: seventhQuality)
     }
     public static func ordered(_ a: Self, _ b: Self) -> Bool {

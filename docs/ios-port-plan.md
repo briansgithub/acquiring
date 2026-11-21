@@ -214,3 +214,9 @@ native loop/query/grouping/identity algorithms and pins source hashes at
 ranking and verification are in progress. Swift tests remain unrun locally.
 App integration belongs to a subsequent lead-owned change; B07 app-visible
 completion is not claimed. All existing review statuses remain unchanged.
+
+B07 reader/install slice now includes independent GRDB reading, physical
+occurrences, ranking/grouping and a real staged gzip/hash installer with
+lease-drained generation activation. Lead's mixed-case grouping correction
+and captured identity tests are included. Focused executable fixture checks
+and PR/CI inspection remain pending; no app-visible completion is claimed.
