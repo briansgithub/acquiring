@@ -160,3 +160,26 @@ belongs to an explicitly MainActor class. No caller or test isolation change was
 needed. Existing framesPerSecond tests remain pure and unchanged. This repairs
 the reported compiler error without changing B06 frame-rate policy or suppressing
 concurrency checking. Remote CI for this prerequisite is recorded below when done.
+
+## Second prerequisite CI finding
+
+Run [44865642901](https://github.com/briansgithub/acquiring/actions/runs/44865642901)
+actually tested `a976d526929098b93e143fd30682eb51dcdb0d87`. The watcher's message
+contained an older hard-coded head label; the GitHub run API is authoritative.
+Package tests passed and the actor-default diagnostic disappeared. App compilation
+then failed at SongViews.swift:3250/3251/3256 because UIView has no
+`preferredFrameRateRange`. These three lines also originated in `1a494fcc9`.
+No app tests executed; the iPad stage was skipped again.
+
+The lead authorized a second minimal prerequisite. The host now forwards its
+update and window-attachment callbacks to the existing
+QuizTimelineDisplayModel.setFrameRatePreference. That MainActor model applies the
+range to its sole CADisplayLink. The host keeps a weak owner reference and the
+passed preference. No second display link, timer, new preference, global cap or
+B06 behavior is introduced. Playback visibility/activity/Reduce Motion gates and
+the 60/Maximum calculation remain unchanged. This retains lifecycle reapplication
+at the API that actually owns cadence.
+
+Apple's [CADisplayLink documentation](https://developer.apple.com/documentation/quartzcore/cadisplaylink/preferredframeraterange)
+describes a best-effort callback timing range. It does not promise a global UIKit
+layer refresh cap. Physical cadence still requires native review.

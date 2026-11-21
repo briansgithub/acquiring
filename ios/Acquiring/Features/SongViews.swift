@@ -3209,7 +3209,7 @@ private struct QuizTimelinePairView: View {
             displayModel.setFrameRatePreference(frameRatePreference)
         }
         .background {
-            TimelineFrameRateHost(preference: frameRatePreference)
+            TimelineFrameRateHost(preference: frameRatePreference, displayModel: displayModel)
         }
     }
 
@@ -3230,30 +3230,35 @@ private struct QuizTimelinePairView: View {
     }
 }
 
-/// Pins the quiz surface to the Settings frame-rate range. Lock in Major
-/// rebuilds the lane views; without this host those new layers can run at the
-/// display maximum even when the display-link request is 60 fps.
+/// Reapplies the Settings cadence request to the existing display-link owner
+/// when SwiftUI rebuilds or attaches the timeline host. UIView has no frame-rate
+/// range API; CADisplayLink owns the request, which is a system timing hint.
 private struct TimelineFrameRateHost: UIViewRepresentable {
     let preference: TimelineFrameRatePreference
+    let displayModel: QuizTimelineDisplayModel
 
     func makeUIView(context: Context) -> HostView {
         HostView()
     }
 
     func updateUIView(_ view: HostView, context: Context) {
-        view.apply(preference)
+        view.apply(preference, to: displayModel)
     }
 
     final class HostView: UIView {
-        func apply(_ preference: TimelineFrameRatePreference) {
-            let range = preference.displayFrameRateRange()
-            preferredFrameRateRange = range
-            window?.rootViewController?.view.preferredFrameRateRange = range
+        private weak var displayModel: QuizTimelineDisplayModel?
+        private var preference = TimelineFrameRatePreference.standard
+
+        func apply(_ preference: TimelineFrameRatePreference, to displayModel: QuizTimelineDisplayModel) {
+            self.preference = preference
+            self.displayModel = displayModel
+            displayModel.setFrameRatePreference(preference)
         }
 
         override func didMoveToWindow() {
             super.didMoveToWindow()
-            preferredFrameRateRange = TimelineFrameRatePreference.stored.displayFrameRateRange()
+            guard window != nil else { return }
+            displayModel?.setFrameRatePreference(preference)
         }
     }
 }
