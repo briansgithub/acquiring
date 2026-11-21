@@ -303,3 +303,29 @@ pending the updated PR head; no shared app files changed.
 B03 PR #54 is mergeable after `2eb92114`; CI started. Final source review
 aligned rest-context fallback keys and NaN-last ordering with Android. Added
 focused Swift cases for fallback and duplicate identity, still unrun locally.
+
+## Cue stack and Android updates
+
+PR #54 now targets the settings branch (#53) at merge head `613cbe49`.
+The B04 worktree `../acquiring-ios-port-spoken-cues` includes both parents.
+B03's six focused tests passed within the 248-test package run at `b251c517`.
+B07's eight focused tests passed within the 250-test package run at `7b62c629`.
+Full app checks remain open.
+
+PR #57 at `98c01ca8` passed all four octave tests and the B02 environment test
+that previously crashed, in iPhone run `44940400939`. The UI suite still logged
+23 assertion failures, including an old cross-song instrument expectation.
+Review that assertion against the per-song policy. Other failures require
+individual diagnosis. iPad execution remains pending. PWA passed in this run
+after the store-count correction merged in #58.
+
+Keep `3c887223` as the provenance pin for existing frozen fixtures. Main now
+includes two Android changes that extend the behavior the port must cover:
+
+| Commit | Batches | Acceptance |
+| --- | --- | --- |
+| `2728f3f3` | B04, B06 | When Lock in Major is on, use the relative major of the song's first section at beat one throughout the song. Labels, spoken degrees and harmonic-distance pulses share that reference. Verify a G-major verse followed by a G-dorian chorus. |
+| `372c3d26` | B05, B06 | Publish the identity of the section under the audible playback head. Resume a pending splice from the start of the next section and recheck the visual handoff on phase changes, including buffering and pause at the boundary. |
+
+Use the new Android PlaybackRootDegreeCueTest and PlaybackEngineTest cases
+when extending the corresponding contracts.
