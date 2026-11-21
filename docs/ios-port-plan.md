@@ -299,3 +299,7 @@ are next; no app integration or prior human review status changed.
 B03 PR #54 is open and linked. Merged current main to retain the lead ledger
 entries and resolve the append-only documentation conflict. CI inspection is
 pending the updated PR head; no shared app files changed.
+
+B03 PR #54 is mergeable after `2eb92114`; CI started. Final source review
+aligned rest-context fallback keys and NaN-last ordering with Android. Added
+focused Swift cases for fallback and duplicate identity, still unrun locally.

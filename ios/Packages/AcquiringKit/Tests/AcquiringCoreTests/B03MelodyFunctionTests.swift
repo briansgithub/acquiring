@@ -108,6 +108,23 @@ final class B03MelodyFunctionTests: XCTestCase {
         XCTAssertEqual(SingingMelodyRegister.pitches(third, keyAt: { _ in minor })[0]?.midiNote, 63)
         XCTAssertEqual(SingingMelodyRegister.pitches(third, keyAt: { _ in major })[0]?.midiNote, 64)
     }
+    func testRestContextAndEqualOnsetIdentity() {
+        let section = ExtractedSection(metadata: ["keys": .array([
+            .object(["tonic": .string("C"), "scale": .string("major"), "beat": .number(1)]),
+            .object(["tonic": .string("D"), "scale": .string("minor"), "beat": .number(2)])
+        ])])
+        let rest = MelodyNote(sd: "1", beat: 3, duration: 1, isRest: true)
+        let restInput = MelodyCueAnnotation.input(section: section, melody: [rest], noteIndex: 0, chordIndex: nil)
+        XCTAssertEqual(restInput.key, KeyInfo(tonic: "C", scale: "major"))
+        XCTAssertNil(restInput.currentPitch)
+        let repeated = MelodyNote(sd: "1", beat: 1, duration: 1)
+        let melody = [repeated, repeated, MelodyNote(sd: "2", beat: 1, duration: 1)]
+        let second = MelodyCueAnnotation.input(section: section, melody: melody, noteIndex: 1, chordIndex: nil)
+        XCTAssertEqual(second.previousPitch?.noteName, "C")
+        XCTAssertEqual(second.nextPitch?.noteName, "D")
+        let invalid = MelodyCueAnnotation.input(section: section, melody: melody, noteIndex: -1, chordIndex: nil)
+        XCTAssertNil(invalid.currentPitch)
+    }
     func testCueAliasesAndSemanticColors() {
         for (title, cue) in [("Chord octave", "root"), ("Chord tenth", "third"), ("Chromatic upper neighbor", "upper neighbor")] {
             let description = MelodyFunctionDescription(title: title, detail: "", tone: .moving)

@@ -17,11 +17,17 @@ public struct MelodyCueEvent: Equatable, Codable, Sendable {
 public enum MelodyCueAnnotation {
     private static func beat(_ value: Double) -> Double { value == 0 ? 1 : value }
     private static func pc(_ pitch: SpelledPitch) -> Int { (pitch.chromaticPosition % 12 + 12) % 12 }
+    private static func precedes(_ a: Double, _ aIndex: Int, _ b: Double, _ bIndex: Int) -> Bool {
+        // Kotlin Double ordering places NaN last; source order breaks equal-onset ties.
+        if a.isNaN { return b.isNaN && aIndex < bIndex }
+        if b.isNaN { return true }
+        return a == b ? aIndex < bIndex : a < b
+    }
     private static func orderedChords(_ section: ExtractedSection) -> [Int] {
         section.chords.indices.sorted {
             let a = beat(section.chords[$0]["beat"]?.doubleValue ?? 1)
             let b = beat(section.chords[$1]["beat"]?.doubleValue ?? 1)
-            return a == b ? $0 < $1 : a < b
+            return precedes(a, $0, b, $1)
         }
     }
     public static func activeChordIndex(section: ExtractedSection, at time: Double) -> Int? {
@@ -33,7 +39,11 @@ public enum MelodyCueAnnotation {
     }
     /// Source indices distinguish duplicate value-type notes/chords. Classification always uses source onset keys.
     public static func input(section: ExtractedSection, melody: [MelodyNote], noteIndex: Int?, chordIndex: Int?) -> MelodyFunctionInput {
-        let note = noteIndex.flatMap { melody.indices.contains($0) ? melody[$0] : nil }
+        let note = noteIndex.flatMap { index -> MelodyNote? in
+            guard melody.indices.contains(index) else { return nil }
+            let candidate = melody[index]
+            return candidate.isRest || candidate.duration <= 0 ? nil : candidate
+        }
         let key = section.key(at: note.map { beat($0.beat) } ?? 1)
         func pitch(_ note: MelodyNote?) -> SpelledPitch? {
             guard let note, !note.isRest, note.duration > 0 else { return nil }
@@ -44,7 +54,7 @@ public enum MelodyCueAnnotation {
         }
         let notes = melody.indices.sorted {
             let a = beat(melody[$0].beat), b = beat(melody[$1].beat)
-            return a == b ? $0 < $1 : a < b
+            return precedes(a, $0, b, $1)
         }
         let position = notes.firstIndex { $0 == noteIndex }!
         func neighbor(_ offset: Int) -> SpelledPitch? {

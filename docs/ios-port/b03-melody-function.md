@@ -79,3 +79,10 @@ The resumed session `turn_context` at `2026-11-21T04:16:05.689Z` again records
 runtime evidence. No additional code-review findings were present in this
 worker's available messages. All Codex thread messages include explicit model
 and effort flags.
+
+PR https://github.com/briansgithub/acquiring/pull/54 is registered with T3.
+Merged main's ledger-only updates in `2eb92114` to resolve the concurrent
+append conflict. The first mergeable head started iOS run `44865646406`.
+A final source review aligned invalid/rest active-note context with Android's
+beat-1 fallback key and retained Kotlin's NaN-last onset ordering. Focused Swift
+tests now also cover rest key fallback and duplicate note source-index identity.
