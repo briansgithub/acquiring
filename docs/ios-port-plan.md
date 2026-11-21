@@ -278,3 +278,28 @@ eight register sequences and five native timelines pass against the PWA port.
 Swift execution remains unverified for B03. Its owner is preparing the PR and
 CI receipt. Source review compared register folding to pinned Android behavior;
 no app integration is claimed.
+
+## B03 implementation checkpoint
+
+B03 worker uses `ios-port-melody-function`, clean from `9d49782e`.
+Pure classifier, singing/spoken register and timeline cue projection now live in
+new AcquiringCore files. Shared models, AudioContracts and app integration are
+untouched. Source authority remains Android `3c887223`; the rising spoken
+B4-to-C5 exception remains. Portable cases pass against the existing PWA model
+with Node 24: 21 roles, 8 registers, 5 native timelines. Focused Swift tests are
+written but unrun; no Swift toolchain is available. Independent lead review and
+actual PR CI disposition remain pending. Receipt: `ios-port/b03-melody-function.md`.
+B04/B06 caller integration and earlier human reviews remain pending.
+
+B03 source-review follow-up adds 22 chord-role cases and exact fixture/source
+provenance checks. All focused Node cases pass; Swift remains unrun. Actual
+runtime evidence on resume confirms Astra/high. PR creation and CI inspection
+are next; no app integration or prior human review status changed.
+
+B03 PR #54 is open and linked. Merged current main to retain the lead ledger
+entries and resolve the append-only documentation conflict. CI inspection is
+pending the updated PR head; no shared app files changed.
+
+B03 PR #54 is mergeable after `2eb92114`; CI started. Final source review
+aligned rest-context fallback keys and NaN-last ordering with Android. Added
+focused Swift cases for fallback and duplicate identity, still unrun locally.
