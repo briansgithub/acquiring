@@ -145,13 +145,13 @@ and must be closed by B11 rather than silently treated as newly verified.
 | Batch | Dependency | Current status |
 | --- | --- | --- |
 | B00 contracts and retained history | none | Evidence pinned; legacy import/recovery review remains open |
-| B02 durable song playback settings | B00 evidence | In progress, Astra/high worker `Acquiring: iOS Song Settings` |
+| B02 durable song playback settings | B00 evidence | PR #53 open; portable review passed; app CI blocked by existing actor isolation |
 | B01 octave persistence and older singing/navigation gaps | B00 evidence | Pending |
-| B03 melody classification and cue metadata | B00 evidence | Pending |
+| B03 melody classification and cue metadata | B00 evidence | In progress, independent Astra/high core-model worker |
 | B04 pulses, exact speech clips, Sonic and limiter | B02, B03 | Pending |
 | B05 gapless Song continuation and clock metadata | B02, B04 | Pending |
 | B06 playback controls, frame clock, captions | B01-B05 | Pending |
-| B07 Aural reader, installer, ranking and query | B00 evidence | Pending; separate large subsystem |
+| B07 Aural reader, installer, ranking and query | B00 evidence | Package work in progress; app integration remains pending |
 | B08 song queues and Library | B02, B05, B07 | Pending |
 | B09 Aural learning, evidence and audio ownership | B01, B04, B07 | Pending |
 | B10 Aural browsing and practice UI | B06-B09 | Pending |
@@ -181,6 +181,104 @@ must leave the PR open. Audit worker `Acquiring: iOS Delta Audit` is complete;
 its artifacts are committed and need not be recreated. Resume by reading B02's
 report/status, not by starting duplicate work.
 
+## B03 ownership and B00 follow-up, 2026-11-20
+
+`Acquiring: iOS Melody Function` owns branch `ios-port-melody-function` in
+`/mnt/c/Users/user1/Desktop/Projects/acquiring-ios-port-melody-function`, created
+clean from main `9d49782e`. B03 may proceed alongside B02 because it owns new
+AcquiringCore files, focused tests and uniquely named contract fixtures. It must
+not edit AudioContracts, AppEnvironment or SongViews. B04/B06 own eventual
+renderer/UI wiring. B02 received this boundary by thread message. Both workers
+must leave their PRs open for lead review.
+
+A bounded B00 inspection found existing repeated-section support in
+`HooktheoryHarvester.harvest`: API responses cache by ID, while repeated tabs
+receive distinct section keys. `CatalogCoordinator` already opens a separate
+HarvestLedger, replays on startup and restores only missing catalog entries.
+These are source findings, not runtime verification. Do not rebuild them.
+
+One remaining compatibility candidate is explicit: Android `DataExtractor`
+uses `Json { ignoreUnknownKeys = true; isLenient = true }`, whereas Swift's
+nested jsonData extraction uses `JSONDecoder`. Before closing I02, pin an actual
+accepted native nonstandard input and compare Swift behavior; do not broadly
+relax parsing or claim this is verified from source syntax alone. Existing
+catalog tests live in AcquiringCatalogTests.swift, CatalogRecoveryTests.swift
+and HarvestLedgerTests.swift. B00 import/recovery review remains open.
+
+## B07 ownership and provider effort
+
+Worker `Acquiring: iOS Aural Catalog` owns the clean main-based branch
+`ios-port-aural-catalog` at
+`/mnt/c/Users/user1/Desktop/Projects/acquiring-ios-port-aural-catalog`.
+It may add only Aural-prefixed catalog package files, focused tests/contracts
+and its receipt until shared edits are coordinated. B02 owns app persistence;
+B03 owns pure melody types. B07 exposes a usable package service, while app
+bootstrap/Settings/UI integration remains explicitly pending. All three workers
+must report and leave PRs open for independent review.
+
+Boss diagnosed the medium-effort discrepancy: initial thread creation included
+Astra/high, but plain `t3thread send` omitted model options on follow-up turns.
+Every future message to a Codex thread must include `-m gpt-6-astra -e high`.
+Boss fixed supervisor nudges and this lead's current runtime reports high.
+Workers received the correction; queued fan-out messages must be allowed to
+deliver normally. Verify actual session turn_context after the next follow-up,
+rather than treating stored selection as proof. Earlier medium runtime reports
+remain part of the record.
+
+Effort check receipt: latest saved turn_context at 2026-11-20T23:15Z confirms
+`gpt-6-astra` / `high` for B02 and B07. The lead's saved context from 23:13:50Z
+still records `medium`; the in-turn runtime update alone does not rewrite that
+record. Re-check the next lead turn. B03 was in T3 `error` state with correction
+message watch `54df1b57` queued for automatic delivery. Do not create a duplicate
+worker or bypass the queue. Its implementation status needs confirmation after
+that follow-up delivers. B07 correction watch is `e32e9d29`.
+
+## Independent interim review, 2026-11-20
+
+B02 PR https://github.com/briansgithub/acquiring/pull/53 is linked to the lead.
+Reviewed head `3f35c404` store/load/write ownership, separate transaction context,
+Xcode target registration and AppEnvironment/SongViews integration. Independently
+ran `python3 contracts/scripts/check_song_playback_settings.py` and
+`git diff --check main...HEAD` in its worktree: eight sanitizer cases, six pinned
+hashes and whitespace check passed. Lifecycle cases remain specifications until
+Swift tests execute. iOS run `44835917107` is in progress; no merge authorized
+by this interim receipt. Worker is recording the actual CI disposition.
+
+B07 commit `7b8b8f1b` received bounded independent source review. Eight hashes
+match native `3c887223`; loop cases equal the pinned native fixture. Sent a
+mixed-case numeral canonicalization difference and missing identity/grouping
+test coverage to its owner. Reader/installer remain in progress.
+
+B03 recovered after its queued follow-up and is running. Latest saved
+turn_context records confirm Astra/high for B02 at 23:15:03Z, B03 at 23:15:32Z,
+B07 at 23:15:02Z and this lead at 23:18:42Z. Earlier medium turns are not relabeled.
+
+## CI disposition and resumed work
+
+All three workers stopped in error state during the interruption and were
+resumed in their existing threads with explicit Astra/high options. Do not
+start duplicates. B02 PR #53 at `3f35c404` passed remote Swift package tests,
+but iOS run `44835917107` failed app module compilation at
+AppEnvironment.swift:269. The UIScreen.main default argument is actor-isolated
+in a nonisolated method; blame identifies unchanged commit `1a494fcc9`.
+No B02 app test executed and iPad tests were skipped. The lead requested a
+separate minimal prerequisite fix on B02 so CI can reach its targeted tests.
+Frame-rate product behavior must stay unchanged until B06. PR remains open.
+
+PWA run `44835917063` failed two browser cases: catalog-worker.spec.ts:116
+expects ten stores but receives eleven; playback.spec.ts:1265 expects Song
+after reload but receives Loop. These were not exercised in Phase 0's local
+unit/parity/build checks. Record them as outstanding PWA CI failures, not
+Swift regression evidence. Local logs are `/tmp/acquiring-ios53-failed.log`
+and `/tmp/acquiring-pwa53-failed.log`.
+
+B03 commit `2b5b9f24` adds pure classifier, register and cue projection without
+shared app edits. The lead independently ran its Node checker: 21 role cases,
+eight register sequences and five native timelines pass against the PWA port.
+Swift execution remains unverified for B03. Its owner is preparing the PR and
+CI receipt. Source review compared register folding to pinned Android behavior;
+no app integration is claimed.
+
 ## B03 implementation checkpoint
 
 B03 worker uses `ios-port-melody-function`, clean from `9d49782e`.
@@ -197,3 +295,7 @@ B03 source-review follow-up adds 22 chord-role cases and exact fixture/source
 provenance checks. All focused Node cases pass; Swift remains unrun. Actual
 runtime evidence on resume confirms Astra/high. PR creation and CI inspection
 are next; no app integration or prior human review status changed.
+
+B03 PR #54 is open and linked. Merged current main to retain the lead ledger
+entries and resolve the append-only documentation conflict. CI inspection is
+pending the updated PR head; no shared app files changed.
