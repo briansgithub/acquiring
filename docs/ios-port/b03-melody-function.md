@@ -86,3 +86,23 @@ append conflict. The first mergeable head started iOS run `44865646406`.
 A final source review aligned invalid/rest active-note context with Android's
 beat-1 fallback key and retained Kotlin's NaN-last onset ordering. Focused Swift
 tests now also cover rest key fallback and duplicate note source-index identity.
+
+## CI repair, 2026-11-21
+
+At head `a85db1e859ae2e153763e5e037c966c86c330809`, iOS run
+`44865799135` compiled the package and ran 248 tests. All 22 assertion failures
+came from B03's six tests. Degree labels such as `5̂` are one Swift grapheme;
+`Character.isNumber` rejected the combined digit/hat, producing `Chord tone`,
+neutral scale-degree descriptions and missing numeric cues. The fix filters
+Unicode decimal scalars, matching Kotlin's character-level digit handling.
+The chord-role test helper now removes the combining hat before parsing its
+independent label expectations. The literal role and native timeline fixtures
+remain unchanged and supply the regression check. This supersedes the earlier
+statement that Swift had never executed; local Swift remains unavailable.
+
+The same bug failed the iOS leg of parity run `44865799131`. Android tests,
+release-logic, web tests, PWA recovery and web/Android chord parity passed.
+PWA run `44865799128` failed only catalog-worker.spec.ts:116, which expects ten
+stores and receives eleven. Its Song-mode test passed in this run. No PWA or
+app files are modified by B03. Main documentation is frozen per the lead's
+latest instruction; subsequent batch status is recorded here.

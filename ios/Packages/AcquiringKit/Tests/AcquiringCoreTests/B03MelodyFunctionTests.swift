@@ -78,7 +78,7 @@ final class B03MelodyFunctionTests: XCTestCase {
                 let pitch = SpelledPitch.fromMIDI(midi)
                 // The first label wins when enharmonic members share a pitch class, as on Android.
                 let firstLabel = tones.first { $0.pitchClass == (midi % 12 + 12) % 12 }?.label ?? label
-                let member = names[Int(firstLabel.filter(\.isNumber)) ?? 0] ?? "tone"
+                let member = names[Int(firstLabel.replacingOccurrences(of: "\u{0302}", with: "").filter(\.isNumber)) ?? 0] ?? "tone"
                 let input = MelodyFunctionInput(currentPitch: pitch, scaleDegreeLabel: "", key: c.key, chordTones: tones)
                 XCTAssertEqual(MelodyFunction.describe(input).title, "Chord " + member, c.id)
             }

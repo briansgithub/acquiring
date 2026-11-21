@@ -53,7 +53,12 @@ public struct MelodyFunctionDescription: Equatable, Sendable {
 
 public enum MelodyFunction {
     private static func pc(_ pitch: SpelledPitch) -> Int { (pitch.chromaticPosition % 12 + 12) % 12 }
-    private static func degree(_ label: String) -> Int? { Int(label.filter(\.isNumber)) }
+    private static func digits(_ label: String) -> String {
+        // Kotlin Char.isDigit sees the digit separately from the combining degree hat.
+        // Swift Character groups "5̂" into one grapheme, whose isNumber is false.
+        String(String.UnicodeScalarView(label.unicodeScalars.filter { CharacterSet.decimalDigits.contains($0) }))
+    }
+    private static func degree(_ label: String) -> Int? { Int(digits(label)) }
     private static func scalePC(_ key: KeyInfo, _ degree: Int) -> Int? {
         MusicTheory.spelledPitch(scaleDegree: String(degree), relativeOctave: 0, key: key).map(pc)
     }
@@ -68,8 +73,8 @@ public enum MelodyFunction {
         }
         let currentPC = pc(current)
         guard let tones = input.chordTones else {
-            let digits = input.scaleDegreeLabel.filter(\.isNumber)
-            let label = digits.isEmpty ? input.scaleDegreeLabel : digits
+            let number = digits(input.scaleDegreeLabel)
+            let label = number.isEmpty ? input.scaleDegreeLabel : number
             let d = degree(label) ?? 0
             return .init(title: "Scale degree \(label)", detail: "No chord under this note. It is scale degree \(label) in the key.",
                          tone: [1, 3, 5].contains(d) ? .stable : [2, 4, 6, 7].contains(d) ? .moving : .neutral)
