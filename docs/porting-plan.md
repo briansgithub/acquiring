@@ -407,6 +407,65 @@ available. Never add the retired magnifier or expose inactive practice controls.
 2. `[review]` **F2 Background/interruption/route recovery (F027, F036, F038–F039, F041–F049; old 7.2/7.4). Sol/high.** Output recovery, session transitions, cleanup and stale-result rejection are implemented. Device-specific verification follows explicit approval; hardware behavior is not verified by the simulator.
 3. `[review]` **F3 Remaining layout/accessibility implementation (F014, F025, F054; old 6.6, implementation part of 9.1). Terra/high.** Adaptive practice controls/sheets, named VoiceOver alternatives, Dynamic Type and reduced-motion behavior, compact seek controls and adaptive key/Lock-in-Major header. Broad focus/orientation/iPad/VoiceOver audit remains gated.
 
+### G — Port Android Aural Quiz
+
+Group G extends the older iOS parity baseline with the final Android Aural Quiz
+experience at `a857c995`. It does not change earlier statuses or approve full-app
+testing. The Windows worktree has no Swift/Xcode toolchain, Mac, simulator, or
+iPhone; implementation checks are recorded honestly at each handoff and all
+native build, simulator, perceptual, and device checks remain in GV.
+
+1. `[review]` **G1 Playback naming and Aural entry (F056, F064; Terra/medium).** Rename only user-facing Quiz copy to Playback while preserving internal APIs, routes, persisted keys, diagnostics, and test identifiers. Add the Aural Quiz entry below home search, a typed route, a non-flashing loading state, and Settings access.
+2. `[review]` **G2 Aural bundle and reader (F057; Sol/high).** Install the published catalog/evidence/popularity bundle with streaming decompression, checksums, SQLite validation, snapshot compatibility, atomic replacement, retry, and measured provenance UI. Open immutable databases read-only without materializing the corpus.
+3. `[review]` **G3 Exact catalog ranking and hierarchy (F058; Terra/high).** Port range-bound exact pagination, ranking/counts, stable IDs, endpoint-only children, outline numbering, accessible expansion, and asynchronous lazy queries.
+4. `[review]` **G4 Discovery controls and coverage (F058; Terra/medium).** Add Roman search, chord-count filters, all five settings, complete flat mode, per-view restoration, mode-aware Roman colors, and physical-transition versus longer-window coverage explanations.
+5. `[review]` **G5 Curriculum and evidence engine (F059; Terra/medium).** Port prerequisites, adaptive target generation, gradual support removal, spaced review, transfer checks, and engine-enforced independent mastery while retaining separate family/pattern and skill identity.
+6. `[review]` **G6 Recognize/Recall/Sing and audio (F060; Sol/high).** Implement the three presentation tabs, graphical responses, bounded streaming, shared Default Instrument, +12-semitone register, 20 ms overlap, 0.75-beat separators, intentional silence, chunking, and lifecycle-safe ownership.
+7. `[review]` **G7 Singing assessment (F061; Sol/high).** Implement root, actual bass, scale-degree, and ordered-root tasks with octave equivalence and technical uncertainty distinct from musical mistakes.
+8. `[review]` **G8 Corpus selection and popularity (F062; Terra/high).** Port cross-language PRNG/hash/order contracts, target-first song/section/occurrence selection, scaffolded reuse, exposure, favorites/variety/popularity factors, real ListenBrainz metadata, and complete provenance.
+9. `[review]` **G9 Songs and full Playback round-trip (F063–F064; Terra/high/Sol/high).** Sort all supporting songs by unrounded popularity, open the normal full Playback route, resolve exact source identity, highlight/jump/loop the passage, stop quiz capture/audio, record assistance, and return natively without losing work.
+10. `[review]` **G10 Durable restoration (F065; Terra/high).** Version and restore exercise, seed, phase, draft, attempts, selected tab, song/catalog positions, filters, expansion, and scroll state across view destruction, backgrounding, and process recreation; retain recoverable corrupt/missing-data behavior.
+11. `[blocked-external]` **GV Native validation catch-up.** When the development Mac returns, incrementally build/install/launch each queued checkpoint, run focused parity tests, measure the 658 MB catalog on the warm iPhone 17 simulator, and complete the recorded human scripts. Use physical hardware only for microphone and route/background checks. The separate full-app testing gate and release authorization remain unchanged.
+
+#### G implementation handoff — 2026-09-18
+
+Implemented in the existing `codex/ios-aural-quiz-port` worktree using the current
+runtime model, GPT-5.6 Sol. The branch was fast-forwarded to Android reference
+`a857c995` without touching the preserved untracked Swift draft or unrelated
+changes in the reference checkout. `AcquiringAural` now owns immutable bundle
+installation, GRDB readers, exact ranking, curriculum/evidence, source selection,
+audio planning, pitch assessment, and versioned session state. Native SwiftUI
+owns the home/catalog/curriculum/exercise/Songs UI and reuses the existing full
+Playback, AVAudioEngine, microphone lease, Settings, Favorites, and catalog
+boundaries. No WebView, runtime mining, legacy transition database, `runtime.db`,
+provider credentials, or older Playback-statistics migration was added.
+
+Checks on Windows: `npm run test:aural-corpus` passed 98 tests with 0 failures
+and 2 opt-in stress tests skipped; this verifies the authoritative normalization,
+catalog, ranking/pagination, hierarchy, popularity, and shared selector contracts,
+not the new Swift implementation. `git diff --check` passed. Two read-only static
+Swift reviews found no definite project-wiring, access-control, actor-isolation,
+or compile blocker after corrections. Swift/Xcode, simulator, native tests,
+audio/microphone behavior, real bundle installation, scrolling/memory
+measurements, screenshots, physical hardware, and full-app testing were unrun
+because the Mac and Apple devices are unavailable. No commit, TestFlight upload,
+or release was made.
+
+Queued human review when GV becomes available: (1) inspect Roman notation,
+mode colors, hierarchy/outline counts, search/filtering, all ranking preferences,
+Flat-list completeness, and coverage explanations; (2) exercise Recognize,
+Recall, and Sing, including root/bass/scale-degree/ordered-root targets, a long
+sequence, chunking, audio overlap/separators/silence, and microphone uncertainty;
+(3) confirm popularity-descending Songs with decimal 0–100 scores and No data
+last; (4) open a song and an active example in full Playback, confirm melody,
+all sections, Favorites/Info/singing tools, exact source section, gold passage
+highlight, Jump and loop, and source-versus-model key text; (5) explore another
+section, Jump back, then use Return, Back, and edge swipe and verify the exact
+answer draft, attempt, tab, Songs/catalog positions, filters, and expansion;
+(6) background/terminate/relaunch at each navigation depth and verify recovery
+or a recoverable exact-source error without silent substitution. Stop for critique
+before the separately authorized full-app testing gate.
+
 #### E/F implementation handoff — 2026-09-05
 
 Routes: Sol/high for microphone ownership, platform audio and practice orchestration;
@@ -2173,3 +2232,471 @@ then complete the normal incremental build/install/launch on the warm iPhone 17.
 Review: choose 60 fps, play `500 Miles`, toggle Lock in Major repeatedly, then
 repeat with Maximum and return to 60 fps. Earlier pending reviews remain pending.
 No release, full-app suite or screenshots; unrelated Android work is preserved.
+
+### Aural Quiz flexible grouping and mode controls — 2026-09-25, Mac validation pending
+
+`[implemented in source; iOS build, simulator, and human review not run]` The
+Windows worktree `H:/Desktop/Acquiring/Acquiring-ios-aural-quiz` is on
+`codex/ios-aural-quiz-port`. Commit `e9c2e96b` is the earlier Aural Quiz iOS
+catalog-port checkpoint; the changes for this specific feature are in the
+working tree. The Mac, Xcode, and simulator were unreachable when this handoff
+was written. **Do not describe this feature as iOS-validated or merge it into
+main on the strength of the Windows checks.**
+
+Implemented in the current iOS source:
+
+- Schema v1/v2/v3 catalog readers remain accepted. Schema v3 discovers exact
+  length/starting-chord buckets from indexed compact ranges and constrains
+  ranked queries to a selected bucket; v1/v2 show their available capabilities.
+  The installer will not replace a validated v3 bundle with the older published
+  v1 manifest, even when a manual update is requested.
+- Aural Quiz displays Relative major, Mixed Modes, Filter by mode and a mode
+  picker; Relative major is the default, while persisted `allModes` remains the
+  Mixed Modes identifier. Existing pre-feature sessions have no browser choice
+  and therefore migrate to Relative major; subsequent explicit choices persist.
+- Group first can switch Length/Starting chord without reranking or dropping
+  loaded pages. Both levels start collapsed, remember an active bucket, page
+  count and scroll identity, and retain recursive children under their parent.
+  Flat list hides those children. Search is debounced; catalog requests reject
+  stale results and actor-owned ranking handles are closed on invalidation.
+- Each leaf offers Review this subgroup using its first 30 ranked rows frozen
+  when Review starts. The existing adaptive progress data selects skills in
+  that pool. The selected transition uses neutral containers and individual
+  chord-colored borders, with hidden answers remaining neutral.
+- Core tests for legacy/default analysis settings, bucket ordering, and
+  relative-token mode were added in `AcquiringAuralTests/AuralGroupingTests.swift`.
+
+Required next Mac session, in order (do not mark any of these as passed yet):
+
+1. Inspect `git status --short --branch` and the iOS diff; preserve this dirty
+   worktree and unrelated changes. Run focused package tests from
+   `ios/Packages/AcquiringKit` with `swift test --filter AuralGroupingTests`
+   and existing `AuralCurriculumTests`/`AuralSelectionParityTests`. Resolve any
+   Swift compile/API errors and rerun affected checks.
+2. On a warm iPhone 17 simulator run an incremental Debug `xcodebuild build`
+   for `ios/Acquiring.xcodeproj`, scheme `Acquiring`, simulator destination,
+   `CODE_SIGNING_ALLOWED=NO`. Terminate the stale app, install the newly built
+   app, and launch it. Do not clean DerivedData or reset the simulator unless
+   a specific stale-state failure requires it.
+3. Exercise a validated schema-v3 catalog in the simulator: confirm each mode
+   control, filtering, both grouping orders and exact bucket membership,
+   independent pagination, recursion, Flat list, search-empty state, subgroup
+   Review, restore after relaunch, and rapid query changes. Also open v1/v2
+   catalogs to verify the disabled/available UI and installation compatibility.
+   Inspect selection borders and accessibility selection/checkmark text with
+   human review. No screenshots are required.
+4. Inspect and fix any findings, record exact commands/results here, then
+   request the established human feature critique. Only after successful Mac
+   validation and review should this iOS source be checkpointed/integrated.
+
+The full v3 export, Android device install, and full-catalog validation are
+separate delivery gates. iOS has not been built, installed, launched, tested,
+or released for this feature. No TestFlight upload was requested.
+The schema-v3 full catalog/evidence and existing popularity overlay currently
+live only under the Windows checkout's ignored
+`H:/Desktop/Acquiring/Acquiring/acquiring_data/` tree; they are not in Git or
+on the Mac. Transfer and checksum-verify all three SQLite files, or rebuild
+them from the same sources, before the simulator's v3 checks. The full catalog
+snapshot is `e18eadf5a212f441afb69f44ca779b577d7476c3baaefca73fd74b9c9ee83cfb`;
+the Android/shared handoff in `docs/aural-catalog.md` records the checksums.
+The Android/shared feature checkpoint is `4c7ddd56` on
+`codex/aural-mode-analysis`: focused Node tests, Android JVM tests, both Debug
+APKs, and full-bundle checksum/snapshot checks passed. The Pixel 7a was not
+listed by ADB, so device installation and instrumentation/human review remain
+pending. The iOS feature files listed above are deliberately uncommitted until
+Mac compilation/simulator validation resolves any findings; the prior port
+checkpoint `e9c2e96b` remains intact.
+
+### Aural Quiz button-based progression search — 2026-09-25, Mac validation pending
+
+`[implemented in source; NOT compiled or simulator-tested]` The new search work
+is in the same dirty `codex/ios-aural-quiz-port` worktree as the flexible
+grouping port above. Do not treat Windows static review as Swift/Xcode
+validation, and do not merge or release the iOS feature until the Mac checks
+below pass. The user confirmed the Mac is unavailable for now.
+
+The Aural Quiz catalog now has seven Roman-degree buttons and an ordered chip
+list instead of an open-ended search field. A chip editor offers flat/natural/
+sharp, Any/Major/Minor/7/maj7/m7 families, and catalog-backed **More options**
+for exact modified chord forms. Chips can be reordered, removed, and cleared;
+the maximum is 32. A versioned structured query is persisted in the browser
+snapshot. The old string search is cleared rather than inferred as a new
+query. Empty means all sequences; otherwise the query matches contiguous,
+whole chord labels anywhere in a top-level sequence, using the active
+relative-major or modal analysis. Recursive children remain under their
+parent. Catalog-backed exact forms use the root-position label and can also
+constrain an inversion when inversion distinction is enabled; turning that
+setting off clears only the inversion constraint. Ranking-page filtering,
+subgroup Review, debounce, stale-request rejection, and cursor ownership
+continue through the existing catalog/store flow.
+
+Added `AuralProgressionQueryTests.swift` for contiguous matching, accidentals,
+families, exact forms, JSON round-trip, and root/inversion behavior.
+`git diff --check` passed on Windows. No Swift package tests, Xcode build, app install,
+simulator interaction, or human visual review ran; none should be marked
+passed. When the Mac is available:
+
+1. Inspect this worktree's dirty state and diff before edits. Run
+   `swift test --filter AuralProgressionQueryTests` and the prior focused
+   grouping/core tests from `ios/Packages/AcquiringKit`; fix compiler/test
+   failures and rerun affected checks.
+2. Build, install, and launch the incremental Debug app on a warm iPhone 17
+   simulator as described above. Use a validated schema-v3 catalog and also
+   confirm v1/v2 fallback behavior.
+3. Test adding/reordering/removing/clearing chips; flat/natural/sharp,
+   quality-family and catalog-backed exact choices; relative-major versus
+   modal labels; exact/inversion behavior across the Distinguish inversions
+   toggle; no-match state; independent group pagination and subgroup Review;
+   rapid edits and relaunch restoration. Review the builder and chip layout
+   with VoiceOver/accessibility labels as well as visually.
+4. Record exact commands/results here, then checkpoint and integrate only
+   validated revisions. The Android tests passed separately, but the Pixel 7a
+   was offline, so device review is pending there too. No remote upload or
+   release was requested for this search work.
+
+### Aural Quiz repeated-loop reduction — 2026-09-25, Mac validation pending
+
+`[implemented in iOS source; NOT compiled or simulator-tested]` The new
+`AuralLoopReduction.swift` applies the same versioned rule as the catalog
+exporter and Android reader: a whole sequence must contain two complete
+copies of its shortest normalized chord cycle, with an optional partial copy.
+For a redundant sequence, it selects the earliest longest contiguous window
+without a repeated directed transition. `I–V–I–V–I` selects `I–V–I`;
+`X–I–V–I–V–Y` remains available. The catalog reader filters ranked pages
+and promotes the nearest retained endpoint descendants in recursive browsing.
+Original source runs, pattern IDs, occurrence spans, and learning history are
+not rewritten. Older catalog bundles remain readable; their group headers
+may still include a category with no retained results. The new schema-v3
+bundle records `sequence_reduction_version=unique-transitions-1` and accurate
+retained counts.
+
+`AuralLoopReductionTests.swift` reads the same JSON fixtures as the Node and
+Android tests, including modified chords and inversion distinctions. Source
+diff whitespace checks passed on Windows. The Mac is still unreachable, so
+Swift tests, an Xcode build, simulator install/launch, and UI/accessibility
+review remain **unrun**. The existing dirty flexible-grouping and button-search
+port remains preserved; do not commit or merge it as validated iOS work.
+
+Next Mac session: inspect the worktree, run
+`swift test --filter AuralLoopReductionTests` alongside the pending grouping
+and query tests, fix and rerun any affected checks, then build/install/launch
+on the warm iPhone 17 simulator. Test a repeated loop in modal, relative-major,
+and inversion views; confirm pages contain retained patterns, recursive paths
+skip redundant intermediates, Review uses retained rows, and a previously
+restored long exercise still opens. Transfer and checksum-verify the new full
+catalog, matching evidence, and popularity overlay before full-catalog tests.
+The Android/shared checkpoint `020f8ef8` and `docs/aural-catalog.md` record
+the exact snapshot, counts, and hashes. On 2026-09-25 the validated full
+bundle, evidence, and popularity files were installed on the Pixel 7a;
+direct private-file hashes matched, and both focused catalog instrumentation
+tests passed against the new snapshot. Android human visual review remains
+pending. This does not validate the uncompiled iOS implementation. No iOS
+release was requested.
+
+### Aural Quiz longest-first groups and bounded progression header — 2026-09-25
+
+`[implemented in iOS source; NOT compiled or simulator-tested]` Visible
+sequence-length groups and the length subgroups under Starting chord now sort
+from longest to shortest. Ranking and pagination within each bucket are
+unchanged. Pattern detail no longer puts an unbounded chord HStack above its
+activity tabs: long progressions show a short preview and a **Show full
+progression** control; both preview and full sequence scroll horizontally
+within the available width. Short progressions also scroll horizontally if
+needed. The Songs tab remains outside that scrolling header.
+
+This change is in the already dirty, uncommitted iOS grouping/search/loop port.
+The Mac remains unreachable, so the Swift build, focused tests, simulator
+install/launch, and accessibility/visual review are **unrun**. Next Mac
+session: build the current iOS worktree, open a long source progression,
+confirm its tabs and Songs list remain reachable with the header collapsed and
+expanded, verify both grouping priorities sort lengths descending, then run
+the focused grouping tests and record their result here. Do not merge or
+release the iOS source before this validation.
+
+Android checkpoint `0c9b4917` validates this change separately: the focused
+Robolectric UI test and both Debug APK builds passed after one fix. The focused
+Pixel 7a instrumentation test passed with the long header expanded and the
+Songs tab reachable. The Android app was installed and relaunched without
+replacing its full catalog. These results do not establish iOS correctness.
+
+### Aural Quiz minimum song-popularity filter — 2026-09-25, Mac validation pending
+
+`[implemented in iOS source; NOT compiled or simulator-tested]` The catalog
+now defaults to an inclusive **80%** minimum song score, adjustable from
+0–100% in the visible Song popularity section. This is a hard eligibility
+filter, separate from the existing Prefer popular songs ranking toggle.
+Missing, nonfinite, or invalid scores do not qualify. The cutoff is stored in
+the optional browser snapshot field so older saved navigation state decodes
+with the new default. Query identity changes when the cutoff changes, closing
+obsolete rankings and invalidating pages. Ranked roots, recursive children,
+Review pools, displayed support counts, the Songs tab, and new practice
+passages all use the same cutoff. Existing restored exercises and non-catalog
+curriculum remain untouched; coverage evidence still describes the corpus.
+
+Added inclusive-boundary/missing-score cases to `AuralGroupingTests.swift`.
+`git diff --check` passed on Windows. The Mac still does not resolve, so
+Swift tests, incremental Xcode build, simulator install/launch, and human
+UI/accessibility review are **unrun**. Next Mac session: inspect the dirty
+iOS worktree; run the focused grouping/core tests and incremental simulator
+build; validate 80% default, 0% and 100% boundaries, missing overlay, rapid
+cutoff changes, pagination, recursive rows, Review, Songs, selected practice
+source, persisted cutoff, and older snapshot decoding. Record exact results
+before committing or integrating the iOS source. Android passed a focused JVM
+test, both Debug builds, and two Pixel 7a catalog/Songs instrumentation tests;
+these do not validate iOS. No iOS release was requested.
+
+### Aural Quiz global frequency-first catalog — 2026-09-28, Mac validation pending
+
+`[implemented in iOS source; NOT compiled or simulator-tested]` The default
+browser is now an ungrouped list sorted by distinct supporting songs across
+the full catalog, then occurrences, length descending, and structural ID.
+The 80% popularity cutoff and search determine eligibility and matching
+examples, not the full-corpus frequency counts. Sort offers Most songs,
+Recommended, Longest, and Shortest; grouping offers None, Length first, and
+Starting chord first. Existing grouping, recursive expansion, subgroup Review,
+and pagination remain. The former Flat list control is Show subsequences with
+its on/off sense inverted. Older browser snapshots migrate once to the new
+default and preserve subsequent explicit choices. Catalog rows expose both
+matching and overall support counts. Source runs whose song ID is absent from
+`catalog_song` are excluded from ranking and passages, matching the Android
+correction for 122 such IDs in the current source cache.
+
+This source is still in the dirty `codex/ios-aural-quiz-port` worktree at
+`b33b2376`, alongside earlier unfinished iOS Aural Quiz changes. Windows
+`git diff --check` passed. Swift tests, Xcode build, simulator install/launch,
+and human UI/accessibility review are **unrun** because the Mac is unavailable.
+Next Mac session: inspect the current dirty tree; run focused
+`AcquiringAuralTests/AuralGroupingTests` and related reader/restoration tests,
+then an incremental Debug build, install, and launch on the warm iPhone 17
+simulator. Check default global order against exact full-catalog song support,
+tie-breaking, four sort choices, both grouping orders, independent pages,
+recursive children, subgroup Review, 80% eligibility, search changes, and
+saved-choice migration. Use the matching validated full catalog, evidence,
+and popularity overlay recorded in the Android/shared `docs/aural-catalog.md`;
+verify snapshot and checksums before simulator tests. Do not mark iOS parity
+validated or integrate/release it until those checks pass. Android installed
+the indexed bundle and app on Pixel 7a and passed focused device tests; that
+does not establish iOS correctness. No commit, push, merge, or release here.
+
+### GitHub checkpoint for Mac validation — 2026-09-28
+
+The in-progress iOS Aural Quiz source, focused Swift test files, and shared
+loop-reduction fixture are being preserved on `codex/ios-aural-quiz-port` so
+the Mac can pull this exact branch. This is a source checkpoint, **not** an
+iOS parity approval or release. On Windows, `git diff --check` passed and the
+JSON fixture parsed; Swift compilation, focused tests, simulator install and
+launch, and human review remain unrun. The Mac should run the focused
+AcquiringAural/Core tests and an incremental simulator build, then verify the
+catalog, search, grouping, loop reduction, frequency order, and popularity
+filter behaviors listed above before this branch is considered merge-ready.
+
+### Mac recovery Phase 1 — 2026-09-29
+
+`[review]` Recovered the port through `6cdd4fa0` onto main `1c95ef0b` in
+`codex/ios-aural-mac-validation` on the user's Xcode 16.2 Mac. Preserved the
+existing compatibility adjustments and repaired compilation of Aural settings,
+evaluation calls, SQL arguments, microphone-owner handling, SwiftUI styling,
+and Playback passage wiring. Incremental Debug build passed; the app was
+installed and launched on the existing iPhone 16 simulator (Xcode destination
+reports iOS 18.3.1). Staged and unstaged whitespace checks passed.
+
+This is source recovery/build validation only, not parity approval. Concurrency
+warnings remain in Swift 5 language mode. No domain tests, screenshots, catalog
+behavior checks, physical-device checks, or release were performed. Latest
+Android minimum-core-length controls and prepared-reader lifecycle behavior
+remain later-phase work, as do the existing frame-rate integration and standalone
+package-lockfile follow-ups. The latest Windows full catalog is not verified here.
+Historical Android checkpoints `03ba1a0e` and `fe869220` were fetched but not merged;
+their commit notes identify newer implementations already on main.
+
+The local integration remains an uncommitted, conflict-free pending merge;
+compatibility backups are retained. Current runtime model identity was not
+exposed; no subagents were used. Human review: inspect Library in the launched
+app, then open Aural Quiz and report its loading/content/error state. Prior review
+statuses remain unchanged. Stop at the user's Phase 1 boundary for model choice;
+do not begin Phase 2 or broad testing without direction.
+
+### Mac compatibility Phase 2 — 2026-09-29
+
+`[review]` The user directed Phase 2 after the source recovery handoff. Restored
+the historical iOS timeline display-link lifecycle change from `22b5d2f7` and
+its focused regression. Removed the obsolete `TimelineFrameRateHost` and its
+guarded unsupported UIView assignments. The saved frame-rate preference is set
+before Quiz activation and on each newly registered display link. Matched the
+standalone Swift package lockfile to GRDB 7.8.0; `swift package resolve` with
+Xcode 16.2 succeeded. Existing key-aware singing-label code was retained.
+
+On the existing iPhone 16/iOS 18.3.1 simulator, the two focused
+`AcquiringTests` methods for timeline frame-rate lifecycle and vocal note-name
+context passed via `xcodebuild -quiet test`. Incremental Debug build then passed,
+and the integrated app installed and launched. Swift 5 language mode still
+reports concurrency warnings; no Swift 6 migration, measured physical display
+rate, broad suite, screenshots, or release was attempted. Prior reviews remain
+pending. Review: in the full `500 Miles` Quiz, alternate 60 fps and Maximum in
+Library Settings while toggling Lock in Major, pausing/resuming, and switching
+sections; check singing note labels in sharp and flat keys and after leaving
+Playback. Stop for model choice before Phase 3.
+
+### Mac Aural data Phase 3 — 2026-09-29
+
+`[review]` The user directed Phase 3. The recovered iOS catalog installer and
+reader were checked against the Android three-file schema contract. The
+installer now serializes concurrent requests while URLSession awaits, validates
+that catalog schema matches the manifest, preserves every prior file if backup
+or replacement fails midway, and recovers leftover backups on the next attempt.
+A complete validated replacement keeps its new files if only backup cleanup was
+interrupted. Existing v3 data is protected from an older published manifest;
+damaged evidence does not qualify for that protection.
+
+Focused Swift package tests on this Mac passed: five existing grouping cases,
+two installer rollback/recovery cases, and one local schema-v3 data case. The
+data case exercises mocked HTTPS responses through the real downloader, gzip
+extraction, SHA-256 verification, installation, repeat install, concurrent
+install requests, read-only catalog/group access, schema mismatch rejection,
+evidence snapshot rejection, no-downgrade, and completed-backup cleanup.
+The incremental Xcode 16.2 Debug build passed, then the app installed and
+launched on the existing iPhone 16 simulator. Staged and unstaged whitespace
+checks passed. No commit, push, screenshot, full suite, or release occurred.
+
+The matching Windows full v3 catalog/evidence/popularity bundle is not on this
+Mac or simulator. Consequently the local fixture proves installer/reader
+mechanics but does not establish full-corpus counts, query performance, actual
+Aural Quiz browsing, or migration from a real v1/v2 installation. Those need
+the validated bundle and later catalog/performance phases. Keep prior reviews
+pending; stop for the user's model choice before Phase 4.
+
+### Mac Aural curriculum Phase 4 — 2026-09-29
+
+`[review]` The user directed Phase 4. Added an Adaptive entry point to the
+generated curriculum, reachable even when the downloadable catalog is absent.
+Adaptive follows prerequisite gates without revealing a named-family breadcrumb;
+named families remain available for supported exploration. Named-variant resume
+now checks the selected variant, and family mastery counts exclude introductory
+guided listening. The middle support level shows a starting-chord cue.
+
+Session examples now freeze their settings so an inversion toggle cannot credit
+the wrong progress bank. Submitted answers persist as drafts; retry clears the
+stored draft. Incorrect independent answers are labeled as independent evidence,
+not practice. Resume regenerates the saved example and conservatively requires
+listening again outside Playback return. Invalid pending generators are discarded
+without dropping valid progress/source history; invalid source-history entries
+mark that history unreliable.
+
+Fourteen focused curriculum/session XCTest cases passed on the Mac with Xcode
+16.2's Swift toolchain, including a 700-example adaptive simulation, prerequisite
+accuracy, support fading, mastery normalization, scoring classification,
+listening/duplicate gates, retry and resume drafts, frozen settings/progress banks,
+invalid pending-example recovery, invalid history, and failed storage. These are
+package tests, not simulator UI automation. Incremental iOS Debug build passed;
+the app installed and launched on the existing iPhone 16 simulator (PID 38952).
+Existing Swift 5 concurrency warnings remain. No full suite, screenshots, real
+microphone test, full catalog check, commit, push, or release was performed.
+
+Human review: (1) Open Aural Quiz → Guided curriculum and Adaptive → Adaptive;
+listen and acknowledge, then continue through examples. (2) Explore a family
+whose adaptive prerequisites are pending; confirm named exercises say Supported
+practice and switching variants opens the selected variant. (3) Leave an
+unfinished Recall draft, reopen that same variant/tab, and check the retained
+answer; after grading, Retry should clear it. Visual, accessibility-tree and
+perceptual checks remain human review, not claimed automated coverage.
+
+The runtime did not expose the exact model identifier; no subagents were used.
+Prior review statuses and the uncommitted pending merge are preserved. Stop
+for model choice before Phase 5; exercise audio, microphone lifecycle, instrument
+changes and real-voice behavior belong to that phase.
+
+### Mac Aural audio and singing Phase 5 — 2026-09-29
+
+`[review]` The user directed Phase 5. Aural playback now stops the previous
+transport before taking the shared renderer, uses the exercise's saved
+instrument, offers an explicit Stop listening action, and waits through a
+bounded output-latency drain before allowing an answer. Playback completion
+checks for transport replacement, stalls and interruption, including a pause
+followed by an automatic resume. Canceled or failed playback requires another
+listen. The existing timeline planner keeps 20 ms adjacent-chord overlap,
+0.75-beat reference/model separators and silent gaps/tails.
+
+Changing Default Instrument during a pending example regenerates its sound
+identity from the same target and seed, retaining harmony, answer, source
+metadata and frozen example settings. A previously heard example becomes
+supported practice and requires a fresh listen. Completed results keep the
+instrument recorded at grading. Aural playback uses the saved default rather
+than a temporary Playback selection.
+
+Singing capture now consumes each actual pitch reading at most once, cancels
+its stream on navigation/stop, and guards completion against a superseded
+capture. Root-sequence tasks collect all note verdicts and give no correctness
+feedback until the sequence ends; an uncertain note can be retried without a
+musical penalty. Named Sing practice exposes automatic and all four manual
+task kinds. Permission denial offers another Record attempt or Continue without
+microphone; the curriculum toggle can re-enable singing in Adaptive.
+
+Nineteen focused package XCTest cases passed with Xcode 16.2, including new
+ordered-root, sparse-pitch, instrument-change, saved waveform-name and all-four-task checks.
+The incremental iOS Debug build passed; the app was installed and launched on
+the existing iPhone 16 simulator (final Phase 5 PID 52077). Staged/unstaged whitespace checks
+passed. Existing Swift 5 concurrency warnings remain. Package tests verify
+planner/assessor/session rules, not acoustic output or microphone hardware.
+The current Quiz renderer exposes a render cursor rather than a true hardware
+playback-head sample counter; the output-latency drain is conservative but
+cannot prove exact audible completion. Full catalog, real microphone/route,
+accessibility interaction and perceptual balance need later approved testing.
+
+Human review: (1) In Adaptive or named practice, Listen, Stop listening,
+replay and submit; stopping should require another complete listen. (2) Change
+Default Instrument in Settings during an unfinished example, then return;
+the same harmony should have the new sound and require listening again.
+(3) In named Sing, switch among root, bass, scale degree and roots in order;
+try uncertain capture and microphone denial/opt-out. Do not infer microphone
+accuracy from the simulator alone.
+
+No full suite, screenshot, physical-device install, commit, push or release was
+performed. The runtime identified only the GPT-6 family, not its exact Codex
+variant or effort. No subagents were used. The pending merge and prior reviews
+remain; stop for the user's model choice before Phase 6.
+
+### Mac Aural catalog/query/ranking Phase 6 — 2026-09-29
+
+`[review]` The user directed Phase 6. Catalog group discovery now applies the
+same progression query, popularity eligibility, source mode, analysis view,
+starting chord and length bounds as result discovery. Queries are validated
+consistently. Group discovery scans bounded batches, honors cancellation and
+reduces legacy loops; catalogs declaring the current reduction version retain
+their prepared ranges. Missing song IDs do not create eligible groups.
+
+The browser exposes Minimum core length (2–9999), persists it and includes it
+in the query/restoration identity. Legacy snapshots default to two; restored
+out-of-range values are clamped. Top-level results honor this bound while
+contained children may be shorter. Empty groups explain the active core-length
+constraint. Existing mode/query/loop behavior received focused regression checks.
+
+A synthetic catalog regression exposed a pagination defect: `hasMore` ignored
+unconsumed entries in the last fetched range batch. The reader now includes
+those entries, preventing early termination for several sort orders. Global
+frequency ranking remains independent of popularity eligibility; displayed
+matching counts remain separate from global counts.
+
+Eighteen focused package XCTest cases passed, including five new SQLite/gzip
+catalog-fixture cases covering ranking, pagination, cutoff boundaries, missing
+scores/song IDs, modes, relative harmony, exact inversion queries, groups,
+legacy loop reduction and an entirely ineligible leading batch. One selected
+iOS simulator test passed for legacy/core-length snapshot restoration (confirmed
+in the Xcode result bundle). The final incremental Xcode 16.2 Debug build passed;
+installed and launched on the existing iPhone 16/iOS 18.3.1 simulator, PID 54247.
+Staged and unstaged whitespace checks passed. Existing concurrency warnings
+remain; no full suite, screenshots, device install, commit, push or release ran.
+
+Human review, once the matching v3 catalog is available: (1) Change minimum core
+length from two to four and reopen the browser; top-level rows must meet the
+bound, while contained children may be shorter. (2) Combine a chord query,
+mode and popularity cutoff; grouped and ungrouped results should agree, and
+an impossible combination should show an empty state. (3) Scroll through
+multiple pages under Most songs, Longest and Shortest; check for missing or
+duplicated rows and distinguish global from matching counts.
+
+The full Windows-generated v3 catalog is unavailable on this Mac. Synthetic
+fixture correctness does not establish full-corpus performance or UI/accessibility
+behavior. Those reviews remain pending. Prepared-reader/cache/performance work
+belongs to the later phase, and Phase 7 has not begun. No subagents were used;
+the exact runtime model variant/thinking setting was not exposed. Preserve prior
+review statuses and the pending merge; stop for the user's model choice.
