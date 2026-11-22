@@ -40,11 +40,17 @@ public final class QuizPCMRenderer: @unchecked Sendable {
         var started = false
     }
     private var speech: [SpeechState] = []
+    private var speechSemantics: SpeechSemantics?
 
     /// Prepared off the callback. Preserve phrase progress across tempo/pitch edits.
-    public func setPreparedSpeech(_ phrases: [PreparedSpeech], preserveProgress: Bool = true) {
+    public func setPreparedSpeech(_ phrases: [PreparedSpeech], preserveProgress: Bool = true,
+                                  preparedFor configuration: QuizSoundConfiguration? = nil) {
+        let prepared = SpeechSemantics(configuration ?? soundConfiguration ?? .init())
+        guard prepared == SpeechSemantics(soundConfiguration ?? .init()) else { return }
+        let preserve = preserveProgress && speechSemantics?.sharesPhraseFamily(with: prepared) == true
+        speechSemantics = prepared
         speech = phrases.map { phrase in
-            if preserveProgress, let old = speech.first(where: { $0.phrase.identity == phrase.identity }), old.started {
+            if preserve, let old = speech.first(where: { $0.phrase.identity == phrase.identity }), old.started {
                 let fraction = old.position / Double(max(old.phrase.totalFrames, 1))
                 return SpeechState(phrase: phrase, position: fraction * Double(phrase.totalFrames),
                                    renderedFrames: old.renderedFrames, started: true)
@@ -72,6 +78,7 @@ public final class QuizPCMRenderer: @unchecked Sendable {
 
     public func configure(_ timeline: QuizTimeline) {
         speech.removeAll(keepingCapacity: true)
+        speechSemantics = nil
         loopFrames = max(Int64((timeline.durationSeconds * sampleRate).rounded()), 1)
         nativeBeatsPerSecond = timeline.nativeBeatsPerSecond
         events = timeline.events.map { event in
@@ -318,13 +325,14 @@ public final class QuizPCMRenderer: @unchecked Sendable {
     }
 
     private func speechSample() -> Double {
-        guard let configuration = soundConfiguration,
-              configuration.cue.speaksRoot || configuration.cue.speaksMelody else { return 0 }
+        guard let configuration = soundConfiguration else { return 0 }
+        let compatible = speechSemantics == SpeechSemantics(configuration)
         let seconds = timelineFrame / sampleRate
         var sum = 0.0
         for i in speech.indices {
             let phrase = speech[i].phrase
-            if phrase.identity % 2 == 1 && (configuration.majorLocked || !configuration.cue.speaksRoot) { continue }
+            let audible = compatible && (configuration.cue.speaksRoot || configuration.cue.speaksMelody) &&
+                !(phrase.identity % 2 == 1 && (configuration.majorLocked || !configuration.cue.speaksRoot))
             guard seconds >= phrase.onsetSeconds, seconds < phrase.endSeconds else { continue }
             if !speech[i].started {
                 speech[i].started = true
@@ -343,7 +351,9 @@ public final class QuizPCMRenderer: @unchecked Sendable {
             let envelope = max(0, min(Double(speech[i].renderedFrames) / fade,
                                      (phrase.endSeconds - seconds) / playbackRate * sampleRate / fade,
                                      (Double(phrase.totalFrames) - position) * sampleRate / 24000 / fade, 1))
-            sum += (first + (next - first) * (position - Double(absoluteIndex))) / 32767 * envelope
+            if audible {
+                sum += (first + (next - first) * (position - Double(absoluteIndex))) / 32767 * envelope
+            }
             speech[i].position += 24000 / sampleRate
             speech[i].renderedFrames += 1
         }

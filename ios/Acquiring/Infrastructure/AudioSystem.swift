@@ -404,8 +404,8 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             ? oldPosition.elapsed / oldPosition.duration * timeline.durationSeconds : 0
         let window = sourceStart...min(timeline.durationSeconds, sourceStart + 8 * max(tempoPercent / 100, 0.01))
         let preparation = Task.detached(priority: .userInitiated) {
-            try SpeechTimelinePreparation.prepare(timeline, configuration: soundConfiguration,
-                                                 playbackRate: tempoPercent / 100, sourceWindow: window)
+            try SpeechTimelinePreparation.prepareLookahead(timeline, configuration: soundConfiguration,
+                                                          playbackRate: tempoPercent / 100, sourceStart: sourceStart)
         }
         let phrases = try await withTaskCancellationHandler {
             try await preparation.value
@@ -428,7 +428,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             preserveProgress: position == .preserveProgress,
             soundConfiguration: soundConfiguration
         )
-        quizRenderer.setPreparedSpeech(phrases, preserveProgress: false)
+        quizRenderer.setPreparedSpeech(phrases, preserveProgress: false, preparedFor: soundConfiguration)
         guard isCurrentQuiz(
             songID: songID,
             sectionID: sectionID,
@@ -573,8 +573,8 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         let sourceStart = snapshot.duration > 0 ? snapshot.elapsed / snapshot.duration * timeline.durationSeconds : 0
         let window = sourceStart...min(timeline.durationSeconds, sourceStart + 8 * context.tempoPercent / 100)
         let preparation = Task.detached(priority: .userInitiated) {
-            try SpeechTimelinePreparation.prepare(timeline, configuration: context.soundConfiguration,
-                                                 playbackRate: context.tempoPercent / 100, sourceWindow: window)
+            try SpeechTimelinePreparation.prepareLookahead(timeline, configuration: context.soundConfiguration,
+                                                          playbackRate: context.tempoPercent / 100, sourceStart: sourceStart)
         }
         speechPreparationTask = Task { [weak self] in
             do {
@@ -585,7 +585,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                 guard let self, self.speechPreparationRevision.accepts(generation), self.quizTimelineLoaded else { return }
                 self.speechPreparationTask = nil
                 self.speechWindow = window
-                self.quizRenderer.setPreparedSpeech(phrases)
+                self.quizRenderer.setPreparedSpeech(phrases, preparedFor: context.soundConfiguration)
             } catch is CancellationError {
             } catch {
                 guard let self, self.speechPreparationRevision.accepts(generation) else { return }
@@ -2017,8 +2017,9 @@ private final class LockedQuizRenderer: @unchecked Sendable {
     func stop() { lock.withLock { renderer.stop() } }
     func seek(progress: Double) { lock.withLock { renderer.seek(progress: progress) } }
     func setPlaybackRate(_ rate: Double) { lock.withLock { renderer.setPlaybackRate(rate) } }
-    func setPreparedSpeech(_ phrases: [PreparedSpeech], preserveProgress: Bool = true) {
-        lock.withLock { renderer.setPreparedSpeech(phrases, preserveProgress: preserveProgress) }
+    func setPreparedSpeech(_ phrases: [PreparedSpeech], preserveProgress: Bool = true,
+                           preparedFor configuration: QuizSoundConfiguration? = nil) {
+        lock.withLock { renderer.setPreparedSpeech(phrases, preserveProgress: preserveProgress, preparedFor: configuration) }
     }
 
     func setSoundConfiguration(_ configuration: QuizSoundConfiguration) {

@@ -16,7 +16,47 @@ public struct PreparedSpeech: Sendable {
     }
 }
 
+struct SpeechSemantics: Equatable {
+    let cue: PlaybackCue
+    let transpose: Int
+    let majorLocked: Bool
+    let chordMode: QuizChordMode
+    init(_ configuration: QuizSoundConfiguration) {
+        cue = configuration.cue; transpose = configuration.transposeSemitones
+        majorLocked = configuration.majorLocked; chordMode = configuration.chordMode
+    }
+    func sharesPhraseFamily(with other: Self) -> Bool {
+        (cue.speaksRoot && other.cue.speaksRoot) || (cue.speaksMelody && other.cue.speaksMelody)
+    }
+}
+
 public enum SpeechTimelinePreparation {
+    /// Pin the opening window so a render block can wrap without waiting for the poller.
+    /// Overlapping windows are prepared once; disjoint slices share logical phrase positions.
+    public static func prepareLookahead(_ timeline: QuizTimeline, configuration: QuizSoundConfiguration,
+                                        playbackRate: Double, sourceStart: Double) throws -> [PreparedSpeech] {
+        guard playbackRate.isFinite, playbackRate > 0, sourceStart.isFinite,
+              timeline.durationSeconds.isFinite, timeline.durationSeconds > 0 else { return [] }
+        let start = min(max(0, sourceStart), timeline.durationSeconds)
+        let openingEnd = min(timeline.durationSeconds, 8 * playbackRate)
+        let movingEnd = min(timeline.durationSeconds, start + 8 * playbackRate)
+        let windows: [ClosedRange<Double>] = start <= openingEnd
+            ? [0...max(openingEnd, movingEnd)] : [0...openingEnd, start...movingEnd]
+        var result: [PreparedSpeech] = []
+        var retained = 0
+        for window in windows {
+            try Task.checkCancellation()
+            let phrases = try prepare(timeline, configuration: configuration, playbackRate: playbackRate, sourceWindow: window)
+            let frames = phrases.reduce(0) { $0 + $1.samples.count }
+            guard frames <= SpokenCuePreparation.maximumFrames - retained else {
+                throw AcquiringAudioError.invalidRequest("Opening and moving speech windows exceed the retained PCM budget.")
+            }
+            retained += frames
+            result += phrases
+        }
+        return result
+    }
+
     /// Bounded, cancellable preparation on the caller's background executor.
     public static func prepare(_ timeline: QuizTimeline, configuration: QuizSoundConfiguration,
                                playbackRate: Double, sourceWindow: ClosedRange<Double>? = nil) throws -> [PreparedSpeech] {

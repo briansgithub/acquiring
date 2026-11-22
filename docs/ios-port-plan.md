@@ -364,3 +364,10 @@ B04 portable checker now executes all 26 native-stream and 14 native-cue-stream
 PWA scenarios against the frozen JVM PCM16 hashes, in addition to 14 Sonic cases
 and 66 asset hashes. All passed. Scheduling head `5c8c8538` is in remote iOS run
 `44972264186`; follow-up source fixes require the next exact-head run.
+
+B04 lead review found stale speech semantics during detached replacement and
+missing initial cues after Loop wrap. Follow-up adds installed semantic identity,
+immediate incompatible-clip suppression with continued logical progress, and a
+pinned opening window within the combined PCM budget. Focused delayed-replacement
+and repeated-loop tests are added. `a5841257` passed the package step in run
+`44972419307`; these follow-up changes require fresh exact-head CI.

@@ -84,10 +84,9 @@ can coexist during replacement. Asset loading/decoding and Sonic never run under
 the renderer lock or in its callback. The existing callback lock remains.
 
 Late preparation skips the elapsed prefix at the current playhead. If the cue's
-musical window already ended, the renderer emits nothing for it. On a loop wrap,
-the next poll primes the opening window; if preparation has not completed, those
-initial samples are silent rather than replayed late. This timing policy needs
-audible-device review. No new output graph, preview owner or measured-Hz replay
+musical window already ended, the renderer emits nothing for it. The opening window is retained alongside the moving window, within the same
+combined 48-second retained PCM budget. A render block can wrap immediately into
+that window without waiting for the poller. Audible-device review remains open. No new output graph, preview owner or measured-Hz replay
 path was introduced.
 
 The single `QuizSoundConfiguration.replacing` path keeps cue and voice volume
@@ -102,7 +101,7 @@ stale seek preparation, expired cues, and completed-phrase continuity. These new
 tests are pending fresh remote execution.
 
 B06 retains the song-wide **presentation** reference handoff. The remaining
-section-based callers in SongViews.swift are `QuizHeader.displayKey`,
+section-based callers in SongViews.swift are `QuizHeader.displayedKey`,
 `MelodyTimelinePresentation.init`, and `ChordTimelinePresentation.init`, plus the
 `QuizTimelinePairView` paths that construct those presentations. B04 only wires
 the audio reference. No new voice controls or VocalPractice views were changed.
@@ -131,3 +130,27 @@ Latest saved turn_context on this resume is `2026-11-22T01:31:42.565Z`,
 Follow-up source review preserves Android fallback when a full chord omits its
 root and skips mode names with no native bundled clip. Cue Off and Lock suppress
 speech immediately, without waiting for asynchronous replacement preparation.
+
+
+## Delayed replacement and loop review
+
+Lead review of `a5841257` identified missing speech semantic identity and eviction
+of the loop-opening window. Installed speech now records cue, transpose, Lock and
+chord mode. The renderer suppresses incompatible clips immediately and rejects a
+result prepared for an obsolete configuration. Volume/mix/waveform changes keep
+compatible speech audible. Silent old phrases continue advancing their logical
+positions, so a completed phrase cannot restart when same-family replacement
+arrives. Root-to-melody changes use the new phrase's current elapsed offset.
+
+`prepareLookahead` prepares and retains the opening eight-second window together
+with the moving window, merging overlaps. Their combined PCM must fit the same
+48-second budget; neither is added by the callback. This supports Loop wraps even
+when no poller replacement arrives at the boundary. Tests exercise delayed cue,
+transpose, Lock and chord-mode replacement, stale results, volume-only continuity,
+completion during a pending replacement, and two later laps from a final-window
+installation. The long-section test checks all 64 cues with combined retained PCM
+bounded on every request. Fresh remote execution is pending for these fixes.
+
+Run `44972419307` at exact head `a5841257` passed its Swift package step; the iPhone
+app step was still running when these review fixes were prepared. No pass from
+that head is attributed to the later changes.
