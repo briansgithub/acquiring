@@ -238,6 +238,7 @@ internal class PlaybackPcmRenderer(
         val event: PlaybackTimelineEvent,
         val oscillators: List<SynthVoice>,
         val rootPulses: List<List<SynthVoice>>,
+        val pulsesPerBeat: Int = 0,
         val arpeggiateCycles: Double,
         var ageFrames: Long = 0,
         var transitionGain: Double = 1.0,
@@ -481,8 +482,9 @@ internal class PlaybackPcmRenderer(
         val event = active.event
         val duration = event.endBeat - event.startBeat
         val pulseCount = active.rootPulses.size
+        // Pulses are defined per beat: each beat holds pulsesPerBeat pulses.
         // Roundoff near the exclusive end must never wrap back to pulse one.
-        val slot = ((beat - event.startBeat) / duration * pulseCount)
+        val slot = ((beat - event.startBeat) * active.pulsesPerBeat)
             .coerceIn(0.0, Math.nextDown(pulseCount.toDouble()))
         val index = slot.toInt()
         val progress = slot - index
@@ -490,7 +492,7 @@ internal class PlaybackPcmRenderer(
 
         val pulseEnvelope = minOf(progress / 0.08, (0.8 - progress) / 0.12, 1.0)
         val elapsedSeconds = if (config.bpm > 0.0) {
-            progress * duration * 60.0 / (pulseCount * config.bpm)
+            progress * 60.0 / (active.pulsesPerBeat * config.bpm)
         } else {
             0.0
         }
@@ -744,7 +746,9 @@ internal class PlaybackPcmRenderer(
         }
         val (oscillators, rootPulses) = if (pulseRoot && pulsing) {
             // Separate voices retrigger decaying instruments on every pulse.
-            emptyList<SynthVoice>() to List(pulseCount) { voices(midiNotes) }
+            val total = Math.ceil((event.endBeat - event.startBeat) * pulseCount - BEAT_EPSILON)
+                .toInt().coerceAtLeast(1)
+            emptyList<SynthVoice>() to List(total) { voices(midiNotes) }
         } else {
             voices(midiNotes) to emptyList()
         }
@@ -752,6 +756,7 @@ internal class PlaybackPcmRenderer(
             event = event,
             oscillators = oscillators,
             rootPulses = rootPulses,
+            pulsesPerBeat = pulseCount,
             arpeggiateCycles = if (isChord && oscillators.size > 1) config.arpeggiateCycles else 0.0,
             transitionGain = if (fadeIn) 0.0 else 1.0,
             transitionFramesRemaining = if (fadeIn) crossfadeFrames else 0,
