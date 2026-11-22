@@ -1044,6 +1044,10 @@ struct QuizView: View {
             }
         }
         .onChange(of: usesRelativeIonianContext) { _, enabled in
+            if let sectionID = selectedSectionID {
+                let current = soundConfiguration
+                _ = setSoundConfiguration(current.replacing(majorLocked: enabled), sectionID: sectionID)
+            }
             cancelQuizCardPreview()
             environment.vocalPractice.handleTransportDiscontinuity()
             environment.rememberQuizSettings(
@@ -1174,13 +1178,7 @@ struct QuizView: View {
         cancelQuizCardPreview()
         environment.vocalPractice.stopPersistentPractice()
         environment.vocalPractice.handleTransportDiscontinuity()
-        let configuration = QuizSoundConfiguration(
-            waveform: soundConfiguration.waveform,
-            melodyChordBalance: soundConfiguration.melodyChordBalance,
-            transposeSemitones: soundConfiguration.transposeSemitones,
-            arpeggioOption: soundConfiguration.arpeggioOption,
-            chordMode: newMode == .full ? .full : .rootOnly
-        )
+        let configuration = soundConfiguration.replacing(chordMode: newMode == .full ? .full : .rootOnly, majorLocked: usesRelativeIonianContext)
         guard setSoundConfiguration(configuration, sectionID: sectionID) else { return }
         mode = newMode
         environment.rememberQuizSettings(songID: songID, mode: newMode)
@@ -1541,13 +1539,7 @@ struct QuizView: View {
 
     private func changeInstrument(_ waveform: SynthWaveform, sectionID: String) {
         let didApply = setSoundConfiguration(
-            QuizSoundConfiguration(
-                waveform: waveform,
-                melodyChordBalance: soundConfiguration.melodyChordBalance,
-                transposeSemitones: soundConfiguration.transposeSemitones,
-                arpeggioOption: soundConfiguration.arpeggioOption,
-                chordMode: soundConfiguration.chordMode
-            ),
+            soundConfiguration.replacing(waveform: waveform, majorLocked: usesRelativeIonianContext),
             sectionID: sectionID
         )
         if didApply { environment.selectQuizInstrument(waveform) }
@@ -1555,13 +1547,7 @@ struct QuizView: View {
 
     private func changeTranspose(_ semitones: Int, sectionID: String) {
         _ = setSoundConfiguration(
-            QuizSoundConfiguration(
-                waveform: soundConfiguration.waveform,
-                melodyChordBalance: soundConfiguration.melodyChordBalance,
-                transposeSemitones: min(max(semitones, -12), 12),
-                arpeggioOption: soundConfiguration.arpeggioOption,
-                chordMode: soundConfiguration.chordMode
-            ),
+            soundConfiguration.replacing(transposeSemitones: min(max(semitones, -12), 12), majorLocked: usesRelativeIonianContext),
             sectionID: sectionID
         )
     }
@@ -1607,13 +1593,7 @@ struct QuizView: View {
                     guard value.isFinite else { return }
                     let index = Int(min(max(value.rounded(), 0), Double(options.count - 1)))
                     _ = setSoundConfiguration(
-                        QuizSoundConfiguration(
-                            waveform: soundConfiguration.waveform,
-                            melodyChordBalance: soundConfiguration.melodyChordBalance,
-                            transposeSemitones: soundConfiguration.transposeSemitones,
-                            arpeggioOption: options[index],
-                            chordMode: soundConfiguration.chordMode
-                        ),
+                        soundConfiguration.replacing(arpeggioOption: options[index], majorLocked: usesRelativeIonianContext),
                         sectionID: sectionID
                     )
                 }
@@ -1637,13 +1617,7 @@ struct QuizView: View {
                 get: { soundConfiguration.melodyChordBalance },
                 set: { balance in
                     _ = setSoundConfiguration(
-                        QuizSoundConfiguration(
-                            waveform: soundConfiguration.waveform,
-                            melodyChordBalance: balance,
-                            transposeSemitones: soundConfiguration.transposeSemitones,
-                            arpeggioOption: soundConfiguration.arpeggioOption,
-                            chordMode: soundConfiguration.chordMode
-                        ),
+                        soundConfiguration.replacing(melodyChordBalance: balance, majorLocked: usesRelativeIonianContext),
                         sectionID: sectionID
                     )
                 }
@@ -2080,13 +2054,7 @@ struct QuizView: View {
             mode = continuity.mode
             tempoPercent = continuity.tempoPercent
             let restoredSoundConfiguration = continuity.playbackConfiguration.soundConfiguration
-            soundConfiguration = QuizSoundConfiguration(
-                waveform: restoredSoundConfiguration.waveform,
-                melodyChordBalance: restoredSoundConfiguration.melodyChordBalance,
-                transposeSemitones: restoredSoundConfiguration.transposeSemitones,
-                arpeggioOption: restoredSoundConfiguration.arpeggioOption,
-                chordMode: continuity.mode == .full ? .full : .rootOnly
-            )
+            soundConfiguration = restoredSoundConfiguration.replacing(chordMode: continuity.mode == .full ? .full : .rootOnly, majorLocked: continuity.usesRelativeIonianContext)
             if soundConfiguration != restoredSoundConfiguration {
                 environment.rememberQuizSettings(
                     songID: songID,
@@ -2290,11 +2258,15 @@ struct QuizView: View {
             )
         }
         let duration = (playbackEndBeat(in: section) - PlaybackTiming.firstBeat) / beatsPerSecond
-        return AcquiringAudio.QuizTimeline(
+        let timeline = AcquiringAudio.QuizTimeline(
             durationSeconds: duration,
             events: melodyEvents + chordEvents,
             nativeBeatsPerSecond: beatsPerSecond
         )
+        let openingKey: KeyInfo?
+        if case let .content(document) = state { openingKey = document.orderedSections.first?.section.key(at: 1) }
+        else { openingKey = nil }
+        return PlaybackCueTimeline.annotate(timeline, section: section, songOpeningKey: openingKey)
     }
 }
 

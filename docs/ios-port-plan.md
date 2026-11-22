@@ -303,3 +303,71 @@ pending the updated PR head; no shared app files changed.
 B03 PR #54 is mergeable after `2eb92114`; CI started. Final source review
 aligned rest-context fallback keys and NaN-last ordering with Android. Added
 focused Swift cases for fallback and duplicate identity, still unrun locally.
+
+## Cue stack and Android updates
+
+PR #54 now targets the settings branch (#53) at merge head `613cbe49`.
+The B04 worktree `../acquiring-ios-port-spoken-cues` includes both parents.
+B03's six focused tests passed within the 248-test package run at `b251c517`.
+B07's eight focused tests passed within the 250-test package run at `7b62c629`.
+Full app checks remain open.
+
+PR #57 at `98c01ca8` passed all four octave tests and the B02 environment test
+that previously crashed, in iPhone run `44940400939`. The UI suite still logged
+23 assertion failures, including an old cross-song instrument expectation.
+Review that assertion against the per-song policy. Other failures require
+individual diagnosis. iPad execution remains pending. PWA passed in this run
+after the store-count correction merged in #58.
+
+Keep `3c887223` as the provenance pin for existing frozen fixtures. Main now
+includes two Android changes that extend the behavior the port must cover:
+
+| Commit | Batches | Acceptance |
+| --- | --- | --- |
+| `2728f3f3` | B04, B06 | When Lock in Major is on, use the relative major of the song's first section at beat one throughout the song. Labels, spoken degrees and harmonic-distance pulses share that reference. Verify a G-major verse followed by a G-dorian chorus. |
+| `372c3d26` | B05, B06 | Publish the identity of the section under the audible playback head. Resume a pending splice from the start of the next section and recheck the visual handoff on phase changes, including buffering and pause at the boundary. |
+
+Use the new Android PlaybackRootDegreeCueTest and PlaybackEngineTest cases
+when extending the corresponding contracts.
+
+## B04 first implementation slice
+
+B04 adds portable cue context, pulse rendering in QuizPCMRenderer and the
+mainline soft limiter. Focused Swift tests cover pulse tails, chord replacement,
+melody retention, counts and mode-window math; they are written but unrun.
+Speech assets/Sonic and caller wiring remain in progress. See
+[ios-port/b04-spoken-cues.md](ios-port/b04-spoken-cues.md). No app-visible or
+native PCM parity completion is claimed. Saved turn_context confirms Astra/high.
+
+B04 merged B03 integration head `821d7b5e` after the pulse commit `ff522ff2`.
+Added exact offline clip delivery and portable Sonic preparation in a separate
+slice. Node checked 66 asset hashes and 14 existing PWA/JVM Sonic cases.
+Swift/C compilation, speech scheduling and caller wiring remain pending.
+
+B04 draft PR #61 is open against `ios-port-melody-function`, with all three stack
+layers linked. AppEnvironment now carries saved cue/voice volume into the audio
+configuration. Existing control reconstruction, metadata and speech scheduling
+remain unfinished. Remote iOS run `44956183588` targets `9411bd7d`; no result yet.
+
+## B04 scheduling checkpoint
+
+Lead reported `f4bb5ea9` passing all 254 package tests in run `44956283926`,
+including native Sonic PCM16 and resource-loading checks. App compilation passed;
+iPhone UI had 21 failed assertions, matching the parent count. The instrument
+case passed. New B04 work adds bounded background lookahead preparation, speech
+rendering, B03 metadata, song-opening audio reference and control-copy preservation.
+Long-section, stale-preparation and expired-cue tests are added for fresh CI.
+B06 owns the remaining song-wide presentation label callers listed in the B04
+receipt. No device/audible acceptance or full batch completion is claimed yet.
+
+B04 portable checker now executes all 26 native-stream and 14 native-cue-stream
+PWA scenarios against the frozen JVM PCM16 hashes, in addition to 14 Sonic cases
+and 66 asset hashes. All passed. Scheduling head `5c8c8538` is in remote iOS run
+`44972264186`; follow-up source fixes require the next exact-head run.
+
+B04 lead review found stale speech semantics during detached replacement and
+missing initial cues after Loop wrap. Follow-up adds installed semantic identity,
+immediate incompatible-clip suppression with continued logical progress, and a
+pinned opening window within the combined PCM budget. Focused delayed-replacement
+and repeated-loop tests are added. `a5841257` passed the package step in run
+`44972419307`; these follow-up changes require fresh exact-head CI.
