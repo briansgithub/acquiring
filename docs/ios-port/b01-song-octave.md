@@ -76,3 +76,18 @@ assertion failures. B02 separately corrected the outdated instrument test.
 That revised test passed on #53 at `516d7f26` in run `44955539541`. That
 run still recorded 21 UI assertion failures. The title-sheet change needs
 fresh CI.
+
+## Title-sheet CI
+
+Head `0fde4662` compiled and passed the iPhone app unit suite and the
+`testQuizSongTitleExpansionRetainsModeAndPlayback` UI test in run
+`44971869431`. The iPhone UI suite had 21 assertion failures across 16 test
+cases. Comparing failed test names with parent #53 run `44955539541`
+at `516d7f26` found the same 16 cases. iPad execution remains unverified.
+The test confirms dismissal and playback continuity. It does not exercise
+copying the selected text.
+
+PWA run `44971869433` failed the existing second-tab catalog retry test at
+`library.spec.ts:67`, where searching after ownership retry returned zero
+rows instead of six. The same test failed earlier on #54 in run
+`44888861727`. Its cause has not been established. PR #57 remains open.
