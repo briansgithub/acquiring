@@ -210,7 +210,7 @@ internal fun PlaybackTab(
     rootDegreeCue: PlaybackRootDegreeCue = PlaybackRootDegreeCue.OFF,
     onRootDegreeCueChange: (PlaybackRootDegreeCue) -> Unit = {},
     voiceVolume: Float = DEFAULT_PLAYBACK_VOICE_VOLUME,
-    loopSection: Boolean = true,
+    loopSection: Boolean = DEFAULT_LOOP_SECTION,
     melodyChordBalance: Float = DEFAULT_MELODY_CHORD_BALANCE,
     onMelodyChordBalanceChange: (Float) -> Unit = {},
     onSectionFinished: () -> Unit = {},
@@ -371,6 +371,20 @@ internal fun PlaybackTab(
         PlaybackController.detachPlayback(playbackOwner, retainedScrubBeat)
     }
 
+    // With background playback on, leaving the foreground (minimize, lock, a system
+    // dialog) keeps a playing transport running under the media service. Scrubbing
+    // still takes the normal pause so the retained scrub position is applied.
+    val latestHostInactive by rememberUpdatedState {
+        if (PlaybackController.keepsPlayingInBackground() && !isScrubbing) {
+            cancelInertia()
+            intervalPreviewJob?.cancel()
+            intervalPreviewJob = null
+            AudioEngine.stopPreviewPlayback()
+        } else {
+            latestPauseVisiblePlayback()
+        }
+    }
+
     DisposableEffect(playbackLifecycleOwner, playbackOwner) {
         if (playbackLifecycleOwner.lifecycle.currentState.isAtLeast(
                 androidx.lifecycle.Lifecycle.State.RESUMED
@@ -383,14 +397,22 @@ internal fun PlaybackTab(
                 androidx.lifecycle.Lifecycle.Event.ON_RESUME ->
                     PlaybackController.attachPlayback(playbackOwner)
                 androidx.lifecycle.Lifecycle.Event.ON_PAUSE,
-                androidx.lifecycle.Lifecycle.Event.ON_STOP -> latestPauseVisiblePlayback()
+                androidx.lifecycle.Lifecycle.Event.ON_STOP -> latestHostInactive()
                 else -> Unit
             }
         }
         playbackLifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
             playbackLifecycleOwner.lifecycle.removeObserver(observer)
-            latestPauseVisiblePlayback()
+            // The screen is being torn down. If the whole app is already out of the
+            // foreground (or its activity is being recreated) background playback
+            // keeps going; leaving the Playback screen inside the app still pauses.
+            val appStillVisible = playbackLifecycleOwner.lifecycle.currentState.isAtLeast(
+                androidx.lifecycle.Lifecycle.State.RESUMED
+            )
+            if (appStillVisible || !PlaybackController.keepsPlayingInBackground()) {
+                latestPauseVisiblePlayback()
+            }
         }
     }
 

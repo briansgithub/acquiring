@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -184,18 +185,31 @@ internal fun LibraryAuralQuizRow(onClick: () -> Unit) {
 }
 
 @Composable
-internal fun LibrarySearchCaption(message: String) {
+internal fun LibrarySearchCaption(message: String, onClear: (() -> Unit)? = null) {
     val found = message.contains("Found")
-    Text(
-        text = message,
-        style = MaterialTheme.typography.labelMedium,
-        color = if (found) {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        } else {
-            MaterialTheme.colorScheme.error
-        },
-        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
-    )
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (found) {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+                MaterialTheme.colorScheme.error
+            },
+            modifier = Modifier.weight(1f)
+        )
+        if (onClear != null) {
+            TextButton(
+                onClick = onClear,
+                modifier = Modifier.testTag("ClearSearchResults")
+            ) {
+                Text("Back to favorites")
+            }
+        }
+    }
 }
 
 @Composable

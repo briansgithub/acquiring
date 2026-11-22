@@ -142,7 +142,7 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             UserDataDatabase::class.java, UserDataDatabase.DB_NAME
         ).addMigrations(UserDataDatabase.MIGRATION_1_2, UserDataDatabase.MIGRATION_2_3,
-            UserDataDatabase.MIGRATION_3_4, UserDataDatabase.MIGRATION_4_5).build()
+            UserDataDatabase.MIGRATION_3_4, UserDataDatabase.MIGRATION_4_5, UserDataDatabase.MIGRATION_5_6).build()
         songOctaveOffsetViewModel.attachDao(userDb.songOctaveOffsetDao())
         songPlaybackSettingsViewModel.attachDao(userDb.songPlaybackSettingsDao())
 

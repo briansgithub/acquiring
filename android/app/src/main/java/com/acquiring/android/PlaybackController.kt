@@ -19,9 +19,14 @@ import kotlinx.coroutines.launch
 
 /**
  * Owns the process's one [PlaybackEngine] while a visible Playback owns its transport.
- * Audio focus and noisy-route handling live here because they remain necessary without
- * publishing a media service, notification, or external transport controls.
+ * Audio focus and noisy-route handling live here. With "background playback" off the
+ * transport pauses whenever the app is not visible. With it on, [PlaybackMediaService]
+ * publishes the notification and media session and playback survives minimizing and
+ * locking; the engine, focus and transport rules stay in this object either way.
  */
+private const val BACKGROUND_PREFS = "playback_background_v1"
+private const val BACKGROUND_KEY = "enabled"
+
 internal object PlaybackController {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val lock = Any()
@@ -40,6 +45,33 @@ internal object PlaybackController {
 
     private val mutableState = MutableStateFlow(PlaybackState())
     val state: StateFlow<PlaybackState> = mutableState.asStateFlow()
+
+    private val mutableBackground = MutableStateFlow(false)
+
+    /** User switch: play as a regular media stream that survives minimizing and locking. */
+    val backgroundPlayback: StateFlow<Boolean> = mutableBackground.asStateFlow()
+
+    private val mutableOwnerAttached = MutableStateFlow(false)
+
+    /** True while a Playback screen (visible, or backgrounded with playback kept) owns the transport. */
+    val ownerAttached: StateFlow<Boolean> = mutableOwnerAttached.asStateFlow()
+
+    private val mutableNowPlaying = MutableStateFlow(PlaybackNowPlaying())
+    val nowPlaying: StateFlow<PlaybackNowPlaying> = mutableNowPlaying.asStateFlow()
+
+    /** True when leaving the foreground must not pause the transport. */
+    fun keepsPlayingInBackground(): Boolean =
+        mutableBackground.value && engine?.isPlaybackRequested == true
+
+    fun setBackgroundPlayback(context: Context, enabled: Boolean) {
+        context.applicationContext.getSharedPreferences(BACKGROUND_PREFS, Context.MODE_PRIVATE)
+            .edit().putBoolean(BACKGROUND_KEY, enabled).apply()
+        mutableBackground.value = enabled
+    }
+
+    fun setNowPlaying(title: String, subtitle: String?) {
+        mutableNowPlaying.value = PlaybackNowPlaying(title, subtitle)
+    }
 
     val isPlaybackRequested: Boolean get() = engine?.isPlaybackRequested == true
     fun isCurrentCompletion(state: PlaybackState): Boolean = engine?.isCurrentCompletion(state) == true
@@ -89,6 +121,9 @@ internal object PlaybackController {
             if (initialized) return
             val applicationContext = context.applicationContext
             spokenRootDegrees = loadSpokenRootDegrees(applicationContext.resources)
+            mutableBackground.value = applicationContext
+                .getSharedPreferences(BACKGROUND_PREFS, Context.MODE_PRIVATE)
+                .getBoolean(BACKGROUND_KEY, false)
             audioManager = applicationContext.getSystemService(AudioManager::class.java)
             focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
                 .setAudioAttributes(
@@ -112,6 +147,7 @@ internal object PlaybackController {
 
     fun attachPlayback(owner: Any) {
         synchronized(lock) { activePlaybackOwner = owner }
+        mutableOwnerAttached.value = true
     }
 
     /** Pauses only if [owner] still owns the visible Playback. */
@@ -119,6 +155,7 @@ internal object PlaybackController {
         val shouldAbandonFocus = synchronized(lock) {
             if (activePlaybackOwner !== owner) return
             activePlaybackOwner = null
+            mutableOwnerAttached.value = false
             resumeAfterTransientFocusLoss = false
             if (retainedScrubBeat != null) {
                 engine?.seek(retainedScrubBeat, resume = false)
@@ -189,8 +226,12 @@ internal object PlaybackController {
         pauseAndClearResume(abandonAudioFocus = true)
     }
 
-    /** Activity-level backstop for app backgrounding, including focus-loss races. */
+    /**
+     * Activity-level backstop for app backgrounding, including focus-loss races.
+     * Background playback deliberately keeps a playing transport and its audio focus.
+     */
     fun pauseForAppInactive() {
+        if (keepsPlayingInBackground()) return
         pauseAndClearResume(abandonAudioFocus = true)
     }
 
