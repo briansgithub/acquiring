@@ -246,7 +246,7 @@ final class AcquiringTests: XCTestCase {
     func testFavoritesMembershipIsUniqueAndNewestFirst() throws {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
-            for: PlaylistRecord.self, PlaylistEntryRecord.self,
+            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self,
             configurations: configuration
         )
         let store = try UserLibraryStore(context: container.mainContext)
@@ -262,7 +262,7 @@ final class AcquiringTests: XCTestCase {
     func testDeletingCustomPlaylistCascadesEntries() throws {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
-            for: PlaylistRecord.self, PlaylistEntryRecord.self,
+            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self,
             configurations: configuration
         )
         let playlist = PlaylistRecord(id: "custom", name: "Custom")
@@ -1735,7 +1735,7 @@ final class AcquiringTests: XCTestCase {
         )
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
-            for: PlaylistRecord.self, PlaylistEntryRecord.self,
+            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self,
             configurations: configuration
         )
         let historySuite = "AcquiringTests.\(UUID().uuidString)"
@@ -2201,5 +2201,278 @@ final class QuizHelpLayoutTests: XCTestCase {
         XCTAssertFalse(QuizHelpGeometry.segment(CGPoint(x: 0, y: 0), CGPoint(x: 5, y: 40), intersects: rect))
         XCTAssertFalse(QuizHelpGeometry.segment(CGPoint(x: 0, y: 0), CGPoint(x: 40, y: 0), intersects: rect))
         XCTAssertFalse(QuizHelpGeometry.segment(CGPoint(x: 0, y: 0), CGPoint(x: 40, y: 40), intersects: .null))
+    }
+}
+
+// B02 targeted tests. Unrun locally: this machine has no Swift/iOS toolchain.
+@MainActor
+final class SongPlaybackSettingsTests: XCTestCase {
+    private func fixture() throws -> Data {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+        return try Data(contentsOf: root.appendingPathComponent("contracts/fixtures/song_playback_settings.json"))
+    }
+
+    private func lifecycle(_ id: String) throws -> [String: Any] {
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: fixture()) as? [String: Any])
+        let cases = try XCTUnwrap(json["lifecycleCases"] as? [[String: Any]])
+        return try XCTUnwrap(cases.first { $0["id"] as? String == id })
+    }
+
+    func testSharedCoalescedTicksExpectation() async throws {
+        let expected = try lifecycle("coalesced-ticks")
+        let store = SettingsTestStore()
+        let gate = SettingsTestGate()
+        store.writeGate = gate
+        let session = SongPlaybackSettingsSession(store: store)
+        session.enterSong("song-a")
+        await session.waitForLoad()
+        session.edit { $0.tempoPercent = 10 }
+        await store.writeStarted.wait()
+        session.edit { $0.tempoPercent = 20 }
+        session.edit { $0.tempoPercent = 30 }
+        gate.open()
+        await session.waitForWrites()
+        XCTAssertEqual(store.writes.count, expected["expectedWrites"] as? Int)
+        XCTAssertEqual(store.rows["song-a"]?.tempoPercent, expected["expectedTempo"] as? Double)
+    }
+
+    func testEnvironmentKeepsDefaultFollowingAndTransientModeSeparate() async throws {
+        let container = try ModelContainer(
+            for: PlaylistRecord.self, PlaylistEntryRecord.self, SongPlaybackSettingsRecord.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        let name = "B02Tests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: name))
+        defer { defaults.removePersistentDomain(forName: name) }
+        let environment = try AppEnvironment(modelContext: container.mainContext,
+            uiTestSession: nil, quizInstrumentDefaults: defaults)
+        environment.saveDefaultQuizInstrument(.flute)
+        environment.rememberQuizSection(songID: "song-a", sectionID: "verse")
+        await environment.songSettings.waitForLoad()
+        XCTAssertEqual(environment.quizInstrument.selection, .flute)
+        XCTAssertNil(environment.songSettings.value?.instrument)
+        environment.rememberQuizSettings(songID: "song-a", mode: .rootOnly)
+        let store = SwiftDataSongPlaybackSettingsStore(container: container)
+        let absent = try await store.get("song-a")
+        XCTAssertNil(absent)
+        environment.rememberQuizSettings(songID: "song-a", tempoPercent: 80)
+        environment.rememberQuizSection(songID: "song-a", sectionID: "chorus")
+        XCTAssertEqual(environment.quizContinuity?.mode, .rootOnly)
+        XCTAssertEqual(environment.quizContinuity?.tempoPercent, 80)
+        environment.saveDefaultQuizInstrument(.sine)
+        XCTAssertEqual(environment.quizInstrument.selection, .sine)
+        XCTAssertNil(environment.songSettings.value?.instrument)
+        environment.selectQuizInstrument(.oboe)
+        await environment.songSettings.waitForWrites()
+        environment.rememberQuizSection(songID: "song-b", sectionID: "verse")
+        XCTAssertEqual(environment.quizInstrument.selection, .sine)
+        await environment.songSettings.waitForLoad()
+        environment.rememberQuizSection(songID: "song-a", sectionID: "verse")
+        await environment.songSettings.waitForLoad()
+        XCTAssertEqual(environment.quizInstrument.selection, .oboe)
+        XCTAssertEqual(environment.quizContinuity?.mode, .full)
+        XCTAssertEqual(environment.quizContinuity?.sectionID, "verse")
+        XCTAssertEqual(environment.quizContinuity?.tempoPercent, 80)
+    }
+
+    func testDiskContainerReopenRetainsSettings() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let configuration = ModelConfiguration(url: directory.appendingPathComponent("settings.store"))
+        let row = SongPlaybackSettings(slug: "artist/song", tempoPercent: 73)
+        do {
+            let container = try ModelContainer(for: SongPlaybackSettingsRecord.self, configurations: configuration)
+            try await SwiftDataSongPlaybackSettingsStore(container: container).upsert(row)
+        }
+        let reopened = try ModelContainer(for: SongPlaybackSettingsRecord.self, configurations: configuration)
+        let restored = try await SwiftDataSongPlaybackSettingsStore(container: reopened).get(row.slug)
+        XCTAssertEqual(restored, row)
+    }
+
+    func testSharedAndroidSanitizerCasesAndRoundTrips() throws {
+        struct Fixture: Decodable {
+            struct Case: Decodable {
+                let id: String
+                let input: SongPlaybackSettings
+                let expected: SongPlaybackSettings
+            }
+            let sanitizerCases: [Case]
+        }
+        let decoder = JSONDecoder()
+        decoder.nonConformingFloatDecodingStrategy = .convertFromString(
+            positiveInfinity: "Infinity", negativeInfinity: "-Infinity", nan: "NaN"
+        )
+        for item in try decoder.decode(Fixture.self, from: fixture()).sanitizerCases {
+            let row = item.input.sanitized()
+            XCTAssertEqual(row, item.expected, item.id)
+            XCTAssertEqual(try decoder.decode(SongPlaybackSettings.self, from: JSONEncoder().encode(row)), row)
+        }
+        XCTAssertEqual(SongPlaybackSettings.instruments["REED_ORGAN"], .oboe)
+    }
+
+    func testMissingRowImmediateDefaultsAndSameSongContinuity() async {
+        let store = SettingsTestStore()
+        let session = SongPlaybackSettingsSession(store: store)
+        session.enterSong("song-a")
+        XCTAssertEqual(session.value, SongPlaybackSettings(slug: "song-a"))
+        await session.waitForLoad()
+        XCTAssertEqual(store.writes.count, 0)
+        session.edit { $0.tempoPercent = 80 }
+        await session.waitForWrites()
+        session.enterSong("song-a")
+        XCTAssertEqual(store.gets, 1)
+        XCTAssertEqual(session.value?.tempoPercent, 80)
+        session.enterSong("song-b")
+        XCTAssertEqual(session.value, SongPlaybackSettings(slug: "song-b"))
+        await session.waitForLoad()
+        XCTAssertNil(store.rows["song-b"])
+    }
+
+    func testDelayedReadCannotReplaceEditIncludingExplicitDefault() async {
+        for tempo in [80.0, 100.0] {
+            let store = SettingsTestStore()
+            var row = SongPlaybackSettings(slug: "song-a")
+            row.tempoPercent = 40
+            store.rows[row.slug] = row
+            store.readGate = SettingsTestGate()
+            let session = SongPlaybackSettingsSession(store: store)
+            session.enterSong(row.slug)
+            await store.readStarted.wait()
+            session.edit { $0.tempoPercent = tempo }
+            store.readGate?.open()
+            await session.waitForLoad()
+            await session.waitForWrites()
+            XCTAssertEqual(session.value?.tempoPercent, tempo)
+            XCTAssertEqual(store.rows[row.slug]?.tempoPercent, tempo)
+        }
+    }
+
+    func testOldReadCannotReplaceNewSong() async {
+        let store = SettingsTestStore()
+        store.rows["song-a"] = SongPlaybackSettings(slug: "song-a", tempoPercent: 40)
+        let gate = SettingsTestGate()
+        store.readGate = gate
+        let session = SongPlaybackSettingsSession(store: store)
+        session.enterSong("song-a")
+        await store.readStarted.wait()
+        store.readGate = nil
+        session.enterSong("song-b")
+        gate.open()
+        await session.waitForLoad()
+        XCTAssertEqual(session.value, SongPlaybackSettings(slug: "song-b"))
+    }
+
+    func testCoalescingKeepsOtherSongsAndPendingReturn() async {
+        let store = SettingsTestStore()
+        let gate = SettingsTestGate()
+        store.writeGate = gate
+        let session = SongPlaybackSettingsSession(store: store)
+        session.enterSong("song-a")
+        await session.waitForLoad()
+        session.edit { $0.tempoPercent = 10 }
+        await store.writeStarted.wait()
+        session.edit { $0.tempoPercent = 20 }
+        session.edit { $0.tempoPercent = 30 }
+        XCTAssertEqual(store.writes.count, 1)
+        session.enterSong("song-b")
+        session.edit { $0.tempoPercent = 80 }
+        session.enterSong("song-a")
+        XCTAssertEqual(session.value?.tempoPercent, 30)
+        gate.open()
+        await session.waitForWrites()
+        XCTAssertEqual(store.writes.map(\.slug), ["song-a", "song-a", "song-b"])
+        XCTAssertEqual(store.rows["song-a"]?.tempoPercent, 30)
+        XCTAssertEqual(store.rows["song-b"]?.tempoPercent, 80)
+    }
+
+    func testSaveFailureRetainsEditsAndRetryPersists() async {
+        let store = SettingsTestStore()
+        store.failWrite = true
+        let session = SongPlaybackSettingsSession(store: store)
+        session.enterSong("song-a")
+        await session.waitForLoad()
+        session.edit { $0.tempoPercent = 80 }
+        await session.waitForWrites()
+        XCTAssertNotNil(session.writeError)
+        XCTAssertNil(store.rows["song-a"])
+        session.enterSong("song-b")
+        session.enterSong("song-a")
+        await session.waitForLoad()
+        XCTAssertEqual(session.value?.tempoPercent, 80)
+        store.failWrite = false
+        session.retryWrites()
+        await session.waitForWrites()
+        XCTAssertNil(session.writeError)
+        XCTAssertEqual(store.rows["song-a"]?.tempoPercent, 80)
+    }
+
+    func testReadFailureDoesNotWriteDefaults() async {
+        let store = SettingsTestStore()
+        store.failRead = true
+        let session = SongPlaybackSettingsSession(store: store)
+        session.enterSong("song-a")
+        await session.waitForLoad()
+        XCTAssertNotNil(session.readError)
+        XCTAssertEqual(store.writes.count, 0)
+    }
+
+    func testSwiftDataRoundTripWithFreshContextPreservesAllFields() async throws {
+        let container = try ModelContainer(for: SongPlaybackSettingsRecord.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        let first = SwiftDataSongPlaybackSettingsStore(container: container)
+        let row = SongPlaybackSettings(slug: "artist/song", lockInMajor: true,
+            tempoPercent: 90, arpeggioOptionIndex: 1, melodyChordBalance: 0.25,
+            instrument: "FLUTE", transpose: 12, rootDegreeCue: "SPOKEN_NUMBER",
+            voiceVolume: 0.8, loopSection: false)
+        try await first.upsert(row)
+        let second = SwiftDataSongPlaybackSettingsStore(container: container)
+        let restored = try await second.get(row.slug)
+        XCTAssertEqual(restored, row)
+    }
+}
+
+@MainActor
+private final class SettingsTestGate {
+    private var isOpen = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+    func wait() async {
+        if isOpen { return }
+        await withCheckedContinuation { waiters.append($0) }
+    }
+    func open() {
+        isOpen = true
+        let pending = waiters
+        waiters.removeAll()
+        pending.forEach { $0.resume() }
+    }
+}
+
+@MainActor
+private final class SettingsTestStore: SongPlaybackSettingsStore {
+    enum Failure: Error { case unavailable }
+    var rows: [String: SongPlaybackSettings] = [:]
+    var writes: [SongPlaybackSettings] = []
+    var gets = 0
+    var failWrite = false
+    var failRead = false
+    var readGate: SettingsTestGate?
+    var writeGate: SettingsTestGate?
+    let readStarted = SettingsTestGate()
+    let writeStarted = SettingsTestGate()
+    func get(_ slug: String) async throws -> SongPlaybackSettings? {
+        gets += 1
+        let snapshot = rows[slug]
+        readStarted.open()
+        await readGate?.wait()
+        if failRead { throw Failure.unavailable }
+        return snapshot
+    }
+    func upsert(_ row: SongPlaybackSettings) async throws {
+        writes.append(row)
+        writeStarted.open()
+        await writeGate?.wait()
+        if failWrite { throw Failure.unavailable }
+        rows[row.slug] = row
     }
 }

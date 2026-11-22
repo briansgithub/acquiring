@@ -1058,8 +1058,21 @@ struct QuizView: View {
             else { return }
             _ = setSoundConfiguration(
                 soundConfiguration.replacing(waveform: waveform),
-                sectionID: sectionID
+                sectionID: sectionID,
+                persistsSettings: false
             )
+        }
+        .safeAreaInset(edge: .top) {
+            if let message = environment.songSettings.writeError ?? environment.songSettings.readError {
+                VStack {
+                    Text(message).font(.caption)
+                    if environment.songSettings.writeError != nil {
+                        Button("Retry saving") { environment.songSettings.retryWrites() }
+                    }
+                }
+                .padding(8)
+                .accessibilityIdentifier("quiz.settings.persistenceError")
+            }
         }
         .onChange(of: transportPhase) { _, _ in updatePracticeContext() }
         // Scrub start and end have to reach the practice model the moment they happen: a drag
@@ -1652,7 +1665,8 @@ struct QuizView: View {
 
     private func setSoundConfiguration(
         _ configuration: QuizSoundConfiguration,
-        sectionID: String
+        sectionID: String,
+        persistsSettings: Bool = true
     ) -> Bool {
         guard soundConfiguration != configuration else { return true }
         cancelQuizCardPreview()
@@ -1672,7 +1686,9 @@ struct QuizView: View {
         }
         soundConfiguration = configuration
         activeQuizRevision = updatedRevision
-        environment.rememberQuizSettings(songID: songID, soundConfiguration: configuration)
+        if persistsSettings {
+            environment.rememberQuizSettings(songID: songID, soundConfiguration: configuration)
+        }
         return true
     }
 
@@ -2051,10 +2067,10 @@ struct QuizView: View {
             let remembered = environment.quizContinuity(for: songID)
             let restored = document.orderedSections.first { $0.key == remembered?.sectionID }
                 ?? selected
-            let continuity = environment.rememberQuizSection(
-                songID: songID,
-                sectionID: restored.key
-            )
+            environment.rememberQuizSection(songID: songID, sectionID: restored.key)
+            await environment.songSettings.waitForLoad()
+            guard !Task.isCancelled,
+                  let continuity = environment.quizContinuity(for: songID) else { return }
             selectedSectionID = restored.key
             environment.vocalPractice.enterSong(
                 songID: songID,
@@ -3193,7 +3209,7 @@ private struct QuizTimelinePairView: View {
             displayModel.setFrameRatePreference(frameRatePreference)
         }
         .background {
-            TimelineFrameRateHost(preference: frameRatePreference)
+            TimelineFrameRateHost(preference: frameRatePreference, displayModel: displayModel)
         }
     }
 
@@ -3214,30 +3230,35 @@ private struct QuizTimelinePairView: View {
     }
 }
 
-/// Pins the quiz surface to the Settings frame-rate range. Lock in Major
-/// rebuilds the lane views; without this host those new layers can run at the
-/// display maximum even when the display-link request is 60 fps.
+/// Reapplies the Settings cadence request to the existing display-link owner
+/// when SwiftUI rebuilds or attaches the timeline host. UIView has no frame-rate
+/// range API; CADisplayLink owns the request, which is a system timing hint.
 private struct TimelineFrameRateHost: UIViewRepresentable {
     let preference: TimelineFrameRatePreference
+    let displayModel: QuizTimelineDisplayModel
 
     func makeUIView(context: Context) -> HostView {
         HostView()
     }
 
     func updateUIView(_ view: HostView, context: Context) {
-        view.apply(preference)
+        view.apply(preference, to: displayModel)
     }
 
     final class HostView: UIView {
-        func apply(_ preference: TimelineFrameRatePreference) {
-            let range = preference.displayFrameRateRange()
-            preferredFrameRateRange = range
-            window?.rootViewController?.view.preferredFrameRateRange = range
+        private weak var displayModel: QuizTimelineDisplayModel?
+        private var preference = TimelineFrameRatePreference.standard
+
+        func apply(_ preference: TimelineFrameRatePreference, to displayModel: QuizTimelineDisplayModel) {
+            self.preference = preference
+            self.displayModel = displayModel
+            displayModel.setFrameRatePreference(preference)
         }
 
         override func didMoveToWindow() {
             super.didMoveToWindow()
-            preferredFrameRateRange = TimelineFrameRatePreference.stored.displayFrameRateRange()
+            guard window != nil else { return }
+            displayModel?.setFrameRatePreference(preference)
         }
     }
 }
