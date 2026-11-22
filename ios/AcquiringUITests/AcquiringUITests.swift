@@ -43,6 +43,10 @@ final class AcquiringUITests: XCTestCase {
         let title = app.staticTexts["quiz.songTitle.expanded"]
         XCTAssertTrue(title.waitForExistence(timeout: 5))
         XCTAssertEqual(title.label, Fixture.fiveHundredMilesQuizTitle)
+        let done = app.buttons["quiz.songTitle.done"]
+        XCTAssertTrue(done.waitForExistence(timeout: 5))
+        done.tap()
+        XCTAssertTrue(title.waitForNonExistence(timeout: 5))
 
         XCTAssertTrue(heading.waitForExistence(timeout: 5))
         XCTAssertEqual(modePicker.value as? String, "Root Only")

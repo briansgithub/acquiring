@@ -498,7 +498,10 @@ final class AppEnvironment {
                 audioSystem?.setSessionInstrument(waveform)
             }
         )
-        vocalPractice = VocalPracticeModel(audio: audioSystem)
+        vocalPractice = VocalPracticeModel(
+            audio: audioSystem,
+            octaveStore: SwiftDataSongOctaveOffsetStore(container: modelContext.container)
+        )
         songSettings.didApply = { [weak self] row in self?.applySongSettings(row) }
     }
 

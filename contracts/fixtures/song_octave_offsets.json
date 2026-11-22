@@ -1,0 +1,58 @@
+{
+  "authority": "3c887223b2d06b4c3a1010d0f8a23ceaf8977d08",
+  "sourceSHA256": {
+    "android/app/src/main/java/com/acquiring/android/SingingTargets.kt": "d3195db38824ee1a91ba3bdf9b99053f8872906bd192040adf5b9325dc41b714",
+    "android/app/src/main/java/com/acquiring/android/SongOctaveOffset.kt": "5579823007dd9ffad4236c9062bfe19e936d4bb497cdaedddcc51dce2225538d",
+    "android/app/src/main/java/com/acquiring/android/SongOctaveOffsetViewModel.kt": "e54950e92fccdf29128463b9eef3ebc0c3ddbd55d2fe0ca4f1cf6708db7d96c3"
+  },
+  "cases": [
+    {
+      "input": -100,
+      "expected": -2
+    },
+    {
+      "input": -3,
+      "expected": -2
+    },
+    {
+      "input": -2,
+      "expected": -2
+    },
+    {
+      "input": -1,
+      "expected": -1
+    },
+    {
+      "input": 0,
+      "expected": 0
+    },
+    {
+      "input": 1,
+      "expected": 1
+    },
+    {
+      "input": 2,
+      "expected": 2
+    },
+    {
+      "input": 3,
+      "expected": 3
+    },
+    {
+      "input": 4,
+      "expected": 3
+    },
+    {
+      "input": 100,
+      "expected": 3
+    }
+  ],
+  "semantics": [
+    "Missing song defaults to zero without writing.",
+    "Same-song section retains current offset.",
+    "Different song restores only its saved value.",
+    "Leaving clears in-memory offset, not persisted data.",
+    "Swift synchronous main-actor operations cannot produce a late read.",
+    "Failures retain pending values and expose retry; no durability claim until save succeeds."
+  ]
+}
