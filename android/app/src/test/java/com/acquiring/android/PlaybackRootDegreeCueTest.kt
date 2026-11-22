@@ -242,16 +242,17 @@ class PlaybackRootDegreeCueTest {
     }
 
     @Test
-    fun bothModesRenderExactlyTheDegreeNumberOfAttacksOnFractionalChords() {
+    fun bothModesRenderTheDegreeNumberOfAttacksPerBeatOnFractionalChords() {
         val duration = 0.525
         for (mode in PlaybackChordMode.entries) {
             for (degree in listOf(1, 5, 7)) {
                 val chord = chord(1.0, 1.0 + duration, degree)
                 val samples = render(listOf(chord), mode, bpm = 120.0)
                 val attacks = attackStarts(samples)
-                assertEquals("$mode degree $degree", degree, attacks.size)
+                val expectedCount = Math.ceil(duration * degree - 1e-9).toInt()
+                assertEquals("$mode degree $degree", expectedCount, attacks.size)
                 attacks.forEachIndexed { slot, actual ->
-                    val expected = (slot * duration / degree * SAMPLE_RATE / 2).roundToInt()
+                    val expected = (slot.toDouble() / degree * SAMPLE_RATE / 2).roundToInt()
                     assertTrue("attack $slot at $actual, expected $expected", abs(actual - expected) < 40)
                 }
             }
@@ -437,10 +438,34 @@ class PlaybackRootDegreeCueTest {
         val samples = ShortArray(SAMPLE_RATE * 2)
         renderer.renderAudioInto(samples)
         val attacks = attackStarts(samples)
-        assertEquals(24, attacks.size)
-        assertEquals(5, attacks.count { it < SAMPLE_RATE / 2 })
-        assertEquals(7, attacks.count { it in SAMPLE_RATE / 2 until SAMPLE_RATE })
-        assertTrue(abs(attacks[12] - SAMPLE_RATE) < 40)
+        // Half-beat chords: ceil(5 * 0.5) = 3 and ceil(7 * 0.5) = 4 pulses per pass.
+        assertEquals(14, attacks.size)
+        assertEquals(3, attacks.count { it < SAMPLE_RATE / 2 })
+        assertEquals(4, attacks.count { it in SAMPLE_RATE / 2 until SAMPLE_RATE })
+        assertTrue(abs(attacks[7] - SAMPLE_RATE) < 40)
+    }
+
+    @Test
+    fun pulsesRepeatTheSameCountOnEveryBeatOfLongerChords() {
+        for (beats in listOf(1, 2, 4)) {
+            for (mode in PlaybackChordMode.entries) {
+                val samples = render(listOf(chord(1.0, 1.0 + beats, 3)), mode, bpm = 120.0)
+                val attacks = attackStarts(samples)
+                assertEquals("$mode $beats beats", 3 * beats, attacks.size)
+                attacks.forEachIndexed { i, actual ->
+                    val expected = (i / 3.0 * SAMPLE_RATE / 2).roundToInt()
+                    assertTrue("attack $i at $actual, expected $expected", abs(actual - expected) < 40)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun harmonicDistancePulsesPerBeatOnLongerChords() {
+        val cue = PlaybackRootDegreeCue.HARMONIC_DISTANCE
+        val far = chord(1.0, 5.0, 7).copy(fifthsFromKeyTonic = 2) // 3 pulses per beat
+        val samples = render(listOf(far), PlaybackChordMode.ROOT_ONLY, cue = cue, bpm = 120.0)
+        assertEquals(12, attackStarts(samples).size)
     }
 
     @Test
