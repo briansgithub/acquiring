@@ -97,7 +97,9 @@ private struct QuizHelpHost: ViewModifier {
             .accessibilityElement(children: .contain)
             .allowsHitTesting(!state.isPresented)
             .accessibilityHidden(state.isPresented)
-            .onPreferenceChange(QuizHelpFramesKey.self) { frames = $0 }
+            .onPreferenceChange(QuizHelpFramesKey.self) { newFrames in
+                Task { @MainActor in frames = newFrames }
+            }
             .overlay {
                 if state.isPresented {
                     GeometryReader { viewport in
