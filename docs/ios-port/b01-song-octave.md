@@ -61,3 +61,18 @@ sound configuration before its nested writeback. The existing failing test
 covers that path; the correction still needs a fresh CI result. Numerous later
 UI failures reported the application was not running. Their individual causes
 are not yet established, and iPad coverage remains unverified. PR #57 stays open.
+
+## Full song title
+
+N02 is now included in this branch. Android's PlaybackDestination presents the
+full title through ModalBottomSheet and SelectionContainer. The Swift toolbar
+opens a sheet with selectable text and a Done button. The existing UI test
+now closes the sheet explicitly and checks that the selected section, chord
+mode and playing state survive. Text selection itself needs simulator review.
+
+On prior head `98c01ca8`, iPhone run `44940400939` passed the four octave
+tests and the B02 test that previously crashed. The same run recorded 23 UI
+assertion failures. B02 separately corrected the outdated instrument test.
+That revised test passed on #53 at `516d7f26` in run `44955539541`. That
+run still recorded 21 UI assertion failures. The title-sheet change needs
+fresh CI.

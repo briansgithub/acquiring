@@ -923,7 +923,7 @@ struct QuizView: View {
     @State private var timelineInertiaGeneration = 0
     @State private var error: String?
     @State private var showsAudioDiagnostics = false
-    @State private var isNavigationTitleExpanded = false
+    @State private var showsFullSongTitle = false
     @State private var usesRelativeIonianContext = false
     @Environment(\.quizHelpState) private var quizHelp
     @State private var tempoPercent = 100.0
@@ -966,36 +966,29 @@ struct QuizView: View {
         }
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
-        .simultaneousGesture(
-            TapGesture().onEnded {
-                if isNavigationTitleExpanded {
-                    isNavigationTitleExpanded = false
-                }
-            }
-        )
-        .overlay(alignment: .top) {
-            if isNavigationTitleExpanded {
+        .sheet(isPresented: $showsFullSongTitle) {
+            ScrollView {
                 Text(navigationTitle)
                     .font(.headline)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .frame(maxWidth: 680)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .shadow(color: .black.opacity(0.12), radius: 6, y: 3)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 8)
-                    .allowsHitTesting(false)
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
                     .accessibilityIdentifier("quiz.songTitle.expanded")
             }
+            .safeAreaInset(edge: .bottom) {
+                Button("Done") { showsFullSongTitle = false }
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .accessibilityIdentifier("quiz.songTitle.done")
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .background(QuizNavigationGestureGuard(enablesEdgeSwipeBack: enablesEdgeSwipeBack))
         .quizNotationFontStyle(notationFontStyle)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if case .content = state {
-                    Button { isNavigationTitleExpanded = true } label: {
+                    Button { showsFullSongTitle = true } label: {
                         Text(navigationTitle)
                             .font(.headline)
                             .lineLimit(1)
@@ -1005,7 +998,7 @@ struct QuizView: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(navigationTitle)
-                    .accessibilityHint("Shows the full song title and artist. Tap the screen to collapse it.")
+                    .accessibilityHint("Opens the full song title and artist so you can select the text.")
                     .accessibilityIdentifier("quiz.songTitle")
                 }
             }
