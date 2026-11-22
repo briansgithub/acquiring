@@ -4,9 +4,17 @@ import Foundation
 /// Runs before installing a timeline, never from the render callback.
 public enum SpokenCuePreparation {
     public static let sampleRate = 24_000
+    public static let maximumFrames = 48 * sampleRate
 
     public static func transform(_ source: [Int16], speed: Float, pitch: Float,
                                  targetFrames: Int? = nil) throws -> [Int16] {
+        guard source.count <= maximumFrames,
+              speed.isFinite, (Float(0.05)...100).contains(speed),
+              Double(source.count) / Double(speed) <= Double(maximumFrames),
+              pitch.isFinite, (Float(0.125)...8).contains(pitch),
+              targetFrames.map({ (0...maximumFrames).contains($0) }) ?? true else {
+            throw AcquiringAudioError.invalidRequest("Speech transform exceeded its preparation bounds.")
+        }
         guard !source.isEmpty else { return [] }
         var count: Int32 = 0
         let output = source.withUnsafeBufferPointer {
@@ -15,7 +23,7 @@ public enum SpokenCuePreparation {
         guard let output else { throw AcquiringAudioError.invalidRequest("Speech transform exceeded its preparation bounds.") }
         defer { acquiring_sonic_free(output) }
         let target = targetFrames ?? Int(count)
-        guard target >= 0, target <= 48 * sampleRate else {
+        guard target >= 0, target <= maximumFrames else {
             throw AcquiringAudioError.invalidRequest("Speech phrase exceeds the PCM budget.")
         }
         var result = [Int16](repeating: 0, count: target)
@@ -24,6 +32,13 @@ public enum SpokenCuePreparation {
     }
 
     public static func phrase(_ parts: [[Int16]], midi: Int, durationSeconds: Double) throws -> [Int16] {
+        var naturalFrames = 0
+        for part in parts {
+            guard part.count <= maximumFrames - naturalFrames else {
+                throw AcquiringAudioError.invalidRequest("Speech phrase exceeds the PCM budget.")
+            }
+            naturalFrames += part.count
+        }
         let source = parts.flatMap { $0 }
         guard !source.isEmpty, durationSeconds.isFinite, durationSeconds > 0 else { return [] }
         let available = Int(min(durationSeconds * Double(sampleRate), Double(Int32.max)).rounded())

@@ -44,6 +44,17 @@ final class SpokenCuePreparationTests: XCTestCase {
             XCTAssertEqual(digest, c.sha256, "source \(c.source), target \(c.targetPercent), pitch \(c.pitchExponent)")
         }
     }
+    func testPreparationRejectsOversizedInputsBeforeConversionOrConcatenation() throws {
+        let limit = SpokenCuePreparation.maximumFrames
+        let oversized = [Int16](repeating: 0, count: limit + 1)
+        XCTAssertThrowsError(try SpokenCuePreparation.transform(oversized, speed: 1, pitch: 1))
+        XCTAssertThrowsError(try SpokenCuePreparation.phrase([oversized], midi: 48, durationSeconds: 1))
+        let half = [Int16](repeating: 0, count: limit / 2 + 1)
+        XCTAssertThrowsError(try SpokenCuePreparation.phrase([half, half], midi: 48, durationSeconds: 1))
+        XCTAssertThrowsError(try SpokenCuePreparation.transform([1], speed: 1, pitch: 1, targetFrames: Int.max))
+        XCTAssertThrowsError(try SpokenCuePreparation.transform([1], speed: .nan, pitch: 1))
+    }
+
     func testOfflineAssetPitchSlicesAndInvalidResource() throws {
         let clips = BundledVoiceClips()
         XCTAssertEqual(try clips.clip(stem: "root_degree_one", midi: 36).count, 7920)
