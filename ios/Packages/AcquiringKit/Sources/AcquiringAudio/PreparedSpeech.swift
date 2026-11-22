@@ -86,6 +86,8 @@ public enum SpeechTimelinePreparation {
                     if let old = context.keyScale, let scale = next.cueContext.keyScale, scale != old,
                        let tonic = next.cueContext.keyTonicMidi {
                         let name = scale.replacingOccurrences(of: "([a-z])([A-Z])", with: "$1_$2", options: .regularExpression).lowercased()
+                        guard ["major", "minor", "dorian", "phrygian", "lydian", "mixolydian", "locrian",
+                               "ionian", "aeolian", "harmonic_minor", "phrygian_dominant"].contains(name) else { continue }
                         let raw = try clips.clip(stem: "mode_" + name)
                         let samples = try SpokenCuePreparation.mode(raw, tonicMidi: tonic + configuration.transposeSemitones)
                         let end = min(event.onsetSeconds + event.durationSeconds,

@@ -55,4 +55,66 @@ for(const c of native.cases) {
   const output=sonicStretch(sources[c.source],24000,Math.fround(c.natural/c.target),2**c.pitchExponent,c.target);
   assert.equal(hash(Buffer.from(output.buffer)),c.sha256);
 }
-console.log(`${manifest.files.length} exact offline assets; ${native.cases.length} PWA/JVM Sonic cases; three frozen fixture hashes passed. Swift/C runtime remains unverified.`);
+console.log(`${manifest.files.length} exact offline assets; ${native.cases.length} PWA/JVM Sonic cases; three frozen fixture hashes passed. This command executes PWA code, not Swift/C.`);
+// Execute the existing PWA renderer against the frozen native stream oracles.
+// This is PWA/JVM evidence; Swift graph output has a separate representation.
+const { PlaybackPcmRenderer, PlaybackAudioLayer: Layer, PlaybackChordMode: Mode } = require(path.join(root,'pwa/src/audio/synth/playback-pcm.ts'));
+const { SpokenRootDegreeClips } = require(path.join(root,'pwa/src/audio/synth/spoken-cues.ts'));
+function rng(){ let seed=0x12345678; return ()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;}; }
+const event=(id,startBeat,endBeat,layer,fullMidiNotes,rootMidiNote=null)=>({id,startBeat,endBeat,layer,fullMidiNotes,rootMidiNote});
+const stream=JSON.parse(read('pwa/src/audio/synth/fixtures/native-stream.json'));
+for(const fixture of stream.cases){
+  const waveform=fixture.waveform;
+  let config={bpm:600,transpose:0,waveform,chordMode:Mode.FULL,melodyGain:0.37,chordGain:0.61,arpeggiateCycles:0.5};
+  const renderer=new PlaybackPcmRenderer({endBeat:1.25,events:[event(1,1,1.24,Layer.CHORD,[48,52,55],36),
+    event(2,1.03,1.125,Layer.MELODY,[60]),event(3,1.15,1.22,Layer.MELODY,[0,-1,64])]},config,fixture.sampleRate,rng());
+  for(const block of fixture.blocks){
+    switch(block.action){
+      case 'gain_tempo_zero':config={...config,bpm:300,melodyGain:0.25,chordGain:0.125};renderer.updateConfig(config);break;
+      case 'seek':renderer.seek(1.10);break;
+      case 'pitch_mode_wave':config={...config,waveform:waveform==='SINE'?'SAWTOOTH':'SINE',transpose:12,chordMode:Mode.ROOT_ONLY,arpeggiateCycles:2};renderer.updateConfig(config);break;
+      case 'freeze_mute':config={...config,bpm:0,melodyGain:0,chordGain:0,arpeggiateCycles:4};renderer.updateConfig(config);break;
+      case 'replace_once':
+        config={...config,bpm:600,waveform,transpose:0,chordMode:Mode.FULL,melodyGain:1,chordGain:0.5,arpeggiateCycles:0};renderer.updateConfig(config);
+        renderer.replaceTimeline({startBeat:0,endBeat:0.05,completionKey:'once',events:[event(8,0,0.05,Layer.CHORD,[60,64,67],48),event(9,0.01,0.04,Layer.MELODY,[55])]});break;
+    }
+    const pcm=new Int16Array(block.frames),actual=renderer.renderInto(pcm);
+    assert.equal(hash(Buffer.from(pcm.buffer)),block.sha256,`${waveform}/${block.action}`);
+    assert.equal(actual.startBeat,block.startBeat);assert.equal(renderer.currentBeat,block.currentBeat);
+    assert.deepEqual(actual.startedEvents.map(e=>[e.id,e.frameOffset]),block.startedEvents);
+  }
+}
+const resources=new Map(manifest.files.map(f=>{
+  const raw=read('pwa/public/voice/'+f.stem+'.pcm');
+  return [f.stem,Int16Array.from({length:raw.length/2},(_,i)=>raw.readInt16LE(i*2))];
+}));
+const clips=SpokenRootDegreeClips.fromResources(resources);
+function cueTimeline(){
+  function chord(id,startBeat,endBeat,notes,degree,alteration,suffix,fifthsKey,fifthsMajor,scale,tonic,relative={degree,alteration}){
+    return {id,startBeat,endBeat,layer:Layer.CHORD,fullMidiNotes:notes,rootMidiNote:notes[0],rootDegree:degree,rootDegreeAlteration:alteration,
+      fullChordRootMidiNote:notes[0]+12,spokenChordSuffix:suffix,relativeMajorRootDegree:relative,fifthsFromKeyTonic:fifthsKey,
+      fifthsFromMajorTonic:fifthsMajor,keyScale:scale,keyTonicMidi:tonic};
+  }
+  const melody=(id,startBeat,endBeat,note,cue)=>({id,startBeat,endBeat,layer:Layer.MELODY,fullMidiNotes:[note],spokenMelodyCue:cue,melodyCueMidi:note});
+  return {startBeat:1,endBeat:10,completionKey:null,events:[chord(1,1,3,[48,52,55],1,0,null,0,0,'major',48),melody(2,1,2,64,'third'),
+    chord(3,3,5,[53,57,60],4,0,null,1,1,'major',48),melody(4,3,3.5,62,'passing'),
+    chord(5,5,7,[55,59,62,65],5,0,'SEVEN',1,1,'major',48),chord(6,7,9,[58,62,65],7,-1,null,2,3,'mixolydian',48,{degree:4,alteration:0}),
+    melody(7,7,8,65,'root'),chord(8,9,10,[45,48,52],6,0,'MIN',3,0,'minor',45,{degree:1,alteration:0})]};
+}
+const cues=JSON.parse(read('pwa/src/audio/synth/fixtures/native-cue-stream.json'));
+for(const scenario of cues.cases){
+  const loud=scenario.cue==='OFF';
+  let config={bpm:240,transpose:0,waveform:scenario.waveform,chordMode:scenario.mode,melodyGain:loud?1:0.6,chordGain:loud?1:0.4,
+    arpeggiateCycles:0,rootDegreeCue:scenario.cue,useRelativeIonianContext:false,voiceVolume:0.5};
+  const renderer=new PlaybackPcmRenderer(cueTimeline(),config,scenario.sampleRate,rng(),clips);
+  for(const block of scenario.blocks){
+    if(block.action==='transpose_voice'){config={...config,transpose:2,voiceVolume:1};renderer.updateConfig(config);}
+    if(block.action==='seek')renderer.seek(6.25,true);
+    if(block.action==='lock_tempo'){config={...config,useRelativeIonianContext:true,bpm:180};renderer.updateConfig(config);}
+    const pcm=new Int16Array(block.frames),actual=renderer.renderInto(pcm);
+    assert.equal(hash(Buffer.from(pcm.buffer)),block.sha256,`${scenario.cue}/${scenario.sampleRate}/${block.action}`);
+    assert.equal(actual.startBeat,block.startBeat);assert.equal(renderer.currentBeat,block.currentBeat);
+    assert.deepEqual(actual.startedEvents.map(e=>[e.id,e.frameOffset]),block.startedEvents);
+  }
+}
+console.log(`${stream.cases.length} native-stream and ${cues.cases.length} native-cue-stream scenarios match PWA PCM16. B05 splice cases excluded.`);

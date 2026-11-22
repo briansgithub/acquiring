@@ -318,10 +318,13 @@ public final class QuizPCMRenderer: @unchecked Sendable {
     }
 
     private func speechSample() -> Double {
+        guard let configuration = soundConfiguration,
+              configuration.cue.speaksRoot || configuration.cue.speaksMelody else { return 0 }
         let seconds = timelineFrame / sampleRate
         var sum = 0.0
         for i in speech.indices {
             let phrase = speech[i].phrase
+            if phrase.identity % 2 == 1 && (configuration.majorLocked || !configuration.cue.speaksRoot) { continue }
             guard seconds >= phrase.onsetSeconds, seconds < phrase.endSeconds else { continue }
             if !speech[i].started {
                 speech[i].started = true

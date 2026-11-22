@@ -40,7 +40,7 @@ public enum PlaybackCueTimeline {
                 context.rootMidi = root?.simpleModePitch.midiNote
                 context.fullChordRootMidi = interpreted.toneLabels.firstIndex { $0.filter(\.isNumber) == "1" }.flatMap {
                     interpreted.midi.indices.contains($0) ? interpreted.midi[$0] : nil
-                } ?? interpreted.rootMidi
+                }
                 context.suffix = suffix(chord, interpreted: interpreted)
                 context.keyScale = key.scale
                 context.keyTonicMidi = MusicTheory.midiNote(scaleDegree: "1", octave: 0, key: key)

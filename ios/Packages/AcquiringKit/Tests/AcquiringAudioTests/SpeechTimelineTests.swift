@@ -26,6 +26,7 @@ final class SpeechTimelineTests: XCTestCase {
         let preparingBeforeSeek = revision.current
         let renderer = QuizPCMRenderer(sampleRate: 24_000)
         renderer.configure(.init(durationSeconds: 10, events: []))
+        renderer.setSoundConfiguration(.init(cue: .spokenNumber))
         renderer.seek(progress: 0.5)
         revision.invalidate() // The production seek path calls refreshPreparedSpeech, which invalidates.
         XCTAssertFalse(revision.accepts(preparingBeforeSeek))
@@ -53,7 +54,7 @@ final class SpeechTimelineTests: XCTestCase {
     func testCompletedPhraseDoesNotReplayAfterTempoPreparationGainOrSeek() {
         let renderer = QuizPCMRenderer(sampleRate: 24_000)
         renderer.configure(.init(durationSeconds: 2, events: []))
-        renderer.setSoundConfiguration(.init(voiceVolume: 1))
+        renderer.setSoundConfiguration(.init(cue: .spokenNumber, voiceVolume: 1))
         renderer.setPreparedSpeech([.init(identity: 0, onsetSeconds: 0, endSeconds: 2,
                                           samples: [Int16](repeating: 8000, count: 2400))])
         renderer.play()
@@ -63,7 +64,7 @@ final class SpeechTimelineTests: XCTestCase {
         renderer.setPlaybackRate(0.5)
         renderer.setPreparedSpeech([.init(identity: 0, onsetSeconds: 0, endSeconds: 2,
                                           samples: [Int16](repeating: 8000, count: 4800))])
-        renderer.setSoundConfiguration(.init(voiceVolume: 0.8))
+        renderer.setSoundConfiguration(.init(cue: .spokenNumber, voiceVolume: 0.8))
         output.withUnsafeMutableBufferPointer { renderer.render(into: $0) }
         XCTAssertTrue(output.allSatisfy { $0 == 0 })
         renderer.seek(progress: 0.75)

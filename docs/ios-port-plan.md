@@ -359,3 +359,8 @@ rendering, B03 metadata, song-opening audio reference and control-copy preservat
 Long-section, stale-preparation and expired-cue tests are added for fresh CI.
 B06 owns the remaining song-wide presentation label callers listed in the B04
 receipt. No device/audible acceptance or full batch completion is claimed yet.
+
+B04 portable checker now executes all 26 native-stream and 14 native-cue-stream
+PWA scenarios against the frozen JVM PCM16 hashes, in addition to 14 Sonic cases
+and 66 asset hashes. All passed. Scheduling head `5c8c8538` is in remote iOS run
+`44972264186`; follow-up source fixes require the next exact-head run.

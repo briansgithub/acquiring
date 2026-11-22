@@ -117,3 +117,17 @@ the same count as parent PR53. The scoped instrument UI test passed on both.
 This is not evidence for the later scheduling/metadata changes, nor proof that
 all UI failures are identical. Device listening and 48 kHz graph acceptance remain
 open. Fresh CI is required for the scheduling head.
+
+Fresh portable execution also passed all 26 native-stream and 14 native-cue-stream
+scenarios against the existing PWA renderer, including exact PCM16 block hashes,
+onset frames and musical positions at the fixtures' controlled rates. B05 splice
+cases were excluded. These execute PWA code and do not establish bit-exact Swift
+stream output. Only the 14 Sonic preparation cases currently have Swift/C PCM16
+hash tests. Existing Swift synthesis/envelopes and the 48 kHz Float graph remain
+separate from Android stream PCM16 representation.
+
+Latest saved turn_context on this resume is `2026-11-22T01:31:42.565Z`,
+`gpt-6-astra` / `high`. Scheduling commit `5c8c8538` started iOS run `44972264186`.
+Follow-up source review preserves Android fallback when a full chord omits its
+root and skips mode names with no native bundled clip. Cue Off and Lock suppress
+speech immediately, without waiting for asynchronous replacement preparation.
