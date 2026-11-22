@@ -41,6 +41,10 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private var notificationTasks: [Task<Void, Never>] = []
     private var transportPollTask: Task<Void, Never>?
     private var quizTimelineLoaded = false
+    private var speechPreparationRevision = SpeechPreparationRevision()
+    private var speechWindow: ClosedRange<Double>?
+    private var speechTimeline: QuizTimeline?
+    private var speechPreparationTask: Task<Void, Never>?
     /// Requested playback is separate from the physical renderer state: a
     /// zero-tempo Quiz is paused but resumes when a positive tempo returns.
     private var quizPlaybackRequested = false
@@ -317,6 +321,11 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         tempoPercent: Double,
         soundConfiguration: QuizSoundConfiguration = .init()
     ) -> UInt64 {
+        speechPreparationTask?.cancel()
+        speechPreparationTask = nil
+        speechPreparationRevision.invalidate()
+        speechTimeline = nil
+        speechWindow = nil
         invalidateQuizPlaybackOwner()
         quizRevision &+= 1
         quizLoadPendingRevision = quizRevision
@@ -390,6 +399,25 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         ) else {
             throw CancellationError()
         }
+        let oldPosition = quizRenderer.snapshot()
+        let sourceStart = position == .preserveProgress && oldPosition.duration > 0
+            ? oldPosition.elapsed / oldPosition.duration * timeline.durationSeconds : 0
+        let window = sourceStart...min(timeline.durationSeconds, sourceStart + 8 * max(tempoPercent / 100, 0.01))
+        let preparation = Task.detached(priority: .userInitiated) {
+            try SpeechTimelinePreparation.prepare(timeline, configuration: soundConfiguration,
+                                                 playbackRate: tempoPercent / 100, sourceWindow: window)
+        }
+        let phrases = try await withTaskCancellationHandler {
+            try await preparation.value
+        } onCancel: { preparation.cancel() }
+        try Task.checkCancellation()
+        guard isCurrentQuiz(songID: songID, sectionID: sectionID, tempoPercent: tempoPercent,
+                            revision: revision, soundConfiguration: soundConfiguration) else { throw CancellationError() }
+        speechPreparationTask?.cancel()
+        speechPreparationTask = nil
+        speechPreparationRevision.invalidate()
+        speechTimeline = timeline
+        speechWindow = window
         transportPollTask?.cancel()
         let shouldContinuePlaying = position == .preserveProgress
             && quizPlaybackRequested
@@ -400,6 +428,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             preserveProgress: position == .preserveProgress,
             soundConfiguration: soundConfiguration
         )
+        quizRenderer.setPreparedSpeech(phrases, preserveProgress: false)
         guard isCurrentQuiz(
             songID: songID,
             sectionID: sectionID,
@@ -451,6 +480,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             soundConfiguration: context.soundConfiguration
         )
         quizRenderer.setPlaybackRate(normalizedTempo / 100)
+        refreshPreparedSpeech()
 
         if normalizedTempo <= 0 {
             transportPollTask?.cancel()
@@ -524,7 +554,47 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         )
         invalidatePreviewPlayback()
         quizRenderer.setSoundConfiguration(soundConfiguration)
+        if context.soundConfiguration.cue != soundConfiguration.cue ||
+            context.soundConfiguration.transposeSemitones != soundConfiguration.transposeSemitones ||
+            context.soundConfiguration.majorLocked != soundConfiguration.majorLocked ||
+            context.soundConfiguration.chordMode != soundConfiguration.chordMode {
+            refreshPreparedSpeech()
+        }
         return quizRevision
+    }
+
+    private func refreshPreparedSpeech() {
+        speechPreparationTask?.cancel()
+        speechPreparationTask = nil
+        speechPreparationRevision.invalidate()
+        guard let timeline = speechTimeline, let context = quizContext, context.tempoPercent > 0 else { return }
+        let generation = speechPreparationRevision.current
+        let snapshot = quizRenderer.snapshot()
+        let sourceStart = snapshot.duration > 0 ? snapshot.elapsed / snapshot.duration * timeline.durationSeconds : 0
+        let window = sourceStart...min(timeline.durationSeconds, sourceStart + 8 * context.tempoPercent / 100)
+        let preparation = Task.detached(priority: .userInitiated) {
+            try SpeechTimelinePreparation.prepare(timeline, configuration: context.soundConfiguration,
+                                                 playbackRate: context.tempoPercent / 100, sourceWindow: window)
+        }
+        speechPreparationTask = Task { [weak self] in
+            do {
+                let phrases = try await withTaskCancellationHandler {
+                    try await preparation.value
+                } onCancel: { preparation.cancel() }
+                try Task.checkCancellation()
+                guard let self, self.speechPreparationRevision.accepts(generation), self.quizTimelineLoaded else { return }
+                self.speechPreparationTask = nil
+                self.speechWindow = window
+                self.quizRenderer.setPreparedSpeech(phrases)
+            } catch is CancellationError {
+            } catch {
+                guard let self, self.speechPreparationRevision.accepts(generation) else { return }
+                self.speechPreparationTask = nil
+                self.speechWindow = window
+                self.quizRenderer.setPreparedSpeech([])
+                self.recordAudioEvent("speech.prepare.failed", details: ["error": error.localizedDescription])
+            }
+        }
     }
 
     func activateQuizPlaybackOwner(revision: UInt64) -> QuizPlaybackOwner? {
@@ -613,6 +683,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         transportPollTask?.cancel()
         let bounded = min(max(progress, 0), 1)
         quizRenderer.seek(progress: bounded)
+        refreshPreparedSpeech()
         let snapshot = quizRenderer.snapshot()
         let phase = transportState.phase
         publish(TransportState(
@@ -739,6 +810,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         transportPollTask?.cancel()
         invalidatePreviewPlayback()
         quizRenderer.stop()
+        refreshPreparedSpeech()
         let snapshot = quizRenderer.snapshot()
         publish(TransportState(
             phase: .stopped,
@@ -1385,6 +1457,16 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                 try? await Task.sleep(for: .milliseconds(50))
                 guard let self, !Task.isCancelled else { return }
                 let snapshot = quizRenderer.snapshot()
+                if let timeline = speechTimeline, let context = quizContext,
+                   context.soundConfiguration.cue.speaksRoot || context.soundConfiguration.cue.speaksMelody,
+                   speechPreparationTask == nil, snapshot.duration > 0 {
+                    let source = snapshot.elapsed / snapshot.duration * timeline.durationSeconds
+                    if speechWindow == nil || source < speechWindow!.lowerBound ||
+                        (speechWindow!.upperBound < timeline.durationSeconds &&
+                         source + 4 * context.tempoPercent / 100 >= speechWindow!.upperBound) {
+                        refreshPreparedSpeech()
+                    }
+                }
                 publish(TransportState(
                     phase: .playing,
                     elapsed: .seconds(snapshot.elapsed),
@@ -1870,7 +1952,7 @@ private struct ActiveMicrophone {
     let channelCount: AVAudioChannelCount
 }
 
-private struct QuizAudioContext: Equatable {
+private struct QuizAudioContext: Equatable, Sendable {
     let songID: String
     let sectionID: String
     let tempoPercent: Double
@@ -1935,6 +2017,10 @@ private final class LockedQuizRenderer: @unchecked Sendable {
     func stop() { lock.withLock { renderer.stop() } }
     func seek(progress: Double) { lock.withLock { renderer.seek(progress: progress) } }
     func setPlaybackRate(_ rate: Double) { lock.withLock { renderer.setPlaybackRate(rate) } }
+    func setPreparedSpeech(_ phrases: [PreparedSpeech], preserveProgress: Bool = true) {
+        lock.withLock { renderer.setPreparedSpeech(phrases, preserveProgress: preserveProgress) }
+    }
+
     func setSoundConfiguration(_ configuration: QuizSoundConfiguration) {
         lock.withLock { renderer.setSoundConfiguration(configuration) }
     }

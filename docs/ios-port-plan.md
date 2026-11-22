@@ -348,3 +348,14 @@ B04 draft PR #61 is open against `ios-port-melody-function`, with all three stac
 layers linked. AppEnvironment now carries saved cue/voice volume into the audio
 configuration. Existing control reconstruction, metadata and speech scheduling
 remain unfinished. Remote iOS run `44956183588` targets `9411bd7d`; no result yet.
+
+## B04 scheduling checkpoint
+
+Lead reported `f4bb5ea9` passing all 254 package tests in run `44956283926`,
+including native Sonic PCM16 and resource-loading checks. App compilation passed;
+iPhone UI had 21 failed assertions, matching the parent count. The instrument
+case passed. New B04 work adds bounded background lookahead preparation, speech
+rendering, B03 metadata, song-opening audio reference and control-copy preservation.
+Long-section, stale-preparation and expired-cue tests are added for fresh CI.
+B06 owns the remaining song-wide presentation label callers listed in the B04
+receipt. No device/audible acceptance or full batch completion is claimed yet.

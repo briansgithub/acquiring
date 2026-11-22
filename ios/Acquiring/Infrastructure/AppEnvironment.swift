@@ -313,18 +313,6 @@ struct QuizPlaybackConfiguration: Equatable {
     }
 }
 
-extension QuizSoundConfiguration {
-    func replacing(waveform: SynthWaveform) -> Self {
-        Self(
-            waveform: waveform,
-            melodyChordBalance: melodyChordBalance,
-            transposeSemitones: transposeSemitones,
-            arpeggioOption: arpeggioOption,
-            chordMode: chordMode,
-            cue: cue, voiceVolume: voiceVolume, majorLocked: majorLocked
-        )
-    }
-}
 
 struct QuizInstrumentPreferences {
     static let defaultsKey = "defaultQuizInstrument"

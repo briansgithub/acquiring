@@ -57,3 +57,63 @@ before claiming that saved cues reach audible playback.
 Draft [PR61](https://github.com/briansgithub/acquiring/pull/61) targets
 `ios-port-melody-function`. PR54 head/base was confirmed as `821d7b5e` /
 `ios-port-song-settings` immediately before opening. All three layers are linked.
+
+## Scheduling and metadata slice
+
+`PlaybackCueTimeline.annotate` now supplies root degree/accidental, source key,
+song-opening major reference, sounding root, suffix and B03 melody annotations.
+`QuizView.timeline` passes the first ordered section's beat-one key. Singing
+register folding and the B03 rising B4-to-C5 spoken exception are retained.
+
+`SpeechTimelinePreparation` loads exact banks, orders accidentals before the
+number, adds native suffix clips, fits phrases with Sonic, and prepares a separate
+mode window at the end of the preceding chord. Mode speech uses the transposed
+new tonic in C3-B3 and is suppressed by Lock in Major. Melody chord-tone filtering
+uses B03's source-role predicate. This source projection does not change role
+labels when the sounding pitch is transposed.
+
+The audio system prepares eight seconds of lookahead on a background task. Its
+existing 50 ms transport poller requests replacement with four seconds of
+headroom, and entry, seeks and tempo changes prime preparation. A preparation
+revision rejects results invalidated by a seek, setting change or replacement.
+The renderer retains each phrase's logical sample position across replacement,
+so completed phrases do not replay after gain or tempo changes. Retained PCM is
+bounded at 48 seconds per prepared window, not per section. Preparation temporarily
+holds one full bounded phrase while slicing the window; old and incoming windows
+can coexist during replacement. Asset loading/decoding and Sonic never run under
+the renderer lock or in its callback. The existing callback lock remains.
+
+Late preparation skips the elapsed prefix at the current playhead. If the cue's
+musical window already ended, the renderer emits nothing for it. On a loop wrap,
+the next poll primes the opening window; if preparation has not completed, those
+initial samples are silent rather than replayed late. This timing policy needs
+audible-device review. No new output graph, preview owner or measured-Hz replay
+path was introduced.
+
+The single `QuizSoundConfiguration.replacing` path keeps cue and voice volume
+through mode, waveform, transpose, arpeggio, mix, Lock and restoration updates.
+AppEnvironment still performs its parent read-before-write exclusivity fix.
+
+Focused tests in `SpeechTimelineTests.swift` cover the supplemental Android
+G-major/G-dorian case in
+`testNewAndroidSongOpeningReferenceOverridesChorusRelativeMajor`, mode-window
+separation/Lock suppression, >48 seconds cumulative speech in a long section,
+stale seek preparation, expired cues, and completed-phrase continuity. These new
+tests are pending fresh remote execution.
+
+B06 retains the song-wide **presentation** reference handoff. The remaining
+section-based callers in SongViews.swift are `QuizHeader.displayKey`,
+`MelodyTimelinePresentation.init`, and `ChordTimelinePresentation.init`, plus the
+`QuizTimelinePairView` paths that construct those presentations. B04 only wires
+the audio reference. No new voice controls or VocalPractice views were changed.
+
+## Exact-head CI evidence
+
+Per lead handoff, `f4bb5ea910ad644ab94554a9b76ac06fe66fcb6f` passed all 254 Swift
+package tests in iOS run `44956283926`, including PlaybackCueTests and
+SpokenCuePreparationTests. That executes the 14 PCM16 Sonic hashes and bundled
+resource lookup on macOS. The app built; iPhone UI recorded 21 failed assertions,
+the same count as parent PR53. The scoped instrument UI test passed on both.
+This is not evidence for the later scheduling/metadata changes, nor proof that
+all UI failures are identical. Device listening and 48 kHz graph acceptance remain
+open. Fresh CI is required for the scheduling head.

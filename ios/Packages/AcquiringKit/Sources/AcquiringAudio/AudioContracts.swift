@@ -150,6 +150,15 @@ public struct QuizSoundConfiguration: Equatable, Sendable {
         self.majorLocked = majorLocked
     }
 
+    public func replacing(waveform: SynthWaveform? = nil, melodyChordBalance: Double? = nil,
+                          transposeSemitones: Int? = nil, arpeggioOption: QuizArpeggioOption? = nil,
+                          chordMode: QuizChordMode? = nil, majorLocked: Bool? = nil) -> Self {
+        Self(waveform: waveform ?? self.waveform, melodyChordBalance: melodyChordBalance ?? self.melodyChordBalance,
+             transposeSemitones: transposeSemitones ?? self.transposeSemitones,
+             arpeggioOption: arpeggioOption ?? self.arpeggioOption, chordMode: chordMode ?? self.chordMode,
+             cue: cue, voiceVolume: voiceVolume, majorLocked: majorLocked ?? self.majorLocked)
+    }
+
     public var melodyGain: Double { melodyChordBalance }
     public var chordGain: Double { 1 - melodyChordBalance }
 }
