@@ -88,9 +88,10 @@ fun LibraryView(
     val songsScope = searchScope == LibrarySearchScope.SONGS
     val activeQuery = if (songsScope) searchQuery else searchArtistQuery
     val executeSearch = { if (songsScope) onSearchTitle() else onSearchArtist() }
-    BackHandler(enabled = searchFocused || hooktheoryFocused) {
+    val resultsShown = libraryResultsShown(allSongs.size)
+    BackHandler(enabled = searchFocused || hooktheoryFocused || resultsShown) {
         focusManager.clearFocus(force = true)
-        if (searchFocused) onExitSearch()
+        if (searchFocused || resultsShown) onExitSearch()
     }
 
     Column(
@@ -109,6 +110,7 @@ fun LibraryView(
             query = activeQuery,
             onQueryChange = { raw ->
                 val next = raw.replace("\n", "")
+                if (libraryQueryExitsResults(next, resultsShown)) onExitSearch()
                 if (songsScope) onSearchQueryChange(next) else onSearchArtistQueryChange(next)
             },
             onFocusChanged = { focused ->
@@ -151,8 +153,13 @@ fun LibraryView(
                 modifier = Modifier.weight(1f)
             )
             !showChrome -> Spacer(modifier = Modifier.weight(1f))
-            allSongs.isNotEmpty() -> {
-                searchResult?.let { LibrarySearchCaption(it) }
+            resultsShown -> {
+                searchResult?.let {
+                    LibrarySearchCaption(it, onClear = {
+                        focusManager.clearFocus(force = true)
+                        onExitSearch()
+                    })
+                }
                 LibrarySongResultList(
                     songs = allSongs,
                     onSongClick = onSongClick,

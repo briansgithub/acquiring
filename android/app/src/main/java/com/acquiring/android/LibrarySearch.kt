@@ -10,6 +10,13 @@ internal enum class LibrarySearchScope {
 
 internal fun libraryChromeVisible(searchFocused: Boolean): Boolean = !searchFocused
 
+/** Finished-search results replace the favorites list, so they must be dismissible. */
+internal fun libraryResultsShown(resultCount: Int): Boolean = resultCount > 0
+
+/** Emptying the search box abandons the results it produced and returns to favorites. */
+internal fun libraryQueryExitsResults(query: String, resultsShown: Boolean): Boolean =
+    resultsShown && query.isEmpty()
+
 /** iOS `catalog_search_key`: case/diacritic fold, then alphanumerics only. */
 internal fun catalogSearchKey(value: String?): String {
     if (value.isNullOrEmpty()) return ""
