@@ -245,6 +245,7 @@ internal class PlaybackPcmRenderer(
         val oscillators: List<SynthVoice>,
         val rootPulses: List<List<SynthVoice>>,
         val pulsesPerBeat: Int = 0,
+        val pulsesPerChord: Boolean = false,
         val arpeggiateCycles: Double,
         var ageFrames: Long = 0,
         var transitionGain: Double = 1.0,
@@ -488,17 +489,26 @@ internal class PlaybackPcmRenderer(
         val event = active.event
         val duration = event.endBeat - event.startBeat
         val pulseCount = active.rootPulses.size
-        // Pulses are defined per beat: each beat holds pulsesPerBeat pulses.
+        // Harmonic distance holds pulsesPerBeat pulses on every beat; root pulses
+        // spread their count over the whole chord.
         // Roundoff near the exclusive end must never wrap back to pulse one.
-        val slot = ((beat - event.startBeat) * active.pulsesPerBeat)
-            .coerceIn(0.0, Math.nextDown(pulseCount.toDouble()))
+        val rawSlot = if (active.pulsesPerChord) {
+            (beat - event.startBeat) / duration * pulseCount
+        } else {
+            (beat - event.startBeat) * active.pulsesPerBeat
+        }
+        val slot = rawSlot.coerceIn(0.0, Math.nextDown(pulseCount.toDouble()))
         val index = slot.toInt()
         val progress = slot - index
         if (progress >= 0.8) return 0.0
 
         val pulseEnvelope = minOf(progress / 0.08, (0.8 - progress) / 0.12, 1.0)
         val elapsedSeconds = if (config.bpm > 0.0) {
-            progress * 60.0 / (active.pulsesPerBeat * config.bpm)
+            if (active.pulsesPerChord) {
+                progress * duration * 60.0 / (pulseCount * config.bpm)
+            } else {
+                progress * 60.0 / (active.pulsesPerBeat * config.bpm)
+            }
         } else {
             0.0
         }
@@ -745,6 +755,7 @@ internal class PlaybackPcmRenderer(
             }
             else -> 0
         }
+        val perChord = config.rootDegreeCue == PlaybackRootDegreeCue.ROOT_PULSES
         val pulsing = when (config.rootDegreeCue) {
             PlaybackRootDegreeCue.ROOT_PULSES -> pulseCount > 1
             PlaybackRootDegreeCue.HARMONIC_DISTANCE -> pulseCount >= 1
@@ -752,8 +763,12 @@ internal class PlaybackPcmRenderer(
         }
         val (oscillators, rootPulses) = if (pulseRoot && pulsing) {
             // Separate voices retrigger decaying instruments on every pulse.
-            val total = Math.ceil((event.endBeat - event.startBeat) * pulseCount - BEAT_EPSILON)
-                .toInt().coerceAtLeast(1)
+            val total = if (perChord) {
+                pulseCount
+            } else {
+                Math.ceil((event.endBeat - event.startBeat) * pulseCount - BEAT_EPSILON)
+                    .toInt().coerceAtLeast(1)
+            }
             emptyList<SynthVoice>() to List(total) { voices(midiNotes) }
         } else {
             voices(midiNotes) to emptyList()
@@ -763,6 +778,7 @@ internal class PlaybackPcmRenderer(
             oscillators = oscillators,
             rootPulses = rootPulses,
             pulsesPerBeat = pulseCount,
+            pulsesPerChord = perChord,
             arpeggiateCycles = if (isChord && oscillators.size > 1) config.arpeggiateCycles else 0.0,
             transitionGain = if (fadeIn) 0.0 else 1.0,
             transitionFramesRemaining = if (fadeIn) crossfadeFrames else 0,
